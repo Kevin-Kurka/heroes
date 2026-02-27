@@ -34,7 +34,7 @@ export default function VariantGroupCard({ group, elevated }: VariantGroupCardPr
 
       {/* Variant items as sub-cards in a responsive grid */}
       {group.items.length > 1 && (
-        <div className={`grid gap-2 mb-4 ${hasDescriptions ? 'sm:grid-cols-2' : 'grid-cols-2 sm:grid-cols-3'}`}>
+        <div className={`grid gap-2 mb-4 ${hasDescriptions ? 'sm:grid-cols-2' : 'grid-cols-2'}`}>
           {group.items.map((item) => (
             <div
               key={item.id}
@@ -52,22 +52,24 @@ export default function VariantGroupCard({ group, elevated }: VariantGroupCardPr
         </div>
       )}
 
-      {/* Choice groups (Philly cheese/toppings, Kids drink/side) */}
+      {/* Choice groups as sub-cards (Kids drink/side, Philly cheese/toppings) */}
       {group.choices && group.choices.length > 0 && (
-        <div className="space-y-2 mb-4">
+        <div className="space-y-3 mb-4">
           {group.choices.map((choice) => (
-            <div key={choice.label} className="flex flex-wrap items-baseline gap-x-2">
+            <div key={choice.label}>
               <span className="text-xs uppercase tracking-wider text-muted font-semibold">
-                {choice.label}:
+                {choice.label}
               </span>
-              {choice.options.map((opt, i) => (
-                <span key={opt} className="text-sm text-foreground">
-                  {opt}
-                  {i < choice.options.length - 1 && (
-                    <span className="text-muted mx-1">&middot;</span>
-                  )}
-                </span>
-              ))}
+              <div className="grid grid-cols-2 gap-2 mt-1.5">
+                {choice.options.map((opt) => (
+                  <div
+                    key={opt}
+                    className="rounded-md bg-white/5 border border-border/60 px-4 py-2 hover:border-accent/30 transition-colors"
+                  >
+                    <span className="font-medium text-foreground text-sm">{opt}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           ))}
         </div>
