@@ -77,7 +77,7 @@ export default function EventsPageClient({ events, allHolidays }: Props) {
           quality={80}
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-background/85" />
+        <div className="absolute inset-0 bg-background/95" />
       </div>
 
       <div className="max-w-4xl mx-auto px-4 py-6">
