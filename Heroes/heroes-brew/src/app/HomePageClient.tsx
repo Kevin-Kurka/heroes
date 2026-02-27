@@ -78,6 +78,11 @@ export default function HomePageClient({ events }: Props) {
   const logoScale = useTransform(scrollYProgress, [0, 1], [1, 0.9]);
   const logoOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
 
+  // Flag background parallax
+  const { scrollY } = useScroll();
+  const homeBgY = useTransform(scrollY, [0, 2000], ['0%', '30%']);
+  const homeBgScale = useTransform(scrollY, [0, 2000], [1, 1.1]);
+
   return (
     <div>
       {/* Hero Section */}
@@ -164,6 +169,13 @@ export default function HomePageClient({ events }: Props) {
 
       {/* Live Ticker */}
       <Ticker events={events} />
+
+      {/* Flag background below ticker */}
+      <div className="relative">
+        <motion.div
+          className="fixed inset-0 -z-10 bg-[url('/home-bg.jpg')] bg-cover bg-center opacity-10 pointer-events-none"
+          style={{ y: homeBgY, scale: homeBgScale }}
+        />
 
       {/* Daily Lineup */}
       <section className="max-w-4xl mx-auto px-4 py-12">
@@ -341,6 +353,7 @@ export default function HomePageClient({ events }: Props) {
           ))}
         </div>
       </section>
+      </div>
     </div>
   );
 }
