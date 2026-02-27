@@ -40,8 +40,15 @@ const ESPN_SPORTS: { sport: string; league: SportLeague }[] = [
 
 async function fetchESPNScoreboard(sport: string, league: SportLeague): Promise<UnifiedEvent[]> {
   try {
+    // Build date range: today through today+7
+    const now = new Date();
+    const end = new Date(now);
+    end.setDate(now.getDate() + 7);
+    const fmt = (d: Date) => d.toISOString().split('T')[0].replace(/-/g, '');
+    const dates = `${fmt(now)}-${fmt(end)}`;
+
     const res = await fetch(
-      `https://site.api.espn.com/apis/site/v2/sports/${sport}/scoreboard`,
+      `https://site.api.espn.com/apis/site/v2/sports/${sport}/scoreboard?dates=${dates}`,
       { next: { revalidate: 300 } } // 5 min for live scores
     );
     if (!res.ok) throw new Error(`ESPN ${league}: ${res.status}`);
@@ -298,16 +305,24 @@ export async function getAllEvents(): Promise<UnifiedEvent[]> {
     return true;
   });
 
-  // Sort: live first, then highlighted, then by time
-  deduped.sort((a, b) => {
-    if (a.isLive && !b.isLive) return -1;
-    if (!a.isLive && b.isLive) return 1;
-    if (a.highlighted && !b.highlighted) return -1;
-    if (!a.highlighted && b.highlighted) return 1;
+  // Filter to today through today+7 days
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const endDate = new Date(today);
+  endDate.setDate(today.getDate() + 7);
+  endDate.setHours(23, 59, 59, 999);
+
+  const filtered = deduped.filter((e) => {
+    const t = new Date(e.eventTimestamp);
+    return t >= today && t <= endDate;
+  });
+
+  // Sort strictly by start time
+  filtered.sort((a, b) => {
     return new Date(a.eventTimestamp).getTime() - new Date(b.eventTimestamp).getTime();
   });
 
-  return deduped;
+  return filtered;
 }
 
 export async function getUpcomingEvents(limit = 5): Promise<UnifiedEvent[]> {

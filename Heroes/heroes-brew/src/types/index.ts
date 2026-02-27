@@ -90,6 +90,19 @@ export interface DaySchedule {
 }
 
 // =====================
+// Instagram
+// =====================
+export interface InstagramPost {
+  id: string;
+  caption?: string;
+  media_url: string;
+  thumbnail_url?: string;
+  permalink: string;
+  timestamp: string;
+  media_type: 'IMAGE' | 'VIDEO' | 'CAROUSEL_ALBUM';
+}
+
+// =====================
 // Navigation
 // =====================
 export interface NavItem {

@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Script from 'next/script';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import TopNav from '@/components/TopNav';
@@ -42,12 +41,6 @@ export default function RootLayout({
           {children}
         </main>
         <BottomNav />
-        {process.env.NEXT_PUBLIC_ELFSIGHT_APP_ID && (
-          <Script
-            src="https://static.elfsight.com/platform/platform.js"
-            strategy="lazyOnload"
-          />
-        )}
       </body>
     </html>
   );

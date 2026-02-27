@@ -1,6 +1,6 @@
 'use client';
 
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import { MapPin, Phone, Clock, Navigation, ExternalLink } from 'lucide-react';
 import { Restaurant } from '@/types';
 import PageTransition from '@/components/PageTransition';
@@ -18,14 +18,17 @@ export default function LocationPageClient({ restaurant }: Props) {
   const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
 
   const { scrollY } = useScroll();
-  const bgY = useTransform(scrollY, [0, 1000], ['0%', '30%']);
-  const bgScale = useTransform(scrollY, [0, 1000], [1, 1.1]);
+  const springConfig = { stiffness: 100, damping: 30, mass: 0.5 };
+  const rawBgY = useTransform(scrollY, [0, 2000], [0, 50]);
+  const rawBgScale = useTransform(scrollY, [0, 2000], [1, 1.03]);
+  const bgY = useSpring(rawBgY, springConfig);
+  const bgScale = useSpring(rawBgScale, springConfig);
 
   return (
     <PageTransition>
       <motion.div
         className="fixed inset-0 -z-10 bg-[url('/location-bg.jpg')] bg-cover bg-center opacity-10 pointer-events-none"
-        style={{ y: bgY, scale: bgScale }}
+        style={{ y: bgY, scale: bgScale, willChange: 'transform' }}
       />
       <div className="max-w-4xl mx-auto px-4 py-6">
         <h1 className="text-3xl font-bold text-foreground drop-shadow-lg mb-6" style={{ viewTransitionName: 'page-title' }}>Find Us</h1>

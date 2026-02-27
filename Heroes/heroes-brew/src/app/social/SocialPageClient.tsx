@@ -1,21 +1,28 @@
 'use client';
 
-import { motion, useScroll, useTransform } from 'framer-motion';
-import { Instagram, ExternalLink } from 'lucide-react';
+import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
+import { Instagram, ExternalLink, Play } from 'lucide-react';
+import { InstagramPost } from '@/types';
 
-const elfsightAppId = process.env.NEXT_PUBLIC_ELFSIGHT_APP_ID;
+interface Props {
+  posts: InstagramPost[];
+}
 
-export default function SocialPageClient() {
+export default function SocialPageClient({ posts }: Props) {
   const { scrollY } = useScroll();
-  const bgY = useTransform(scrollY, [0, 1000], ['0%', '30%']);
-  const bgScale = useTransform(scrollY, [0, 1000], [1, 1.1]);
+  const springConfig = { stiffness: 100, damping: 30, mass: 0.5 };
+  const rawBgY = useTransform(scrollY, [0, 2000], [0, 50]);
+  const rawBgScale = useTransform(scrollY, [0, 2000], [1, 1.03]);
+  const bgY = useSpring(rawBgY, springConfig);
+  const bgScale = useSpring(rawBgScale, springConfig);
 
   return (
     <div className="relative">
       <motion.div
         className="fixed inset-0 -z-10 bg-[url('/social-bg.jpg')] bg-cover bg-center opacity-10 pointer-events-none"
-        style={{ y: bgY, scale: bgScale }}
+        style={{ y: bgY, scale: bgScale, willChange: 'transform' }}
       />
+
       {/* Instagram CTA */}
       <motion.a
         href="https://www.instagram.com/americanheroesandbrew/"
@@ -39,11 +46,55 @@ export default function SocialPageClient() {
         <ExternalLink size={16} className="text-muted group-hover:text-pink-400 transition-colors" />
       </motion.a>
 
-      {/* Elfsight Widget or Placeholder */}
-      <div className="rounded-md border border-border overflow-hidden">
-        {elfsightAppId ? (
-          <div className={`elfsight-app-${elfsightAppId}`} data-elfsight-app-lazy />
-        ) : (
+      {/* Instagram Grid */}
+      {posts.length > 0 ? (
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
+          {posts.map((post, i) => (
+            <motion.a
+              key={post.id}
+              href={post.permalink}
+              target="_blank"
+              rel="noopener noreferrer"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.2, delay: i * 0.03, ease: [0, 0, 0.2, 1] }}
+              className="group relative aspect-square rounded-md overflow-hidden bg-card/70 backdrop-blur-md border border-white/10 hover:border-purple-500/40 transition-all"
+            >
+              <img
+                src={post.media_type === 'VIDEO' ? (post.thumbnail_url || post.media_url) : post.media_url}
+                alt={post.caption?.slice(0, 100) || 'Instagram post'}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                loading="lazy"
+              />
+
+              {/* Video indicator */}
+              {post.media_type === 'VIDEO' && (
+                <div className="absolute top-2 right-2 p-1 bg-black/60 rounded-full">
+                  <Play size={14} className="text-white fill-white" />
+                </div>
+              )}
+
+              {/* Carousel indicator */}
+              {post.media_type === 'CAROUSEL_ALBUM' && (
+                <div className="absolute top-2 right-2 flex gap-0.5">
+                  <div className="w-1.5 h-1.5 rounded-full bg-white/80" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-white/40" />
+                </div>
+              )}
+
+              {/* Hover overlay with caption */}
+              {post.caption && (
+                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end p-3">
+                  <p className="text-white text-xs line-clamp-3 leading-relaxed">
+                    {post.caption}
+                  </p>
+                </div>
+              )}
+            </motion.a>
+          ))}
+        </div>
+      ) : (
+        <div className="rounded-md border border-border overflow-hidden">
           <div className="p-8 text-center">
             <div className="grid grid-cols-3 gap-2 mb-6">
               {Array.from({ length: 9 }).map((_, i) => (
@@ -57,14 +108,14 @@ export default function SocialPageClient() {
               ))}
             </div>
             <p className="text-muted text-sm">
-              Instagram feed will appear here once Elfsight widget is configured.
+              Instagram feed will appear once connected.
             </p>
             <p className="text-muted/60 text-xs mt-1">
-              Set NEXT_PUBLIC_ELFSIGHT_APP_ID in .env.local to enable.
+              Set INSTAGRAM_ACCESS_TOKEN in environment variables to enable.
             </p>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

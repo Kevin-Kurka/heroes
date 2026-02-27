@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { motion, LayoutGroup, useScroll, useTransform } from 'framer-motion';
+import { motion, LayoutGroup, useScroll, useTransform, useSpring } from 'framer-motion';
 import { Menu } from '@/types';
 import MenuCard from '@/components/MenuCard';
 import VariantGroupCard from '@/components/VariantGroupCard';
@@ -42,14 +42,17 @@ export default function MenuPageClient({ menus }: Props) {
   const currentGroup = groups.find(g => g.id === activeGroup) || groups[0];
 
   const { scrollY } = useScroll();
-  const bgY = useTransform(scrollY, [0, 1000], ['0%', '30%']);
-  const bgScale = useTransform(scrollY, [0, 1000], [1, 1.1]);
+  const springConfig = { stiffness: 100, damping: 30, mass: 0.5 };
+  const rawBgY = useTransform(scrollY, [0, 2000], [0, 50]);
+  const rawBgScale = useTransform(scrollY, [0, 2000], [1, 1.03]);
+  const bgY = useSpring(rawBgY, springConfig);
+  const bgScale = useSpring(rawBgScale, springConfig);
 
   return (
     <PageTransition>
       <motion.div
         className="fixed inset-0 -z-10 bg-[url('/menu-bg.jpg')] bg-cover bg-center opacity-10 pointer-events-none"
-        style={{ y: bgY, scale: bgScale }}
+        style={{ y: bgY, scale: bgScale, willChange: 'transform' }}
       />
       <div className="max-w-4xl mx-auto px-4 py-6">
         {/* Header */}

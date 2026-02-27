@@ -1,13 +1,18 @@
 import type { Metadata } from 'next';
 import PageTransition from '@/components/PageTransition';
 import SocialPageClient from './SocialPageClient';
+import { getInstagramPosts } from '@/lib/instagram';
+
+export const revalidate = 900; // ISR: 15 min
 
 export const metadata: Metadata = {
   title: 'Social | American Heroes & Brew',
   description: 'Follow American Heroes & Brew on Instagram for specials, events, and vibes.',
 };
 
-export default function SocialPage() {
+export default async function SocialPage() {
+  const posts = await getInstagramPosts(12);
+
   return (
     <PageTransition>
       <div className="max-w-4xl mx-auto px-4 py-6">
@@ -17,7 +22,7 @@ export default function SocialPage() {
             Follow us on Instagram for the latest from Heroes.
           </p>
         </div>
-        <SocialPageClient />
+        <SocialPageClient posts={posts} />
       </div>
     </PageTransition>
   );

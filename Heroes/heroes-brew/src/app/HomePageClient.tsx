@@ -3,7 +3,7 @@
 import { useRef, useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import { UtensilsCrossed, CalendarDays, MapPin, ChevronRight, Trophy, Flame } from 'lucide-react';
 import { UnifiedEvent } from '@/types';
 import Ticker from '@/components/Ticker';
@@ -69,19 +69,27 @@ export default function HomePageClient({ events }: Props) {
     offset: ['start start', 'end start'],
   });
 
-  // Layer 1: Sandwich background — slowest parallax
-  const heroY = useTransform(scrollYProgress, [0, 1], ['0%', '20%']);
-  const heroScale = useTransform(scrollYProgress, [0, 1], [1, 1.08]);
+  const springConfig = { stiffness: 100, damping: 30, mass: 0.5 };
+
+  // Layer 1: Hero background — gentle parallax
+  const rawHeroY = useTransform(scrollYProgress, [0, 1], ['0%', '12%']);
+  const rawHeroScale = useTransform(scrollYProgress, [0, 1], [1, 1.05]);
+  const heroY = useSpring(rawHeroY, springConfig);
+  const heroScale = useSpring(rawHeroScale, springConfig);
 
   // Layer 2: Logo — parallax, fades on scroll
-  const logoY = useTransform(scrollYProgress, [0, 1], ['0%', '50%']);
-  const logoScale = useTransform(scrollYProgress, [0, 1], [1, 0.9]);
+  const rawLogoY = useTransform(scrollYProgress, [0, 1], ['0%', '30%']);
+  const rawLogoScale = useTransform(scrollYProgress, [0, 1], [1, 0.92]);
   const logoOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
+  const logoY = useSpring(rawLogoY, springConfig);
+  const logoScale = useSpring(rawLogoScale, springConfig);
 
   // Flag background parallax
   const { scrollY } = useScroll();
-  const homeBgY = useTransform(scrollY, [0, 2000], ['0%', '30%']);
-  const homeBgScale = useTransform(scrollY, [0, 2000], [1, 1.1]);
+  const rawHomeBgY = useTransform(scrollY, [0, 3000], [0, 40]);
+  const rawHomeBgScale = useTransform(scrollY, [0, 3000], [1, 1.03]);
+  const homeBgY = useSpring(rawHomeBgY, springConfig);
+  const homeBgScale = useSpring(rawHomeBgScale, springConfig);
 
   return (
     <div>
@@ -90,7 +98,7 @@ export default function HomePageClient({ events }: Props) {
         {/* Layer 1: Sandwich background — slowest parallax */}
         <motion.div
           className="absolute inset-0"
-          style={{ y: heroY, scale: heroScale }}
+          style={{ y: heroY, scale: heroScale, willChange: 'transform' }}
         >
           <Image
             src="/hero.jpg"
@@ -174,7 +182,7 @@ export default function HomePageClient({ events }: Props) {
       <div className="relative overflow-hidden">
         <motion.div
           className="absolute -top-20 inset-x-0 bottom-0 -z-10 bg-[url('/home-bg.jpg')] bg-cover bg-center opacity-10 pointer-events-none"
-          style={{ y: homeBgY, scale: homeBgScale }}
+          style={{ y: homeBgY, scale: homeBgScale, willChange: 'transform' }}
         />
 
       {/* Daily Lineup */}
