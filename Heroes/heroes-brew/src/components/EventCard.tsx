@@ -58,7 +58,7 @@ export default function EventCard({ event, index }: EventCardProps) {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.2, delay: index * 0.03, ease: [0, 0, 0.2, 1] as const }}
-        className={`rounded-md border p-4 ${themeColors.border} ${themeColors.bg}`}
+        className={`rounded-md border backdrop-blur-md p-4 ${themeColors.border} ${themeColors.bg}`}
       >
         <div className="flex items-center gap-3">
           <div className={`w-12 h-12 rounded-md flex items-center justify-center text-2xl ${themeColors.iconBg}`}>
@@ -88,7 +88,7 @@ export default function EventCard({ event, index }: EventCardProps) {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2, delay: index * 0.03, ease: [0, 0, 0.2, 1] as const }}
-      className={`rounded-md border border-border/60 bg-card p-4 ${cardOpacity} ${
+      className={`rounded-md border border-white/10 bg-card/70 backdrop-blur-md p-4 ${cardOpacity} ${
         event.isLive ? 'ring-1 ring-red-500/40 border-red-500/30' : ''
       } ${event.highlighted && !isFinal ? 'ring-1 ring-accent/30' : ''}`}
     >
