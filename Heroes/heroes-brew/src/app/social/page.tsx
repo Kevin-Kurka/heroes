@@ -12,7 +12,7 @@ export default function SocialPage() {
     <PageTransition>
       <div className="max-w-4xl mx-auto px-4 py-6">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-foreground">Social</h1>
+          <h1 className="text-3xl font-bold text-foreground drop-shadow-lg">Social</h1>
           <p className="text-muted text-sm mt-1">
             Follow us on Instagram for the latest from Heroes.
           </p>

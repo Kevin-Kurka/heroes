@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { UnifiedEvent } from '@/types';
@@ -34,6 +34,19 @@ const LEAGUE_NAME: Record<string, string> = {
 
 export default function EventsPageClient({ events, allHolidays }: Props) {
   const [filter, setFilter] = useState<Filter>('ALL');
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const [isSticky, setIsSticky] = useState(false);
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsSticky(!entry.isIntersecting),
+      { threshold: 0 }
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, []);
 
   const filters: { label: string; value: Filter }[] = [
     { label: 'All', value: 'ALL' },
@@ -69,14 +82,19 @@ export default function EventsPageClient({ events, allHolidays }: Props) {
 
       <div className="max-w-4xl mx-auto px-4 py-6">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-foreground" style={{ viewTransitionName: 'page-title' }}>Scoreboard</h1>
+          <h1 className="text-3xl font-bold text-foreground drop-shadow-lg" style={{ viewTransitionName: 'page-title' }}>Scoreboard</h1>
           <p className="text-muted text-sm mt-1">
             All the games and celebrations coming up this week.
           </p>
         </div>
 
+        {/* Sentinel to detect sticky state */}
+        <div ref={sentinelRef} className="h-0" />
+
         {/* Filters */}
-        <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
+        <div className={`sticky top-0 md:top-16 z-40 -mx-4 px-4 py-3 mb-4 flex gap-2 overflow-x-auto no-scrollbar transition-all duration-200 ${
+          isSticky ? 'bg-background/80 backdrop-blur-md' : ''
+        }`}>
           {filters.map((f) => (
             <button
               key={f.value}
@@ -84,7 +102,7 @@ export default function EventsPageClient({ events, allHolidays }: Props) {
               className={`shrink-0 inline-flex items-center gap-1.5 px-4 py-2 rounded-sm text-sm font-medium transition-all duration-200 ${
                 filter === f.value
                   ? 'bg-accent text-background shadow-md shadow-accent/20'
-                  : 'bg-card text-muted hover:text-foreground hover:bg-card-hover border border-border'
+                  : 'bg-white/5 text-muted hover:text-foreground hover:bg-white/10 border border-white/10'
               }`}
             >
               {LEAGUE_LOGO[f.value] && (

@@ -54,7 +54,7 @@ export default function MenuPageClient({ menus }: Props) {
       <div className="max-w-4xl mx-auto px-4 py-6">
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-foreground" style={{ viewTransitionName: 'page-title' }}>Menu</h1>
+          <h1 className="text-3xl font-bold text-foreground drop-shadow-lg" style={{ viewTransitionName: 'page-title' }}>Menu</h1>
           <p className="text-muted text-sm mt-1">
             All your favorites, every day.
           </p>

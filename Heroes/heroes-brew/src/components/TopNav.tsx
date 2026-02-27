@@ -15,7 +15,7 @@ export default function TopNav() {
   const pathname = usePathname();
 
   return (
-    <header className="hidden md:block fixed top-0 left-0 right-0 z-50 border-b border-border bg-card/95 backdrop-blur-md">
+    <header className="hidden md:block fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-card/60 backdrop-blur-md">
       <div className="max-w-6xl mx-auto flex items-center justify-between h-16 px-6">
         <Link href="/" className="flex items-center gap-2">
           <span className="text-xl font-bold text-accent tracking-tight">

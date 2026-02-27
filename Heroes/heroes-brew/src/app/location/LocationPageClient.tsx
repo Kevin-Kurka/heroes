@@ -20,7 +20,7 @@ export default function LocationPageClient({ restaurant }: Props) {
   return (
     <PageTransition>
       <div className="max-w-4xl mx-auto px-4 py-6">
-        <h1 className="text-3xl font-bold text-foreground mb-6" style={{ viewTransitionName: 'page-title' }}>Find Us</h1>
+        <h1 className="text-3xl font-bold text-foreground drop-shadow-lg mb-6" style={{ viewTransitionName: 'page-title' }}>Find Us</h1>
 
         <div className="grid gap-6 md:grid-cols-2">
           {/* Map */}
