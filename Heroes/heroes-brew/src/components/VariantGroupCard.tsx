@@ -52,24 +52,22 @@ export default function VariantGroupCard({ group, elevated }: VariantGroupCardPr
         </div>
       )}
 
-      {/* Choice groups as sub-cards (Kids drink/side, Philly cheese/toppings) */}
+      {/* Choice groups as inline pills (Philly cheese/toppings, Kids drink/side) */}
       {group.choices && group.choices.length > 0 && (
-        <div className="space-y-3 mb-4">
+        <div className="space-y-2.5 mb-4">
           {group.choices.map((choice) => (
-            <div key={choice.label}>
-              <span className="text-xs uppercase tracking-wider text-muted font-semibold">
-                {choice.label}
+            <div key={choice.label} className="flex flex-wrap items-center gap-2">
+              <span className="text-xs uppercase tracking-wider text-muted font-semibold mr-1">
+                {choice.label}:
               </span>
-              <div className="grid grid-cols-2 gap-2 mt-1.5">
-                {choice.options.map((opt) => (
-                  <div
-                    key={opt}
-                    className="rounded-md bg-white/5 border border-border/60 px-4 py-2 hover:border-accent/30 transition-colors"
-                  >
-                    <span className="font-medium text-foreground text-sm">{opt}</span>
-                  </div>
-                ))}
-              </div>
+              {choice.options.map((opt) => (
+                <span
+                  key={opt}
+                  className="inline-block rounded-full border border-dashed border-muted/50 bg-white/[0.03] px-3 py-1 text-sm text-foreground/80"
+                >
+                  {opt}
+                </span>
+              ))}
             </div>
           ))}
         </div>
