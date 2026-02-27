@@ -67,8 +67,8 @@ export default function MenuPageClient({ menus }: Props) {
         <LayoutGroup>
           <div
             ref={categoryRef}
-            className={`sticky top-0 md:top-16 z-40 py-3 mb-4 overflow-x-auto flex gap-2 no-scrollbar transition-all duration-200 ${
-              isSticky ? 'bg-background/80 backdrop-blur-md -ml-[50vw] -mr-[50vw] relative left-1/2 right-1/2 w-screen px-[max(1rem,calc((100vw-56rem)/2+1rem))]' : '-mx-4 px-4'
+            className={`sticky top-0 md:top-16 z-40 -mx-4 px-4 py-3 mb-4 overflow-x-auto flex gap-2 no-scrollbar transition-all duration-200 ${
+              isSticky ? 'bg-card/60 backdrop-blur-md border-b border-white/10' : ''
             }`}
           >
             {groups.map((group) => (
