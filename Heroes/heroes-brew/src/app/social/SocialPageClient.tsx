@@ -13,12 +13,13 @@ export default function SocialPageClient() {
         href="https://www.instagram.com/americanheroesandbrew/"
         target="_blank"
         rel="noopener noreferrer"
-        initial={{ opacity: 0, y: 16 }}
+        initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        whileHover={{ scale: 1.02 }}
-        className="flex items-center gap-4 bg-gradient-to-r from-purple-600/20 to-pink-600/20 border border-purple-500/30 rounded-xl p-4 mb-6 group"
+        transition={{ duration: 0.2, ease: [0, 0, 0.2, 1] }}
+        whileHover={{ scale: 1.01 }}
+        className="flex items-center gap-4 bg-gradient-to-r from-purple-600/20 to-pink-600/20 border border-purple-500/30 rounded-md p-4 mb-6 group"
       >
-        <div className="p-3 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl">
+        <div className="p-3 bg-gradient-to-br from-purple-500 to-pink-500 rounded-md">
           <Instagram size={24} className="text-white" />
         </div>
         <div className="flex-1">
@@ -31,7 +32,7 @@ export default function SocialPageClient() {
       </motion.a>
 
       {/* Elfsight Widget or Placeholder */}
-      <div className="rounded-xl border border-border overflow-hidden">
+      <div className="rounded-md border border-border overflow-hidden">
         {elfsightAppId ? (
           <div className={`elfsight-app-${elfsightAppId}`} data-elfsight-app-lazy />
         ) : (
@@ -40,9 +41,9 @@ export default function SocialPageClient() {
               {Array.from({ length: 9 }).map((_, i) => (
                 <motion.div
                   key={i}
-                  initial={{ opacity: 0, scale: 0.9 }}
+                  initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: i * 0.05 }}
+                  transition={{ duration: 0.15, delay: i * 0.03, ease: [0, 0, 0.2, 1] }}
                   className="aspect-square rounded-lg shimmer"
                 />
               ))}

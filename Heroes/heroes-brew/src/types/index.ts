@@ -2,7 +2,7 @@
 // Unified Event Types
 // =====================
 export type EventType = 'SPORTS' | 'HOLIDAY';
-export type SportLeague = 'MLB' | 'NFL' | 'NBA';
+export type SportLeague = 'MLB' | 'NFL' | 'NBA' | 'NHL' | 'MLS' | 'CFB';
 
 export interface UnifiedEvent {
   id: string;
@@ -16,55 +16,44 @@ export interface UnifiedEvent {
   awayTeam?: string;
   homeScore?: number;
   awayScore?: number;
+  homeLogo?: string;
+  awayLogo?: string;
   status?: string;
   isLive?: boolean;
   highlighted?: boolean;
+  emoji?: string;
+  holidayTheme?: string;
 }
 
 // =====================
-// Toast Menu Types
+// Menu Types
 // =====================
-export interface ToastMenuItem {
-  guid: string;
+export interface MenuItem {
+  id: string;
   name: string;
   description?: string;
   price: number;
   imageUrl?: string;
   calories?: number;
-  modifierGroups?: ToastModifierGroup[];
 }
 
-export interface ToastModifierGroup {
-  guid: string;
-  name: string;
-  modifiers: ToastModifier[];
-  minSelections?: number;
-  maxSelections?: number;
-}
-
-export interface ToastModifier {
-  guid: string;
-  name: string;
-  price: number;
-}
-
-export interface ToastMenuGroup {
-  guid: string;
+export interface MenuGroup {
+  id: string;
   name: string;
   description?: string;
-  items: ToastMenuItem[];
+  items: MenuItem[];
 }
 
-export interface ToastMenu {
-  guid: string;
+export interface Menu {
+  id: string;
   name: string;
-  groups: ToastMenuGroup[];
+  groups: MenuGroup[];
 }
 
 // =====================
-// Toast Restaurant Types
+// Restaurant Types
 // =====================
-export interface ToastRestaurant {
+export interface Restaurant {
   name: string;
   address1: string;
   address2?: string;

@@ -2,6 +2,9 @@ import type { NextConfig } from "next";
 import { resolve } from "path";
 
 const nextConfig: NextConfig = {
+  experimental: {
+    viewTransition: true,
+  },
   turbopack: {
     root: resolve(import.meta.dirname),
   },
@@ -14,6 +17,10 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "americanheroesandbrew.com",
+      },
+      {
+        protocol: "https",
+        hostname: "a.espncdn.com",
       },
     ],
   },

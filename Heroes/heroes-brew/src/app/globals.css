@@ -1,17 +1,19 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0f1117;
-  --foreground: #e4e4e7;
-  --card: #1a1d27;
-  --card-hover: #222632;
-  --accent: #f59e0b;
-  --accent-dim: #b45309;
+  --background: #0a0e1a;
+  --foreground: #e8e8ec;
+  --card: #111827;
+  --card-hover: #1a2236;
+  --accent: #bf0a30;
+  --accent-dim: #8b0722;
   --muted: #71717a;
-  --border: #27272a;
+  --border: #1e2a3a;
   --success: #22c55e;
   --sports: #3b82f6;
   --holiday: #f43f5e;
+  --navy: #002868;
+  --star: #ffffff;
 }
 
 @theme inline {
@@ -26,6 +28,8 @@
   --color-success: var(--success);
   --color-sports: var(--sports);
   --color-holiday: var(--holiday);
+  --color-navy: var(--navy);
+  --color-star: var(--star);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -56,6 +60,15 @@ html {
   background: var(--muted);
 }
 
+/* Hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 /* Ticker animation */
 @keyframes ticker-scroll {
   0% { transform: translateX(0); }
@@ -76,4 +89,40 @@ html {
   background: linear-gradient(90deg, var(--card) 25%, var(--card-hover) 50%, var(--card) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
+}
+
+/* =====================
+   View Transitions (cross-page)
+   ===================== */
+::view-transition-old(root) {
+  animation: vt-fade-out 150ms cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+::view-transition-new(root) {
+  animation: vt-fade-in 200ms cubic-bezier(0, 0, 0.2, 1) forwards;
+}
+
+@keyframes vt-fade-out {
+  from { opacity: 1; transform: scale(1); }
+  to   { opacity: 0; transform: scale(0.98); }
+}
+@keyframes vt-fade-in {
+  from { opacity: 0; transform: scale(1.02); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* Hero element transitions (shared across pages) */
+::view-transition-old(page-title) {
+  animation: vt-slide-out 150ms cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+::view-transition-new(page-title) {
+  animation: vt-slide-in 200ms cubic-bezier(0, 0, 0.2, 1) forwards;
+}
+
+@keyframes vt-slide-out {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-8px); }
+}
+@keyframes vt-slide-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
 }

@@ -2,11 +2,11 @@
 
 import { motion } from 'framer-motion';
 import { MapPin, Phone, Clock, Navigation, ExternalLink } from 'lucide-react';
-import { ToastRestaurant } from '@/types';
+import { Restaurant } from '@/types';
 import PageTransition from '@/components/PageTransition';
 
 interface Props {
-  restaurant: ToastRestaurant;
+  restaurant: Restaurant;
 }
 
 export default function LocationPageClient({ restaurant }: Props) {
@@ -20,15 +20,15 @@ export default function LocationPageClient({ restaurant }: Props) {
   return (
     <PageTransition>
       <div className="max-w-4xl mx-auto px-4 py-6">
-        <h1 className="text-3xl font-bold text-foreground mb-6">Find Us</h1>
+        <h1 className="text-3xl font-bold text-foreground mb-6" style={{ viewTransitionName: 'page-title' }}>Find Us</h1>
 
         <div className="grid gap-6 md:grid-cols-2">
           {/* Map */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.97 }}
+            initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-            className="rounded-xl overflow-hidden border border-border aspect-[4/3] md:aspect-auto md:h-full"
+            transition={{ duration: 0.25, ease: [0, 0, 0.2, 1] }}
+            className="rounded-md overflow-hidden border border-border aspect-[4/3] md:aspect-auto md:h-full"
           >
             <iframe
               src={embedUrl}
@@ -48,11 +48,11 @@ export default function LocationPageClient({ restaurant }: Props) {
               href={mapsUrl}
               target="_blank"
               rel="noopener noreferrer"
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              whileHover={{ scale: 1.02 }}
-              className="flex items-start gap-4 bg-card border border-border rounded-xl p-4 hover:border-accent/30 transition-colors group"
+              transition={{ duration: 0.2, delay: 0.05, ease: [0, 0, 0.2, 1] }}
+              whileHover={{ scale: 1.01 }}
+              className="flex items-start gap-4 bg-card border border-border rounded-md p-4 hover:border-accent/30 transition-colors group"
             >
               <div className="p-2 bg-accent/10 rounded-lg shrink-0">
                 <MapPin size={20} className="text-accent" />
@@ -71,11 +71,11 @@ export default function LocationPageClient({ restaurant }: Props) {
             {/* Phone */}
             <motion.a
               href={`tel:${restaurant.phone.replace(/\D/g, '')}`}
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              whileHover={{ scale: 1.02 }}
-              className="flex items-start gap-4 bg-card border border-border rounded-xl p-4 hover:border-accent/30 transition-colors group"
+              transition={{ duration: 0.2, delay: 0.1, ease: [0, 0, 0.2, 1] }}
+              whileHover={{ scale: 1.01 }}
+              className="flex items-start gap-4 bg-card border border-border rounded-md p-4 hover:border-accent/30 transition-colors group"
             >
               <div className="p-2 bg-accent/10 rounded-lg shrink-0">
                 <Phone size={20} className="text-accent" />
@@ -91,10 +91,10 @@ export default function LocationPageClient({ restaurant }: Props) {
 
             {/* Hours */}
             <motion.div
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="bg-card border border-border rounded-xl p-4"
+              transition={{ duration: 0.2, delay: 0.15, ease: [0, 0, 0.2, 1] }}
+              className="bg-card border border-border rounded-md p-4"
             >
               <div className="flex items-center gap-3 mb-3">
                 <div className="p-2 bg-accent/10 rounded-lg">

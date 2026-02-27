@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { getMenus } from '@/lib/toast';
+import { getMenus } from '@/lib/menu';
 import MenuPageClient from './MenuPageClient';
 
 export const metadata: Metadata = {
@@ -7,9 +7,7 @@ export const metadata: Metadata = {
   description: 'Burgers, wings, craft brews and more at American Heroes & Brew in Carlsbad, CA.',
 };
 
-export const revalidate = 900; // ISR 15 min
-
-export default async function MenuPage() {
-  const menus = await getMenus();
+export default function MenuPage() {
+  const menus = getMenus();
   return <MenuPageClient menus={menus} />;
 }

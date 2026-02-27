@@ -1,21 +1,18 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { ToastMenuItem } from '@/types';
+import { MenuItem } from '@/types';
 
 interface MenuCardProps {
-  item: ToastMenuItem;
+  item: MenuItem;
   index: number;
 }
 
-export default function MenuCard({ item, index }: MenuCardProps) {
+export default function MenuCard({ item }: MenuCardProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, delay: index * 0.05 }}
       whileHover={{ scale: 1.015 }}
-      className="group rounded-xl bg-card border border-border p-4 hover:border-accent/30 hover:bg-card-hover transition-all duration-200"
+      className="group rounded-md bg-card border border-border p-4 hover:border-accent/30 hover:bg-card-hover transition-all duration-200"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">

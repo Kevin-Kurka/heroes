@@ -7,7 +7,7 @@ import { motion } from 'framer-motion';
 const navItems = [
   { label: 'Home', href: '/' },
   { label: 'Menu', href: '/menu' },
-  { label: 'Events', href: '/events' },
+  { label: 'Scoreboard', href: '/events' },
   { label: 'Social', href: '/social' },
   { label: 'Location', href: '/location' },
 ];
@@ -43,7 +43,7 @@ export default function TopNav() {
                   <motion.div
                     layoutId="topnav-indicator"
                     className="absolute bottom-0 left-2 right-2 h-0.5 rounded-full bg-accent"
-                    transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                    transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                   />
                 )}
               </Link>

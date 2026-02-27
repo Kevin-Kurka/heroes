@@ -6,9 +6,21 @@ const SD_TEAMS = new Set([
   'San Diego Padres',
   // NFL
   'Los Angeles Chargers',
+  'Los Angeles Rams',
   // NBA
   'LA Clippers',
   'Los Angeles Clippers',
+  'Los Angeles Lakers',
+  // NHL
+  'Anaheim Ducks',
+  // MLS
+  'San Diego FC',
+  'LA Galaxy',
+  'Los Angeles FC',
+  // CFB
+  'San Diego State Aztecs',
+  'UCLA Bruins',
+  'USC Trojans',
 ]);
 
 function isLocalTeam(name?: string): boolean {
@@ -16,7 +28,73 @@ function isLocalTeam(name?: string): boolean {
 }
 
 // =====================
-// MLB - All games for the week
+// ESPN scoreboard fetcher (works for all leagues)
+// =====================
+const ESPN_SPORTS: { sport: string; league: SportLeague }[] = [
+  { sport: 'football/nfl', league: 'NFL' },
+  { sport: 'basketball/nba', league: 'NBA' },
+  { sport: 'hockey/nhl', league: 'NHL' },
+  { sport: 'soccer/usa.1', league: 'MLS' },
+  { sport: 'football/college-football', league: 'CFB' },
+];
+
+async function fetchESPNScoreboard(sport: string, league: SportLeague): Promise<UnifiedEvent[]> {
+  try {
+    const res = await fetch(
+      `https://site.api.espn.com/apis/site/v2/sports/${sport}/scoreboard`,
+      { next: { revalidate: 300 } } // 5 min for live scores
+    );
+    if (!res.ok) throw new Error(`ESPN ${league}: ${res.status}`);
+    const data = await res.json();
+
+    const events: UnifiedEvent[] = [];
+    for (const event of data.events || []) {
+      const comp = event.competitions?.[0];
+      const homeComp = comp?.competitors?.find((c: Record<string, unknown>) => c.homeAway === 'home');
+      const awayComp = comp?.competitors?.find((c: Record<string, unknown>) => c.homeAway === 'away');
+
+      const home = homeComp?.team?.displayName || 'Home';
+      const away = awayComp?.team?.displayName || 'Away';
+      const homeLogo = (homeComp?.team?.logo || homeComp?.team?.logos?.[0]?.href) as string | undefined;
+      const awayLogo = (awayComp?.team?.logo || awayComp?.team?.logos?.[0]?.href) as string | undefined;
+
+      const statusState = event.status?.type?.state;
+      const statusDetail = event.status?.type?.detail || 'Scheduled';
+      const isLive = statusState === 'in';
+      const isFinal = statusState === 'post';
+
+      events.push({
+        id: `${league.toLowerCase()}-${event.id}`,
+        eventTimestamp: event.date,
+        eventTitle: `${away} @ ${home}`,
+        eventType: 'SPORTS',
+        league,
+        displayMessage: isLive
+          ? `LIVE NOW at Heroes! ${away} vs ${home}`
+          : isFinal
+          ? `Final: ${away} vs ${home}`
+          : `Watch ${away} vs ${home} here at Heroes!`,
+        venue: comp?.venue?.fullName,
+        homeTeam: home,
+        awayTeam: away,
+        homeScore: homeComp?.score ? parseInt(homeComp.score as string) : undefined,
+        awayScore: awayComp?.score ? parseInt(awayComp.score as string) : undefined,
+        homeLogo,
+        awayLogo,
+        status: statusDetail,
+        isLive,
+        highlighted: isLocalTeam(home) || isLocalTeam(away),
+      });
+    }
+    return events;
+  } catch (err) {
+    console.error(`${league} fetch error:`, err);
+    return [];
+  }
+}
+
+// =====================
+// MLB - MLB Stats API (more detailed schedule data)
 // =====================
 async function fetchMLBGames(): Promise<UnifiedEvent[]> {
   try {
@@ -29,7 +107,7 @@ async function fetchMLBGames(): Promise<UnifiedEvent[]> {
 
     const res = await fetch(
       `https://statsapi.mlb.com/api/v1/schedule?sportId=1&startDate=${startStr}&endDate=${endStr}&hydrate=team`,
-      { next: { revalidate: 900 } }
+      { next: { revalidate: 300 } }
     );
     if (!res.ok) throw new Error(`MLB API: ${res.status}`);
     const data = await res.json();
@@ -39,18 +117,27 @@ async function fetchMLBGames(): Promise<UnifiedEvent[]> {
       for (const game of date.games || []) {
         const home = game.teams?.home?.team?.name || 'Home';
         const away = game.teams?.away?.team?.name || 'Away';
+        const isLive = game.status?.detailedState === 'In Progress';
+        const isFinal = game.status?.detailedState === 'Final';
+
         events.push({
           id: `mlb-${game.gamePk}`,
           eventTimestamp: game.gameDate,
           eventTitle: `${away} @ ${home}`,
           eventType: 'SPORTS',
           league: 'MLB',
-          displayMessage: `Catch ${away} vs ${home} live on our big screens!`,
+          displayMessage: isLive
+            ? `LIVE NOW at Heroes! ${away} vs ${home}`
+            : isFinal
+            ? `Final: ${away} vs ${home}`
+            : `Catch ${away} vs ${home} live on our big screens!`,
           venue: game.venue?.name,
           homeTeam: home,
           awayTeam: away,
+          homeScore: game.teams?.home?.score,
+          awayScore: game.teams?.away?.score,
           status: game.status?.detailedState || 'Scheduled',
-          isLive: game.status?.detailedState === 'In Progress',
+          isLive,
           highlighted: isLocalTeam(home) || isLocalTeam(away),
         });
       }
@@ -63,109 +150,158 @@ async function fetchMLBGames(): Promise<UnifiedEvent[]> {
 }
 
 // =====================
-// NFL - Using ESPN public API
+// Holidays — themed cards for major celebrations
 // =====================
-async function fetchNFLGames(): Promise<UnifiedEvent[]> {
-  return fetchESPNGames('football/nfl', 'NFL');
+interface HolidayDef {
+  month: number; // 1-based
+  day: number;
+  name: string;
+  emoji: string;
+  theme: string; // Tailwind color base for theming
+  message: string;
+}
+
+// Fixed-date holidays. Variable-date ones (Easter, Thanksgiving, etc.) are computed below.
+const FIXED_HOLIDAYS: HolidayDef[] = [
+  { month: 1, day: 1, name: "New Year's Day", emoji: '🎆', theme: 'amber', message: 'Ring in the New Year with craft brews & big screens!' },
+  { month: 2, day: 2, name: 'Super Bowl Sunday', emoji: '🏈', theme: 'green', message: 'Super Bowl watch party! Wings, beer & the biggest game of the year.' },
+  { month: 2, day: 14, name: "Valentine's Day", emoji: '❤️', theme: 'rose', message: "Date night at Heroes — craft cocktails & a game on every screen." },
+  { month: 3, day: 17, name: "St. Patrick's Day", emoji: '☘️', theme: 'emerald', message: "Slainte! Green beer, Irish specials & good craic all day." },
+  { month: 4, day: 20, name: '420', emoji: '🌿', theme: 'lime', message: 'Chill vibes, munchies menu & laid-back tunes all day.' },
+  { month: 5, day: 5, name: 'Cinco de Mayo', emoji: '🇲🇽', theme: 'green', message: 'Margaritas, tacos & fiesta vibes — feliz Cinco de Mayo!' },
+  { month: 7, day: 4, name: 'Independence Day', emoji: '🇺🇸', theme: 'blue', message: 'Red, white & brew! BBQ specials & patriotic pints.' },
+  { month: 9, day: 1, name: 'Labor Day', emoji: '🍔', theme: 'sky', message: "Last cookout of summer — cold brews & hot grills." },
+  { month: 10, day: 31, name: 'Halloween', emoji: '🎃', theme: 'orange', message: 'Costume contest, spooky cocktails & scary-good wings.' },
+  { month: 11, day: 11, name: "Veterans Day", emoji: '🎖️', theme: 'red', message: 'Honoring our heroes — free appetizer for all veterans.' },
+  { month: 12, day: 24, name: 'Christmas Eve', emoji: '🎄', theme: 'red', message: "Cozy up with holiday brews & festive bites." },
+  { month: 12, day: 25, name: 'Christmas Day', emoji: '🎅', theme: 'red', message: 'Merry Christmas from the Heroes family!' },
+  { month: 12, day: 31, name: "New Year's Eve", emoji: '🥂', theme: 'amber', message: "Countdown party — champagne toasts & midnight cheers!" },
+];
+
+function getNthWeekday(year: number, month: number, weekday: number, n: number): Date {
+  const first = new Date(year, month - 1, 1);
+  const firstWeekday = first.getDay();
+  let day = 1 + ((weekday - firstWeekday + 7) % 7) + (n - 1) * 7;
+  return new Date(year, month - 1, day);
+}
+
+function getLastMonday(year: number, month: number): Date {
+  const last = new Date(year, month, 0); // last day of month
+  const offset = (last.getDay() - 1 + 7) % 7;
+  return new Date(year, month - 1, last.getDate() - offset);
+}
+
+function getVariableHolidays(year: number): HolidayDef[] {
+  const holidays: (HolidayDef & { date: Date })[] = [];
+
+  // MLK Day: 3rd Monday of January
+  const mlk = getNthWeekday(year, 1, 1, 3);
+  holidays.push({ date: mlk, month: mlk.getMonth() + 1, day: mlk.getDate(), name: 'MLK Day', emoji: '✊', theme: 'violet', message: 'Honoring the dream — community, unity & cold brews.' });
+
+  // Presidents Day: 3rd Monday of February
+  const pres = getNthWeekday(year, 2, 1, 3);
+  holidays.push({ date: pres, month: pres.getMonth() + 1, day: pres.getDate(), name: "Presidents' Day", emoji: '🏛️', theme: 'blue', message: 'Presidential pints & patriotic specials all day.' });
+
+  // Mother's Day: 2nd Sunday of May
+  const mothers = getNthWeekday(year, 5, 0, 2);
+  holidays.push({ date: mothers, month: mothers.getMonth() + 1, day: mothers.getDate(), name: "Mother's Day", emoji: '💐', theme: 'pink', message: "Treat Mom to brunch, brews & big-screen sports!" });
+
+  // Memorial Day: Last Monday of May
+  const memorial = getLastMonday(year, 5);
+  holidays.push({ date: memorial, month: memorial.getMonth() + 1, day: memorial.getDate(), name: 'Memorial Day', emoji: '🇺🇸', theme: 'red', message: 'Remembering our heroes — BBQ & brew specials.' });
+
+  // Father's Day: 3rd Sunday of June
+  const fathers = getNthWeekday(year, 6, 0, 3);
+  holidays.push({ date: fathers, month: fathers.getMonth() + 1, day: fathers.getDate(), name: "Father's Day", emoji: '🍺', theme: 'sky', message: "Dad's day — free pint for every father!" });
+
+  // Thanksgiving: 4th Thursday of November
+  const tgiving = getNthWeekday(year, 11, 4, 4);
+  holidays.push({ date: tgiving, month: tgiving.getMonth() + 1, day: tgiving.getDate(), name: 'Thanksgiving', emoji: '🦃', theme: 'orange', message: 'Turkey, touchdowns & tap takeovers!' });
+
+  // Black Friday: Day after Thanksgiving
+  const bf = new Date(tgiving);
+  bf.setDate(bf.getDate() + 1);
+  holidays.push({ date: bf, month: bf.getMonth() + 1, day: bf.getDate(), name: 'Black Friday', emoji: '🛍️', theme: 'zinc', message: 'Skip the lines — refuel with wings & beer after shopping.' });
+
+  return holidays.map(({ date: _d, ...rest }) => rest);
+}
+
+function holidayDefsToEvents(defs: HolidayDef[], year: number): UnifiedEvent[] {
+  return defs
+    .map((h) => {
+      const d = new Date(year, h.month - 1, h.day);
+      return { ...h, date: d };
+    })
+    .sort((a, b) => a.date.getTime() - b.date.getTime())
+    .map(({ name, emoji, theme, message, date }) => ({
+      id: `holiday-${date.toISOString().split('T')[0]}`,
+      eventTimestamp: date.toISOString(),
+      eventTitle: name,
+      eventType: 'HOLIDAY' as const,
+      displayMessage: message,
+      emoji,
+      holidayTheme: theme,
+    }));
+}
+
+function getHolidayEvents(): UnifiedEvent[] {
+  const year = new Date().getFullYear();
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const twoWeeksOut = new Date(today);
+  twoWeeksOut.setDate(today.getDate() + 14);
+
+  const allDefs = [...FIXED_HOLIDAYS, ...getVariableHolidays(year)];
+
+  const upcoming = allDefs.filter((h) => {
+    const d = new Date(year, h.month - 1, h.day);
+    return d >= today && d <= twoWeeksOut;
+  });
+
+  return holidayDefsToEvents(upcoming, year);
+}
+
+export function getAllHolidays(): UnifiedEvent[] {
+  const year = new Date().getFullYear();
+  const allDefs = [...FIXED_HOLIDAYS, ...getVariableHolidays(year)];
+  return holidayDefsToEvents(allDefs, year);
 }
 
 // =====================
-// NBA - Using ESPN public API
-// =====================
-async function fetchNBAGames(): Promise<UnifiedEvent[]> {
-  return fetchESPNGames('basketball/nba', 'NBA');
-}
-
-async function fetchESPNGames(sport: string, league: SportLeague): Promise<UnifiedEvent[]> {
-  try {
-    const res = await fetch(
-      `https://site.api.espn.com/apis/site/v2/sports/${sport}/scoreboard`,
-      { next: { revalidate: 900 } }
-    );
-    if (!res.ok) throw new Error(`ESPN ${league} API: ${res.status}`);
-    const data = await res.json();
-
-    const events: UnifiedEvent[] = [];
-    for (const event of data.events || []) {
-      const comp = event.competitions?.[0];
-      const homeComp = comp?.competitors?.find((c: Record<string, unknown>) => c.homeAway === 'home');
-      const awayComp = comp?.competitors?.find((c: Record<string, unknown>) => c.homeAway === 'away');
-      const home = homeComp?.team?.displayName || 'Home';
-      const away = awayComp?.team?.displayName || 'Away';
-
-      events.push({
-        id: `${league.toLowerCase()}-${event.id}`,
-        eventTimestamp: event.date,
-        eventTitle: `${away} @ ${home}`,
-        eventType: 'SPORTS',
-        league,
-        displayMessage: `Watch ${away} vs ${home} here at Heroes!`,
-        venue: comp?.venue?.fullName,
-        homeTeam: home,
-        awayTeam: away,
-        homeScore: homeComp?.score ? parseInt(homeComp.score) : undefined,
-        awayScore: awayComp?.score ? parseInt(awayComp.score) : undefined,
-        status: event.status?.type?.detail || 'Scheduled',
-        isLive: event.status?.type?.state === 'in',
-        highlighted: isLocalTeam(home) || isLocalTeam(away),
-      });
-    }
-    return events;
-  } catch (err) {
-    console.error(`${league} fetch error:`, err);
-    return [];
-  }
-}
-
-// =====================
-// Holidays
-// =====================
-async function fetchHolidays(): Promise<UnifiedEvent[]> {
-  try {
-    const year = new Date().getFullYear();
-    const res = await fetch(
-      `https://date.nager.at/api/v3/PublicHolidays/${year}/US`,
-      { next: { revalidate: 86400 } }
-    );
-    if (!res.ok) throw new Error(`Holiday API: ${res.status}`);
-    const data = await res.json();
-
-    const today = new Date();
-    const twoWeeksOut = new Date(today);
-    twoWeeksOut.setDate(today.getDate() + 14);
-
-    return (data as Record<string, unknown>[])
-      .filter((h) => {
-        const d = new Date(h.date as string);
-        return d >= today && d <= twoWeeksOut;
-      })
-      .map((h) => ({
-        id: `holiday-${h.date}`,
-        eventTimestamp: new Date(h.date as string).toISOString(),
-        eventTitle: h.localName as string || h.name as string,
-        eventType: 'HOLIDAY' as const,
-        displayMessage: `Celebrate ${h.localName || h.name} with us! Special menu & drinks.`,
-      }));
-  } catch (err) {
-    console.error('Holiday fetch error:', err);
-    return [];
-  }
-}
-
-// =====================
-// Unified fetch
+// Unified fetch — all leagues in parallel
 // =====================
 export async function getAllEvents(): Promise<UnifiedEvent[]> {
-  const [mlb, nfl, nba, holidays] = await Promise.all([
+  const espnFetches = ESPN_SPORTS.map(({ sport, league }) =>
+    fetchESPNScoreboard(sport, league)
+  );
+
+  const [mlb, ...espnResults] = await Promise.all([
     fetchMLBGames(),
-    fetchNFLGames(),
-    fetchNBAGames(),
-    fetchHolidays(),
+    ...espnFetches,
   ]);
 
-  const all = [...mlb, ...nfl, ...nba, ...holidays];
-  all.sort((a, b) => new Date(a.eventTimestamp).getTime() - new Date(b.eventTimestamp).getTime());
-  return all;
+  const holidays = getHolidayEvents();
+
+  const all = [mlb, ...espnResults, holidays].flat();
+
+  // Deduplicate MLB (MLB Stats API + ESPN might overlap)
+  const seen = new Set<string>();
+  const deduped = all.filter((e) => {
+    if (seen.has(e.id)) return false;
+    seen.add(e.id);
+    return true;
+  });
+
+  // Sort: live first, then highlighted, then by time
+  deduped.sort((a, b) => {
+    if (a.isLive && !b.isLive) return -1;
+    if (!a.isLive && b.isLive) return 1;
+    if (a.highlighted && !b.highlighted) return -1;
+    if (!a.highlighted && b.highlighted) return 1;
+    return new Date(a.eventTimestamp).getTime() - new Date(b.eventTimestamp).getTime();
+  });
+
+  return deduped;
 }
 
 export async function getUpcomingEvents(limit = 5): Promise<UnifiedEvent[]> {

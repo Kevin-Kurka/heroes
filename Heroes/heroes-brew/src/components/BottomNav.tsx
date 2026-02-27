@@ -8,7 +8,7 @@ import { motion } from 'framer-motion';
 const navItems = [
   { label: 'Home', href: '/', icon: Home },
   { label: 'Menu', href: '/menu', icon: UtensilsCrossed },
-  { label: 'Events', href: '/events', icon: CalendarDays },
+  { label: 'Scoreboard', href: '/events', icon: CalendarDays },
   { label: 'Social', href: '/social', icon: Camera },
   { label: 'Location', href: '/location', icon: MapPin },
 ];
@@ -32,7 +32,7 @@ export default function BottomNav() {
                 <motion.div
                   layoutId="bottomnav-indicator"
                   className="absolute -top-1 h-0.5 w-8 rounded-full bg-accent"
-                  transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                  transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                 />
               )}
               <Icon
