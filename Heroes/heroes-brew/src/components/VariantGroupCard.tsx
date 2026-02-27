@@ -38,14 +38,14 @@ export default function VariantGroupCard({ group, elevated }: VariantGroupCardPr
           {group.items.map((item) => (
             <div
               key={item.id}
-              className="rounded-md bg-white/5 border border-border/60 px-3 py-2 hover:border-accent/30 transition-colors"
+              className="rounded-md bg-white/5 border border-border/60 px-4 py-3 hover:border-accent/30 transition-colors"
             >
               <span className="font-medium text-foreground text-sm">
                 {item.name}
                 {item.subtitle && <span className="text-xs font-bold text-muted ml-1">[{item.subtitle}]</span>}
               </span>
               {item.description && (
-                <p className="text-xs text-muted mt-0.5 line-clamp-2">{item.description}</p>
+                <p className="text-xs text-muted mt-1 line-clamp-2">{item.description}</p>
               )}
             </div>
           ))}
