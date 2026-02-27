@@ -117,6 +117,10 @@ async function fetchMLBGames(): Promise<UnifiedEvent[]> {
       for (const game of date.games || []) {
         const home = game.teams?.home?.team?.name || 'Home';
         const away = game.teams?.away?.team?.name || 'Away';
+        const homeId = game.teams?.home?.team?.id;
+        const awayId = game.teams?.away?.team?.id;
+        const homeLogo = homeId ? `https://midfield.mlbstatic.com/v1/team/${homeId}/spots/72` : undefined;
+        const awayLogo = awayId ? `https://midfield.mlbstatic.com/v1/team/${awayId}/spots/72` : undefined;
         const isLive = game.status?.detailedState === 'In Progress';
         const isFinal = game.status?.detailedState === 'Final';
 
@@ -136,6 +140,8 @@ async function fetchMLBGames(): Promise<UnifiedEvent[]> {
           awayTeam: away,
           homeScore: game.teams?.home?.score,
           awayScore: game.teams?.away?.score,
+          homeLogo,
+          awayLogo,
           status: game.status?.detailedState || 'Scheduled',
           isLive,
           highlighted: isLocalTeam(home) || isLocalTeam(away),
