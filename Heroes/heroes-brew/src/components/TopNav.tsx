@@ -5,10 +5,9 @@ import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
 
 const navItems = [
-  { label: 'Home', href: '/' },
   { label: 'Menu', href: '/menu' },
-  { label: 'Scoreboard', href: '/events' },
   { label: 'Social', href: '/social' },
+  { label: 'Scoreboard', href: '/events' },
   { label: 'Location', href: '/location' },
 ];
 
