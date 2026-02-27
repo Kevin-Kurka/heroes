@@ -34,7 +34,7 @@ export default function VariantGroupCard({ group, elevated }: VariantGroupCardPr
 
       {/* Variant items as sub-cards in a responsive grid */}
       {group.items.length > 1 && (
-        <div className={`grid gap-2 mb-4 ${hasDescriptions ? 'sm:grid-cols-2' : 'grid-cols-2'}`}>
+        <div className={`grid gap-2 mb-4 ${hasDescriptions ? 'sm:grid-cols-2' : 'grid-cols-1 sm:grid-cols-2'}`}>
           {group.items.map((item) => (
             <div
               key={item.id}

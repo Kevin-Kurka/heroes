@@ -129,7 +129,7 @@ export default function EventCard({ event, index }: EventCardProps) {
         {/* Away team */}
         <div className="flex flex-col items-center flex-1 min-w-0">
           {event.awayLogo && (
-            <img src={event.awayLogo} alt="" className="w-12 h-12 object-contain" />
+            <img src={event.awayLogo} alt="" className="w-10 h-10 sm:w-12 sm:h-12 object-contain" />
           )}
           <span className={`text-[10px] font-medium truncate max-w-full mt-1 ${
             hasScore && event.awayScore! > event.homeScore! ? 'text-foreground' : 'text-muted'
@@ -139,9 +139,9 @@ export default function EventCard({ event, index }: EventCardProps) {
         </div>
 
         {/* Score / VS */}
-        <div className="shrink-0 text-center min-w-[64px]">
+        <div className="shrink-0 text-center min-w-[48px] sm:min-w-[64px]">
           {hasScore ? (
-            <div className={`font-mono text-lg font-bold tracking-wider ${
+            <div className={`font-mono text-base sm:text-lg font-bold tracking-wider ${
               isFinal ? 'text-muted' : 'text-foreground'
             }`}>
               {event.awayScore} – {event.homeScore}
@@ -157,7 +157,7 @@ export default function EventCard({ event, index }: EventCardProps) {
         {/* Home team */}
         <div className="flex flex-col items-center flex-1 min-w-0">
           {event.homeLogo && (
-            <img src={event.homeLogo} alt="" className="w-12 h-12 object-contain" />
+            <img src={event.homeLogo} alt="" className="w-10 h-10 sm:w-12 sm:h-12 object-contain" />
           )}
           <span className={`text-[10px] font-medium truncate max-w-full mt-1 ${
             hasScore && event.homeScore! > event.awayScore! ? 'text-foreground' : 'text-muted'
