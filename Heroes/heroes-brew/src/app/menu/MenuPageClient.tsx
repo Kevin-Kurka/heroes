@@ -50,7 +50,7 @@ export default function MenuPageClient({ menus }: Props) {
         <LayoutGroup>
           <div
             ref={categoryRef}
-            className="sticky top-0 md:top-16 z-40 bg-background/95 backdrop-blur-md -mx-4 px-4 py-3 mb-4 overflow-x-auto flex gap-2 no-scrollbar"
+            className="sticky top-0 md:top-16 z-40 bg-transparent backdrop-blur-md -mx-4 px-4 py-3 mb-4 overflow-x-auto flex gap-2 no-scrollbar"
           >
             {groups.map((group) => (
               <button
@@ -60,7 +60,7 @@ export default function MenuPageClient({ menus }: Props) {
                 className={`relative shrink-0 px-4 py-2 rounded-sm text-sm font-medium transition-colors duration-300 ${
                   activeGroup === group.id
                     ? 'text-white'
-                    : 'bg-card text-muted hover:text-foreground hover:bg-card-hover border border-border'
+                    : 'bg-white/5 text-muted hover:text-foreground hover:bg-white/10 border border-white/10'
                 }`}
               >
                 {activeGroup === group.id && (
