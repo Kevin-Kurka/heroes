@@ -88,7 +88,7 @@ export function getMenus(): Menu[] {
         },
         {
           id: 'g-heroes',
-          name: 'Hero Sandwiches',
+          name: 'Heroes',
           subGroups: [
             {
               id: 'g-philly',

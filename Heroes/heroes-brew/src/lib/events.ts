@@ -62,13 +62,16 @@ async function fetchESPNScoreboard(sport: string, league: SportLeague): Promise<
 
       const home = homeComp?.team?.displayName || 'Home';
       const away = awayComp?.team?.displayName || 'Away';
-      const homeLogo = (homeComp?.team?.logo || homeComp?.team?.logos?.[0]?.href) as string | undefined;
-      const awayLogo = (awayComp?.team?.logo || awayComp?.team?.logos?.[0]?.href) as string | undefined;
+      const homeLogo = homeComp?.team?.logo as string | undefined;
+      const awayLogo = awayComp?.team?.logo as string | undefined;
 
       const statusState = event.status?.type?.state;
       const statusDetail = event.status?.type?.detail || 'Scheduled';
       const isLive = statusState === 'in';
       const isFinal = statusState === 'post';
+
+      // Only parse scores for live/final games — ESPN returns "0" for scheduled games
+      const hasScoreData = isLive || isFinal;
 
       events.push({
         id: `${league.toLowerCase()}-${event.id}`,
@@ -84,8 +87,8 @@ async function fetchESPNScoreboard(sport: string, league: SportLeague): Promise<
         venue: comp?.venue?.fullName,
         homeTeam: home,
         awayTeam: away,
-        homeScore: homeComp?.score ? parseInt(homeComp.score as string) : undefined,
-        awayScore: awayComp?.score ? parseInt(awayComp.score as string) : undefined,
+        homeScore: hasScoreData ? parseInt(homeComp.score as string) : undefined,
+        awayScore: hasScoreData ? parseInt(awayComp.score as string) : undefined,
         homeLogo,
         awayLogo,
         status: statusDetail,
@@ -128,8 +131,10 @@ async function fetchMLBGames(): Promise<UnifiedEvent[]> {
         const awayId = game.teams?.away?.team?.id;
         const homeLogo = homeId ? `https://midfield.mlbstatic.com/v1/team/${homeId}/spots/72` : undefined;
         const awayLogo = awayId ? `https://midfield.mlbstatic.com/v1/team/${awayId}/spots/72` : undefined;
-        const isLive = game.status?.detailedState === 'In Progress';
-        const isFinal = game.status?.detailedState === 'Final';
+        const detailedState = game.status?.detailedState || '';
+        const isLive = detailedState === 'In Progress';
+        const isFinal = detailedState === 'Final' || detailedState === 'Game Over';
+        const hasScoreData = isLive || isFinal;
 
         events.push({
           id: `mlb-${game.gamePk}`,
@@ -145,8 +150,8 @@ async function fetchMLBGames(): Promise<UnifiedEvent[]> {
           venue: game.venue?.name,
           homeTeam: home,
           awayTeam: away,
-          homeScore: game.teams?.home?.score,
-          awayScore: game.teams?.away?.score,
+          homeScore: hasScoreData ? game.teams?.home?.score : undefined,
+          awayScore: hasScoreData ? game.teams?.away?.score : undefined,
           homeLogo,
           awayLogo,
           status: game.status?.detailedState || 'Scheduled',

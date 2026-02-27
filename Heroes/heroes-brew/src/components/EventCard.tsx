@@ -90,7 +90,7 @@ export default function EventCard({ event, index }: EventCardProps) {
       transition={{ duration: 0.2, delay: index * 0.03, ease: [0, 0, 0.2, 1] as const }}
       className={`rounded-md border border-white/10 bg-card/70 backdrop-blur-md p-4 ${cardOpacity} ${
         event.isLive ? 'ring-1 ring-red-500/40 border-red-500/30' : ''
-      } ${event.highlighted && !isFinal ? 'ring-1 ring-accent/30' : ''}`}
+      }`}
     >
       {/* Top row: badges + date/time */}
       <div className="flex items-center justify-between mb-3">
@@ -101,11 +101,6 @@ export default function EventCard({ event, index }: EventCardProps) {
               alt={event.league}
               className="w-5 h-5 object-contain"
             />
-          )}
-          {event.highlighted && !isFinal && (
-            <span className="text-[10px] font-bold tracking-wide px-1.5 py-0.5 rounded-sm bg-accent text-white">
-              LOCAL
-            </span>
           )}
           {event.isLive && (
             <span className="text-[10px] font-bold text-red-500 animate-pulse flex items-center gap-1">
