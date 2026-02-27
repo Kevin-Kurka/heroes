@@ -10,11 +10,11 @@ interface VariantGroupCardProps {
 export default function VariantGroupCard({ group, elevated }: VariantGroupCardProps) {
   const hasDescriptions = group.items.some((item) => item.description);
   const bgClass = elevated
-    ? 'bg-card-elevated'
-    : 'bg-card';
+    ? 'bg-card-elevated/70'
+    : 'bg-card/70';
 
   return (
-    <div className={`rounded-md border border-border p-5 transition-all duration-200 ${bgClass}`}>
+    <div className={`rounded-md backdrop-blur-md border border-white/10 p-5 transition-all duration-200 ${bgClass}`}>
       {/* Header: name + price */}
       <div className="flex items-baseline justify-between gap-4 mb-2">
         <h2 className="text-xl font-bold text-foreground uppercase tracking-wide">
