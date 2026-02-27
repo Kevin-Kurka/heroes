@@ -16,6 +16,8 @@ export default function MenuPageClient({ menus }: Props) {
   const groups = menu?.groups || [];
   const [activeGroup, setActiveGroup] = useState(groups[0]?.id || '');
   const categoryRef = useRef<HTMLDivElement>(null);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const [isSticky, setIsSticky] = useState(false);
 
   // Scroll active category into view
   useEffect(() => {
@@ -24,6 +26,18 @@ export default function MenuPageClient({ menus }: Props) {
       active?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
     }
   }, [activeGroup]);
+
+  // Detect when tabs become sticky
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsSticky(!entry.isIntersecting),
+      { threshold: 0 }
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, []);
 
   const currentGroup = groups.find(g => g.id === activeGroup) || groups[0];
 
@@ -46,11 +60,16 @@ export default function MenuPageClient({ menus }: Props) {
           </p>
         </div>
 
+        {/* Sentinel to detect sticky state */}
+        <div ref={sentinelRef} className="h-0" />
+
         {/* Sticky category nav */}
         <LayoutGroup>
           <div
             ref={categoryRef}
-            className="sticky top-0 md:top-16 z-40 -mx-4 px-4 py-3 mb-4 overflow-x-auto flex gap-2 no-scrollbar"
+            className={`sticky top-0 md:top-16 z-40 -mx-4 px-4 py-3 mb-4 overflow-x-auto flex gap-2 no-scrollbar transition-all duration-200 ${
+              isSticky ? 'bg-background/80 backdrop-blur-md' : ''
+            }`}
           >
             {groups.map((group) => (
               <button
