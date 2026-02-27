@@ -50,7 +50,7 @@ export default function MenuPageClient({ menus }: Props) {
         <LayoutGroup>
           <div
             ref={categoryRef}
-            className="sticky top-0 md:top-16 z-40 bg-transparent backdrop-blur-md -mx-4 px-4 py-3 mb-4 overflow-x-auto flex gap-2 no-scrollbar"
+            className="sticky top-0 md:top-16 z-40 -mx-4 px-4 py-3 mb-4 overflow-x-auto flex gap-2 no-scrollbar"
           >
             {groups.map((group) => (
               <button

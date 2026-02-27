@@ -1,13 +1,21 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { Instagram, ExternalLink } from 'lucide-react';
 
 const elfsightAppId = process.env.NEXT_PUBLIC_ELFSIGHT_APP_ID;
 
 export default function SocialPageClient() {
+  const { scrollY } = useScroll();
+  const bgY = useTransform(scrollY, [0, 1000], ['0%', '30%']);
+  const bgScale = useTransform(scrollY, [0, 1000], [1, 1.1]);
+
   return (
-    <div>
+    <div className="relative">
+      <motion.div
+        className="fixed inset-0 -z-10 bg-[url('/social-bg.jpg')] bg-cover bg-center opacity-10 pointer-events-none"
+        style={{ y: bgY, scale: bgScale }}
+      />
       {/* Instagram CTA */}
       <motion.a
         href="https://www.instagram.com/americanheroesandbrew/"
