@@ -78,12 +78,12 @@ export function getMenus(): Menu[] {
           basePrice: 18,
           addOns: [{ name: 'Make it a double', price: '+4' }],
           items: [
-            { id: 'b1', name: 'Pasadena', description: 'The "OG" — lettuce, tomato, pickle, red onion, Hero sauce, cheese, on a brioche bun.', price: 18 },
-            { id: 'b2', name: 'Tombstone', description: 'Cowboy — bacon, grilled onion, cheddar, BBQ sauce, topped with onion rings on a brioche bun.', price: 18 },
-            { id: 'b3', name: 'Bethlehem', description: 'Steeltown — bacon, mushrooms, grilled onions, cheddar cheese on a brioche bun.', price: 18 },
-            { id: 'b4', name: 'Minneapolis', description: 'Juicy Lucy — stuffed cheese patty, grilled onions, cheese skirt, Hero sauce on a brioche bun.', price: 18 },
-            { id: 'b5', name: 'Hollywood', description: 'Patty Melt — white American cheese, grilled onions, Hero sauce on toasted rye bread.', price: 18 },
-            { id: 'b6', name: 'Leucadia', description: 'Smash burger — grilled onion, white American cheese, pickles, Hero sauce on a potato bun.', price: 18 },
+            { id: 'b1', name: 'Pasadena', subtitle: 'The OG', description: 'Lettuce, tomato, pickle, red onion, Hero sauce, cheese, on a brioche bun.', price: 18 },
+            { id: 'b2', name: 'Tombstone', subtitle: 'Cowboy', description: 'Bacon, grilled onion, cheddar, BBQ sauce, topped with onion rings on a brioche bun.', price: 18 },
+            { id: 'b3', name: 'Bethlehem', subtitle: 'Steeltown', description: 'Bacon, mushrooms, grilled onions, cheddar cheese on a brioche bun.', price: 18 },
+            { id: 'b4', name: 'Minneapolis', subtitle: 'Juicy Lucy', description: 'Stuffed cheese patty, grilled onions, cheese skirt, Hero sauce on a brioche bun.', price: 18 },
+            { id: 'b5', name: 'Hollywood', subtitle: 'Patty Melt', description: 'White American cheese, grilled onions, Hero sauce on toasted rye bread.', price: 18 },
+            { id: 'b6', name: 'Leucadia', subtitle: 'Smash Burger', description: 'Grilled onion, white American cheese, pickles, Hero sauce on a potato bun.', price: 18 },
           ],
         },
         {
@@ -107,10 +107,10 @@ export function getMenus(): Menu[] {
             },
           ],
           items: [
-            { id: 'h1', name: 'Hoboken', description: 'Italian — capicola, salami, ham, mortadella, provolone, lettuce, tomato, onion, oregano, oil & vinegar, on an Italian roll.', price: 22 },
-            { id: 'h2', name: 'Manhattan', description: 'Reuben — pastrami, pickles, dark ale ground mustard, Russian dressing, sauerkraut, Swiss cheese on rye bread.', price: 22 },
-            { id: 'h3', name: 'Los Angeles', description: 'French Dip — slow-cooked roast beef, Swiss cheese, horseradish aioli, with au jus, on an Italian roll.', price: 22 },
-            { id: 'h4', name: 'Carlsbad', description: 'BLT+ — grilled chicken, bacon, avocado, lettuce, tomato, garlic aioli, on a long roll.', price: 20 },
+            { id: 'h1', name: 'Hoboken', subtitle: 'Italian', description: 'Capicola, salami, ham, mortadella, provolone, lettuce, tomato, onion, oregano, oil & vinegar, on an Italian roll.', price: 22 },
+            { id: 'h2', name: 'Manhattan', subtitle: 'Reuben', description: 'Pastrami, pickles, dark ale ground mustard, Russian dressing, sauerkraut, Swiss cheese on rye bread.', price: 22 },
+            { id: 'h3', name: 'Los Angeles', subtitle: 'French Dip', description: 'Slow-cooked roast beef, Swiss cheese, horseradish aioli, with au jus, on an Italian roll.', price: 22 },
+            { id: 'h4', name: 'Carlsbad', subtitle: 'BLT+', description: 'Grilled chicken, bacon, avocado, lettuce, tomato, garlic aioli, on a long roll.', price: 20 },
           ],
         },
         {

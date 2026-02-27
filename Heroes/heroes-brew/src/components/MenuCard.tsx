@@ -14,6 +14,7 @@ export default function MenuCard({ item }: MenuCardProps) {
         <div className="flex-1 min-w-0">
           <h3 className="font-semibold text-foreground group-hover:text-accent transition-colors leading-tight">
             {item.name}
+            {item.subtitle && <span className="text-xs font-bold text-muted ml-1.5">[{item.subtitle}]</span>}
           </h3>
           {item.description && (
             <p className="text-sm text-muted mt-1 line-clamp-2">{item.description}</p>

@@ -31,6 +31,7 @@ export interface UnifiedEvent {
 export interface MenuItem {
   id: string;
   name: string;
+  subtitle?: string;
   description?: string;
   price: number;
   imageUrl?: string;
