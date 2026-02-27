@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { motion, LayoutGroup } from 'framer-motion';
+import { motion, LayoutGroup, useScroll, useTransform } from 'framer-motion';
 import { Menu } from '@/types';
 import MenuCard from '@/components/MenuCard';
 import VariantGroupCard from '@/components/VariantGroupCard';
@@ -27,9 +27,16 @@ export default function MenuPageClient({ menus }: Props) {
 
   const currentGroup = groups.find(g => g.id === activeGroup) || groups[0];
 
+  const { scrollY } = useScroll();
+  const bgY = useTransform(scrollY, [0, 1000], ['0%', '30%']);
+  const bgScale = useTransform(scrollY, [0, 1000], [1, 1.1]);
+
   return (
     <PageTransition>
-      <div className="fixed inset-0 -z-10 bg-[url('/menu-bg.jpg')] bg-cover bg-center opacity-10 pointer-events-none" />
+      <motion.div
+        className="fixed inset-0 -z-10 bg-[url('/menu-bg.jpg')] bg-cover bg-center opacity-10 pointer-events-none"
+        style={{ y: bgY, scale: bgScale }}
+      />
       <div className="max-w-4xl mx-auto px-4 py-6">
         {/* Header */}
         <div className="mb-6">
