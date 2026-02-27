@@ -16,8 +16,7 @@ const DAILY_SPECIALS = [
     unifiedPrice: '$10 each',
     deals: [
       { item: '8-piece Fried Shrimp' },
-      { item: 'Modelo Bucket' },
-      { item: 'Michelob Ultra Bucket' },
+      { item: 'Buckets', detail: '[Modelo, Ultra]' },
       { item: 'Casa Azul Tequila Margaritas' },
     ],
   },
@@ -34,7 +33,7 @@ const DAILY_SPECIALS = [
     day: 'Wednesday',
     name: 'Wings & Well Wednesday',
     deals: [
-      { item: '½ price Wings', price: '50% off' },
+      { item: 'Signature Wings', price: '50% off' },
       { item: 'Well Drinks', price: '$6' },
     ],
   },
@@ -200,7 +199,7 @@ export default function HomePageClient({ events }: Props) {
                 <ul className="space-y-2">
                   {DAILY_SPECIALS[todayIndex].deals.map((deal) => (
                     <li key={deal.item} className="flex items-center justify-between text-sm">
-                      <span className="text-foreground/90">{deal.item}</span>
+                      <span className="text-foreground/90">{deal.item}{'detail' in deal && <span className="text-xs text-muted ml-1">{deal.detail}</span>}</span>
                       {'price' in deal && (
                         <span className="font-semibold text-accent">{deal.price}</span>
                       )}
@@ -233,7 +232,7 @@ export default function HomePageClient({ events }: Props) {
                   <ul className="space-y-1 border-t border-border/30 pt-2">
                     {special.deals.map((deal) => (
                       <li key={deal.item} className="flex items-center justify-between text-xs">
-                        <span className="text-foreground/70">{deal.item}</span>
+                        <span className="text-foreground/70">{deal.item}{'detail' in deal && <span className="text-xs text-muted ml-1">{deal.detail}</span>}</span>
                         {'price' in deal && (
                           <span className="font-medium text-accent ml-2 whitespace-nowrap">{deal.price}</span>
                         )}
@@ -269,7 +268,7 @@ export default function HomePageClient({ events }: Props) {
                   <ul className="space-y-1 border-t border-border/30 pt-2">
                     {special.deals.map((deal) => (
                       <li key={deal.item} className="flex items-center justify-between text-xs">
-                        <span className="text-foreground/70">{deal.item}</span>
+                        <span className="text-foreground/70">{deal.item}{'detail' in deal && <span className="text-xs text-muted ml-1">{deal.detail}</span>}</span>
                         {'price' in deal && (
                           <span className="font-medium text-accent ml-2 whitespace-nowrap">{deal.price}</span>
                         )}
