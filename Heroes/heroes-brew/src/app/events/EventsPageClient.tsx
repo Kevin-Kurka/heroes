@@ -92,8 +92,8 @@ export default function EventsPageClient({ events, allHolidays }: Props) {
         <div ref={sentinelRef} className="h-0" />
 
         {/* Filters */}
-        <div className={`sticky top-0 md:top-16 z-40 -mx-4 px-4 py-3 mb-4 flex gap-2 overflow-x-auto no-scrollbar transition-all duration-200 ${
-          isSticky ? 'bg-background/80 backdrop-blur-md' : ''
+        <div className={`sticky top-0 md:top-16 z-40 py-3 mb-4 flex gap-2 overflow-x-auto no-scrollbar transition-all duration-200 ${
+          isSticky ? 'bg-background/80 backdrop-blur-md -ml-[50vw] -mr-[50vw] relative left-1/2 right-1/2 w-screen px-[max(1rem,calc((100vw-56rem)/2+1rem))]' : '-mx-4 px-4'
         }`}>
           {filters.map((f) => (
             <button
