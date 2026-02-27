@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { MapPin, Phone, Clock, Navigation, ExternalLink } from 'lucide-react';
 import { Restaurant } from '@/types';
 import PageTransition from '@/components/PageTransition';
@@ -17,8 +17,16 @@ export default function LocationPageClient({ restaurant }: Props) {
 
   const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
 
+  const { scrollY } = useScroll();
+  const bgY = useTransform(scrollY, [0, 1000], ['0%', '30%']);
+  const bgScale = useTransform(scrollY, [0, 1000], [1, 1.1]);
+
   return (
     <PageTransition>
+      <motion.div
+        className="fixed inset-0 -z-10 bg-[url('/location-bg.jpg')] bg-cover bg-center opacity-10 pointer-events-none"
+        style={{ y: bgY, scale: bgScale }}
+      />
       <div className="max-w-4xl mx-auto px-4 py-6">
         <h1 className="text-3xl font-bold text-foreground drop-shadow-lg mb-6" style={{ viewTransitionName: 'page-title' }}>Find Us</h1>
 
@@ -52,7 +60,7 @@ export default function LocationPageClient({ restaurant }: Props) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.2, delay: 0.05, ease: [0, 0, 0.2, 1] }}
               whileHover={{ scale: 1.01 }}
-              className="flex items-start gap-4 bg-card border border-border rounded-md p-4 hover:border-accent/30 transition-colors group"
+              className="flex items-start gap-4 bg-card/70 backdrop-blur-md border border-white/10 rounded-md p-4 hover:border-accent/30 transition-colors group"
             >
               <div className="p-2 bg-accent/10 rounded-lg shrink-0">
                 <MapPin size={20} className="text-accent" />
@@ -75,7 +83,7 @@ export default function LocationPageClient({ restaurant }: Props) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.2, delay: 0.1, ease: [0, 0, 0.2, 1] }}
               whileHover={{ scale: 1.01 }}
-              className="flex items-start gap-4 bg-card border border-border rounded-md p-4 hover:border-accent/30 transition-colors group"
+              className="flex items-start gap-4 bg-card/70 backdrop-blur-md border border-white/10 rounded-md p-4 hover:border-accent/30 transition-colors group"
             >
               <div className="p-2 bg-accent/10 rounded-lg shrink-0">
                 <Phone size={20} className="text-accent" />
@@ -94,7 +102,7 @@ export default function LocationPageClient({ restaurant }: Props) {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.2, delay: 0.15, ease: [0, 0, 0.2, 1] }}
-              className="bg-card border border-border rounded-md p-4"
+              className="bg-card/70 backdrop-blur-md border border-white/10 rounded-md p-4"
             >
               <div className="flex items-center gap-3 mb-3">
                 <div className="p-2 bg-accent/10 rounded-lg">
