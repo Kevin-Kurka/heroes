@@ -70,7 +70,13 @@ export default function MenuPageClient({ menus }: Props) {
 
         {/* Menu items */}
         <div key={activeGroup}>
-          {currentGroup?.displayMode === 'variants' ? (
+          {currentGroup?.displayMode === 'starters' && currentGroup.subGroups ? (
+            <div className="space-y-4">
+              {currentGroup.subGroups.map((sub) => (
+                <VariantGroupCard key={sub.id} group={sub} elevated />
+              ))}
+            </div>
+          ) : currentGroup?.displayMode === 'variants' ? (
             <VariantGroupCard group={currentGroup} />
           ) : (
             <>

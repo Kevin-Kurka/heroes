@@ -53,10 +53,11 @@ export interface MenuGroup {
   name: string;
   description?: string;
   items: MenuItem[];
-  displayMode?: 'cards' | 'variants';
+  displayMode?: 'cards' | 'variants' | 'starters';
   basePrice?: number;
   addOns?: MenuGroupAddOn[];
   choices?: MenuGroupChoice[];
+  subGroups?: MenuGroup[];
 }
 
 export interface Menu {

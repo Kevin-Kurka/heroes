@@ -4,6 +4,7 @@
   --background: #0a0e1a;
   --foreground: #e8e8ec;
   --card: #111827;
+  --card-elevated: #172033;
   --card-hover: #1a2236;
   --accent: #bf0a30;
   --accent-dim: #8b0722;
@@ -20,6 +21,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
+  --color-card-elevated: var(--card-elevated);
   --color-card-hover: var(--card-hover);
   --color-accent: var(--accent);
   --color-accent-dim: var(--accent-dim);

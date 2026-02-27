@@ -4,13 +4,17 @@ import { MenuGroup } from '@/types';
 
 interface VariantGroupCardProps {
   group: MenuGroup;
+  elevated?: boolean;
 }
 
-export default function VariantGroupCard({ group }: VariantGroupCardProps) {
+export default function VariantGroupCard({ group, elevated }: VariantGroupCardProps) {
   const hasDescriptions = group.items.some((item) => item.description);
+  const bgClass = elevated
+    ? 'bg-card-elevated hover:bg-card-hover'
+    : 'bg-card hover:bg-card-hover';
 
   return (
-    <div className="rounded-md bg-card border border-border p-5 hover:border-accent/30 hover:bg-card-hover transition-all duration-200">
+    <div className={`rounded-md border border-border p-5 hover:border-accent/30 transition-all duration-200 ${bgClass}`}>
       {/* Header: name + price */}
       <div className="flex items-baseline justify-between gap-4 mb-2">
         <h2 className="text-xl font-bold text-foreground uppercase tracking-wide">
