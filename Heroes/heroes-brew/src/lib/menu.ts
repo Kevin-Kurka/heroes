@@ -159,13 +159,13 @@ export function getRestaurantInfo(): Restaurant {
     latitude: 33.1581,
     longitude: -117.3506,
     hours: [
-      { dayOfWeek: 'Monday', open: '11:00 AM', close: '10:00 PM' },
-      { dayOfWeek: 'Tuesday', open: '11:00 AM', close: '10:00 PM' },
-      { dayOfWeek: 'Wednesday', open: '11:00 AM', close: '10:00 PM' },
-      { dayOfWeek: 'Thursday', open: '11:00 AM', close: '11:00 PM' },
-      { dayOfWeek: 'Friday', open: '11:00 AM', close: '12:00 AM' },
-      { dayOfWeek: 'Saturday', open: '9:00 AM', close: '12:00 AM' },
-      { dayOfWeek: 'Sunday', open: '9:00 AM', close: '10:00 PM' },
+      { dayOfWeek: 'Monday', open: '10:00 AM', close: '10:00 PM' },
+      { dayOfWeek: 'Tuesday', open: '10:00 AM', close: '10:00 PM' },
+      { dayOfWeek: 'Wednesday', open: '10:00 AM', close: '10:00 PM' },
+      { dayOfWeek: 'Thursday', open: '10:00 AM', close: '10:00 PM' },
+      { dayOfWeek: 'Friday', open: '10:00 AM', close: '12:00 AM' },
+      { dayOfWeek: 'Saturday', open: '8:00 AM', close: '12:00 AM' },
+      { dayOfWeek: 'Sunday', open: '8:00 AM', close: '10:00 PM' },
     ],
   };
 }

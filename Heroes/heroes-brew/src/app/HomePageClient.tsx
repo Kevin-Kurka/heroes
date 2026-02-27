@@ -173,7 +173,7 @@ export default function HomePageClient({ events }: Props) {
       {/* Flag background below ticker */}
       <div className="relative overflow-hidden">
         <motion.div
-          className="absolute inset-0 -z-10 bg-[url('/home-bg.jpg')] bg-cover bg-center opacity-10 pointer-events-none"
+          className="absolute -top-20 inset-x-0 bottom-0 -z-10 bg-[url('/home-bg.jpg')] bg-cover bg-center opacity-10 pointer-events-none"
           style={{ y: homeBgY, scale: homeBgScale }}
         />
 
