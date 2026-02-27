@@ -1,6 +1,5 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import { MenuItem } from '@/types';
 
 interface MenuCardProps {
@@ -10,10 +9,7 @@ interface MenuCardProps {
 
 export default function MenuCard({ item }: MenuCardProps) {
   return (
-    <motion.div
-      whileHover={{ scale: 1.015 }}
-      className="group rounded-md bg-card border border-border p-4 hover:border-accent/30 hover:bg-card-hover transition-all duration-200"
-    >
+    <div className="group rounded-md bg-card border border-border p-4 hover:border-accent/30 hover:bg-card-hover hover:scale-[1.015] transition-all duration-200">
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
           <h3 className="font-semibold text-foreground group-hover:text-accent transition-colors leading-tight">
@@ -27,6 +23,6 @@ export default function MenuCard({ item }: MenuCardProps) {
           ${item.price.toFixed(2)}
         </span>
       </div>
-    </motion.div>
+    </div>
   );
 }

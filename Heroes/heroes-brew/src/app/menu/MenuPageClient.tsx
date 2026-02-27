@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
+import { motion, LayoutGroup } from 'framer-motion';
 import { Menu } from '@/types';
 import MenuCard from '@/components/MenuCard';
 import PageTransition from '@/components/PageTransition';
@@ -37,7 +37,7 @@ export default function MenuPageClient({ menus }: Props) {
           </p>
         </div>
 
-        {/* Sticky category nav — smooth layoutId animation for active indicator */}
+        {/* Sticky category nav */}
         <LayoutGroup>
           <div
             ref={categoryRef}
@@ -67,50 +67,23 @@ export default function MenuPageClient({ menus }: Props) {
           </div>
         </LayoutGroup>
 
-        {/* Menu items — smooth crossfade between tabs */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeGroup}
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -6 }}
-            transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
-          >
-            {currentGroup?.description && (
-              <div className="text-sm mb-4">
-                {currentGroup.description.split('\n').map((line, i) => (
-                  <p key={i} className={i === 0 ? 'text-foreground font-medium' : 'text-muted mt-0.5'}>
-                    {line}
-                  </p>
-                ))}
-              </div>
-            )}
-            <motion.div
-              className="grid gap-3 sm:grid-cols-2"
-              initial="hidden"
-              animate="show"
-              variants={{
-                hidden: { opacity: 0 },
-                show: {
-                  opacity: 1,
-                  transition: { staggerChildren: 0.04 },
-                },
-              }}
-            >
-              {currentGroup?.items.map((item) => (
-                <motion.div
-                  key={item.id}
-                  variants={{
-                    hidden: { opacity: 0, y: 10 },
-                    show: { opacity: 1, y: 0, transition: { duration: 0.3, ease: [0.4, 0, 0.2, 1] } },
-                  }}
-                >
-                  <MenuCard item={item} index={0} />
-                </motion.div>
+        {/* Menu items */}
+        <div key={activeGroup}>
+          {currentGroup?.description && (
+            <div className="text-sm mb-4">
+              {currentGroup.description.split('\n').map((line, i) => (
+                <p key={i} className={i === 0 ? 'text-foreground font-medium' : 'text-muted mt-0.5'}>
+                  {line}
+                </p>
               ))}
-            </motion.div>
-          </motion.div>
-        </AnimatePresence>
+            </div>
+          )}
+          <div className="grid gap-3 sm:grid-cols-2">
+            {currentGroup?.items.map((item, i) => (
+              <MenuCard key={item.id} item={item} index={i} />
+            ))}
+          </div>
+        </div>
       </div>
     </PageTransition>
   );
