@@ -46,6 +46,7 @@ export function getMenus(): Menu[] {
             {
               id: 'g-munchies',
               name: 'Munchies',
+              description: 'Share with the table, or keep for yourself.',
               displayMode: 'variants',
               basePrice: 12,
               items: [
