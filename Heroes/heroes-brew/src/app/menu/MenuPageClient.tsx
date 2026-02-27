@@ -100,6 +100,20 @@ export default function MenuPageClient({ menus }: Props) {
                   <MenuCard key={item.id} item={item} index={i} />
                 ))}
               </div>
+              {currentGroup?.addOns && currentGroup.addOns.length > 0 && (
+                <div className="border-t border-border pt-3 mt-4 space-y-1">
+                  {currentGroup.addOns.map((addOn) => (
+                    <div key={addOn.name} className="text-sm">
+                      <span className="text-accent font-medium">
+                        {addOn.name} {addOn.price}
+                      </span>
+                      {addOn.description && (
+                        <span className="text-muted ml-1.5">({addOn.description})</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </>
           )}
         </div>

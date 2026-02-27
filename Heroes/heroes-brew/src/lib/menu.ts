@@ -62,7 +62,7 @@ export function getMenus(): Menu[] {
         {
           id: 'g-salads',
           name: 'Salads',
-          description: 'Add chicken +5, avocado +3.',
+          addOns: [{ name: 'Add chicken', price: '+5' }, { name: 'Avocado', price: '+3' }],
           items: [
             { id: 's1', name: 'Healthy Hero', description: 'Spring mix, sprouts, tomato, cucumber, red onion, croutons.', price: 17 },
             { id: 's2', name: 'Caesar', description: 'Romaine, croutons, parmesan, creamy caesar.', price: 17 },
