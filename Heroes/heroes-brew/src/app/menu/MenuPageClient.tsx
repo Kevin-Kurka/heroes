@@ -29,6 +29,7 @@ export default function MenuPageClient({ menus }: Props) {
 
   return (
     <PageTransition>
+      <div className="fixed inset-0 -z-10 bg-[url('/menu-bg.jpg')] bg-cover bg-center opacity-10 pointer-events-none" />
       <div className="max-w-4xl mx-auto px-4 py-6">
         {/* Header */}
         <div className="mb-6">
