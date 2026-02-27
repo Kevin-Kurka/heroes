@@ -34,7 +34,6 @@ export function getMenus(): Menu[] {
               description: 'Pile of fries with your choice of toppings.',
               displayMode: 'variants',
               basePrice: 18,
-              addOns: [{ name: 'Loaded', price: '+4' }],
               items: [
                 { id: 'f1', name: 'Carne Asada', price: 18 },
                 { id: 'f2', name: 'Buffalo Chicken', price: 18 },
@@ -74,7 +73,10 @@ export function getMenus(): Menu[] {
         {
           id: 'g-burgers',
           name: 'Burgers',
-          description: 'Best burgers in Carlsbad, comes with choice of fries or rings.\nMake it a double +4.',
+          description: 'Best burgers in Carlsbad, comes with choice of fries or rings.',
+          displayMode: 'variants',
+          basePrice: 18,
+          addOns: [{ name: 'Make it a double', price: '+4' }],
           items: [
             { id: 'b1', name: 'Pasadena', description: 'The "OG" — lettuce, tomato, pickle, red onion, Hero sauce, cheese, on a brioche bun.', price: 18 },
             { id: 'b2', name: 'Tombstone', description: 'Cowboy — bacon, grilled onion, cheddar, BBQ sauce, topped with onion rings on a brioche bun.', price: 18 },
@@ -85,23 +87,25 @@ export function getMenus(): Menu[] {
           ],
         },
         {
-          id: 'g-philly',
-          name: 'Philly Cheesesteak',
-          description: 'Thin sliced ribeye on an Amoroso roll.',
-          displayMode: 'variants',
-          basePrice: 22,
-          addOns: [{ name: 'Billy Style', price: '+4', description: 'loaded, double cheese, fries' }],
-          choices: [
-            { label: 'Cheese', options: ['Wiz', 'Provolone'] },
-            { label: 'Toppings', options: ['Onions', 'Peppers', 'Mushrooms'] },
-          ],
-          items: [
-            { id: 'p1', name: 'Classic Philly', price: 22 },
-          ],
-        },
-        {
           id: 'g-heroes',
           name: 'Hero Sandwiches',
+          subGroups: [
+            {
+              id: 'g-philly',
+              name: 'Philly Cheesesteak',
+              description: 'Thin sliced ribeye on an Amoroso roll.',
+              displayMode: 'variants',
+              basePrice: 22,
+              addOns: [{ name: 'Billy Style', price: '+4', description: 'loaded, double cheese, fries' }],
+              choices: [
+                { label: 'Cheese', options: ['Wiz', 'Provolone'] },
+                { label: 'Toppings', options: ['Onions', 'Peppers', 'Mushrooms'] },
+              ],
+              items: [
+                { id: 'p1', name: 'Classic Philly', price: 22 },
+              ],
+            },
+          ],
           items: [
             { id: 'h1', name: 'Hoboken', description: 'Italian — capicola, salami, ham, mortadella, provolone, lettuce, tomato, onion, oregano, oil & vinegar, on an Italian roll.', price: 22 },
             { id: 'h2', name: 'Manhattan', description: 'Reuben — pastrami, pickles, dark ale ground mustard, Russian dressing, sauerkraut, Swiss cheese on rye bread.', price: 22 },
@@ -124,12 +128,18 @@ export function getMenus(): Menu[] {
         {
           id: 'g-kids',
           name: 'Kids',
-          description: 'Choose your side: fries or fruit. Choose your drink: soda, apple, or milk.',
+          displayMode: 'variants',
+          basePrice: 12,
+          choices: [
+            { label: 'Drink', options: ['Milk', 'Soda', 'Apple Juice'] },
+            { label: 'Side', options: ['Fries', 'Fruit'] },
+          ],
+          addOns: [{ name: 'Add Dessert', price: '+2', description: 'Ice Cream, Cookie, or Churro' }],
           items: [
-            { id: 'k1', name: 'Mac & Cheese', description: 'Kids mac & cheese with choice of side and drink.', price: 12 },
-            { id: 'k2', name: 'Corn Dog', description: 'Kids corn dog with choice of side and drink.', price: 12 },
-            { id: 'k3', name: 'Chicken Tenders', description: 'Kids chicken tenders with choice of side and drink.', price: 12 },
-            { id: 'k4', name: 'Burger', description: 'Kids burger with choice of side and drink.', price: 12 },
+            { id: 'k1', name: 'Mac & Cheese', price: 12 },
+            { id: 'k2', name: 'Corn Dog', price: 12 },
+            { id: 'k3', name: 'Chicken Tenders', price: 12 },
+            { id: 'k4', name: 'Burger', price: 12 },
           ],
         },
       ],

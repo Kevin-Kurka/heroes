@@ -89,6 +89,12 @@ export default function MenuPageClient({ menus }: Props) {
                   ))}
                 </div>
               )}
+              {/* Featured sub-groups (e.g. Philly in Heroes) — full width above grid */}
+              {currentGroup?.subGroups?.map((sub) => (
+                <div key={sub.id} className="mb-4">
+                  <VariantGroupCard group={sub} />
+                </div>
+              ))}
               <div className="grid gap-3 sm:grid-cols-2">
                 {currentGroup?.items.map((item, i) => (
                   <MenuCard key={item.id} item={item} index={i} />

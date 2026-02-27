@@ -10,11 +10,11 @@ interface VariantGroupCardProps {
 export default function VariantGroupCard({ group, elevated }: VariantGroupCardProps) {
   const hasDescriptions = group.items.some((item) => item.description);
   const bgClass = elevated
-    ? 'bg-card-elevated hover:bg-card-hover'
-    : 'bg-card hover:bg-card-hover';
+    ? 'bg-card-elevated'
+    : 'bg-card';
 
   return (
-    <div className={`rounded-md border border-border p-5 hover:border-accent/30 transition-all duration-200 ${bgClass}`}>
+    <div className={`rounded-md border border-border p-5 transition-all duration-200 ${bgClass}`}>
       {/* Header: name + price */}
       <div className="flex items-baseline justify-between gap-4 mb-2">
         <h2 className="text-xl font-bold text-foreground uppercase tracking-wide">
@@ -32,36 +32,24 @@ export default function VariantGroupCard({ group, elevated }: VariantGroupCardPr
         <p className="text-sm text-muted mb-4">{group.description}</p>
       )}
 
-      {/* Variants — two layouts depending on whether items have descriptions */}
+      {/* Variant items as sub-cards in a responsive grid */}
       {group.items.length > 1 && (
-        hasDescriptions ? (
-          /* Burger-style: each variant on its own line with description */
-          <div className="space-y-2 mb-4">
-            {group.items.map((item) => (
-              <div key={item.id}>
-                <span className="font-semibold text-foreground">{item.name}</span>
-                {item.description && (
-                  <span className="text-sm text-muted ml-2">{item.description}</span>
-                )}
-              </div>
-            ))}
-          </div>
-        ) : (
-          /* Wings/Fries-style: compact pill list */
-          <div className="flex flex-wrap gap-x-1 gap-y-1 mb-4">
-            {group.items.map((item, i) => (
-              <span key={item.id} className="text-foreground text-sm">
-                {item.name}
-                {i < group.items.length - 1 && (
-                  <span className="text-muted mx-1.5">&middot;</span>
-                )}
-              </span>
-            ))}
-          </div>
-        )
+        <div className={`grid gap-2 mb-4 ${hasDescriptions ? 'sm:grid-cols-2' : 'grid-cols-2 sm:grid-cols-3'}`}>
+          {group.items.map((item) => (
+            <div
+              key={item.id}
+              className="rounded-md bg-white/5 border border-border/60 px-3 py-2 hover:border-accent/30 transition-colors"
+            >
+              <span className="font-medium text-foreground text-sm">{item.name}</span>
+              {item.description && (
+                <p className="text-xs text-muted mt-0.5 line-clamp-2">{item.description}</p>
+              )}
+            </div>
+          ))}
+        </div>
       )}
 
-      {/* Choice groups (Philly cheese/toppings) */}
+      {/* Choice groups (Philly cheese/toppings, Kids drink/side) */}
       {group.choices && group.choices.length > 0 && (
         <div className="space-y-2 mb-4">
           {group.choices.map((choice) => (
