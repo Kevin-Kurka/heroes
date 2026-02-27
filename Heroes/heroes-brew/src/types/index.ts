@@ -37,11 +37,26 @@ export interface MenuItem {
   calories?: number;
 }
 
+export interface MenuGroupAddOn {
+  name: string;
+  price: string;
+  description?: string;
+}
+
+export interface MenuGroupChoice {
+  label: string;
+  options: string[];
+}
+
 export interface MenuGroup {
   id: string;
   name: string;
   description?: string;
   items: MenuItem[];
+  displayMode?: 'cards' | 'variants';
+  basePrice?: number;
+  addOns?: MenuGroupAddOn[];
+  choices?: MenuGroupChoice[];
 }
 
 export interface Menu {

@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, LayoutGroup } from 'framer-motion';
 import { Menu } from '@/types';
 import MenuCard from '@/components/MenuCard';
+import VariantGroupCard from '@/components/VariantGroupCard';
 import PageTransition from '@/components/PageTransition';
 
 interface Props {
@@ -69,20 +70,26 @@ export default function MenuPageClient({ menus }: Props) {
 
         {/* Menu items */}
         <div key={activeGroup}>
-          {currentGroup?.description && (
-            <div className="text-sm mb-4">
-              {currentGroup.description.split('\n').map((line, i) => (
-                <p key={i} className={i === 0 ? 'text-foreground font-medium' : 'text-muted mt-0.5'}>
-                  {line}
-                </p>
-              ))}
-            </div>
+          {currentGroup?.displayMode === 'variants' ? (
+            <VariantGroupCard group={currentGroup} />
+          ) : (
+            <>
+              {currentGroup?.description && (
+                <div className="text-sm mb-4">
+                  {currentGroup.description.split('\n').map((line, i) => (
+                    <p key={i} className={i === 0 ? 'text-foreground font-medium' : 'text-muted mt-0.5'}>
+                      {line}
+                    </p>
+                  ))}
+                </div>
+              )}
+              <div className="grid gap-3 sm:grid-cols-2">
+                {currentGroup?.items.map((item, i) => (
+                  <MenuCard key={item.id} item={item} index={i} />
+                ))}
+              </div>
+            </>
           )}
-          <div className="grid gap-3 sm:grid-cols-2">
-            {currentGroup?.items.map((item, i) => (
-              <MenuCard key={item.id} item={item} index={i} />
-            ))}
-          </div>
         </div>
       </div>
     </PageTransition>
