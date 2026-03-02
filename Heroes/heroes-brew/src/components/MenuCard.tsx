@@ -21,7 +21,7 @@ export default function MenuCard({ item }: MenuCardProps) {
           )}
         </div>
         <span className="text-accent font-mono font-semibold text-sm shrink-0">
-          ${item.price.toFixed(2)}
+          ${item.price}
         </span>
       </div>
     </div>
