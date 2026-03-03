@@ -12,7 +12,7 @@ interface Props {
 export default function LocationPageClient({ restaurant }: Props) {
   const fullAddress = `${restaurant.address1}${restaurant.address2 ? ', ' + restaurant.address2 : ''}, ${restaurant.city}, ${restaurant.stateCode} ${restaurant.zipCode}`;
   const mapsQuery = encodeURIComponent(fullAddress);
-  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${mapsQuery}`;
+  const mapsUrl = 'https://www.google.com/maps/dir//American+Heroes+%26+Brew,+300+Carlsbad+Village+Dr+STE+120,+Carlsbad,+CA+92008';
   const embedUrl = `https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY}&q=${mapsQuery}`;
 
   const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });

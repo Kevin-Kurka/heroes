@@ -164,7 +164,7 @@ export default function HomePageClient({ events }: Props) {
               View Menu
             </Link>
             <a
-              href="https://www.google.com/maps/dir/?api=1&destination=American+Heroes+%26+Brew+Carlsbad"
+              href="https://www.google.com/maps/dir//American+Heroes+%26+Brew,+300+Carlsbad+Village+Dr+STE+120,+Carlsbad,+CA+92008"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-2 bg-navy border border-navy text-white font-medium px-6 py-3 rounded-sm hover:bg-navy/80 transition-all shadow-[0_4px_16px_rgba(0,0,0,0.5),0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.6)]"
