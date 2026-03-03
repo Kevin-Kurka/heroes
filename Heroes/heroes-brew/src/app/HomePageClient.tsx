@@ -42,6 +42,7 @@ const DAILY_SPECIALS = [
     name: 'Thirsty Thursday',
     deals: [
       { item: 'Burgers', price: '$5 off' },
+      { item: 'American Heroes Signature Draft', price: '$5' },
     ],
   },
 ] as const;
