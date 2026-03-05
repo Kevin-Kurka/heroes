@@ -75,17 +75,19 @@ export default function VariantGroupCard({ group, elevated }: VariantGroupCardPr
 
       {/* Add-ons */}
       {group.addOns && group.addOns.length > 0 && (
-        <div className="border-t border-border pt-3 space-y-1">
-          {group.addOns.map((addOn) => (
-            <div key={addOn.name} className="text-sm">
-              <span className="text-accent font-medium">
-                {addOn.name} {addOn.price}
+        <div className="border-t border-border pt-3">
+          <div className="flex flex-wrap gap-2">
+            {group.addOns.map((addOn) => (
+              <span
+                key={addOn.name}
+                className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-sm"
+                title={addOn.description || undefined}
+              >
+                <span className="text-muted">{addOn.name}</span>
+                <span className="text-accent font-mono font-semibold text-xs">{addOn.price}</span>
               </span>
-              {addOn.description && (
-                <span className="text-muted ml-1.5">({addOn.description})</span>
-              )}
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
     </div>
