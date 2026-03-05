@@ -77,7 +77,16 @@ export function getMenus(): Menu[] {
           description: 'Best burgers in Carlsbad, comes with choice of fries or rings.',
           displayMode: 'variants',
           basePrice: 18,
-          addOns: [{ name: 'Make it a double', price: '+4' }],
+          addOns: [
+            { name: 'Make it a double', price: '+4' },
+            { name: 'Potato Salad', price: '+2' },
+            { name: 'Macaroni Salad', price: '+3' },
+            { name: 'Fries', price: '+4' },
+            { name: 'Onion Rings', price: '+6' },
+            { name: 'Frings', price: '+8' },
+            { name: 'Salad', price: '+10' },
+            { name: 'Wings', price: '+12' },
+          ],
           items: [
             { id: 'b1', name: 'Pasadena', subtitle: 'The OG', description: 'Lettuce, tomato, pickle, red onion, Hero sauce, cheese, on a brioche bun.', price: 18 },
             { id: 'b2', name: 'Tombstone', subtitle: 'Cowboy', description: 'Bacon, grilled onion, cheddar, BBQ sauce, topped with onion rings on a brioche bun.', price: 18 },
@@ -90,6 +99,15 @@ export function getMenus(): Menu[] {
         {
           id: 'g-heroes',
           name: 'Heroes',
+          addOns: [
+            { name: 'Potato Salad', price: '+2' },
+            { name: 'Macaroni Salad', price: '+3' },
+            { name: 'Fries', price: '+4' },
+            { name: 'Onion Rings', price: '+6' },
+            { name: 'Frings', price: '+8' },
+            { name: 'Salad', price: '+10' },
+            { name: 'Wings', price: '+12' },
+          ],
           subGroups: [
             {
               id: 'g-philly',
