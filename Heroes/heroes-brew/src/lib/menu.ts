@@ -152,7 +152,13 @@ export function getMenus(): Menu[] {
             { label: 'Drink', options: ['Milk', 'Soda', 'Apple Juice'] },
             { label: 'Side', options: ['Fries', 'Fruit'] },
           ],
-          addOns: [{ name: 'Add Dessert', price: '+2', description: 'Ice Cream, Cookie, or Churro' }],
+          addOnLabel: 'Dessert',
+          addOns: [
+            { name: 'Cookie', price: '+2' },
+            { name: 'Ice Cream', price: '+3' },
+            { name: 'Ice Cream Sandwich', price: '+5' },
+            { name: 'Churros', price: '+8' },
+          ],
           items: [
             { id: 'k1', name: 'Mac & Cheese', price: 12 },
             { id: 'k2', name: 'Corn Dog', price: 12 },

@@ -132,7 +132,7 @@ export default function MenuPageClient({ menus }: Props) {
               </div>
               {currentGroup?.addOns && currentGroup.addOns.length > 0 && (
                 <div className="border-t border-border pt-3 mt-4">
-                  <span className="text-xs uppercase tracking-wider text-muted font-semibold mb-2 block">Sides</span>
+                  <span className="text-xs uppercase tracking-wider text-muted font-semibold mb-2 block">{currentGroup.addOnLabel || 'Sides'}</span>
                   <div className="flex flex-wrap gap-2">
                     {currentGroup.addOns.map((addOn) => (
                       <span

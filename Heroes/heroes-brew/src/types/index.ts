@@ -57,6 +57,7 @@ export interface MenuGroup {
   displayMode?: 'cards' | 'variants' | 'starters';
   basePrice?: number;
   addOns?: MenuGroupAddOn[];
+  addOnLabel?: string;
   choices?: MenuGroupChoice[];
   subGroups?: MenuGroup[];
 }
