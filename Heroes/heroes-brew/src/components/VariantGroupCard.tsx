@@ -76,6 +76,7 @@ export default function VariantGroupCard({ group, elevated }: VariantGroupCardPr
       {/* Add-ons */}
       {group.addOns && group.addOns.length > 0 && (
         <div className="border-t border-border pt-3">
+          <span className="text-xs uppercase tracking-wider text-muted font-semibold mb-2 block">Sides</span>
           <div className="flex flex-wrap gap-2">
             {group.addOns.map((addOn) => (
               <span

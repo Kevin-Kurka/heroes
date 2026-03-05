@@ -74,11 +74,10 @@ export function getMenus(): Menu[] {
         {
           id: 'g-burgers',
           name: 'Burgers',
-          description: 'Best burgers in Carlsbad, comes with choice of fries or rings.',
+          description: 'Best burgers in Carlsbad. Make it a double +$4.',
           displayMode: 'variants',
           basePrice: 18,
           addOns: [
-            { name: 'Make it a double', price: '+4' },
             { name: 'Potato Salad', price: '+2' },
             { name: 'Macaroni Salad', price: '+3' },
             { name: 'Fries', price: '+4' },
