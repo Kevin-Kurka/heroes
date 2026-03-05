@@ -29,7 +29,13 @@ export default function VariantGroupCard({ group, elevated }: VariantGroupCardPr
 
       {/* Description */}
       {group.description && (
-        <p className="text-sm text-muted mb-4">{group.description}</p>
+        <p className="text-sm text-muted mb-4">
+          {group.description.split(/(\+\d+)/).map((part, i) =>
+            /^\+\d+$/.test(part)
+              ? <span key={i} className="text-accent font-mono font-semibold">{part}</span>
+              : part
+          )}
+        </p>
       )}
 
       {/* Variant items as sub-cards in a responsive grid */}
