@@ -18,6 +18,7 @@ export function getMenus(): Menu[] {
               description: '8 wings, celery, carrots. Choice of sauce/rub & dressing.',
               displayMode: 'variants',
               basePrice: 18,
+              addOnLabel: 'Mods',
               addOns: [{ name: 'Sub chicken tenders', price: '+3' }],
               items: [
                 { id: 'w1', name: 'Buffalo', price: 18 },
@@ -63,6 +64,7 @@ export function getMenus(): Menu[] {
         {
           id: 'g-salads',
           name: 'Salads',
+          addOnLabel: 'Mods',
           addOns: [{ name: 'Add chicken', price: '+5' }, { name: 'Avocado', price: '+3' }],
           items: [
             { id: 's1', name: 'Healthy Hero', description: 'Spring mix, sprouts, tomato, cucumber, red onion, croutons.', price: 17 },
