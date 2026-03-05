@@ -116,6 +116,7 @@ export function getMenus(): Menu[] {
               description: 'Thin sliced ribeye on an Amoroso roll.',
               displayMode: 'variants',
               basePrice: 22,
+              addOnLabel: 'Mods',
               addOns: [{ name: 'Billy Style', price: '+4', description: 'loaded, double cheese, fries' }],
               choices: [
                 { label: 'Cheese', options: ['Wiz', 'Provolone'] },
