@@ -90,7 +90,7 @@ export default function VariantGroupCard({ group, elevated }: VariantGroupCardPr
                 className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-sm"
                 title={addOn.description || undefined}
               >
-                <span className="text-muted">{addOn.name}</span>
+                <span className="text-foreground/70">{addOn.name}</span>
                 <span className="text-accent font-mono font-semibold text-xs">{addOn.price}</span>
               </span>
             ))}
