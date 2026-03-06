@@ -89,13 +89,20 @@ export function getMenus(): Menu[] {
             {
               id: 'g-sampler',
               name: 'Sample Platter',
-              description: 'Includes 4 wings and two munchies.',
+              description: 'The game time essentials.',
               displayMode: 'variants',
-              basePrice: 24,
+              basePrice: 36,
+              choices: [
+                { label: 'Select', options: ['Wings', 'Loaded Fries', 'Nachos'] },
+                { label: '2 Munchies', options: ['Frings', 'Mozzarella Sticks', 'Pretzel Bites', 'Fried Pickle Chips', 'Hummus', 'Jalapeno Poppers'] },
+              ],
               addOnLabel: 'Mods',
-              addOns: [{ name: 'Three Munchies', price: '+10' }],
+              addOns: [
+                { name: 'Three Munchies', price: '+10' },
+                { name: 'Sliders', price: '+4 ea' },
+              ],
               items: [
-                { id: 'sp1', name: 'Sample Platter', price: 24 },
+                { id: 'sp1', name: 'Sample Platter', price: 36 },
               ],
             },
           ],
