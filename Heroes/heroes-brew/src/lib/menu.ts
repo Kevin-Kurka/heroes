@@ -77,8 +77,6 @@ export function getMenus(): Menu[] {
               description: 'Share with the table, or keep for yourself.',
               displayMode: 'variants',
               basePrice: 12,
-              addOnLabel: 'Mods',
-              addOns: [{ name: 'Three Munchies', price: '+10' }],
               items: [
                 { id: 'm1', name: 'Frings', price: 12 },
                 { id: 'm2', name: 'Mozzarella Sticks', price: 12 },
@@ -86,7 +84,18 @@ export function getMenus(): Menu[] {
                 { id: 'm4', name: 'Fried Pickle Chips', price: 12 },
                 { id: 'm5', name: 'Hummus', price: 12 },
                 { id: 'm6', name: 'Jalapeno Poppers', price: 12 },
-                { id: 'm7', name: 'Sample Platter', description: 'Includes 4 wings and two munchies.', price: 24 },
+              ],
+            },
+            {
+              id: 'g-sampler',
+              name: 'Sample Platter',
+              description: 'Includes 4 wings and two munchies.',
+              displayMode: 'variants',
+              basePrice: 24,
+              addOnLabel: 'Mods',
+              addOns: [{ name: 'Three Munchies', price: '+10' }],
+              items: [
+                { id: 'sp1', name: 'Sample Platter', price: 24 },
               ],
             },
           ],
