@@ -19,7 +19,7 @@ export function getMenus(): Menu[] {
               displayMode: 'variants',
               basePrice: 18,
               addOnLabel: 'Mods',
-              addOns: [{ name: 'Sub chicken tenders', price: '+3' }],
+              addOns: [{ name: 'Boneless', price: '+3' }],
               items: [
                 { id: 'w1', name: 'Buffalo', price: 18 },
                 { id: 'w2', name: 'Mango Habanero', price: 18 },
@@ -27,6 +27,32 @@ export function getMenus(): Menu[] {
                 { id: 'w4', name: 'Kickin BBQ', price: 18 },
                 { id: 'w5', name: 'Lemon Pepper (Dry Rub)', price: 18 },
                 { id: 'w6', name: 'Old Bay (Dry Rub)', price: 18 },
+              ],
+            },
+            {
+              id: 'g-nachos',
+              name: 'Nachos',
+              displayMode: 'variants',
+              basePrice: 18,
+              addOnLabel: 'Mods',
+              addOns: [
+                { name: 'Carnitas', price: '+6' },
+                { name: 'Carne Asada', price: '+8' },
+              ],
+              items: [
+                { id: 'n1', name: 'Nachos', price: 18 },
+              ],
+            },
+            {
+              id: 'g-sliders',
+              name: 'Sliders',
+              displayMode: 'variants',
+              basePrice: 16,
+              choices: [
+                { label: 'Select', options: ['Pulled Pork', 'Cheeseburger', 'Hamburger'] },
+              ],
+              items: [
+                { id: 'sl1', name: 'Sliders', price: 16 },
               ],
             },
             {
@@ -50,6 +76,8 @@ export function getMenus(): Menu[] {
               description: 'Share with the table, or keep for yourself.',
               displayMode: 'variants',
               basePrice: 12,
+              addOnLabel: 'Mods',
+              addOns: [{ name: 'Three Munchies', price: '+10' }],
               items: [
                 { id: 'm1', name: 'Frings', price: 12 },
                 { id: 'm2', name: 'Mozzarella Sticks', price: 12 },
@@ -57,6 +85,7 @@ export function getMenus(): Menu[] {
                 { id: 'm4', name: 'Fried Pickle Chips', price: 12 },
                 { id: 'm5', name: 'Hummus', price: 12 },
                 { id: 'm6', name: 'Jalapeno Poppers', price: 12 },
+                { id: 'm7', name: 'Sample Platter', description: 'Includes 4 wings and two munchies.', price: 24 },
               ],
             },
           ],
