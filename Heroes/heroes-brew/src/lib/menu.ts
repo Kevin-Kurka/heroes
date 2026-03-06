@@ -32,7 +32,7 @@ export function getMenus(): Menu[] {
             {
               id: 'g-nachos',
               name: 'Nachos',
-              description: 'Chips, cheese (cheddar/jack/nacho), beans, sour cream, onions, jalapeños, guacamole, cilantro with a side of Mariano\'s spicy salsa.',
+              description: 'Mountain of chips. Cheddar, jack and nacho cheeses with beans, sour cream, onions, jalapeños, guacamole, cilantro with a side of Mariano\'s spicy salsa.',
               displayMode: 'variants',
               basePrice: 18,
               addOnLabel: 'Mods',
