@@ -47,6 +47,7 @@ export function getMenus(): Menu[] {
             {
               id: 'g-sliders',
               name: 'Sliders',
+              description: '3 juicy sliders served your way on a mini brioche bun.',
               displayMode: 'variants',
               basePrice: 16,
               choices: [
