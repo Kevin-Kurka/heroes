@@ -116,7 +116,7 @@ export function getMenus(): Menu[] {
           items: [
             { id: 's1', name: 'Healthy Hero', description: 'Spring mix, sprouts, tomato, cucumber, red onion, croutons.', price: 17 },
             { id: 's2', name: 'Caesar', description: 'Romaine, croutons, parmesan, creamy caesar.', price: 17 },
-            { id: 's3', name: 'Cobb', description: 'Romaine, tomato, red onion, egg, bacon, avocado, blue cheese crumble.', price: 17 },
+            { id: 's3', name: 'Cobb', description: 'Romaine, tomato, red onion, egg, bacon, avocado, blue cheese crumble.', price: 20 },
             { id: 's4', name: 'Antipasto', description: 'Spring mix, tomato, cold cuts, provolone, parmesan, cherry peppers.', price: 20 },
           ],
         },
