@@ -13,20 +13,19 @@ const DAILY_SPECIALS = [
   {
     day: 'Monday',
     name: 'Monday Madness',
-    unifiedPrice: '$10 each',
+    unifiedPrice: '$4 each',
     deals: [
-      { item: '8-piece Fried Shrimp' },
-      { item: 'Buckets', detail: '[Modelo, Ultra]' },
-      { item: 'Casa Azul Tequila Margaritas' },
+      { item: 'Sliders', detail: '[Pulled Pork, Beef]' },
+      { item: 'Beer', detail: '[Select Drafts]' },
     ],
   },
   {
     day: 'Tuesday',
-    name: "Tito's & Tenders Tuesday",
-    unifiedPrice: '$7 each',
+    name: 'Taco Tuesday',
+    unifiedPrice: '$3 each',
     deals: [
-      { item: "Tito's Vodka w/ mixer" },
-      { item: '5-piece Tenders' },
+      { item: 'Tacos', detail: '[Carnitas, Carne Asada]' },
+      { item: 'Beer', detail: '[Modelo, Ultra]' },
     ],
   },
   {
