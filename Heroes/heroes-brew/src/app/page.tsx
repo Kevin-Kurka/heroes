@@ -1,7 +1,7 @@
 import { getUpcomingEvents } from '@/lib/events';
 import HomePageClient from './HomePageClient';
 
-export const revalidate = 900;
+export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
   const events = await getUpcomingEvents(6);

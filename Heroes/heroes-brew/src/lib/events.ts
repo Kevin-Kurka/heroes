@@ -49,7 +49,7 @@ async function fetchESPNScoreboard(sport: string, league: SportLeague): Promise<
 
     const res = await fetch(
       `https://site.api.espn.com/apis/site/v2/sports/${sport}/scoreboard?dates=${dates}`,
-      { next: { revalidate: 300 } } // 5 min for live scores
+      { cache: 'no-store' }
     );
     if (!res.ok) throw new Error(`ESPN ${league}: ${res.status}`);
     const data = await res.json();
@@ -117,7 +117,7 @@ async function fetchMLBGames(): Promise<UnifiedEvent[]> {
 
     const res = await fetch(
       `https://statsapi.mlb.com/api/v1/schedule?sportId=1&startDate=${startStr}&endDate=${endStr}&hydrate=team`,
-      { next: { revalidate: 300 } }
+      { cache: 'no-store' }
     );
     if (!res.ok) throw new Error(`MLB API: ${res.status}`);
     const data = await res.json();

@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description: 'Live sports, game schedules, and upcoming events at American Heroes & Brew in Carlsbad, CA.',
 };
 
-export const revalidate = 900;
+export const dynamic = 'force-dynamic';
 
 export default async function EventsPage() {
   const events = await getAllEvents();
