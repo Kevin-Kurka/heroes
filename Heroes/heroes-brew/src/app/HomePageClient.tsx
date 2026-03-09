@@ -32,8 +32,8 @@ const DAILY_SPECIALS = [
     day: 'Wednesday',
     name: 'Wings & Well Wednesday',
     deals: [
-      { item: 'Signature Wings', price: '50% off' },
-      { item: 'Well Drinks', price: '$6' },
+      { item: 'Signature Wings', price: '$2' },
+      { item: 'Drinks', price: '$2 off' },
     ],
   },
   {
