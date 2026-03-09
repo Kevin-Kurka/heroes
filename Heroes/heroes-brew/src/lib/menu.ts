@@ -194,16 +194,37 @@ export function getMenus(): Menu[] {
               basePrice: 16,
               choices: [
                 { label: 'Tortilla', options: ['Corn', 'Flour'] },
-                { label: 'Meat', options: ['Carne Asada', 'Carnitas'] },
+                { label: 'Meat', options: ['Carne Asada', 'Carnitas', 'Chicken'] },
+              ],
+              addOnLabel: 'Mods',
+              addOns: [
+                { name: 'Nacho Cheese', price: '+1' },
+                { name: 'Guacamole', price: '+3' },
+                { name: 'Nachos', price: '+12' },
               ],
               items: [
                 { id: 'hh2', name: 'Village Tacos', price: 16 },
               ],
             },
+            {
+              id: 'g-dogs',
+              name: 'Dodger Dogs',
+              description: '2 dodger dogs with your choice of topping.',
+              displayMode: 'variants',
+              basePrice: 12,
+              choices: [
+                { label: 'Toppings', options: ['Ketchup', 'Mustard', 'Onions', 'Relish', 'Cheese'] },
+              ],
+              addOnLabel: 'Mods',
+              addOns: [
+                { name: 'Chili', price: '+3' },
+              ],
+              items: [
+                { id: 'hh1', name: 'Dodger Dogs', price: 12 },
+              ],
+            },
           ],
-          items: [
-            { id: 'hh1', name: 'Dodger Dogs', description: '2 dodger dogs with your choice of topping.\nChili Cheese +4.', price: 12 },
-          ],
+          items: [],
         },
         {
           id: 'g-sweet',
