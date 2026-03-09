@@ -222,7 +222,7 @@ export function getMenus(): Menu[] {
                 { name: 'Chili', price: '+3' },
               ],
               items: [
-                { id: 'hh1', name: 'Dodger Dogs', price: 12 },
+                { id: 'hh1', name: 'Dodger Dogs', price: 15 },
               ],
             },
           ],
