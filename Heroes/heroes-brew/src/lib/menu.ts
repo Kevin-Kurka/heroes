@@ -198,6 +198,7 @@ export function getMenus(): Menu[] {
               ],
               addOnLabel: 'Mods',
               addOns: [
+                { name: 'Avocado', price: '+3' },
                 { name: 'Nacho Cheese', price: '+1' },
                 { name: 'Guacamole', price: '+3' },
                 { name: 'Nachos', price: '+12' },
