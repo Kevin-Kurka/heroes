@@ -301,12 +301,10 @@ export default function PrintableMenuClient({ menus }: { menus: Menu[] }) {
   return (
     <>
       {/* Print-specific styles — also hides site nav/chrome */}
-      <style jsx global>{`
-        /* Hide site nav on this page (screen + print) */
+      <style dangerouslySetInnerHTML={{ __html: `
         nav, header, .bottom-nav { display: none !important; }
         main { padding-top: 0 !important; padding-bottom: 0 !important; min-height: auto !important; }
         html, body { background: #f3f4f6 !important; }
-
         @media print {
           .no-print { display: none !important; }
           html, body { background: white !important; color: black !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -325,7 +323,7 @@ export default function PrintableMenuClient({ menus }: { menus: Menu[] }) {
           }
           .section-title { font-size: 24px; font-weight: 800; border-bottom: 3px solid black; padding-bottom: 4px; }
         }
-      `}</style>
+      ` }} />
 
       {/* Control bar — hidden when printing */}
       <div className="no-print sticky top-0 z-50 bg-gray-900 text-white px-4 py-3 shadow-lg">
