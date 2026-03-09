@@ -221,7 +221,7 @@ export function getMenus(): Menu[] {
               name: 'Dodger Dogs',
               description: '2 dodger dogs with your choice of topping.',
               displayMode: 'variants',
-              basePrice: 12,
+              basePrice: 15,
               choices: [
                 { label: 'Toppings', options: ['Ketchup', 'Mustard', 'Onions', 'Relish'] },
               ],
