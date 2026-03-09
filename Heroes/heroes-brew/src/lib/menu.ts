@@ -189,15 +189,15 @@ export function getMenus(): Menu[] {
             {
               id: 'g-tacos',
               name: 'Village Tacos',
-              description: '3 tacos, topped with pickled onion, cilantro, crema, queso fresco.',
+              description: '3 tacos, topped with pickled onion, cilantro, crema, queso fresco. Served with chips and salsa.',
               displayMode: 'variants',
-              basePrice: 12,
+              basePrice: 16,
               choices: [
                 { label: 'Tortilla', options: ['Corn', 'Flour'] },
                 { label: 'Meat', options: ['Carne Asada', 'Carnitas'] },
               ],
               items: [
-                { id: 'hh2', name: 'Village Tacos', price: 12 },
+                { id: 'hh2', name: 'Village Tacos', price: 16 },
               ],
             },
           ],
