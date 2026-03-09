@@ -51,7 +51,7 @@ export function getMenus(): Menu[] {
               displayMode: 'variants',
               basePrice: 16,
               choices: [
-                { label: 'Select Three', options: ['Pulled Pork', 'Cheeseburger', 'Hamburger'] },
+                { label: 'Select', options: ['Pulled Pork', 'Cheeseburger', 'Hamburger'] },
               ],
               items: [
                 { id: 'sl1', name: 'Sliders', price: 16 },
@@ -214,10 +214,11 @@ export function getMenus(): Menu[] {
               displayMode: 'variants',
               basePrice: 12,
               choices: [
-                { label: 'Toppings', options: ['Ketchup', 'Mustard', 'Onions', 'Relish', 'Cheese'] },
+                { label: 'Toppings', options: ['Ketchup', 'Mustard', 'Onions', 'Relish'] },
               ],
               addOnLabel: 'Mods',
               addOns: [
+                { name: 'Cheese', price: '+1' },
                 { name: 'Chili', price: '+3' },
               ],
               items: [
