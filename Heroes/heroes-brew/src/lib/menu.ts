@@ -185,6 +185,15 @@ export function getMenus(): Menu[] {
         {
           id: 'g-handhelds',
           name: 'Handhelds',
+          addOns: [
+            { name: 'Potato Salad', price: '+2' },
+            { name: 'Macaroni Salad', price: '+3' },
+            { name: 'Fries', price: '+4' },
+            { name: 'Onion Rings', price: '+6' },
+            { name: 'Frings', price: '+8' },
+            { name: 'Salad', price: '+10' },
+            { name: 'Wings', price: '+12' },
+          ],
           subGroups: [
             {
               id: 'g-tacos',
