@@ -13,7 +13,7 @@ const DAILY_SPECIALS = [
   {
     day: 'Monday',
     name: 'Monday Madness',
-    unifiedPrice: '$4 each',
+    unifiedPrice: '$4',
     deals: [
       { item: 'Sliders', detail: '[Pulled Pork, Beef]' },
       { item: 'Beer', detail: '[Select Drafts]' },
@@ -22,7 +22,7 @@ const DAILY_SPECIALS = [
   {
     day: 'Tuesday',
     name: 'Taco Tuesday',
-    unifiedPrice: '$3 each',
+    unifiedPrice: '$3',
     deals: [
       { item: 'Tacos', detail: '[Carnitas, Carne Asada]' },
       { item: 'Beer', detail: '[Modelo, Ultra]' },
@@ -40,9 +40,10 @@ const DAILY_SPECIALS = [
   {
     day: 'Thursday',
     name: 'Thirsty Thursday',
+    unifiedPrice: '$5',
     deals: [
-      { item: 'Burgers', price: '$5 off' },
-      { item: 'American Heroes Signature Draft', price: '$5' },
+      { item: 'Burgers', price: 'off' },
+      { item: 'Select Drafts', price: 'each' },
     ],
   },
 ] as const;
