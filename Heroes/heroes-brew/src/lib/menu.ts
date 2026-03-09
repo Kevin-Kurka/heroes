@@ -181,6 +181,7 @@ export function getMenus(): Menu[] {
             { id: 'h2', name: 'Manhattan', subtitle: 'Reuben', description: 'Pastrami, pickles, dark ale ground mustard, Russian dressing, sauerkraut, Swiss cheese on rye bread.', price: 22 },
             { id: 'h3', name: 'Los Angeles', subtitle: 'French Dip', description: 'Slow-cooked roast beef, Swiss cheese, horseradish aioli, with au jus, on an Italian roll.', price: 22 },
             { id: 'h4', name: 'Carlsbad', subtitle: 'BLT+', description: 'Grilled chicken, bacon, avocado, lettuce, tomato, garlic aioli, on a long roll.', price: 20 },
+            { id: 'h5', name: 'Carolina', subtitle: 'Pulled Pork', description: 'Pulled pork, pickles, slaw, kickin BBQ sauce on a brioche bun.', price: 22 },
           ],
         },
         {
