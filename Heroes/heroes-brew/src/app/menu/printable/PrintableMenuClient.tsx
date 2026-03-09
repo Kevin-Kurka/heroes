@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Menu, ToastMenuGroup } from '@/types';
+import { Menu, MenuGroup } from '@/types';
 
 /* ─── Daily Specials (synced with HomePageClient) ─── */
 const DAILY_SPECIALS = [
@@ -94,7 +94,7 @@ function DailyLineupSection() {
   );
 }
 
-function StartersSection({ group }: { group: ToastMenuGroup }) {
+function StartersSection({ group }: { group: MenuGroup }) {
   return (
     <div className="print-section" id="section-starters">
       <h1 className="section-title">Starters</h1>
@@ -126,7 +126,7 @@ function StartersSection({ group }: { group: ToastMenuGroup }) {
   );
 }
 
-function SaladsSection({ group }: { group: ToastMenuGroup }) {
+function SaladsSection({ group }: { group: MenuGroup }) {
   return (
     <div className="print-section" id="section-salads">
       <h1 className="section-title">Salads</h1>
@@ -146,7 +146,7 @@ function SaladsSection({ group }: { group: ToastMenuGroup }) {
   );
 }
 
-function BurgersSection({ group }: { group: ToastMenuGroup }) {
+function BurgersSection({ group }: { group: MenuGroup }) {
   return (
     <div className="print-section" id="section-burgers">
       <h1 className="section-title">Burgers</h1>
@@ -172,8 +172,8 @@ function HeroesAndHandheldsSection({
   heroesGroup,
   handheldsGroup,
 }: {
-  heroesGroup: ToastMenuGroup;
-  handheldsGroup: ToastMenuGroup;
+  heroesGroup: MenuGroup;
+  handheldsGroup: MenuGroup;
 }) {
   return (
     <div className="print-section" id="section-heroes">
@@ -228,7 +228,7 @@ function HeroesAndHandheldsSection({
   );
 }
 
-function SweetStuffSection({ group }: { group: ToastMenuGroup }) {
+function SweetStuffSection({ group }: { group: MenuGroup }) {
   return (
     <div className="print-section" id="section-sweet">
       <h1 className="section-title">Sweet Stuff</h1>
@@ -247,7 +247,7 @@ function SweetStuffSection({ group }: { group: ToastMenuGroup }) {
   );
 }
 
-function KidsSection({ group }: { group: ToastMenuGroup }) {
+function KidsSection({ group }: { group: MenuGroup }) {
   return (
     <div className="print-section" id="section-kids">
       <h1 className="section-title">Kids Menu</h1>
