@@ -17,13 +17,17 @@ export default function MenuCard({ item }: MenuCardProps) {
             {item.subtitle && <span className="text-xs font-bold text-muted ml-1.5">[{item.subtitle}]</span>}
           </h3>
           {item.description && (
-            <p className="text-sm text-muted mt-1 line-clamp-2">
-              {item.description.split(/(\+\d+)/).map((part, i) =>
-                /^\+\d+$/.test(part)
-                  ? <span key={i} className="text-accent font-mono font-semibold">{part}</span>
-                  : part
-              )}
-            </p>
+            <div className="text-sm text-muted mt-1">
+              {item.description.split('\n').map((line, li) => (
+                <p key={li} className={li > 0 ? 'mt-1' : ''}>
+                  {line.split(/(\+\d+)/).map((part, i) =>
+                    /^\+\d+$/.test(part)
+                      ? <span key={i} className="text-accent font-mono font-semibold">{part}</span>
+                      : part
+                  )}
+                </p>
+              ))}
+            </div>
           )}
         </div>
         <span className="text-accent font-mono font-semibold text-sm shrink-0">
