@@ -99,8 +99,8 @@ export function getMenus(): Menu[] {
               ],
               addOnLabel: 'Mods',
               addOns: [
-                { name: 'Three Munchies', price: '+10' },
                 { name: 'Sliders', price: '+4 ea' },
+                { name: 'Three Munchies', price: '+10' },
               ],
               items: [
                 { id: 'sp1', name: 'Sample Platter', price: 36 },
@@ -112,7 +112,7 @@ export function getMenus(): Menu[] {
           id: 'g-salads',
           name: 'Salads',
           addOnLabel: 'Mods',
-          addOns: [{ name: 'Add chicken', price: '+5' }, { name: 'Avocado', price: '+3' }],
+          addOns: [{ name: 'Avocado', price: '+3' }, { name: 'Add chicken', price: '+5' }],
           items: [
             { id: 's1', name: 'Healthy Hero', description: 'Spring mix, sprouts, tomato, cucumber, red onion, croutons.', price: 17 },
             { id: 's2', name: 'Caesar', description: 'Romaine, croutons, parmesan, creamy caesar.', price: 17 },
@@ -198,8 +198,8 @@ export function getMenus(): Menu[] {
               ],
               addOnLabel: 'Mods',
               addOns: [
-                { name: 'Avocado', price: '+3' },
                 { name: 'Nacho Cheese', price: '+1' },
+                { name: 'Avocado', price: '+3' },
                 { name: 'Guacamole', price: '+3' },
                 { name: 'Nachos', price: '+12' },
               ],
