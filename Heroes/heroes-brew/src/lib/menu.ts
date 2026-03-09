@@ -142,7 +142,7 @@ export function getMenus(): Menu[] {
             { id: 'b4', name: 'Minneapolis', subtitle: 'Juicy Lucy', description: 'Stuffed cheese patty, grilled onions, cheese skirt, Hero sauce on a brioche bun.', price: 18 },
             { id: 'b5', name: 'Hollywood', subtitle: 'Patty Melt', description: 'White American cheese, grilled onions, Hero sauce on toasted rye bread.', price: 18 },
             { id: 'b6', name: 'Leucadia', subtitle: 'Smash Burger', description: 'Grilled onion, white American cheese, pickles, Hero sauce on a potato bun.', price: 18 },
-            { id: 'b7', name: 'Jalapeño', subtitle: 'Jalapeño Burger', description: 'Pepper jack, jalapeños, onion ring on a brioche bun.', price: 18 },
+            { id: 'b7', name: 'Austin', subtitle: 'Jalapeño Burger', description: 'Pepper jack, wiz, jalapeños, onion ring on a brioche bun.', price: 18 },
           ],
         },
         {
