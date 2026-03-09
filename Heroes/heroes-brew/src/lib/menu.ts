@@ -180,7 +180,29 @@ export function getMenus(): Menu[] {
             { id: 'h3', name: 'Los Angeles', subtitle: 'French Dip', description: 'Slow-cooked roast beef, Swiss cheese, horseradish aioli, with au jus, on an Italian roll.', price: 22 },
             { id: 'h4', name: 'Carlsbad', subtitle: 'BLT+', description: 'Grilled chicken, bacon, avocado, lettuce, tomato, garlic aioli, on a long roll.', price: 20 },
             { id: 'h5', name: 'Carolina', subtitle: 'Pulled Pork', description: 'Pulled pork, pickles, slaw, kickin BBQ sauce on a brioche bun.', price: 20 },
-            { id: 'h6', name: 'Dodger Dogs', description: '2 dodger dogs with your choice of topping.\nChili Cheese +4.', price: 12 },
+          ],
+        },
+        {
+          id: 'g-handhelds',
+          name: 'Handhelds',
+          subGroups: [
+            {
+              id: 'g-tacos',
+              name: 'Village Tacos',
+              description: '3 tacos, topped with pickled onion, cilantro, crema, queso fresco.',
+              displayMode: 'variants',
+              basePrice: 12,
+              choices: [
+                { label: 'Tortilla', options: ['Corn', 'Flour'] },
+                { label: 'Meat', options: ['Carne Asada', 'Carnitas'] },
+              ],
+              items: [
+                { id: 'hh2', name: 'Village Tacos', price: 12 },
+              ],
+            },
+          ],
+          items: [
+            { id: 'hh1', name: 'Dodger Dogs', description: '2 dodger dogs with your choice of topping.\nChili Cheese +4.', price: 12 },
           ],
         },
         {
