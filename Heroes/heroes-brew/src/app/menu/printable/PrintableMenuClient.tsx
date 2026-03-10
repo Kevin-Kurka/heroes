@@ -8,9 +8,9 @@ type StyleKey = 'classic' | 'minimal' | 'rustic';
 type SectionKey = 'daily' | 'starters' | 'salads' | 'burgers' | 'heroes' | 'sweet' | 'kids';
 
 const STYLES: { key: StyleKey; label: string; desc: string }[] = [
-  { key: 'classic', label: 'Classic Sports Bar', desc: 'Bold headers, dotted leaders, amber accents' },
-  { key: 'minimal', label: 'Modern Minimal', desc: 'Clean whitespace, thin rules, elegant type' },
-  { key: 'rustic', label: 'Rustic Americana', desc: 'Warm tones, decorative borders, vintage feel' },
+  { key: 'classic', label: 'Classic Sports Bar', desc: 'Bold Oswald headers · dotted leaders · amber accents' },
+  { key: 'minimal', label: 'Modern Minimal', desc: 'Playfair + Inter · airy whitespace · thin rules' },
+  { key: 'rustic', label: 'Americana', desc: 'Red, white & blue · stars & banners · vintage tavern' },
 ];
 
 const SECTIONS: { key: SectionKey; label: string }[] = [
@@ -23,795 +23,611 @@ const SECTIONS: { key: SectionKey; label: string }[] = [
   { key: 'kids', label: 'Kids' },
 ];
 
-/* ─── Daily Specials (synced with HomePageClient) ─── */
 const DAILY_SPECIALS = [
-  { day: 'Monday', name: 'Monday Madness', price: '$4', lines: ['Sliders [Pulled Pork, Beef]', 'Beer [Select Drafts]'] },
-  { day: 'Tuesday', name: 'Taco Tuesday', price: '$3', lines: ['Tacos [Carnitas, Carne Asada]', 'Beer [Modelo, Ultra]'] },
+  { day: 'Monday', name: 'Monday Madness', price: '$4', lines: ['Sliders · Pulled Pork, Beef', 'Beer · Select Drafts'] },
+  { day: 'Tuesday', name: 'Taco Tuesday', price: '$3', lines: ['Tacos · Carnitas, Carne Asada', 'Beer · Modelo, Ultra'] },
   { day: 'Wednesday', name: 'Wings & Well Wednesday', price: '$2', lines: ['Signature Wings each', 'Drinks off'] },
   { day: 'Thursday', name: 'Thirsty Thursday', price: '$5', lines: ['Burgers off', 'Select Drafts each'] },
 ];
 
-/* ─── Style CSS Generator ─── */
-function getStyleCSS(style: StyleKey): string {
-  const base = `
-    nav, header, .bottom-nav, footer { display: none !important; }
-    main { padding-top: 0 !important; padding-bottom: 0 !important; min-height: auto !important; }
-    * { box-sizing: border-box; }
-    @media print {
-      .no-print { display: none !important; }
-      html, body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      .print-section { page-break-before: always; }
-      .print-section:first-of-type { page-break-before: avoid; }
-      @page { size: A4; margin: 15mm 18mm; }
-      .print-footer-fixed { display: block !important; position: fixed; bottom: 0; left: 0; right: 0; text-align: center; font-size: 8px; padding: 4px 0; }
+/* ============================================================
+   STYLE SHEETS
+   ============================================================ */
+function getStyleCSS(s: StyleKey): string {
+  const shared = `
+    nav,header,.bottom-nav,footer{display:none!important}
+    main{padding:0!important;min-height:auto!important}
+    *{box-sizing:border-box;margin:0;padding:0}
+    @media print{
+      .no-print{display:none!important}
+      html,body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+      .page{page-break-before:always;box-shadow:none!important;border-radius:0!important}
+      .page:first-of-type{page-break-before:avoid}
+      @page{size:A4;margin:12mm 14mm}
     }
-    @media screen {
-      .print-footer-fixed { display: none; }
-      .print-section {
-        max-width: 210mm; margin: 0 auto 24px; border-radius: 6px;
-        min-height: 280mm;
-      }
+    @media screen{
+      .page{max-width:210mm;margin:0 auto 24px;border-radius:4px;min-height:297mm}
     }
+    .cols-2{columns:2;column-gap:24px}
+    .cols-2>*{break-inside:avoid}
+    .vgroup{margin-bottom:14px}
+    .vgroup-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:2px}
+    .vgroup-name{font-weight:700;font-size:15px}
+    .vgroup-price{font-weight:700;font-size:15px}
+    .vgroup-desc{font-size:10.5px;line-height:1.45;margin-bottom:4px}
+    .pills{display:flex;flex-wrap:wrap;gap:3px;margin:3px 0}
+    .pill{font-size:9.5px;border-radius:3px;padding:1px 6px}
+    .choice-row{font-size:10px;margin:2px 0}
+    .choice-lbl{font-weight:700;text-transform:uppercase;letter-spacing:.8px;font-size:9px}
+    .addon-wrap{margin-top:6px;padding:6px 10px;border-radius:5px}
+    .addon-lbl{font-weight:700;text-transform:uppercase;letter-spacing:1.5px;font-size:8.5px;margin-bottom:3px}
+    .addon-itm{display:inline-block;font-size:10px;margin-right:10px}
+    .item-row{display:flex;align-items:baseline;margin-bottom:5px}
+    .item-nm{font-weight:700;font-size:12.5px;white-space:nowrap}
+    .item-sub{font-size:10.5px;font-style:italic;margin-left:4px}
+    .item-fill{flex:1;min-width:8px;margin:0 4px}
+    .item-pr{font-weight:700;font-size:12.5px;white-space:nowrap}
+    .item-desc{font-size:10px;line-height:1.4;margin:-2px 0 6px}
+    .pg-foot{text-align:center;font-size:7.5px;position:absolute;bottom:10mm;left:14mm;right:14mm}
   `;
 
-  if (style === 'classic') return base + `
+  if (s === 'classic') return shared + `
     @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Open+Sans:wght@400;600;700&display=swap');
-    html, body { background: #e5e7eb !important; font-family: 'Open Sans', sans-serif; }
-    .print-section { background: white; color: #1a1a1a; padding: 18mm 20mm; box-shadow: 0 2px 8px rgba(0,0,0,.15); }
-    .menu-header { font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 3px; font-size: 14px; text-align: center; color: #333; border-bottom: 2px solid #333; padding-bottom: 6px; margin-bottom: 8px; }
-    .menu-header-logo { font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 28px; text-align: center; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 2px; }
-    .section-title { font-family: 'Oswald', sans-serif; font-size: 26px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; border-bottom: 3px solid #1a1a1a; padding-bottom: 6px; margin-bottom: 16px; }
-    .item-row { display: flex; align-items: baseline; gap: 4px; margin-bottom: 10px; }
-    .item-name { font-weight: 700; font-size: 14px; white-space: nowrap; }
-    .item-subtitle { font-size: 12px; color: #666; font-style: italic; }
-    .item-dots { flex: 1; border-bottom: 2px dotted #ccc; margin: 0 4px; min-width: 20px; position: relative; top: -3px; }
-    .item-price { font-weight: 700; font-size: 14px; white-space: nowrap; }
-    .item-desc { font-size: 11px; color: #555; margin: -6px 0 8px 0; line-height: 1.4; }
-    .sub-title { font-family: 'Oswald', sans-serif; font-size: 17px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #ddd; padding-bottom: 3px; margin: 14px 0 8px; }
-    .addon-box { background: #fef3c7; border: 1px solid #fbbf24; border-radius: 6px; padding: 8px 12px; margin-top: 12px; }
-    .addon-label { font-family: 'Oswald', sans-serif; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; color: #92400e; margin-bottom: 4px; }
-    .addon-item { display: inline-block; font-size: 11px; margin-right: 12px; color: #333; }
-    .choice-line { font-size: 11px; color: #444; margin: 2px 0; }
-    .choice-label { font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 1px; color: #666; }
-    .daily-card { border: 2px solid #1a1a1a; border-radius: 8px; padding: 14px; }
-    .daily-name { font-family: 'Oswald', sans-serif; font-size: 20px; font-weight: 700; text-transform: uppercase; }
-    .daily-price { font-family: 'Oswald', sans-serif; font-size: 32px; font-weight: 700; }
-    .daily-day { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: #666; }
-    .section-footer { text-align: center; font-size: 9px; color: #999; margin-top: auto; padding-top: 12px; }
-    @media print {
-      html, body { background: white !important; color: #1a1a1a !important; font-family: 'Open Sans', sans-serif; }
-      .print-section { padding: 0; box-shadow: none; }
-      .addon-box { background: #fef3c7 !important; border-color: #fbbf24 !important; }
-      .print-footer-fixed { color: #999; font-family: 'Open Sans', sans-serif; }
-    }
+    html,body{background:#e5e7eb!important;font-family:'Open Sans',sans-serif;color:#1a1a1a}
+    .page{background:#fff;padding:14mm 16mm;box-shadow:0 2px 8px rgba(0,0,0,.12);position:relative}
+    .pg-logo{font-family:'Oswald',sans-serif;font-weight:700;font-size:22px;text-transform:uppercase;letter-spacing:3px;text-align:center}
+    .pg-sub{font-size:9px;letter-spacing:4px;text-transform:uppercase;text-align:center;color:#666;border-bottom:2px solid #222;padding-bottom:5px;margin-bottom:12px}
+    .sec-title{font-family:'Oswald',sans-serif;font-size:20px;font-weight:700;text-transform:uppercase;letter-spacing:2px;border-bottom:3px solid #1a1a1a;padding-bottom:4px;margin-bottom:10px}
+    .vgroup-name{font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:1px}
+    .vgroup-desc{color:#555}
+    .pill{background:#f3f4f6;border:1px solid #ddd}
+    .item-fill{border-bottom:2px dotted #ccc;position:relative;top:-3px}
+    .item-sub{color:#666}
+    .item-desc{color:#555}
+    .addon-wrap{background:#fef3c7;border:1px solid #fbbf24}
+    .addon-lbl{color:#92400e}
+    .choice-lbl{color:#666}
+    .pg-foot{color:#999}
+    .daily-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .daily-card{border:2px solid #222;border-radius:6px;padding:12px}
+    .daily-nm{font-family:'Oswald',sans-serif;font-size:17px;font-weight:700;text-transform:uppercase}
+    .daily-pr{font-family:'Oswald',sans-serif;font-size:28px;font-weight:700}
+    .daily-day{font-size:9px;text-transform:uppercase;letter-spacing:3px;color:#666}
+    .sub-hd{font-family:'Oswald',sans-serif;font-size:14px;font-weight:600;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #ddd;padding-bottom:2px;margin:10px 0 6px}
+    @media print{html,body{background:#fff!important}.page{padding:0}.addon-wrap{background:#fef3c7!important;border-color:#fbbf24!important}}
   `;
 
-  if (style === 'minimal') return base + `
+  if (s === 'minimal') return shared + `
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
-    html, body { background: #f9fafb !important; font-family: 'Inter', sans-serif; }
-    .print-section { background: white; color: #111; padding: 22mm 24mm; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
-    .menu-header { font-family: 'Inter', sans-serif; font-weight: 300; font-size: 12px; text-align: center; letter-spacing: 6px; text-transform: uppercase; color: #888; border-bottom: 1px solid #e5e7eb; padding-bottom: 8px; margin-bottom: 8px; }
-    .menu-header-logo { font-family: 'Playfair Display', serif; font-weight: 600; font-size: 24px; text-align: center; margin-bottom: 2px; color: #111; }
-    .section-title { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 600; letter-spacing: 6px; text-transform: uppercase; color: #111; margin-bottom: 20px; padding-bottom: 8px; border-bottom: 1px solid #d1d5db; }
-    .item-row { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 6px; padding-bottom: 6px; }
-    .item-name { font-weight: 600; font-size: 13px; }
-    .item-subtitle { font-size: 11px; color: #888; font-weight: 300; margin-left: 6px; }
-    .item-dots { display: none; }
-    .item-price { font-weight: 500; font-size: 13px; color: #444; white-space: nowrap; }
-    .item-desc { font-size: 11px; color: #777; margin: -2px 0 10px 0; line-height: 1.5; font-weight: 300; }
-    .item-divider { border-bottom: 1px solid #f3f4f6; margin-bottom: 2px; }
-    .sub-title { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 600; color: #333; margin: 18px 0 8px; padding-bottom: 4px; border-bottom: 1px solid #e5e7eb; }
-    .addon-box { border-top: 1px solid #e5e7eb; padding-top: 10px; margin-top: 16px; }
-    .addon-label { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 3px; color: #aaa; margin-bottom: 6px; }
-    .addon-item { display: inline-block; font-size: 11px; margin-right: 16px; color: #555; font-weight: 300; }
-    .choice-line { font-size: 11px; color: #666; margin: 2px 0; font-weight: 300; }
-    .choice-label { font-weight: 500; text-transform: uppercase; font-size: 10px; letter-spacing: 2px; color: #999; }
-    .daily-card { border: 1px solid #e5e7eb; border-radius: 4px; padding: 16px; }
-    .daily-name { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 600; }
-    .daily-price { font-size: 28px; font-weight: 300; color: #333; }
-    .daily-day { font-size: 10px; text-transform: uppercase; letter-spacing: 4px; color: #aaa; font-weight: 300; }
-    .section-footer { text-align: center; font-size: 9px; color: #bbb; margin-top: auto; padding-top: 12px; font-weight: 300; }
-    @media print {
-      html, body { background: white !important; color: #111 !important; font-family: 'Inter', sans-serif; }
-      .print-section { padding: 0; box-shadow: none; }
-      .print-footer-fixed { color: #bbb; font-family: 'Inter', sans-serif; font-weight: 300; }
-    }
+    html,body{background:#f9fafb!important;font-family:'Inter',sans-serif;color:#111}
+    .page{background:#fff;padding:18mm 20mm;box-shadow:0 1px 4px rgba(0,0,0,.06);position:relative}
+    .pg-logo{font-family:'Playfair Display',serif;font-weight:600;font-size:20px;text-align:center}
+    .pg-sub{font-family:'Inter',sans-serif;font-weight:300;font-size:9px;letter-spacing:5px;text-transform:uppercase;text-align:center;color:#999;border-bottom:1px solid #e5e7eb;padding-bottom:6px;margin-bottom:14px}
+    .sec-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:600;letter-spacing:4px;text-transform:uppercase;border-bottom:1px solid #d1d5db;padding-bottom:6px;margin-bottom:12px}
+    .vgroup-name{font-family:'Playfair Display',serif}
+    .vgroup-desc{color:#777;font-weight:300}
+    .pill{background:#f9fafb;border:1px solid #e5e7eb}
+    .item-fill{display:none}
+    .item-nm{font-weight:600;font-size:12px}
+    .item-sub{color:#999;font-weight:300;font-style:normal}
+    .item-desc{color:#888;font-weight:300}
+    .item-pr{font-weight:500;color:#444;font-size:12px}
+    .addon-wrap{border-top:1px solid #e5e7eb;padding-top:8px;background:none;border-radius:0}
+    .addon-lbl{color:#bbb;letter-spacing:3px}
+    .addon-itm{color:#666;font-weight:300}
+    .choice-lbl{color:#bbb;letter-spacing:2px}
+    .choice-row{color:#666;font-weight:300}
+    .pg-foot{color:#ccc;font-weight:300}
+    .daily-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .daily-card{border:1px solid #e5e7eb;border-radius:4px;padding:14px}
+    .daily-nm{font-family:'Playfair Display',serif;font-size:16px;font-weight:600}
+    .daily-pr{font-size:24px;font-weight:300;color:#444}
+    .daily-day{font-size:9px;text-transform:uppercase;letter-spacing:4px;color:#bbb;font-weight:300}
+    .sub-hd{font-family:'Playfair Display',serif;font-size:13px;font-weight:600;border-bottom:1px solid #e5e7eb;padding-bottom:2px;margin:10px 0 6px}
+    @media print{html,body{background:#fff!important}.page{padding:0}}
   `;
 
-  /* rustic */
-  return base + `
-    @import url('https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Lora:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&display=swap');
-    html, body { background: #d6cfc4 !important; font-family: 'Source Sans 3', sans-serif; }
-    .print-section { background: #faf6f0; color: #2c1810; padding: 18mm 20mm; box-shadow: 0 2px 8px rgba(0,0,0,.18); border: 3px double #8b7355; }
-    .menu-header { font-family: 'Lora', serif; font-size: 12px; text-align: center; letter-spacing: 3px; text-transform: uppercase; color: #8b7355; border-bottom: 2px solid #8b7355; padding-bottom: 6px; margin-bottom: 8px; }
-    .menu-header-logo { font-family: 'Alfa Slab One', cursive; font-size: 26px; text-align: center; color: #2c1810; margin-bottom: 2px; }
-    .menu-header-stars { text-align: center; font-size: 16px; color: #8b7355; letter-spacing: 8px; margin-bottom: 4px; }
-    .section-title { font-family: 'Alfa Slab One', cursive; font-size: 26px; color: #2c1810; margin-bottom: 4px; }
-    .section-title-rule { height: 3px; background: linear-gradient(90deg, #8b7355, #c9a96e, #8b7355); margin-bottom: 16px; border-radius: 2px; }
-    .item-row { display: flex; align-items: baseline; gap: 4px; margin-bottom: 8px; }
-    .item-name { font-family: 'Lora', serif; font-weight: 700; font-size: 14px; white-space: nowrap; color: #2c1810; }
-    .item-subtitle { font-family: 'Lora', serif; font-size: 12px; color: #8b7355; font-style: italic; }
-    .item-dots { flex: 1; border-bottom: 1px dashed #c9a96e; margin: 0 4px; min-width: 20px; position: relative; top: -3px; }
-    .item-price { font-weight: 700; font-size: 14px; white-space: nowrap; color: #2c1810; }
-    .item-desc { font-size: 11px; color: #6b5a4e; margin: -4px 0 8px 0; line-height: 1.4; }
-    .sub-title { font-family: 'Alfa Slab One', cursive; font-size: 16px; color: #2c1810; margin: 14px 0 4px; }
-    .sub-title-rule { height: 2px; background: #c9a96e; margin-bottom: 8px; }
-    .addon-box { background: #f0e8d8; border: 2px solid #c9a96e; border-radius: 8px; padding: 10px 14px; margin-top: 14px; }
-    .addon-label { font-family: 'Lora', serif; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: #8b7355; margin-bottom: 4px; }
-    .addon-item { display: inline-block; font-size: 11px; margin-right: 12px; color: #4a3728; }
-    .addon-star { color: #c9a96e; margin-right: 2px; }
-    .choice-line { font-size: 11px; color: #5a4a3e; margin: 2px 0; }
-    .choice-label { font-family: 'Lora', serif; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 1px; color: #8b7355; }
-    .daily-card { border: 2px solid #8b7355; border-radius: 8px; padding: 14px; background: #f5efe5; }
-    .daily-name { font-family: 'Alfa Slab One', cursive; font-size: 18px; color: #2c1810; }
-    .daily-price { font-family: 'Alfa Slab One', cursive; font-size: 30px; color: #8b7355; }
-    .daily-day { font-family: 'Lora', serif; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: #8b7355; font-style: italic; }
-    .section-footer { text-align: center; font-size: 9px; color: #a89880; margin-top: auto; padding-top: 12px; font-family: 'Lora', serif; font-style: italic; }
-    .ornament { text-align: center; color: #c9a96e; font-size: 14px; letter-spacing: 8px; margin: 8px 0; }
-    @media print {
-      html, body { background: white !important; color: #2c1810 !important; font-family: 'Source Sans 3', sans-serif; }
-      .print-section { padding: 0; box-shadow: none; background: #faf6f0 !important; border-color: #8b7355 !important; }
-      .addon-box { background: #f0e8d8 !important; border-color: #c9a96e !important; }
-      .daily-card { background: #f5efe5 !important; border-color: #8b7355 !important; }
-      .section-title-rule { background: linear-gradient(90deg, #8b7355, #c9a96e, #8b7355) !important; }
-      .print-footer-fixed { color: #a89880; font-family: 'Lora', serif; font-style: italic; }
-    }
+  /* ── Americana: red white blue ── */
+  return shared + `
+    @import url('https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Lora:wght@400;600;700&family=Source+Sans+3:wght@400;600;700&display=swap');
+    html,body{background:#b0bec5!important;font-family:'Source Sans 3',sans-serif;color:#1b2a4a}
+    .page{background:#fff;padding:14mm 16mm;box-shadow:0 2px 10px rgba(0,0,0,.2);border:4px solid #1b2a4a;position:relative}
+    .page::before{content:'';position:absolute;top:4px;left:4px;right:4px;bottom:4px;border:2px solid #bf2a2a;pointer-events:none}
+    .pg-logo{font-family:'Alfa Slab One',cursive;font-size:22px;text-align:center;color:#1b2a4a}
+    .pg-stars{text-align:center;font-size:11px;letter-spacing:6px;color:#bf2a2a;margin-bottom:2px}
+    .pg-sub{font-family:'Lora',serif;font-size:9px;letter-spacing:3px;text-transform:uppercase;text-align:center;color:#1b2a4a;border-bottom:3px double #1b2a4a;padding-bottom:5px;margin-bottom:12px}
+    .sec-title{font-family:'Alfa Slab One',cursive;font-size:20px;color:#1b2a4a;margin-bottom:2px}
+    .sec-rule{height:3px;background:linear-gradient(90deg,#bf2a2a,#1b2a4a,#bf2a2a);margin-bottom:10px;border-radius:1px}
+    .vgroup-name{font-family:'Lora',serif;color:#1b2a4a}
+    .vgroup-desc{color:#4a5568}
+    .pill{background:#eef2f7;border:1px solid #c5cfe0;color:#1b2a4a}
+    .item-fill{border-bottom:1px dashed #c5cfe0;position:relative;top:-3px}
+    .item-nm{font-family:'Lora',serif;color:#1b2a4a}
+    .item-sub{color:#bf2a2a;font-family:'Lora',serif}
+    .item-desc{color:#4a5568}
+    .addon-wrap{background:#eef2f7;border:2px solid #1b2a4a;border-radius:6px}
+    .addon-lbl{color:#bf2a2a;font-family:'Lora',serif}
+    .addon-itm{color:#1b2a4a}
+    .choice-lbl{color:#bf2a2a}
+    .pg-foot{color:#8899aa;font-family:'Lora',serif;font-style:italic}
+    .daily-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .daily-card{border:2px solid #1b2a4a;border-radius:6px;padding:12px;background:#fafbfd}
+    .daily-nm{font-family:'Alfa Slab One',cursive;font-size:16px;color:#1b2a4a}
+    .daily-pr{font-family:'Alfa Slab One',cursive;font-size:26px;color:#bf2a2a}
+    .daily-day{font-family:'Lora',serif;font-size:9px;text-transform:uppercase;letter-spacing:2px;color:#6679a0;font-style:italic}
+    .sub-hd{font-family:'Alfa Slab One',cursive;font-size:13px;color:#1b2a4a;margin:8px 0 4px}
+    .sub-rule{height:2px;background:#bf2a2a;margin-bottom:6px;width:60px}
+    .orn{text-align:center;color:#bf2a2a;font-size:10px;letter-spacing:6px;margin:6px 0}
+    .star-bullet::before{content:'★ ';color:#bf2a2a;font-size:8px}
+    @media print{html,body{background:#fff!important}.page{padding:0;box-shadow:none}.page::before{top:4px;left:4px;right:4px;bottom:4px}.addon-wrap{background:#eef2f7!important}.daily-card{background:#fafbfd!important}}
   `;
 }
 
-/* ─── Helpers ─── */
-function fmtPrice(p: number) {
-  return `$${p}`;
-}
+/* ============================================================
+   SHARED RENDERERS
+   ============================================================ */
+function fmtPrice(p: number) { return `$${p}`; }
 
-function PageHeader({ style }: { style: StyleKey }) {
-  if (style === 'rustic') {
-    return (
-      <div style={{ marginBottom: 16 }}>
-        <div className="menu-header-stars">★ ★ ★ ★ ★</div>
-        <div className="menu-header-logo">American Heroes &amp; Brew</div>
-        <div className="menu-header">Carlsbad, California</div>
-      </div>
-    );
-  }
+function Header({ style: s }: { style: StyleKey }) {
+  if (s === 'rustic') return (
+    <div style={{ marginBottom: 10 }}>
+      <div className="pg-stars">★ ★ ★ ★ ★</div>
+      <div className="pg-logo">American Heroes &amp; Brew</div>
+      <div className="pg-sub">Carlsbad, California · est. 2024</div>
+    </div>
+  );
   return (
-    <div style={{ marginBottom: 16 }}>
-      <div className="menu-header-logo">American Heroes &amp; Brew</div>
-      <div className="menu-header">300 Carlsbad Village Dr, Suite 101 · (760) 994-0187</div>
+    <div style={{ marginBottom: 10 }}>
+      <div className="pg-logo">American Heroes &amp; Brew</div>
+      <div className="pg-sub">300 Carlsbad Village Dr, Suite 101 · Carlsbad CA · (760) 994-0187</div>
     </div>
   );
 }
 
-function SectionHeader({ title, style }: { title: string; style: StyleKey }) {
-  if (style === 'rustic') {
-    return (
-      <>
-        <h1 className="section-title">{title}</h1>
-        <div className="section-title-rule" />
-      </>
-    );
-  }
-  return <h1 className="section-title">{title}</h1>;
+function SecTitle({ title, style: s }: { title: string; style: StyleKey }) {
+  return <>
+    <div className="sec-title">{title}</div>
+    {s === 'rustic' && <div className="sec-rule" />}
+  </>;
 }
 
-function SubHeader({ title, price, style }: { title: string; price?: number; style: StyleKey }) {
-  if (style === 'rustic') {
-    return (
-      <>
-        <div className="sub-title">
-          {title}{price ? <span style={{ marginLeft: 8, fontFamily: "'Source Sans 3', sans-serif", fontSize: 14, fontWeight: 700 }}>{fmtPrice(price)}</span> : null}
+function SubHd({ title, price, style: s }: { title: string; price?: number; style: StyleKey }) {
+  return <>
+    <div className="sub-hd">
+      {title}{price != null && <span style={{ marginLeft: 8, fontWeight: 700 }}>{fmtPrice(price)}</span>}
+    </div>
+    {s === 'rustic' && <div className="sub-rule" />}
+  </>;
+}
+
+function Footer() {
+  return <div className="pg-foot">American Heroes &amp; Brew · 300 Carlsbad Village Dr, Suite 101, Carlsbad CA 92008 · (760) 994-0187</div>;
+}
+
+/** Render a variant group the way the site does:
+ *  Name $price → description → variant pills (no prices if same) → choices → addons */
+function VGroup({ g, style: s }: { g: MenuGroup; style: StyleKey }) {
+  const allSame = g.items.every(i => i.price === g.basePrice);
+  return (
+    <div className="vgroup">
+      <div className="vgroup-head">
+        <span className="vgroup-name">{g.name}</span>
+        {g.basePrice != null && <span className="vgroup-price">{fmtPrice(g.basePrice)}</span>}
+      </div>
+      {g.description && <div className="vgroup-desc">{g.description}</div>}
+      {g.items.length > 1 && (
+        <div className="pills">
+          {g.items.map(i => (
+            <span key={i.id} className="pill">
+              {i.name}{i.subtitle ? ` · ${i.subtitle}` : ''}
+              {!allSame && i.price !== g.basePrice ? ` ${fmtPrice(i.price)}` : ''}
+            </span>
+          ))}
         </div>
-        <div className="sub-title-rule" />
-      </>
-    );
-  }
-  return (
-    <div className="sub-title">
-      {title}{price ? <span style={{ marginLeft: 8, fontSize: 14, fontWeight: 600 }}>{fmtPrice(price)}</span> : null}
+      )}
+      {g.choices?.map(c => (
+        <div key={c.label} className="choice-row"><span className="choice-lbl">{c.label}: </span>{c.options.join(' · ')}</div>
+      ))}
+      {g.addOns && g.addOns.length > 0 && (
+        <div style={{ marginTop: 4 }}>
+          {g.addOns.map(a => <span key={a.name} className="addon-itm">{s === 'rustic' && <span style={{ color: '#bf2a2a', marginRight: 2 }}>★</span>}{a.name} <strong>{a.price}</strong></span>)}
+        </div>
+      )}
     </div>
   );
 }
 
-function ItemRow({ name, subtitle, description, price, style }: { name: string; subtitle?: string; description?: string; price: number; style: StyleKey }) {
-  return (
-    <>
-      <div className="item-row">
-        <span className="item-name">{name}</span>
-        {subtitle && <span className="item-subtitle">{style === 'rustic' ? `— ${subtitle}` : `(${subtitle})`}</span>}
-        {style !== 'minimal' && <span className="item-dots" />}
-        {style === 'minimal' && <span style={{ flex: 1 }} />}
-        <span className="item-price">{fmtPrice(price)}</span>
-      </div>
-      {description && <div className="item-desc">{description}</div>}
-      {style === 'minimal' && <div className="item-divider" />}
-    </>
-  );
+/** Item row with optional dots and description */
+function ItemLine({ name, sub, desc, price, style: s }: { name: string; sub?: string; desc?: string; price: number; style: StyleKey }) {
+  return <>
+    <div className="item-row">
+      <span className="item-nm">{name}</span>
+      {sub && <span className="item-sub">{s === 'rustic' ? `— ${sub}` : `(${sub})`}</span>}
+      <span className="item-fill" />
+      {s === 'minimal' && <span style={{ flex: 1 }} />}
+      <span className="item-pr">{fmtPrice(price)}</span>
+    </div>
+    {desc && <div className="item-desc">{desc}</div>}
+  </>;
 }
 
-function AddOnBox({ addOns, label, style }: { addOns?: { name: string; price: string }[]; label?: string; style: StyleKey }) {
+function AddOnBox({ addOns, label, style: s }: { addOns?: { name: string; price: string }[]; label?: string; style: StyleKey }) {
   if (!addOns?.length) return null;
   return (
-    <div className="addon-box">
-      <div className="addon-label">{label || 'Sides'}</div>
-      <div>
-        {addOns.map((a) => (
-          <span key={a.name} className="addon-item">
-            {style === 'rustic' && <span className="addon-star">★</span>}
-            {a.name} <strong>{a.price}</strong>
-          </span>
-        ))}
-      </div>
+    <div className="addon-wrap">
+      <div className="addon-lbl">{label || 'Sides'}</div>
+      {addOns.map(a => <span key={a.name} className="addon-itm">{s === 'rustic' && <span style={{ color: '#bf2a2a', marginRight: 2 }}>★</span>}{a.name} <strong>{a.price}</strong></span>)}
     </div>
   );
 }
 
-function ChoiceLines({ choices }: { choices?: { label: string; options: string[] }[] }) {
-  if (!choices?.length) return null;
-  return (
-    <div style={{ marginTop: 4 }}>
-      {choices.map((c) => (
-        <div key={c.label} className="choice-line">
-          <span className="choice-label">{c.label}:</span>{' '}{c.options.join(' · ')}
-        </div>
-      ))}
-    </div>
-  );
-}
+/* ============================================================
+   SECTION RENDERERS — 2-column flow, mirroring site patterns
+   ============================================================ */
 
-function VariantPills({ items, basePrice }: { items: { id: string; name: string; price: number }[]; basePrice?: number }) {
-  if (items.length <= 1) return null;
+function DailySection({ style: s }: { style: StyleKey }) {
   return (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 2, marginBottom: 4 }}>
-      {items.map((it) => (
-        <span key={it.id} style={{ fontSize: 10, background: 'rgba(0,0,0,.05)', borderRadius: 3, padding: '1px 6px' }}>
-          {it.name}
-          {it.price !== basePrice && ` ${fmtPrice(it.price)}`}
-        </span>
-      ))}
-    </div>
-  );
-}
-
-function PageFooter() {
-  return (
-    <div className="section-footer">
-      American Heroes &amp; Brew · 300 Carlsbad Village Dr, Suite 101, Carlsbad CA 92008 · (760) 994-0187
-    </div>
-  );
-}
-
-/* ─── Section Renderers ─── */
-
-function DailyLineupSection({ style }: { style: StyleKey }) {
-  return (
-    <div className="print-section" id="section-daily">
-      <PageHeader style={style} />
-      <SectionHeader title="Daily Lineup" style={style} />
-      {style === 'rustic' && <div className="ornament">◆ ◆ ◆</div>}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginTop: 16 }}>
-        {DAILY_SPECIALS.map((s) => (
-          <div key={s.day} className="daily-card">
+    <div className="page">
+      <Header style={s} />
+      <SecTitle title="Daily Lineup" style={s} />
+      {s === 'rustic' && <div className="orn">★ ★ ★</div>}
+      <div className="daily-grid">
+        {DAILY_SPECIALS.map(d => (
+          <div key={d.day} className="daily-card">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-              <div>
-                <div className="daily-name">{s.name}</div>
-                <div className="daily-day">{s.day}</div>
-              </div>
-              <div className="daily-price">{s.price}</div>
+              <div><div className="daily-nm">{d.name}</div><div className="daily-day">{d.day}</div></div>
+              <div className="daily-pr">{d.price}</div>
             </div>
-            <div style={{ marginTop: 8 }}>
-              {s.lines.map((l) => (
-                <div key={l} style={{ fontSize: 13 }}>{l}</div>
-              ))}
-            </div>
+            <div style={{ marginTop: 6 }}>{d.lines.map(l => <div key={l} style={{ fontSize: 12 }}>{l}</div>)}</div>
           </div>
         ))}
       </div>
-      <PageFooter />
+      <Footer />
     </div>
   );
 }
 
-function StartersSection({ group, style }: { group: MenuGroup; style: StyleKey }) {
+function StartersSection({ group, style: s }: { group: MenuGroup; style: StyleKey }) {
   return (
-    <div className="print-section" id="section-starters">
-      <PageHeader style={style} />
-      <SectionHeader title="Starters" style={style} />
-      {group.subGroups?.map((sub) => (
-        <div key={sub.id} style={{ marginBottom: 14 }}>
-          <SubHeader title={sub.name} price={sub.basePrice} style={style} />
-          {sub.description && <div className="item-desc">{sub.description}</div>}
-          <VariantPills items={sub.items} basePrice={sub.basePrice} />
-          <ChoiceLines choices={sub.choices} />
-          <AddOnBox addOns={sub.addOns} label={sub.addOnLabel} style={style} />
-        </div>
-      ))}
-      <PageFooter />
+    <div className="page">
+      <Header style={s} />
+      <SecTitle title="Starters" style={s} />
+      <div className="cols-2">
+        {group.subGroups?.map(sub => <VGroup key={sub.id} g={sub} style={s} />)}
+      </div>
+      <Footer />
     </div>
   );
 }
 
-function SaladsSection({ group, style }: { group: MenuGroup; style: StyleKey }) {
+function SaladsSection({ group, style: s }: { group: MenuGroup; style: StyleKey }) {
   return (
-    <div className="print-section" id="section-salads">
-      <PageHeader style={style} />
-      <SectionHeader title="Salads" style={style} />
-      {group.items.map((it) => (
-        <ItemRow key={it.id} name={it.name} description={it.description} price={it.price} style={style} />
-      ))}
-      <AddOnBox addOns={group.addOns} label={group.addOnLabel} style={style} />
-      <PageFooter />
+    <div className="page">
+      <Header style={s} />
+      <SecTitle title="Salads" style={s} />
+      {group.items.map(it => <ItemLine key={it.id} name={it.name} desc={it.description} price={it.price} style={s} />)}
+      <AddOnBox addOns={group.addOns} label={group.addOnLabel} style={s} />
+      <Footer />
     </div>
   );
 }
 
-function BurgersSection({ group, style }: { group: MenuGroup; style: StyleKey }) {
+function BurgersSection({ group, style: s }: { group: MenuGroup; style: StyleKey }) {
+  /* All burgers are same price — show once at top, then 2-col list */
   return (
-    <div className="print-section" id="section-burgers">
-      <PageHeader style={style} />
-      <SectionHeader title="Burgers" style={style} />
-      {group.description && <div className="item-desc" style={{ fontSize: 12, marginBottom: 12 }}>{group.description}</div>}
-      {group.items.map((it) => (
-        <ItemRow key={it.id} name={it.name} subtitle={it.subtitle} description={it.description} price={it.price} style={style} />
-      ))}
-      <AddOnBox addOns={group.addOns} label={group.addOnLabel} style={style} />
-      <PageFooter />
-    </div>
-  );
-}
-
-function HeroesAndHandheldsSection({ heroesGroup, handheldsGroup, style }: { heroesGroup: MenuGroup; handheldsGroup: MenuGroup; style: StyleKey }) {
-  return (
-    <div className="print-section" id="section-heroes">
-      <PageHeader style={style} />
-      <SectionHeader title="Heroes & Handhelds" style={style} />
-
-      {heroesGroup.subGroups?.map((sub) => (
-        <div key={sub.id} style={{ marginBottom: 12 }}>
-          <SubHeader title={sub.name} price={sub.basePrice} style={style} />
-          {sub.description && <div className="item-desc">{sub.description}</div>}
-          <ChoiceLines choices={sub.choices} />
-        </div>
-      ))}
-
-      {heroesGroup.items.map((it) => (
-        <ItemRow key={it.id} name={it.name} subtitle={it.subtitle} description={it.description} price={it.price} style={style} />
-      ))}
-      <AddOnBox addOns={heroesGroup.addOns} label={heroesGroup.addOnLabel} style={style} />
-
-      {style === 'rustic' ? (
-        <div className="ornament" style={{ margin: '16px 0' }}>— ★ —</div>
-      ) : (
-        <div style={{ borderTop: '2px solid #ccc', marginTop: 18, paddingTop: 14 }} />
-      )}
-
-      <SubHeader title="Handhelds" style={style} />
-      {handheldsGroup.subGroups?.map((sub) => (
-        <div key={sub.id} style={{ marginBottom: 12 }}>
-          <SubHeader title={sub.name} price={sub.basePrice} style={style} />
-          {sub.description && <div className="item-desc">{sub.description}</div>}
-          <ChoiceLines choices={sub.choices} />
-          <AddOnBox addOns={sub.addOns} label={sub.addOnLabel} style={style} />
-        </div>
-      ))}
-      <AddOnBox addOns={handheldsGroup.addOns} label={handheldsGroup.addOnLabel} style={style} />
-      <PageFooter />
-    </div>
-  );
-}
-
-function SweetStuffSection({ group, style }: { group: MenuGroup; style: StyleKey }) {
-  return (
-    <div className="print-section" id="section-sweet">
-      <PageHeader style={style} />
-      <SectionHeader title="Sweet Stuff" style={style} />
-      {group.items.map((it) => (
-        <ItemRow key={it.id} name={it.name} description={it.description} price={it.price} style={style} />
-      ))}
-      <PageFooter />
-    </div>
-  );
-}
-
-/* ─── Kids Activity Pages ─── */
-const KIDS_ACTIVITIES = [
-  {
-    id: 'coloring-hero',
-    title: 'Color the Hero!',
-    type: 'coloring' as const,
-    svg: `<svg viewBox="0 0 400 500" xmlns="http://www.w3.org/2000/svg">
-      <rect x="10" y="10" width="380" height="480" rx="20" fill="none" stroke="#333" stroke-width="2"/>
-      <text x="200" y="50" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="bold">Color the Hero!</text>
-      <!-- Shield -->
-      <path d="M200 100 L260 130 L260 220 Q260 280 200 320 Q140 280 140 220 L140 130 Z" fill="none" stroke="#333" stroke-width="3"/>
-      <path d="M200 140 L240 160 L240 220 Q240 260 200 290 Q160 260 160 220 L160 160 Z" fill="none" stroke="#333" stroke-width="1.5"/>
-      <text x="200" y="230" text-anchor="middle" font-family="serif" font-size="48" font-weight="bold" fill="none" stroke="#333" stroke-width="2">H</text>
-      <!-- Stars around shield -->
-      <polygon points="100,120 105,135 120,135 108,144 113,158 100,150 87,158 92,144 80,135 95,135" fill="none" stroke="#333" stroke-width="1.5"/>
-      <polygon points="300,120 305,135 320,135 308,144 313,158 300,150 287,158 292,144 280,135 295,135" fill="none" stroke="#333" stroke-width="1.5"/>
-      <polygon points="200,80 204,92 217,92 207,100 210,112 200,105 190,112 193,100 183,92 196,92" fill="none" stroke="#333" stroke-width="1.5"/>
-      <!-- Banner -->
-      <path d="M120 340 Q200 320 280 340 L270 370 Q200 350 130 370 Z" fill="none" stroke="#333" stroke-width="2"/>
-      <text x="200" y="362" text-anchor="middle" font-family="serif" font-size="14" fill="none" stroke="#333" stroke-width="1">HEROES &amp; BREW</text>
-      <!-- Hot dog -->
-      <ellipse cx="200" cy="420" rx="80" ry="20" fill="none" stroke="#333" stroke-width="2"/>
-      <path d="M130 410 Q200 390 270 410" fill="none" stroke="#333" stroke-width="2"/>
-      <path d="M140 420 Q170 412 200 415 Q230 412 260 420" fill="none" stroke="#333" stroke-width="1" stroke-dasharray="4"/>
-      <text x="200" y="470" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#666">Color me in!</text>
-    </svg>`,
-  },
-  {
-    id: 'maze',
-    title: 'Help the Hero Find the Burger!',
-    type: 'maze' as const,
-    svg: `<svg viewBox="0 0 400 500" xmlns="http://www.w3.org/2000/svg">
-      <rect x="10" y="10" width="380" height="480" rx="20" fill="none" stroke="#333" stroke-width="2"/>
-      <text x="200" y="50" text-anchor="middle" font-family="sans-serif" font-size="18" font-weight="bold">Help the Hero Find the Burger!</text>
-      <!-- Start indicator -->
-      <text x="45" y="90" text-anchor="middle" font-size="24">🦸</text>
-      <text x="45" y="108" text-anchor="middle" font-size="10" fill="#666">START</text>
-      <!-- Maze walls -->
-      <rect x="30" y="115" width="340" height="310" fill="none" stroke="#333" stroke-width="3"/>
-      <!-- Horizontal walls -->
-      <line x1="30" y1="155" x2="120" y2="155" stroke="#333" stroke-width="2.5"/>
-      <line x1="160" y1="155" x2="290" y2="155" stroke="#333" stroke-width="2.5"/>
-      <line x1="70" y1="195" x2="200" y2="195" stroke="#333" stroke-width="2.5"/>
-      <line x1="240" y1="195" x2="370" y2="195" stroke="#333" stroke-width="2.5"/>
-      <line x1="30" y1="235" x2="100" y2="235" stroke="#333" stroke-width="2.5"/>
-      <line x1="140" y1="235" x2="240" y2="235" stroke="#333" stroke-width="2.5"/>
-      <line x1="280" y1="235" x2="330" y2="235" stroke="#333" stroke-width="2.5"/>
-      <line x1="70" y1="275" x2="160" y2="275" stroke="#333" stroke-width="2.5"/>
-      <line x1="200" y1="275" x2="370" y2="275" stroke="#333" stroke-width="2.5"/>
-      <line x1="30" y1="315" x2="130" y2="315" stroke="#333" stroke-width="2.5"/>
-      <line x1="170" y1="315" x2="260" y2="315" stroke="#333" stroke-width="2.5"/>
-      <line x1="300" y1="315" x2="370" y2="315" stroke="#333" stroke-width="2.5"/>
-      <line x1="70" y1="355" x2="200" y2="355" stroke="#333" stroke-width="2.5"/>
-      <line x1="240" y1="355" x2="330" y2="355" stroke="#333" stroke-width="2.5"/>
-      <line x1="30" y1="385" x2="100" y2="385" stroke="#333" stroke-width="2.5"/>
-      <line x1="140" y1="385" x2="290" y2="385" stroke="#333" stroke-width="2.5"/>
-      <!-- Vertical walls -->
-      <line x1="120" y1="115" x2="120" y2="155" stroke="#333" stroke-width="2.5"/>
-      <line x1="290" y1="115" x2="290" y2="155" stroke="#333" stroke-width="2.5"/>
-      <line x1="200" y1="155" x2="200" y2="195" stroke="#333" stroke-width="2.5"/>
-      <line x1="100" y1="195" x2="100" y2="235" stroke="#333" stroke-width="2.5"/>
-      <line x1="280" y1="235" x2="280" y2="275" stroke="#333" stroke-width="2.5"/>
-      <line x1="160" y1="275" x2="160" y2="315" stroke="#333" stroke-width="2.5"/>
-      <line x1="260" y1="315" x2="260" y2="355" stroke="#333" stroke-width="2.5"/>
-      <line x1="100" y1="355" x2="100" y2="385" stroke="#333" stroke-width="2.5"/>
-      <line x1="330" y1="355" x2="330" y2="425" stroke="#333" stroke-width="2.5"/>
-      <!-- End indicator -->
-      <text x="355" y="418" text-anchor="middle" font-size="24">🍔</text>
-      <text x="355" y="438" text-anchor="middle" font-size="10" fill="#666">FINISH</text>
-      <text x="200" y="475" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#666">Can you find the way?</text>
-    </svg>`,
-  },
-  {
-    id: 'wordsearch',
-    title: 'Word Search',
-    type: 'game' as const,
-    svg: `<svg viewBox="0 0 400 500" xmlns="http://www.w3.org/2000/svg">
-      <rect x="10" y="10" width="380" height="480" rx="20" fill="none" stroke="#333" stroke-width="2"/>
-      <text x="200" y="48" text-anchor="middle" font-family="sans-serif" font-size="18" font-weight="bold">Heroes Word Search</text>
-      <text x="200" y="68" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#666">Find the words hidden in the grid!</text>
-      ${(() => {
-        const grid = [
-          ['B','U','R','G','E','R','S','H','W','I','N','G','S'],
-          ['T','A','C','O','S','F','R','I','E','S','P','H','D'],
-          ['N','A','C','H','O','S','L','I','D','E','R','S','O'],
-          ['S','A','L','A','D','K','E','Y','L','I','M','E','G'],
-          ['H','E','R','O','E','S','C','A','R','L','S','B','S'],
-          ['P','H','I','L','L','Y','U','C','B','R','E','W','M'],
-          ['C','H','U','R','R','O','S','A','U','C','E','P','O'],
-          ['P','I','C','K','L','E','S','O','N','I','O','N','Z'],
-          ['M','A','C','C','H','E','E','S','E','B','A','C','Z'],
-          ['C','H','I','C','K','E','N','L','E','T','T','U','A'],
-          ['K','E','T','C','H','U','P','R','E','T','Z','E','R'],
-          ['A','V','O','C','A','D','O','C','O','B','B','Q','E'],
-          ['P','A','S','A','D','E','N','A','I','C','E','T','L'],
-        ];
-        const cellSize = 24;
-        const startX = 46;
-        const startY = 92;
-        let cells = '';
-        grid.forEach((row, ri) => {
-          row.forEach((ch, ci) => {
-            const x = startX + ci * cellSize;
-            const y = startY + ri * cellSize;
-            cells += `<rect x="${x}" y="${y}" width="${cellSize}" height="${cellSize}" fill="none" stroke="#ddd" stroke-width="0.5"/>`;
-            cells += `<text x="${x + cellSize/2}" y="${y + cellSize/2 + 5}" text-anchor="middle" font-family="monospace" font-size="14" font-weight="600">${ch}</text>`;
-          });
-        });
-        return cells;
-      })()}
-      <text x="36" y="420" font-family="sans-serif" font-size="12" font-weight="bold">Find these words:</text>
-      <text x="36" y="440" font-family="sans-serif" font-size="11">BURGERS · WINGS · TACOS · FRIES</text>
-      <text x="36" y="456" font-family="sans-serif" font-size="11">NACHOS · HEROES · PHILLY · BREW</text>
-      <text x="36" y="472" font-family="sans-serif" font-size="11">CHURROS · SALAD · CARLSBAD</text>
-    </svg>`,
-  },
-  {
-    id: 'connect-dots',
-    title: 'Connect the Dots',
-    type: 'game' as const,
-    svg: `<svg viewBox="0 0 400 500" xmlns="http://www.w3.org/2000/svg">
-      <rect x="10" y="10" width="380" height="480" rx="20" fill="none" stroke="#333" stroke-width="2"/>
-      <text x="200" y="48" text-anchor="middle" font-family="sans-serif" font-size="18" font-weight="bold">Connect the Dots</text>
-      <text x="200" y="68" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#666">Connect 1-30 to reveal the picture!</text>
-      ${(() => {
-        // Star shape outline
-        const points = [
-          [200,90],[218,150],[280,150],[230,190],[248,252],
-          [200,218],[152,252],[170,190],[120,150],[182,150],
-          [200,90],[195,120],[210,130],[240,145],[260,158],
-          [250,175],[255,200],[245,230],[228,245],[210,235],
-          [200,218],[190,235],[172,245],[155,230],[145,200],
-          [150,175],[140,158],[160,145],[190,130],[205,120],
-        ];
-        return points.map((p, i) => {
-          const num = i + 1;
-          return `<circle cx="${p[0]}" cy="${p[1]+50}" r="8" fill="white" stroke="#333" stroke-width="1.5"/>
-                  <text x="${p[0]}" y="${p[1]+54}" text-anchor="middle" font-family="sans-serif" font-size="9" font-weight="bold">${num}</text>`;
-        }).join('');
-      })()}
-      <text x="200" y="460" text-anchor="middle" font-family="sans-serif" font-size="14" fill="#333" font-weight="bold">What is it? A ⭐ STAR ⭐!</text>
-      <text x="200" y="480" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#666">Like the stars on our Heroes shield!</text>
-    </svg>`,
-  },
-  {
-    id: 'coloring-food',
-    title: 'Color the Food!',
-    type: 'coloring' as const,
-    svg: `<svg viewBox="0 0 400 500" xmlns="http://www.w3.org/2000/svg">
-      <rect x="10" y="10" width="380" height="480" rx="20" fill="none" stroke="#333" stroke-width="2"/>
-      <text x="200" y="48" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="bold">Color the Food!</text>
-      <!-- Burger -->
-      <text x="120" y="88" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="bold">Burger</text>
-      <!-- Top bun -->
-      <path d="M60 130 Q120 80 180 130 Z" fill="none" stroke="#333" stroke-width="2.5"/>
-      <!-- sesame seeds -->
-      <ellipse cx="100" cy="112" rx="4" ry="3" fill="none" stroke="#333" stroke-width="1"/>
-      <ellipse cx="130" cy="105" rx="4" ry="3" fill="none" stroke="#333" stroke-width="1"/>
-      <ellipse cx="145" cy="118" rx="4" ry="3" fill="none" stroke="#333" stroke-width="1"/>
-      <!-- Lettuce -->
-      <path d="M55 135 Q70 128 85 135 Q100 128 115 135 Q130 128 145 135 Q160 128 175 135 Q185 128 190 135" fill="none" stroke="#333" stroke-width="2"/>
-      <!-- Patty -->
-      <rect x="58" y="140" width="124" height="18" rx="4" fill="none" stroke="#333" stroke-width="2.5"/>
-      <!-- Cheese drip -->
-      <path d="M58 160 L58 168 Q70 175 82 168 L82 160" fill="none" stroke="#333" stroke-width="1.5"/>
-      <path d="M100 160 L100 170 Q112 177 124 170 L124 160" fill="none" stroke="#333" stroke-width="1.5"/>
-      <rect x="58" y="160" width="124" height="10" fill="none" stroke="#333" stroke-width="1.5"/>
-      <!-- Bottom bun -->
-      <path d="M55 172 L185 172 Q185 195 120 195 Q55 195 55 172 Z" fill="none" stroke="#333" stroke-width="2.5"/>
-
-      <!-- Hot Dog -->
-      <text x="300" y="88" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="bold">Hot Dog</text>
-      <!-- Bun -->
-      <path d="M240 180 Q300 90 360 180" fill="none" stroke="#333" stroke-width="2.5"/>
-      <line x1="240" y1="180" x2="360" y2="180" stroke="#333" stroke-width="2"/>
-      <!-- Sausage -->
-      <ellipse cx="300" cy="165" rx="55" ry="12" fill="none" stroke="#333" stroke-width="2"/>
-      <!-- Mustard zigzag -->
-      <polyline points="260,155 268,145 276,155 284,145 292,155 300,145 308,155 316,145 324,155 332,145 340,155" fill="none" stroke="#333" stroke-width="1.5"/>
-
-      <!-- Taco -->
-      <text x="120" y="230" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="bold">Taco</text>
-      <path d="M60 320 Q120 240 180 320" fill="none" stroke="#333" stroke-width="2.5"/>
-      <line x1="60" y1="320" x2="180" y2="320" stroke="#333" stroke-width="2"/>
-      <!-- Toppings -->
-      <circle cx="90" cy="295" r="8" fill="none" stroke="#333" stroke-width="1.5"/>
-      <circle cx="120" cy="285" r="10" fill="none" stroke="#333" stroke-width="1.5"/>
-      <circle cx="150" cy="295" r="7" fill="none" stroke="#333" stroke-width="1.5"/>
-      <path d="M85 305 Q100 298 115 305 Q130 298 145 305 Q160 298 170 305" fill="none" stroke="#333" stroke-width="1"/>
-
-      <!-- Ice Cream -->
-      <text x="300" y="230" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="bold">Ice Cream</text>
-      <!-- Cone -->
-      <polygon points="270,340 330,340 300,420" fill="none" stroke="#333" stroke-width="2.5"/>
-      <!-- Cross-hatch on cone -->
-      <line x1="276" y1="350" x2="312" y2="400" stroke="#333" stroke-width="1"/>
-      <line x1="288" y1="350" x2="318" y2="390" stroke="#333" stroke-width="1"/>
-      <line x1="300" y1="350" x2="308" y2="365" stroke="#333" stroke-width="1"/>
-      <line x1="324" y1="350" x2="288" y2="400" stroke="#333" stroke-width="1"/>
-      <line x1="312" y1="350" x2="282" y2="390" stroke="#333" stroke-width="1"/>
-      <!-- Scoops -->
-      <circle cx="285" cy="310" r="32" fill="none" stroke="#333" stroke-width="2.5"/>
-      <circle cx="315" cy="310" r="32" fill="none" stroke="#333" stroke-width="2.5"/>
-      <circle cx="300" cy="280" r="32" fill="none" stroke="#333" stroke-width="2.5"/>
-      <!-- Cherry -->
-      <circle cx="300" cy="250" r="8" fill="none" stroke="#333" stroke-width="2"/>
-      <path d="M300 242 Q310 230 305 220" fill="none" stroke="#333" stroke-width="1.5"/>
-
-      <text x="200" y="460" text-anchor="middle" font-family="sans-serif" font-size="14" fill="#333" font-weight="bold">Color each food item with your favorite colors!</text>
-      <text x="200" y="478" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#666">Which one is your favorite at Heroes &amp; Brew?</text>
-    </svg>`,
-  },
-];
-
-function KidsSection({ group, style }: { group: MenuGroup; style: StyleKey }) {
-  return (
-    <>
-      {/* Kids Menu Page */}
-      <div className="print-section" id="section-kids">
-        <PageHeader style={style} />
-        <SectionHeader title="Kids Menu" style={style} />
-        {group.basePrice && (
-          <div style={{ fontSize: 13, marginBottom: 16, color: style === 'rustic' ? '#6b5a4e' : '#555' }}>
-            All items {fmtPrice(group.basePrice)}. Includes drink and side.
+    <div className="page">
+      <Header style={s} />
+      <SecTitle title="Burgers" style={s} />
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 4 }}>
+        <div className="vgroup-desc" style={{ fontSize: 12 }}>{group.description}</div>
+        {group.basePrice != null && <span className="vgroup-price" style={{ fontSize: 18 }}>{fmtPrice(group.basePrice)}</span>}
+      </div>
+      {s === 'rustic' && <div className="orn">— ★ —</div>}
+      <div className="cols-2">
+        {group.items.map(it => (
+          <div key={it.id} style={{ marginBottom: 10, breakInside: 'avoid' }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+              <span className="item-nm">{it.name}</span>
+              {it.subtitle && <span className="item-sub">{s === 'rustic' ? `— ${it.subtitle}` : `(${it.subtitle})`}</span>}
+            </div>
+            {it.description && <div className="item-desc">{it.description}</div>}
           </div>
-        )}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-          {group.items.map((it) => (
-            <div key={it.id} style={{
-              border: style === 'rustic' ? '2px solid #8b7355' : style === 'classic' ? '2px solid #1a1a1a' : '1px solid #e5e7eb',
-              borderRadius: 8,
-              padding: 16,
-              textAlign: 'center',
-              background: style === 'rustic' ? '#f5efe5' : 'white',
-            }}>
-              <div style={{
-                fontSize: 40,
-                marginBottom: 8,
-              }}>
+        ))}
+      </div>
+      <AddOnBox addOns={group.addOns} label={group.addOnLabel} style={s} />
+      <Footer />
+    </div>
+  );
+}
+
+function HeroesSection({ heroesGroup, handheldsGroup, style: s }: { heroesGroup: MenuGroup; handheldsGroup: MenuGroup; style: StyleKey }) {
+  return (
+    <div className="page">
+      <Header style={s} />
+      <SecTitle title="Heroes & Handhelds" style={s} />
+      <div className="cols-2">
+        {/* Philly */}
+        {heroesGroup.subGroups?.map(sub => <VGroup key={sub.id} g={sub} style={s} />)}
+        {/* Hero sandwiches */}
+        {heroesGroup.items.map(it => (
+          <div key={it.id} style={{ marginBottom: 10, breakInside: 'avoid' }}>
+            <div className="item-row">
+              <span className="item-nm">{it.name}</span>
+              {it.subtitle && <span className="item-sub">{s === 'rustic' ? `— ${it.subtitle}` : `(${it.subtitle})`}</span>}
+              <span className="item-fill" />{s === 'minimal' && <span style={{ flex: 1 }} />}
+              <span className="item-pr">{fmtPrice(it.price)}</span>
+            </div>
+            {it.description && <div className="item-desc">{it.description}</div>}
+          </div>
+        ))}
+      </div>
+      <AddOnBox addOns={heroesGroup.addOns} label={heroesGroup.addOnLabel} style={s} />
+
+      {s === 'rustic' ? <div className="orn" style={{ margin: '10px 0' }}>★ ★ ★</div> : <div style={{ borderTop: '2px solid #ddd', margin: '12px 0' }} />}
+
+      <SubHd title="Handhelds" style={s} />
+      <div className="cols-2">
+        {handheldsGroup.subGroups?.map(sub => <VGroup key={sub.id} g={sub} style={s} />)}
+      </div>
+      <AddOnBox addOns={handheldsGroup.addOns} label={handheldsGroup.addOnLabel} style={s} />
+      <Footer />
+    </div>
+  );
+}
+
+function SweetSection({ group, style: s }: { group: MenuGroup; style: StyleKey }) {
+  return (
+    <div className="page">
+      <Header style={s} />
+      <SecTitle title="Sweet Stuff" style={s} />
+      <div className="cols-2">
+        {group.items.map(it => <ItemLine key={it.id} name={it.name} desc={it.description} price={it.price} style={s} />)}
+      </div>
+      <Footer />
+    </div>
+  );
+}
+
+/* ============================================================
+   KIDS — Single-page activity placemat: menu + coloring + games
+   ============================================================ */
+function KidsSection({ group, style: s }: { group: MenuGroup; style: StyleKey }) {
+  return (
+    <div className="page" style={{ padding: s === 'minimal' ? '12mm 14mm' : '10mm 12mm', overflow: 'hidden' }}>
+      {/* Fun header */}
+      <div style={{ textAlign: 'center', marginBottom: 8 }}>
+        <div style={{ fontSize: 24, fontWeight: 900, fontFamily: s === 'rustic' ? "'Alfa Slab One',cursive" : s === 'classic' ? "'Oswald',sans-serif" : "'Playfair Display',serif", textTransform: s === 'minimal' ? 'none' : 'uppercase', letterSpacing: s === 'minimal' ? 4 : 2, color: s === 'rustic' ? '#1b2a4a' : '#222' }}>
+          Heroes Kids Menu
+        </div>
+        <div style={{ fontSize: 10, color: '#888', letterSpacing: 2, marginTop: 2 }}>
+          AMERICAN HEROES &amp; BREW · CARLSBAD, CA
+        </div>
+      </div>
+
+      {/* ── Top section: Menu items grid + choices ── */}
+      <div style={{ border: s === 'rustic' ? '2px solid #1b2a4a' : '2px solid #222', borderRadius: 8, padding: '8px 10px', marginBottom: 8, background: s === 'rustic' ? '#fafbfd' : '#fafafa' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+          <span style={{ fontWeight: 800, fontSize: 14, fontFamily: s === 'rustic' ? "'Alfa Slab One',cursive" : s === 'classic' ? "'Oswald',sans-serif" : "'Playfair Display',serif", textTransform: 'uppercase', letterSpacing: 1 }}>
+            Pick Your Meal!
+          </span>
+          <span style={{ fontWeight: 800, fontSize: 18, color: s === 'rustic' ? '#bf2a2a' : '#222' }}>{group.basePrice ? fmtPrice(group.basePrice) : ''}</span>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 6, textAlign: 'center' }}>
+          {group.items.map(it => (
+            <div key={it.id} style={{ border: '1px solid #ddd', borderRadius: 6, padding: '6px 2px', background: '#fff' }}>
+              <div style={{ fontSize: 24 }}>
                 {it.name === 'Mac & Cheese' ? '🧀' : it.name === 'Corn Dog' ? '🌽' : it.name === 'Chicken Tenders' ? '🍗' : it.name === 'Burger' ? '🍔' : '🌭'}
               </div>
-              <div style={{
-                fontFamily: style === 'rustic' ? "'Alfa Slab One', cursive" : style === 'classic' ? "'Oswald', sans-serif" : "'Playfair Display', serif",
-                fontSize: 18,
-                fontWeight: 700,
-              }}>
-                {it.name}
-              </div>
-              <div style={{ fontSize: 22, fontWeight: 700, marginTop: 4, color: style === 'rustic' ? '#8b7355' : style === 'classic' ? '#1a1a1a' : '#444' }}>
-                {fmtPrice(it.price)}
-              </div>
+              <div style={{ fontSize: 10, fontWeight: 700, marginTop: 2 }}>{it.name}</div>
             </div>
           ))}
         </div>
-        <ChoiceLines choices={group.choices} />
-        <AddOnBox addOns={group.addOns} label={group.addOnLabel} style={style} />
-
-        <div style={{ textAlign: 'center', marginTop: 24, fontSize: 13, color: '#888' }}>
-          Ask your server for crayons!
+        <div style={{ display: 'flex', gap: 16, marginTop: 6, fontSize: 9 }}>
+          {group.choices?.map(c => (
+            <div key={c.label}><span style={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1 }}>{c.label}: </span>{c.options.join(' · ')}</div>
+          ))}
+          {group.addOns && <div><span style={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1 }}>{group.addOnLabel}: </span>{group.addOns.map(a => `${a.name} ${a.price}`).join(' · ')}</div>}
         </div>
-        <PageFooter />
       </div>
 
-      {/* Activity Pages */}
-      {KIDS_ACTIVITIES.map((activity) => (
-        <div key={activity.id} className="print-section" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '10mm' }}>
-          <div
-            style={{ width: '100%', maxWidth: 400 }}
-            dangerouslySetInnerHTML={{ __html: activity.svg }}
-          />
+      {/* ── Bottom section: 2 columns — coloring left, games right ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, height: 'calc(100% - 180px)' }}>
+        {/* LEFT: Coloring */}
+        <div style={{ border: '1.5px dashed #ccc', borderRadius: 8, padding: 6, display: 'flex', flexDirection: 'column' }}>
+          <div style={{ textAlign: 'center', fontWeight: 800, fontSize: 12, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4, color: s === 'rustic' ? '#bf2a2a' : '#444' }}>
+            Color Me In!
+          </div>
+          <svg viewBox="0 0 300 380" style={{ flex: 1, width: '100%' }}>
+            {/* Shield */}
+            <path d="M150 20 L220 55 L220 160 Q220 230 150 270 Q80 230 80 160 L80 55 Z" fill="none" stroke="#333" strokeWidth="2.5"/>
+            <path d="M150 45 L200 70 L200 160 Q200 215 150 245 Q100 215 100 160 L100 70 Z" fill="none" stroke="#333" strokeWidth="1.5"/>
+            {/* H */}
+            <text x="150" y="175" textAnchor="middle" fontFamily="serif" fontSize="56" fontWeight="bold" fill="none" stroke="#333" strokeWidth="2">H</text>
+            {/* Stars */}
+            <polygon points="150,10 154,22 167,22 157,30 160,42 150,35 140,42 143,30 133,22 146,22" fill="none" stroke="#333" strokeWidth="1.5"/>
+            <polygon points="70,35 74,47 87,47 77,55 80,67 70,60 60,67 63,55 53,47 66,47" fill="none" stroke="#333" strokeWidth="1.5"/>
+            <polygon points="230,35 234,47 247,47 237,55 240,67 230,60 220,67 223,55 213,47 226,47" fill="none" stroke="#333" strokeWidth="1.5"/>
+            {/* Banner */}
+            <path d="M70 280 Q150 260 230 280 L220 305 Q150 285 80 305 Z" fill="none" stroke="#333" strokeWidth="2"/>
+            <text x="150" y="298" textAnchor="middle" fontFamily="serif" fontSize="12" fill="none" stroke="#333" strokeWidth="1">HEROES &amp; BREW</text>
+            {/* Burger */}
+            <path d="M90 330 Q150 310 210 330 Z" fill="none" stroke="#333" strokeWidth="2"/>
+            <ellipse cx="150" cy="330" rx="4" ry="3" fill="none" stroke="#333" strokeWidth="1"/>
+            <ellipse cx="170" cy="325" rx="4" ry="3" fill="none" stroke="#333" strokeWidth="1"/>
+            <ellipse cx="130" cy="325" rx="4" ry="3" fill="none" stroke="#333" strokeWidth="1"/>
+            <path d="M85 335 Q100 330 115 335 Q130 330 145 335 Q160 330 175 335 Q190 330 205 335 Q215 330 220 335" fill="none" stroke="#333" strokeWidth="1.5"/>
+            <rect x="88" y="338" width="124" height="14" rx="3" fill="none" stroke="#333" strokeWidth="2"/>
+            <rect x="88" y="354" width="124" height="8" fill="none" stroke="#333" strokeWidth="1.5"/>
+            <path d="M85 364 L215 364 Q215 378 150 378 Q85 378 85 364 Z" fill="none" stroke="#333" strokeWidth="2"/>
+          </svg>
         </div>
-      ))}
-    </>
+
+        {/* RIGHT: Games */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          {/* Word Search */}
+          <div style={{ border: '1.5px dashed #ccc', borderRadius: 8, padding: 6, flex: 1 }}>
+            <div style={{ textAlign: 'center', fontWeight: 800, fontSize: 11, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 3, color: s === 'rustic' ? '#1b2a4a' : '#444' }}>
+              Word Search
+            </div>
+            <svg viewBox="0 0 280 195" style={{ width: '100%' }}>
+              {(() => {
+                const grid = [
+                  'BURGERSWINGS',
+                  'TACOSHEROFLY',
+                  'NACHOSFRIESK',
+                  'CSLIDERSALAD',
+                  'HCHURROSBREW',
+                  'EPHILLYCKDOG',
+                  'ECARLSBADPIE',
+                  'SAUCEPICKLES',
+                ];
+                const sz = 16;
+                const ox = 8;
+                const oy = 2;
+                const cells: string[] = [];
+                grid.forEach((row, ri) => {
+                  [...row].forEach((ch, ci) => {
+                    const x = ox + ci * sz;
+                    const y = oy + ri * sz;
+                    cells.push(`<rect x="${x}" y="${y}" width="${sz}" height="${sz}" fill="none" stroke="#e0e0e0" stroke-width=".5"/>`);
+                    cells.push(`<text x="${x + sz / 2}" y="${y + sz / 2 + 4}" text-anchor="middle" font-family="monospace" font-size="10" font-weight="600">${ch}</text>`);
+                  });
+                });
+                cells.push(`<text x="8" y="145" font-family="sans-serif" font-size="8" font-weight="700">Find:</text>`);
+                cells.push(`<text x="8" y="157" font-family="sans-serif" font-size="7.5">BURGERS · WINGS · TACOS · NACHOS</text>`);
+                cells.push(`<text x="8" y="168" font-family="sans-serif" font-size="7.5">FRIES · HEROES · PHILLY · BREW</text>`);
+                cells.push(`<text x="8" y="179" font-family="sans-serif" font-size="7.5">CHURROS · SALAD · CARLSBAD · PIE</text>`);
+                return <g dangerouslySetInnerHTML={{ __html: cells.join('') }} />;
+              })()}
+            </svg>
+          </div>
+
+          {/* Maze */}
+          <div style={{ border: '1.5px dashed #ccc', borderRadius: 8, padding: 6, flex: 1 }}>
+            <div style={{ textAlign: 'center', fontWeight: 800, fontSize: 11, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 3, color: s === 'rustic' ? '#1b2a4a' : '#444' }}>
+              Help the Hero Find the Burger!
+            </div>
+            <svg viewBox="0 0 280 160" style={{ width: '100%' }}>
+              {/* Start/End */}
+              <text x="14" y="16" fontSize="14">🦸</text>
+              <text x="255" y="152" fontSize="14">🍔</text>
+              {/* Maze border */}
+              <rect x="8" y="22" width="264" height="120" fill="none" stroke="#333" strokeWidth="2"/>
+              {/* Horizontal walls */}
+              <line x1="8" y1="42" x2="80" y2="42" stroke="#333" strokeWidth="1.8"/>
+              <line x1="110" y1="42" x2="200" y2="42" stroke="#333" strokeWidth="1.8"/>
+              <line x1="230" y1="42" x2="272" y2="42" stroke="#333" strokeWidth="1.8"/>
+              <line x1="40" y1="62" x2="140" y2="62" stroke="#333" strokeWidth="1.8"/>
+              <line x1="170" y1="62" x2="240" y2="62" stroke="#333" strokeWidth="1.8"/>
+              <line x1="8" y1="82" x2="70" y2="82" stroke="#333" strokeWidth="1.8"/>
+              <line x1="100" y1="82" x2="180" y2="82" stroke="#333" strokeWidth="1.8"/>
+              <line x1="210" y1="82" x2="272" y2="82" stroke="#333" strokeWidth="1.8"/>
+              <line x1="40" y1="102" x2="120" y2="102" stroke="#333" strokeWidth="1.8"/>
+              <line x1="150" y1="102" x2="230" y2="102" stroke="#333" strokeWidth="1.8"/>
+              <line x1="8" y1="122" x2="90" y2="122" stroke="#333" strokeWidth="1.8"/>
+              <line x1="120" y1="122" x2="200" y2="122" stroke="#333" strokeWidth="1.8"/>
+              {/* Vertical walls */}
+              <line x1="80" y1="22" x2="80" y2="42" stroke="#333" strokeWidth="1.8"/>
+              <line x1="200" y1="22" x2="200" y2="42" stroke="#333" strokeWidth="1.8"/>
+              <line x1="140" y1="42" x2="140" y2="62" stroke="#333" strokeWidth="1.8"/>
+              <line x1="70" y1="62" x2="70" y2="82" stroke="#333" strokeWidth="1.8"/>
+              <line x1="240" y1="62" x2="240" y2="82" stroke="#333" strokeWidth="1.8"/>
+              <line x1="180" y1="82" x2="180" y2="102" stroke="#333" strokeWidth="1.8"/>
+              <line x1="120" y1="102" x2="120" y2="122" stroke="#333" strokeWidth="1.8"/>
+              <line x1="230" y1="102" x2="230" y2="142" stroke="#333" strokeWidth="1.8"/>
+            </svg>
+          </div>
+
+          {/* Tic Tac Toe */}
+          <div style={{ border: '1.5px dashed #ccc', borderRadius: 8, padding: 6 }}>
+            <div style={{ textAlign: 'center', fontWeight: 800, fontSize: 11, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 2, color: s === 'rustic' ? '#1b2a4a' : '#444' }}>
+              Tic-Tac-Toe
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: 16 }}>
+              {[0, 1].map(n => (
+                <svg key={n} viewBox="0 0 90 90" style={{ width: 70, height: 70 }}>
+                  <line x1="30" y1="5" x2="30" y2="85" stroke="#333" strokeWidth="2"/>
+                  <line x1="60" y1="5" x2="60" y2="85" stroke="#333" strokeWidth="2"/>
+                  <line x1="5" y1="30" x2="85" y2="30" stroke="#333" strokeWidth="2"/>
+                  <line x1="5" y1="60" x2="85" y2="60" stroke="#333" strokeWidth="2"/>
+                </svg>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style={{ textAlign: 'center', fontSize: 7, color: '#aaa', marginTop: 4 }}>
+        American Heroes &amp; Brew · 300 Carlsbad Village Dr, Carlsbad CA · Ask your server for crayons!
+      </div>
+    </div>
   );
 }
 
-/* ─── Main Component ─── */
+/* ============================================================
+   MAIN COMPONENT
+   ============================================================ */
 export default function PrintableMenuClient({ menus }: { menus: Menu[] }) {
-  const [selected, setSelected] = useState<Set<SectionKey>>(new Set(['daily', 'starters', 'salads', 'burgers', 'heroes', 'sweet', 'kids']));
+  const [selected, setSelected] = useState<Set<SectionKey>>(new Set(SECTIONS.map(s => s.key)));
   const [style, setStyle] = useState<StyleKey>('classic');
 
   const groups = menus[0]?.groups || [];
-  const find = (id: string) => groups.find((g) => g.id === id)!;
+  const find = (id: string) => groups.find(g => g.id === id)!;
 
   const toggle = (key: SectionKey) => {
-    setSelected((prev) => {
+    setSelected(prev => {
       const next = new Set(prev);
-      if (next.has(key)) next.delete(key);
-      else next.add(key);
+      next.has(key) ? next.delete(key) : next.add(key);
       return next;
     });
   };
-
-  const selectAll = () => setSelected(new Set(SECTIONS.map((s) => s.key)));
-  const selectNone = () => setSelected(new Set());
 
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: getStyleCSS(style) }} />
 
-      {/* Control bar */}
-      <div className="no-print" style={{
-        position: 'sticky', top: 0, zIndex: 50,
-        background: '#111827', color: 'white',
-        padding: '12px 16px',
-        boxShadow: '0 4px 12px rgba(0,0,0,.3)',
-        fontFamily: 'system-ui, sans-serif',
-      }}>
+      {/* ── Control Bar ── */}
+      <div className="no-print" style={{ position: 'sticky', top: 0, zIndex: 50, background: '#111827', color: '#fff', padding: '10px 16px', boxShadow: '0 4px 12px rgba(0,0,0,.3)', fontFamily: 'system-ui,sans-serif' }}>
         <div style={{ maxWidth: 800, margin: '0 auto' }}>
-          {/* Top row: title + style selector + print */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-            <h1 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>Print Menus</h1>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              {/* Style selector */}
-              <div style={{ display: 'flex', gap: 4 }}>
-                {STYLES.map((s) => (
-                  <button
-                    key={s.key}
-                    onClick={() => setStyle(s.key)}
-                    title={s.desc}
-                    style={{
-                      padding: '6px 12px',
-                      borderRadius: 6,
-                      border: 'none',
-                      fontSize: 12,
-                      fontWeight: 600,
-                      cursor: 'pointer',
-                      transition: 'all .15s',
-                      background: style === s.key ? '#f59e0b' : '#374151',
-                      color: style === s.key ? '#000' : '#9ca3af',
-                    }}
-                  >
-                    {s.label}
-                  </button>
-                ))}
-              </div>
-              <button
-                onClick={() => window.print()}
-                style={{
-                  background: '#f59e0b',
-                  color: '#000',
-                  fontWeight: 700,
-                  padding: '8px 20px',
-                  borderRadius: 8,
-                  border: 'none',
-                  fontSize: 14,
-                  cursor: 'pointer',
-                }}
-              >
-                🖨️ Print Selected
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+            <h1 style={{ fontSize: 16, fontWeight: 700, margin: 0 }}>Print Menus</h1>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              {STYLES.map(st => (
+                <button key={st.key} onClick={() => setStyle(st.key)} title={st.desc} style={{ padding: '5px 10px', borderRadius: 5, border: 'none', fontSize: 11, fontWeight: 600, cursor: 'pointer', background: style === st.key ? '#f59e0b' : '#374151', color: style === st.key ? '#000' : '#9ca3af' }}>
+                  {st.label}
+                </button>
+              ))}
+              <button onClick={() => window.print()} style={{ background: '#f59e0b', color: '#000', fontWeight: 700, padding: '6px 16px', borderRadius: 6, border: 'none', fontSize: 13, cursor: 'pointer', marginLeft: 4 }}>
+                🖨️ Print
               </button>
             </div>
           </div>
-
-          {/* Section checkboxes */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-            <button onClick={selectAll} style={{ background: 'none', border: 'none', color: '#f59e0b', fontSize: 12, cursor: 'pointer', padding: 0 }}>Select All</button>
-            <button onClick={selectNone} style={{ background: 'none', border: 'none', color: '#f59e0b', fontSize: 12, cursor: 'pointer', padding: 0 }}>Clear</button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', fontSize: 12 }}>
+            <button onClick={() => setSelected(new Set(SECTIONS.map(s => s.key)))} style={{ background: 'none', border: 'none', color: '#f59e0b', fontSize: 11, cursor: 'pointer', padding: 0 }}>All</button>
+            <button onClick={() => setSelected(new Set())} style={{ background: 'none', border: 'none', color: '#f59e0b', fontSize: 11, cursor: 'pointer', padding: 0 }}>None</button>
             <span style={{ color: '#4b5563' }}>|</span>
-            {SECTIONS.map((s) => (
-              <label key={s.key} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, cursor: 'pointer' }}>
-                <input
-                  type="checkbox"
-                  checked={selected.has(s.key)}
-                  onChange={() => toggle(s.key)}
-                  style={{ accentColor: '#f59e0b', width: 16, height: 16 }}
-                />
-                {s.label}
+            {SECTIONS.map(sec => (
+              <label key={sec.key} style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer' }}>
+                <input type="checkbox" checked={selected.has(sec.key)} onChange={() => toggle(sec.key)} style={{ accentColor: '#f59e0b', width: 14, height: 14 }} />
+                {sec.label}
               </label>
             ))}
           </div>
-
-          {/* Style description */}
-          <div style={{ fontSize: 11, color: '#6b7280', marginTop: 6 }}>
-            Style: {STYLES.find((s) => s.key === style)?.desc}
-          </div>
+          <div style={{ fontSize: 10, color: '#6b7280', marginTop: 4 }}>Style: {STYLES.find(st => st.key === style)?.desc}</div>
         </div>
       </div>
 
-      {/* Content */}
-      <div style={{ minHeight: '100vh', padding: '24px 16px' }}>
-        {selected.has('daily') && <DailyLineupSection style={style} />}
+      {/* ── Pages ── */}
+      <div style={{ minHeight: '100vh', padding: '20px 16px' }}>
+        {selected.has('daily') && <DailySection style={style} />}
         {selected.has('starters') && <StartersSection group={find('g-starters')} style={style} />}
         {selected.has('salads') && <SaladsSection group={find('g-salads')} style={style} />}
         {selected.has('burgers') && <BurgersSection group={find('g-burgers')} style={style} />}
-        {selected.has('heroes') && (
-          <HeroesAndHandheldsSection heroesGroup={find('g-heroes')} handheldsGroup={find('g-handhelds')} style={style} />
-        )}
-        {selected.has('sweet') && <SweetStuffSection group={find('g-sweet')} style={style} />}
+        {selected.has('heroes') && <HeroesSection heroesGroup={find('g-heroes')} handheldsGroup={find('g-handhelds')} style={style} />}
+        {selected.has('sweet') && <SweetSection group={find('g-sweet')} style={style} />}
         {selected.has('kids') && <KidsSection group={find('g-kids')} style={style} />}
-
-        {selected.size === 0 && (
-          <div style={{ textAlign: 'center', color: '#9ca3af', marginTop: 80, fontSize: 18 }}>
-            Select menu sections above to preview &amp; print
-          </div>
-        )}
+        {selected.size === 0 && <div style={{ textAlign: 'center', color: '#9ca3af', marginTop: 80, fontSize: 16 }}>Select sections above to preview &amp; print</div>}
       </div>
-
-      {/* Print footer */}
-      <div className="print-footer-fixed">American Heroes &amp; Brew · 300 Carlsbad Village Dr, Suite 101, Carlsbad CA 92008 · (760) 994-0187</div>
     </>
   );
 }
