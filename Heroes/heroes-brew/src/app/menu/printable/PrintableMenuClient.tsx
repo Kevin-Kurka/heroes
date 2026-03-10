@@ -4,13 +4,14 @@ import { useState } from 'react';
 import { Menu, MenuGroup } from '@/types';
 
 /* ─── Types ─── */
-type StyleKey = 'classic' | 'minimal' | 'rustic';
+type StyleKey = 'dark' | 'editorial' | 'heritage';
+type ModeKey = 'light' | 'dark';
 type SectionKey = 'daily' | 'starters' | 'salads' | 'burgers' | 'heroes' | 'sweet' | 'kids';
 
 const STYLES: { key: StyleKey; label: string; desc: string }[] = [
-  { key: 'classic', label: 'Classic Sports Bar', desc: 'Bold Oswald headers · dotted leaders · amber accents' },
-  { key: 'minimal', label: 'Modern Minimal', desc: 'Playfair + Inter · airy whitespace · thin rules' },
-  { key: 'rustic', label: 'Americana', desc: 'Red, white & blue · stars & banners · vintage tavern' },
+  { key: 'dark', label: 'Dark & Gold', desc: 'Gold ornamental accents · elegant serif type · classic upscale' },
+  { key: 'editorial', label: 'Bold Editorial', desc: 'Red accent banners · strong sans-serif · modern grid' },
+  { key: 'heritage', label: 'Heritage', desc: 'Navy & red ink · vintage Americana ornaments · serif type' },
 ];
 
 const SECTIONS: { key: SectionKey; label: string }[] = [
@@ -26,140 +27,291 @@ const SECTIONS: { key: SectionKey; label: string }[] = [
 const DAILY_SPECIALS = [
   { day: 'Monday', name: 'Monday Madness', price: '$4', lines: ['Sliders · Pulled Pork, Beef', 'Beer · Select Drafts'] },
   { day: 'Tuesday', name: 'Taco Tuesday', price: '$3', lines: ['Tacos · Carnitas, Carne Asada', 'Beer · Modelo, Ultra'] },
-  { day: 'Wednesday', name: 'Wings & Well Wednesday', price: '$2', lines: ['Signature Wings each', 'Drinks off'] },
+  { day: 'Wednesday', name: 'Wings Wednesday', price: '$2', lines: ['Signature Wings each', 'Well Drinks off'] },
   { day: 'Thursday', name: 'Thirsty Thursday', price: '$5', lines: ['Burgers off', 'Select Drafts each'] },
 ];
 
+/* SVG ornaments */
+const CORNER_TL = `<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><path d="M5 55 Q5 5 55 5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10 55 Q10 10 55 10" fill="none" stroke="currentColor" stroke-width="0.8"/><circle cx="8" cy="8" r="2" fill="currentColor"/></svg>`;
+const STAR5 = `<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><polygon points="10,1 12.5,7 19,7.5 14,12 15.5,19 10,15.5 4.5,19 6,12 1,7.5 7.5,7" fill="currentColor"/></svg>`;
+const DIVIDER_LINE = `<svg viewBox="0 0 200 12" xmlns="http://www.w3.org/2000/svg"><line x1="0" y1="6" x2="80" y2="6" stroke="currentColor" stroke-width="0.8"/><polygon points="100,1 103,6 100,11 97,6" fill="currentColor"/><line x1="120" y1="6" x2="200" y2="6" stroke="currentColor" stroke-width="0.8"/></svg>`;
+
 /* ============================================================
-   STYLE SHEETS
+   STYLE CSS — each style has light + dark palettes
    ============================================================ */
-function getStyleCSS(s: StyleKey): string {
+function getStyleCSS(s: StyleKey, m: ModeKey): string {
   const shared = `
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap');
     nav,header,.bottom-nav,footer{display:none!important}
     main{padding:0!important;min-height:auto!important}
-    *{box-sizing:border-box;margin:0;padding:0}
+    *{box-sizing:border-box}
     @media print{
       .no-print{display:none!important}
       html,body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-      .page{page-break-before:always;box-shadow:none!important;border-radius:0!important}
-      .page:first-of-type{page-break-before:avoid}
-      @page{size:A4;margin:12mm 14mm}
+      .pg{page-break-before:always;box-shadow:none!important}
+      .pg:first-of-type{page-break-before:avoid}
+      @page{size:A4;margin:0}
     }
-    @media screen{
-      .page{max-width:210mm;margin:0 auto 24px;border-radius:4px;min-height:297mm}
-    }
-    .cols-2{columns:2;column-gap:24px}
-    .cols-2>*{break-inside:avoid}
-    .vgroup{margin-bottom:14px}
-    .vgroup-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:2px}
-    .vgroup-name{font-weight:700;font-size:15px}
-    .vgroup-price{font-weight:700;font-size:15px}
-    .vgroup-desc{font-size:10.5px;line-height:1.45;margin-bottom:4px}
+    @media screen{.pg{max-width:210mm;margin:0 auto 28px;min-height:297mm}}
+    .c2{columns:2;column-gap:20px}.c2>*{break-inside:avoid}
+  `;
+
+  /* ── Dark & Gold ── */
+  if (s === 'dark' && m === 'dark') return shared + `
+    html,body{background:#1a1a2e!important}
+    .pg{background:#0f1628;color:#e8dcc8;padding:16mm 18mm;position:relative;overflow:hidden;border:1px solid #2a3050}
+    .pg-corner{position:absolute;color:#c9a84c;width:50px;height:50px}
+    .pg-corner.tl{top:8mm;left:8mm}.pg-corner.tr{top:8mm;right:8mm;transform:scaleX(-1)}
+    .pg-corner.bl{bottom:8mm;left:8mm;transform:scaleY(-1)}.pg-corner.br{bottom:8mm;right:8mm;transform:scale(-1)}
+    .pg-inner{border:1px solid #c9a84c33;padding:4mm;min-height:calc(297mm - 40mm)}
+    .logo{font-family:'Playfair Display',serif;font-weight:800;font-size:24px;text-align:center;color:#c9a84c;letter-spacing:3px;text-transform:uppercase}
+    .tagline{font-family:'Inter',sans-serif;font-weight:300;font-size:8px;text-align:center;color:#c9a84c99;letter-spacing:6px;text-transform:uppercase;margin-top:2px}
+    .divider{text-align:center;color:#c9a84c;margin:8px 0;width:120px;display:block;margin-left:auto;margin-right:auto}
+    .sec{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:#c9a84c;text-align:center;letter-spacing:3px;text-transform:uppercase;margin-bottom:4px}
+    .sec-sub{font-family:'Inter',sans-serif;font-size:9px;text-align:center;color:#e8dcc880;font-weight:300;letter-spacing:2px;margin-bottom:12px}
+    .grp{margin-bottom:12px}
+    .grp-head{display:flex;align-items:baseline;justify-content:space-between;border-bottom:1px solid #c9a84c33;padding-bottom:3px;margin-bottom:3px}
+    .grp-nm{font-family:'Playfair Display',serif;font-weight:700;font-size:14px;color:#e8dcc8}
+    .grp-pr{font-family:'Inter',sans-serif;font-weight:600;font-size:14px;color:#c9a84c}
+    .grp-desc{font-family:'Inter',sans-serif;font-size:9.5px;color:#e8dcc899;font-weight:300;line-height:1.4;margin-bottom:3px}
     .pills{display:flex;flex-wrap:wrap;gap:3px;margin:3px 0}
-    .pill{font-size:9.5px;border-radius:3px;padding:1px 6px}
-    .choice-row{font-size:10px;margin:2px 0}
-    .choice-lbl{font-weight:700;text-transform:uppercase;letter-spacing:.8px;font-size:9px}
-    .addon-wrap{margin-top:6px;padding:6px 10px;border-radius:5px}
-    .addon-lbl{font-weight:700;text-transform:uppercase;letter-spacing:1.5px;font-size:8.5px;margin-bottom:3px}
-    .addon-itm{display:inline-block;font-size:10px;margin-right:10px}
-    .item-row{display:flex;align-items:baseline;margin-bottom:5px}
-    .item-nm{font-weight:700;font-size:12.5px;white-space:nowrap}
-    .item-sub{font-size:10.5px;font-style:italic;margin-left:4px}
-    .item-fill{flex:1;min-width:8px;margin:0 4px}
-    .item-pr{font-weight:700;font-size:12.5px;white-space:nowrap}
-    .item-desc{font-size:10px;line-height:1.4;margin:-2px 0 6px}
-    .pg-foot{text-align:center;font-size:7.5px;position:absolute;bottom:10mm;left:14mm;right:14mm}
+    .pill{font-size:8.5px;border:1px solid #c9a84c44;border-radius:3px;padding:1px 6px;color:#e8dcc8cc;background:#c9a84c0a}
+    .row{display:flex;align-items:baseline;margin-bottom:4px}
+    .row-nm{font-family:'Playfair Display',serif;font-weight:600;font-size:12px;color:#e8dcc8;white-space:nowrap}
+    .row-sub{font-family:'Playfair Display',serif;font-style:italic;font-size:10px;color:#c9a84c;margin-left:5px}
+    .row-dots{flex:1;border-bottom:1px dotted #c9a84c44;margin:0 6px;min-width:10px;position:relative;top:-2px}
+    .row-pr{font-family:'Inter',sans-serif;font-weight:600;font-size:12px;color:#c9a84c;white-space:nowrap}
+    .row-desc{font-family:'Inter',sans-serif;font-size:9px;color:#e8dcc866;font-weight:300;margin:-1px 0 5px;line-height:1.35}
+    .addons{border:1px solid #c9a84c33;border-radius:6px;padding:6px 10px;margin-top:8px;background:#c9a84c08}
+    .addons-lbl{font-family:'Inter',sans-serif;font-size:7.5px;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:#c9a84c;margin-bottom:3px}
+    .addon{display:inline-block;font-size:9px;margin-right:10px;color:#e8dcc8aa}
+    .addon strong{color:#c9a84c}
+    .ch-row{font-family:'Inter',sans-serif;font-size:9px;color:#e8dcc899;margin:1px 0}
+    .ch-lbl{font-weight:600;text-transform:uppercase;font-size:7.5px;letter-spacing:1.5px;color:#c9a84c88}
+    .ft{text-align:center;font-family:'Inter',sans-serif;font-size:7px;color:#e8dcc844;letter-spacing:2px;margin-top:auto;padding-top:8px}
+    .daily-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+    .d-card{border:1px solid #c9a84c44;border-radius:6px;padding:10px;background:#c9a84c06}
+    .d-nm{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:#e8dcc8}
+    .d-pr{font-family:'Playfair Display',serif;font-size:24px;font-weight:800;color:#c9a84c}
+    .d-day{font-family:'Inter',sans-serif;font-size:8px;text-transform:uppercase;letter-spacing:3px;color:#c9a84c88;font-weight:300}
+    .d-line{font-size:10px;color:#e8dcc8aa}
+    .sub-hd{font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:#c9a84c;border-bottom:1px solid #c9a84c33;padding-bottom:2px;margin:8px 0 5px}
+    @media print{html,body{background:#0f1628!important}.pg{background:#0f1628!important;border:none;padding:10mm 14mm}}
   `;
 
-  if (s === 'classic') return shared + `
-    @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Open+Sans:wght@400;600;700&display=swap');
-    html,body{background:#e5e7eb!important;font-family:'Open Sans',sans-serif;color:#1a1a1a}
-    .page{background:#fff;padding:14mm 16mm;box-shadow:0 2px 8px rgba(0,0,0,.12);position:relative}
-    .pg-logo{font-family:'Oswald',sans-serif;font-weight:700;font-size:22px;text-transform:uppercase;letter-spacing:3px;text-align:center}
-    .pg-sub{font-size:9px;letter-spacing:4px;text-transform:uppercase;text-align:center;color:#666;border-bottom:2px solid #222;padding-bottom:5px;margin-bottom:12px}
-    .sec-title{font-family:'Oswald',sans-serif;font-size:20px;font-weight:700;text-transform:uppercase;letter-spacing:2px;border-bottom:3px solid #1a1a1a;padding-bottom:4px;margin-bottom:10px}
-    .vgroup-name{font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:1px}
-    .vgroup-desc{color:#555}
-    .pill{background:#f3f4f6;border:1px solid #ddd}
-    .item-fill{border-bottom:2px dotted #ccc;position:relative;top:-3px}
-    .item-sub{color:#666}
-    .item-desc{color:#555}
-    .addon-wrap{background:#fef3c7;border:1px solid #fbbf24}
-    .addon-lbl{color:#92400e}
-    .choice-lbl{color:#666}
-    .pg-foot{color:#999}
-    .daily-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .daily-card{border:2px solid #222;border-radius:6px;padding:12px}
-    .daily-nm{font-family:'Oswald',sans-serif;font-size:17px;font-weight:700;text-transform:uppercase}
-    .daily-pr{font-family:'Oswald',sans-serif;font-size:28px;font-weight:700}
-    .daily-day{font-size:9px;text-transform:uppercase;letter-spacing:3px;color:#666}
-    .sub-hd{font-family:'Oswald',sans-serif;font-size:14px;font-weight:600;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #ddd;padding-bottom:2px;margin:10px 0 6px}
-    @media print{html,body{background:#fff!important}.page{padding:0}.addon-wrap{background:#fef3c7!important;border-color:#fbbf24!important}}
+  if (s === 'dark' && m === 'light') return shared + `
+    html,body{background:#e8e0d0!important}
+    .pg{background:#faf6ee;color:#2a1f14;padding:16mm 18mm;position:relative;overflow:hidden;border:1px solid #d4c9b0}
+    .pg-corner{position:absolute;color:#8b6914;width:50px;height:50px}
+    .pg-corner.tl{top:8mm;left:8mm}.pg-corner.tr{top:8mm;right:8mm;transform:scaleX(-1)}
+    .pg-corner.bl{bottom:8mm;left:8mm;transform:scaleY(-1)}.pg-corner.br{bottom:8mm;right:8mm;transform:scale(-1)}
+    .pg-inner{border:1px solid #8b691433;padding:4mm;min-height:calc(297mm - 40mm)}
+    .logo{font-family:'Playfair Display',serif;font-weight:800;font-size:24px;text-align:center;color:#8b6914;letter-spacing:3px;text-transform:uppercase}
+    .tagline{font-family:'Inter',sans-serif;font-weight:300;font-size:8px;text-align:center;color:#8b691488;letter-spacing:6px;text-transform:uppercase;margin-top:2px}
+    .divider{text-align:center;color:#8b6914;margin:8px 0;width:120px;display:block;margin-left:auto;margin-right:auto}
+    .sec{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:#8b6914;text-align:center;letter-spacing:3px;text-transform:uppercase;margin-bottom:4px}
+    .sec-sub{font-family:'Inter',sans-serif;font-size:9px;text-align:center;color:#6b5a3d;font-weight:300;letter-spacing:2px;margin-bottom:12px}
+    .grp{margin-bottom:12px}
+    .grp-head{display:flex;align-items:baseline;justify-content:space-between;border-bottom:1px solid #8b691433;padding-bottom:3px;margin-bottom:3px}
+    .grp-nm{font-family:'Playfair Display',serif;font-weight:700;font-size:14px;color:#2a1f14}
+    .grp-pr{font-family:'Inter',sans-serif;font-weight:600;font-size:14px;color:#8b6914}
+    .grp-desc{font-family:'Inter',sans-serif;font-size:9.5px;color:#6b5a3d;font-weight:300;line-height:1.4;margin-bottom:3px}
+    .pills{display:flex;flex-wrap:wrap;gap:3px;margin:3px 0}
+    .pill{font-size:8.5px;border:1px solid #8b691433;border-radius:3px;padding:1px 6px;color:#2a1f14cc;background:#8b69140a}
+    .row{display:flex;align-items:baseline;margin-bottom:4px}
+    .row-nm{font-family:'Playfair Display',serif;font-weight:600;font-size:12px;color:#2a1f14;white-space:nowrap}
+    .row-sub{font-family:'Playfair Display',serif;font-style:italic;font-size:10px;color:#8b6914;margin-left:5px}
+    .row-dots{flex:1;border-bottom:1px dotted #8b691444;margin:0 6px;min-width:10px;position:relative;top:-2px}
+    .row-pr{font-family:'Inter',sans-serif;font-weight:600;font-size:12px;color:#8b6914;white-space:nowrap}
+    .row-desc{font-family:'Inter',sans-serif;font-size:9px;color:#6b5a3d99;font-weight:300;margin:-1px 0 5px;line-height:1.35}
+    .addons{border:1px solid #8b691433;border-radius:6px;padding:6px 10px;margin-top:8px;background:#8b69140a}
+    .addons-lbl{font-family:'Inter',sans-serif;font-size:7.5px;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:#8b6914;margin-bottom:3px}
+    .addon{display:inline-block;font-size:9px;margin-right:10px;color:#2a1f14aa}
+    .addon strong{color:#8b6914}
+    .ch-row{font-family:'Inter',sans-serif;font-size:9px;color:#6b5a3d;margin:1px 0}
+    .ch-lbl{font-weight:600;text-transform:uppercase;font-size:7.5px;letter-spacing:1.5px;color:#8b691488}
+    .ft{text-align:center;font-family:'Inter',sans-serif;font-size:7px;color:#2a1f1444;letter-spacing:2px;margin-top:auto;padding-top:8px}
+    .daily-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+    .d-card{border:1px solid #8b691433;border-radius:6px;padding:10px;background:#f0e8d4}
+    .d-nm{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:#2a1f14}
+    .d-pr{font-family:'Playfair Display',serif;font-size:24px;font-weight:800;color:#8b6914}
+    .d-day{font-family:'Inter',sans-serif;font-size:8px;text-transform:uppercase;letter-spacing:3px;color:#8b691488;font-weight:300}
+    .d-line{font-size:10px;color:#2a1f14aa}
+    .sub-hd{font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:#8b6914;border-bottom:1px solid #8b691433;padding-bottom:2px;margin:8px 0 5px}
+    @media print{html,body{background:#faf6ee!important}.pg{background:#faf6ee!important;border-color:#d4c9b0!important;padding:10mm 14mm}}
   `;
 
-  if (s === 'minimal') return shared + `
-    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
-    html,body{background:#f9fafb!important;font-family:'Inter',sans-serif;color:#111}
-    .page{background:#fff;padding:18mm 20mm;box-shadow:0 1px 4px rgba(0,0,0,.06);position:relative}
-    .pg-logo{font-family:'Playfair Display',serif;font-weight:600;font-size:20px;text-align:center}
-    .pg-sub{font-family:'Inter',sans-serif;font-weight:300;font-size:9px;letter-spacing:5px;text-transform:uppercase;text-align:center;color:#999;border-bottom:1px solid #e5e7eb;padding-bottom:6px;margin-bottom:14px}
-    .sec-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:600;letter-spacing:4px;text-transform:uppercase;border-bottom:1px solid #d1d5db;padding-bottom:6px;margin-bottom:12px}
-    .vgroup-name{font-family:'Playfair Display',serif}
-    .vgroup-desc{color:#777;font-weight:300}
-    .pill{background:#f9fafb;border:1px solid #e5e7eb}
-    .item-fill{display:none}
-    .item-nm{font-weight:600;font-size:12px}
-    .item-sub{color:#999;font-weight:300;font-style:normal}
-    .item-desc{color:#888;font-weight:300}
-    .item-pr{font-weight:500;color:#444;font-size:12px}
-    .addon-wrap{border-top:1px solid #e5e7eb;padding-top:8px;background:none;border-radius:0}
-    .addon-lbl{color:#bbb;letter-spacing:3px}
-    .addon-itm{color:#666;font-weight:300}
-    .choice-lbl{color:#bbb;letter-spacing:2px}
-    .choice-row{color:#666;font-weight:300}
-    .pg-foot{color:#ccc;font-weight:300}
-    .daily-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-    .daily-card{border:1px solid #e5e7eb;border-radius:4px;padding:14px}
-    .daily-nm{font-family:'Playfair Display',serif;font-size:16px;font-weight:600}
-    .daily-pr{font-size:24px;font-weight:300;color:#444}
-    .daily-day{font-size:9px;text-transform:uppercase;letter-spacing:4px;color:#bbb;font-weight:300}
-    .sub-hd{font-family:'Playfair Display',serif;font-size:13px;font-weight:600;border-bottom:1px solid #e5e7eb;padding-bottom:2px;margin:10px 0 6px}
-    @media print{html,body{background:#fff!important}.page{padding:0}}
+  /* ── Bold Editorial ── */
+  if (s === 'editorial' && m === 'light') return shared + `
+    html,body{background:#e5e7eb!important}
+    .pg{background:#fff;color:#1a1a1a;padding:0;position:relative;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.1)}
+    .pg-banner{background:#bf1b1b;padding:12mm 18mm 8mm;color:#fff;position:relative}
+    .pg-banner::after{content:'';position:absolute;bottom:-12px;left:0;right:0;height:12px;background:linear-gradient(to bottom right,#bf1b1b 50%,transparent 50%)}
+    .pg-body{padding:14px 18mm 14mm}
+    .logo{font-family:'Oswald',sans-serif;font-weight:700;font-size:28px;text-transform:uppercase;letter-spacing:5px;color:#fff}
+    .tagline{font-family:'Inter',sans-serif;font-weight:400;font-size:9px;letter-spacing:4px;text-transform:uppercase;color:#ffffff99;margin-top:2px}
+    .divider{display:none}
+    .sec{font-family:'Oswald',sans-serif;font-size:22px;font-weight:700;text-transform:uppercase;letter-spacing:3px;color:#1a1a1a;text-align:left;margin-bottom:2px;padding-bottom:4px;border-bottom:3px solid #bf1b1b;display:inline-block}
+    .sec-sub{font-family:'Inter',sans-serif;font-size:9px;text-align:left;color:#666;font-weight:400;letter-spacing:1px;margin-bottom:10px}
+    .grp{margin-bottom:12px;border-left:3px solid #bf1b1b;padding-left:10px}
+    .grp-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:2px}
+    .grp-nm{font-family:'Oswald',sans-serif;font-weight:600;font-size:14px;text-transform:uppercase;letter-spacing:1px;color:#1a1a1a}
+    .grp-pr{font-family:'Oswald',sans-serif;font-weight:700;font-size:15px;color:#bf1b1b}
+    .grp-desc{font-family:'Inter',sans-serif;font-size:9.5px;color:#555;font-weight:400;line-height:1.4;margin-bottom:3px}
+    .pills{display:flex;flex-wrap:wrap;gap:3px;margin:3px 0}
+    .pill{font-size:8.5px;border:1px solid #e5e7eb;border-radius:2px;padding:1px 6px;color:#333;background:#f9fafb;font-family:'Inter',sans-serif}
+    .row{display:flex;align-items:baseline;margin-bottom:4px}
+    .row-nm{font-family:'Oswald',sans-serif;font-weight:500;font-size:12.5px;text-transform:uppercase;letter-spacing:.5px;color:#1a1a1a;white-space:nowrap}
+    .row-sub{font-family:'Inter',sans-serif;font-size:10px;color:#bf1b1b;font-weight:500;margin-left:5px;font-style:normal}
+    .row-dots{flex:1;margin:0 6px;min-width:10px}
+    .row-pr{font-family:'Oswald',sans-serif;font-weight:600;font-size:12.5px;color:#bf1b1b;white-space:nowrap}
+    .row-desc{font-family:'Inter',sans-serif;font-size:9px;color:#777;font-weight:400;margin:-1px 0 5px;line-height:1.35}
+    .addons{border-top:2px solid #bf1b1b;padding-top:6px;margin-top:8px}
+    .addons-lbl{font-family:'Oswald',sans-serif;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:#bf1b1b;margin-bottom:3px}
+    .addon{display:inline-block;font-size:9px;margin-right:10px;color:#555;font-family:'Inter',sans-serif}
+    .addon strong{color:#bf1b1b;font-weight:600}
+    .ch-row{font-family:'Inter',sans-serif;font-size:9px;color:#666;margin:1px 0}
+    .ch-lbl{font-weight:600;text-transform:uppercase;font-size:7.5px;letter-spacing:1.5px;color:#bf1b1b}
+    .ft{text-align:center;font-family:'Inter',sans-serif;font-size:7px;color:#aaa;letter-spacing:2px;margin-top:auto;padding-top:8px}
+    .daily-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+    .d-card{border:2px solid #1a1a1a;border-radius:0;padding:10px;position:relative}
+    .d-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:#bf1b1b}
+    .d-nm{font-family:'Oswald',sans-serif;font-size:16px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#1a1a1a;margin-left:4px}
+    .d-pr{font-family:'Oswald',sans-serif;font-size:26px;font-weight:700;color:#bf1b1b}
+    .d-day{font-family:'Inter',sans-serif;font-size:8px;text-transform:uppercase;letter-spacing:3px;color:#888;font-weight:500;margin-left:4px}
+    .d-line{font-size:10px;color:#555;margin-left:4px}
+    .sub-hd{font-family:'Oswald',sans-serif;font-size:14px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#1a1a1a;border-bottom:2px solid #bf1b1b;padding-bottom:2px;margin:8px 0 5px;display:inline-block}
+    @media print{html,body{background:#fff!important}.pg{box-shadow:none;padding:0}.pg-banner{padding:8mm 14mm 6mm}.pg-body{padding:10px 14mm 10mm}}
   `;
 
-  /* ── Americana: red white blue ── */
+  if (s === 'editorial' && m === 'dark') return shared + `
+    html,body{background:#111!important}
+    .pg{background:#1a1a1a;color:#e5e5e5;padding:0;position:relative;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.3)}
+    .pg-banner{background:#bf1b1b;padding:12mm 18mm 8mm;color:#fff;position:relative}
+    .pg-banner::after{content:'';position:absolute;bottom:-12px;left:0;right:0;height:12px;background:linear-gradient(to bottom right,#bf1b1b 50%,transparent 50%)}
+    .pg-body{padding:14px 18mm 14mm}
+    .logo{font-family:'Oswald',sans-serif;font-weight:700;font-size:28px;text-transform:uppercase;letter-spacing:5px;color:#fff}
+    .tagline{font-family:'Inter',sans-serif;font-weight:400;font-size:9px;letter-spacing:4px;text-transform:uppercase;color:#ffffff99;margin-top:2px}
+    .divider{display:none}
+    .sec{font-family:'Oswald',sans-serif;font-size:22px;font-weight:700;text-transform:uppercase;letter-spacing:3px;color:#e5e5e5;text-align:left;margin-bottom:2px;padding-bottom:4px;border-bottom:3px solid #bf1b1b;display:inline-block}
+    .sec-sub{font-family:'Inter',sans-serif;font-size:9px;text-align:left;color:#999;font-weight:400;letter-spacing:1px;margin-bottom:10px}
+    .grp{margin-bottom:12px;border-left:3px solid #bf1b1b;padding-left:10px}
+    .grp-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:2px}
+    .grp-nm{font-family:'Oswald',sans-serif;font-weight:600;font-size:14px;text-transform:uppercase;letter-spacing:1px;color:#e5e5e5}
+    .grp-pr{font-family:'Oswald',sans-serif;font-weight:700;font-size:15px;color:#e74c4c}
+    .grp-desc{font-family:'Inter',sans-serif;font-size:9.5px;color:#aaa;font-weight:400;line-height:1.4;margin-bottom:3px}
+    .pills{display:flex;flex-wrap:wrap;gap:3px;margin:3px 0}
+    .pill{font-size:8.5px;border:1px solid #444;border-radius:2px;padding:1px 6px;color:#ddd;background:#2a2a2a;font-family:'Inter',sans-serif}
+    .row{display:flex;align-items:baseline;margin-bottom:4px}
+    .row-nm{font-family:'Oswald',sans-serif;font-weight:500;font-size:12.5px;text-transform:uppercase;letter-spacing:.5px;color:#e5e5e5;white-space:nowrap}
+    .row-sub{font-family:'Inter',sans-serif;font-size:10px;color:#e74c4c;font-weight:500;margin-left:5px;font-style:normal}
+    .row-dots{flex:1;margin:0 6px;min-width:10px;border-bottom:1px dotted #444}
+    .row-pr{font-family:'Oswald',sans-serif;font-weight:600;font-size:12.5px;color:#e74c4c;white-space:nowrap}
+    .row-desc{font-family:'Inter',sans-serif;font-size:9px;color:#888;font-weight:400;margin:-1px 0 5px;line-height:1.35}
+    .addons{border-top:2px solid #bf1b1b;padding-top:6px;margin-top:8px}
+    .addons-lbl{font-family:'Oswald',sans-serif;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:#e74c4c;margin-bottom:3px}
+    .addon{display:inline-block;font-size:9px;margin-right:10px;color:#aaa;font-family:'Inter',sans-serif}
+    .addon strong{color:#e74c4c;font-weight:600}
+    .ch-row{font-family:'Inter',sans-serif;font-size:9px;color:#999;margin:1px 0}
+    .ch-lbl{font-weight:600;text-transform:uppercase;font-size:7.5px;letter-spacing:1.5px;color:#e74c4c}
+    .ft{text-align:center;font-family:'Inter',sans-serif;font-size:7px;color:#555;letter-spacing:2px;margin-top:auto;padding-top:8px}
+    .daily-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+    .d-card{border:2px solid #444;border-radius:0;padding:10px;position:relative}
+    .d-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:#bf1b1b}
+    .d-nm{font-family:'Oswald',sans-serif;font-size:16px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#e5e5e5;margin-left:4px}
+    .d-pr{font-family:'Oswald',sans-serif;font-size:26px;font-weight:700;color:#e74c4c}
+    .d-day{font-family:'Inter',sans-serif;font-size:8px;text-transform:uppercase;letter-spacing:3px;color:#777;font-weight:500;margin-left:4px}
+    .d-line{font-size:10px;color:#aaa;margin-left:4px}
+    .sub-hd{font-family:'Oswald',sans-serif;font-size:14px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#e5e5e5;border-bottom:2px solid #bf1b1b;padding-bottom:2px;margin:8px 0 5px;display:inline-block}
+    @media print{html,body{background:#1a1a1a!important}.pg{background:#1a1a1a!important;box-shadow:none;padding:0}.pg-banner{padding:8mm 14mm 6mm}.pg-body{padding:10px 14mm 10mm}}
+  `;
+
+  /* ── Heritage ── */
+  if (s === 'heritage' && m === 'light') return shared + `
+    html,body{background:#c5b9a8!important}
+    .pg{background:#f5f0e6;color:#1b2a4a;padding:14mm 16mm;position:relative;overflow:hidden;border:3px solid #1b2a4a;box-shadow:0 2px 12px rgba(0,0,0,.15)}
+    .pg::before{content:'';position:absolute;top:4px;left:4px;right:4px;bottom:4px;border:1.5px solid #bf2a2a;pointer-events:none}
+    .pg::after{content:'';position:absolute;top:8px;left:8px;right:8px;bottom:8px;border:0.5px solid #1b2a4a44;pointer-events:none}
+    .logo{font-family:'Playfair Display',serif;font-weight:800;font-size:22px;text-align:center;color:#1b2a4a;letter-spacing:2px}
+    .tagline{font-family:'Lora',serif;font-style:italic;font-size:9px;text-align:center;color:#5a6b8a;letter-spacing:2px;margin-top:1px}
+    .stars-row{text-align:center;color:#bf2a2a;font-size:9px;letter-spacing:5px;margin:4px 0}
+    .divider{text-align:center;color:#1b2a4a;margin:6px auto;width:100px;display:block}
+    .sec{font-family:'Playfair Display',serif;font-size:20px;font-weight:800;color:#1b2a4a;text-align:center;letter-spacing:2px;text-transform:uppercase;margin-bottom:2px}
+    .sec-rule{height:3px;background:linear-gradient(90deg,transparent,#bf2a2a,#1b2a4a,#bf2a2a,transparent);margin:0 auto 10px;width:60%;border-radius:2px}
+    .sec-sub{font-family:'Lora',serif;font-style:italic;font-size:9px;text-align:center;color:#5a6b8a;margin-bottom:10px}
+    .grp{margin-bottom:12px}
+    .grp-head{display:flex;align-items:baseline;justify-content:space-between;border-bottom:1.5px solid #1b2a4a22;padding-bottom:2px;margin-bottom:3px}
+    .grp-nm{font-family:'Playfair Display',serif;font-weight:700;font-size:14px;color:#1b2a4a}
+    .grp-pr{font-family:'Lora',serif;font-weight:700;font-size:14px;color:#bf2a2a}
+    .grp-desc{font-family:'Source Sans 3',sans-serif;font-size:9.5px;color:#5a6b8a;font-weight:400;line-height:1.4;margin-bottom:3px}
+    .pills{display:flex;flex-wrap:wrap;gap:3px;margin:3px 0}
+    .pill{font-size:8.5px;border:1px solid #1b2a4a33;border-radius:3px;padding:1px 6px;color:#1b2a4a;background:#e8e0d0}
+    .row{display:flex;align-items:baseline;margin-bottom:4px}
+    .row-nm{font-family:'Playfair Display',serif;font-weight:700;font-size:12px;color:#1b2a4a;white-space:nowrap}
+    .row-sub{font-family:'Lora',serif;font-style:italic;font-size:10px;color:#bf2a2a;margin-left:5px}
+    .row-dots{flex:1;border-bottom:1px dashed #1b2a4a33;margin:0 6px;min-width:10px;position:relative;top:-2px}
+    .row-pr{font-family:'Lora',serif;font-weight:700;font-size:12px;color:#bf2a2a;white-space:nowrap}
+    .row-desc{font-family:'Source Sans 3',sans-serif;font-size:9px;color:#5a6b8a;font-weight:400;margin:-1px 0 5px;line-height:1.35}
+    .addons{border:1.5px solid #1b2a4a33;border-radius:6px;padding:6px 10px;margin-top:8px;background:#e8e0d0}
+    .addons-lbl{font-family:'Lora',serif;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#bf2a2a;margin-bottom:3px}
+    .addon{display:inline-block;font-size:9px;margin-right:10px;color:#1b2a4a;font-family:'Source Sans 3',sans-serif}
+    .addon strong{color:#bf2a2a}
+    .ch-row{font-family:'Source Sans 3',sans-serif;font-size:9px;color:#5a6b8a;margin:1px 0}
+    .ch-lbl{font-weight:700;text-transform:uppercase;font-size:7.5px;letter-spacing:1.5px;color:#bf2a2a}
+    .ft{text-align:center;font-family:'Lora',serif;font-style:italic;font-size:7px;color:#1b2a4a66;letter-spacing:1px;margin-top:auto;padding-top:8px}
+    .daily-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+    .d-card{border:2px solid #1b2a4a;border-radius:6px;padding:10px;background:#faf7f0}
+    .d-nm{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:#1b2a4a}
+    .d-pr{font-family:'Playfair Display',serif;font-size:24px;font-weight:800;color:#bf2a2a}
+    .d-day{font-family:'Lora',serif;font-style:italic;font-size:8px;text-transform:uppercase;letter-spacing:2px;color:#5a6b8a}
+    .d-line{font-size:10px;color:#3a4a6a;font-family:'Source Sans 3',sans-serif}
+    .sub-hd{font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:#1b2a4a;margin:8px 0 3px}
+    .sub-rule{height:2px;width:40px;background:#bf2a2a;margin-bottom:5px}
+    @media print{html,body{background:#f5f0e6!important}.pg{box-shadow:none;border-color:#1b2a4a!important;padding:10mm 12mm}.pg::before{border-color:#bf2a2a!important}}
+  `;
+
+  /* heritage dark */
   return shared + `
-    @import url('https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Lora:wght@400;600;700&family=Source+Sans+3:wght@400;600;700&display=swap');
-    html,body{background:#b0bec5!important;font-family:'Source Sans 3',sans-serif;color:#1b2a4a}
-    .page{background:#fff;padding:14mm 16mm;box-shadow:0 2px 10px rgba(0,0,0,.2);border:4px solid #1b2a4a;position:relative}
-    .page::before{content:'';position:absolute;top:4px;left:4px;right:4px;bottom:4px;border:2px solid #bf2a2a;pointer-events:none}
-    .pg-logo{font-family:'Alfa Slab One',cursive;font-size:22px;text-align:center;color:#1b2a4a}
-    .pg-stars{text-align:center;font-size:11px;letter-spacing:6px;color:#bf2a2a;margin-bottom:2px}
-    .pg-sub{font-family:'Lora',serif;font-size:9px;letter-spacing:3px;text-transform:uppercase;text-align:center;color:#1b2a4a;border-bottom:3px double #1b2a4a;padding-bottom:5px;margin-bottom:12px}
-    .sec-title{font-family:'Alfa Slab One',cursive;font-size:20px;color:#1b2a4a;margin-bottom:2px}
-    .sec-rule{height:3px;background:linear-gradient(90deg,#bf2a2a,#1b2a4a,#bf2a2a);margin-bottom:10px;border-radius:1px}
-    .vgroup-name{font-family:'Lora',serif;color:#1b2a4a}
-    .vgroup-desc{color:#4a5568}
-    .pill{background:#eef2f7;border:1px solid #c5cfe0;color:#1b2a4a}
-    .item-fill{border-bottom:1px dashed #c5cfe0;position:relative;top:-3px}
-    .item-nm{font-family:'Lora',serif;color:#1b2a4a}
-    .item-sub{color:#bf2a2a;font-family:'Lora',serif}
-    .item-desc{color:#4a5568}
-    .addon-wrap{background:#eef2f7;border:2px solid #1b2a4a;border-radius:6px}
-    .addon-lbl{color:#bf2a2a;font-family:'Lora',serif}
-    .addon-itm{color:#1b2a4a}
-    .choice-lbl{color:#bf2a2a}
-    .pg-foot{color:#8899aa;font-family:'Lora',serif;font-style:italic}
-    .daily-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .daily-card{border:2px solid #1b2a4a;border-radius:6px;padding:12px;background:#fafbfd}
-    .daily-nm{font-family:'Alfa Slab One',cursive;font-size:16px;color:#1b2a4a}
-    .daily-pr{font-family:'Alfa Slab One',cursive;font-size:26px;color:#bf2a2a}
-    .daily-day{font-family:'Lora',serif;font-size:9px;text-transform:uppercase;letter-spacing:2px;color:#6679a0;font-style:italic}
-    .sub-hd{font-family:'Alfa Slab One',cursive;font-size:13px;color:#1b2a4a;margin:8px 0 4px}
-    .sub-rule{height:2px;background:#bf2a2a;margin-bottom:6px;width:60px}
-    .orn{text-align:center;color:#bf2a2a;font-size:10px;letter-spacing:6px;margin:6px 0}
-    .star-bullet::before{content:'★ ';color:#bf2a2a;font-size:8px}
-    @media print{html,body{background:#fff!important}.page{padding:0;box-shadow:none}.page::before{top:4px;left:4px;right:4px;bottom:4px}.addon-wrap{background:#eef2f7!important}.daily-card{background:#fafbfd!important}}
+    html,body{background:#0e1525!important}
+    .pg{background:#162033;color:#d4cfc4;padding:14mm 16mm;position:relative;overflow:hidden;border:3px solid #3a4f7a;box-shadow:0 2px 12px rgba(0,0,0,.3)}
+    .pg::before{content:'';position:absolute;top:4px;left:4px;right:4px;bottom:4px;border:1.5px solid #bf2a2a;pointer-events:none}
+    .pg::after{content:'';position:absolute;top:8px;left:8px;right:8px;bottom:8px;border:0.5px solid #3a4f7a44;pointer-events:none}
+    .logo{font-family:'Playfair Display',serif;font-weight:800;font-size:22px;text-align:center;color:#d4cfc4;letter-spacing:2px}
+    .tagline{font-family:'Lora',serif;font-style:italic;font-size:9px;text-align:center;color:#8899bb;letter-spacing:2px;margin-top:1px}
+    .stars-row{text-align:center;color:#e04040;font-size:9px;letter-spacing:5px;margin:4px 0}
+    .divider{text-align:center;color:#8899bb;margin:6px auto;width:100px;display:block}
+    .sec{font-family:'Playfair Display',serif;font-size:20px;font-weight:800;color:#d4cfc4;text-align:center;letter-spacing:2px;text-transform:uppercase;margin-bottom:2px}
+    .sec-rule{height:3px;background:linear-gradient(90deg,transparent,#e04040,#6080bb,#e04040,transparent);margin:0 auto 10px;width:60%;border-radius:2px}
+    .sec-sub{font-family:'Lora',serif;font-style:italic;font-size:9px;text-align:center;color:#8899bb;margin-bottom:10px}
+    .grp{margin-bottom:12px}
+    .grp-head{display:flex;align-items:baseline;justify-content:space-between;border-bottom:1.5px solid #3a4f7a44;padding-bottom:2px;margin-bottom:3px}
+    .grp-nm{font-family:'Playfair Display',serif;font-weight:700;font-size:14px;color:#d4cfc4}
+    .grp-pr{font-family:'Lora',serif;font-weight:700;font-size:14px;color:#e04040}
+    .grp-desc{font-family:'Source Sans 3',sans-serif;font-size:9.5px;color:#8899bb;font-weight:400;line-height:1.4;margin-bottom:3px}
+    .pills{display:flex;flex-wrap:wrap;gap:3px;margin:3px 0}
+    .pill{font-size:8.5px;border:1px solid #3a4f7a55;border-radius:3px;padding:1px 6px;color:#d4cfc4cc;background:#3a4f7a18}
+    .row{display:flex;align-items:baseline;margin-bottom:4px}
+    .row-nm{font-family:'Playfair Display',serif;font-weight:700;font-size:12px;color:#d4cfc4;white-space:nowrap}
+    .row-sub{font-family:'Lora',serif;font-style:italic;font-size:10px;color:#e04040;margin-left:5px}
+    .row-dots{flex:1;border-bottom:1px dashed #3a4f7a44;margin:0 6px;min-width:10px;position:relative;top:-2px}
+    .row-pr{font-family:'Lora',serif;font-weight:700;font-size:12px;color:#e04040;white-space:nowrap}
+    .row-desc{font-family:'Source Sans 3',sans-serif;font-size:9px;color:#8899bb99;font-weight:400;margin:-1px 0 5px;line-height:1.35}
+    .addons{border:1.5px solid #3a4f7a44;border-radius:6px;padding:6px 10px;margin-top:8px;background:#3a4f7a18}
+    .addons-lbl{font-family:'Lora',serif;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#e04040;margin-bottom:3px}
+    .addon{display:inline-block;font-size:9px;margin-right:10px;color:#d4cfc4aa;font-family:'Source Sans 3',sans-serif}
+    .addon strong{color:#e04040}
+    .ch-row{font-family:'Source Sans 3',sans-serif;font-size:9px;color:#8899bb;margin:1px 0}
+    .ch-lbl{font-weight:700;text-transform:uppercase;font-size:7.5px;letter-spacing:1.5px;color:#e04040}
+    .ft{text-align:center;font-family:'Lora',serif;font-style:italic;font-size:7px;color:#d4cfc444;letter-spacing:1px;margin-top:auto;padding-top:8px}
+    .daily-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+    .d-card{border:2px solid #3a4f7a;border-radius:6px;padding:10px;background:#1e2d48}
+    .d-nm{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:#d4cfc4}
+    .d-pr{font-family:'Playfair Display',serif;font-size:24px;font-weight:800;color:#e04040}
+    .d-day{font-family:'Lora',serif;font-style:italic;font-size:8px;text-transform:uppercase;letter-spacing:2px;color:#8899bb}
+    .d-line{font-size:10px;color:#a0b0cc;font-family:'Source Sans 3',sans-serif}
+    .sub-hd{font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:#d4cfc4;margin:8px 0 3px}
+    .sub-rule{height:2px;width:40px;background:#e04040;margin-bottom:5px}
+    @media print{html,body{background:#162033!important}.pg{box-shadow:none;border-color:#3a4f7a!important;padding:10mm 12mm}.pg::before{border-color:#bf2a2a!important}}
   `;
 }
 
@@ -168,438 +320,271 @@ function getStyleCSS(s: StyleKey): string {
    ============================================================ */
 function fmtPrice(p: number) { return `$${p}`; }
 
+function Orn({ type, style: s }: { type: 'corner-tl' | 'corner-tr' | 'corner-bl' | 'corner-br' | 'divider' | 'star'; style: StyleKey; mode?: ModeKey }) {
+  if (s === 'editorial') return null;
+  if (type === 'divider') return <div className="divider" dangerouslySetInnerHTML={{ __html: DIVIDER_LINE }} />;
+  if (type.startsWith('corner')) {
+    if (s !== 'dark') return null;
+    const cls = type.replace('corner-', '');
+    return <div className={`pg-corner ${cls}`} dangerouslySetInnerHTML={{ __html: CORNER_TL }} />;
+  }
+  return null;
+}
+
 function Header({ style: s }: { style: StyleKey }) {
-  if (s === 'rustic') return (
-    <div style={{ marginBottom: 10 }}>
-      <div className="pg-stars">★ ★ ★ ★ ★</div>
-      <div className="pg-logo">American Heroes &amp; Brew</div>
-      <div className="pg-sub">Carlsbad, California · est. 2024</div>
+  if (s === 'editorial') return (
+    <div className="pg-banner">
+      <div className="logo">American Heroes &amp; Brew</div>
+      <div className="tagline">300 Carlsbad Village Dr, Suite 101 · Carlsbad, CA · (760) 994-0187</div>
     </div>
   );
-  return (
-    <div style={{ marginBottom: 10 }}>
-      <div className="pg-logo">American Heroes &amp; Brew</div>
-      <div className="pg-sub">300 Carlsbad Village Dr, Suite 101 · Carlsbad CA · (760) 994-0187</div>
-    </div>
-  );
+  const inner = <>
+    {s === 'heritage' && <div className="stars-row">★ ★ ★ ★ ★</div>}
+    <div className="logo">American Heroes &amp; Brew</div>
+    <div className="tagline">{s === 'heritage' ? 'Carlsbad, California · Est. 2024' : '300 Carlsbad Village Dr · Carlsbad CA · (760) 994-0187'}</div>
+    <Orn type="divider" style={s} />
+  </>;
+  return <div style={{ marginBottom: 8 }}>{inner}</div>;
 }
 
-function SecTitle({ title, style: s }: { title: string; style: StyleKey }) {
+function SecHead({ title, desc, style: s }: { title: string; desc?: string; style: StyleKey }) {
   return <>
-    <div className="sec-title">{title}</div>
-    {s === 'rustic' && <div className="sec-rule" />}
+    <div className="sec">{title}</div>
+    {s === 'heritage' && <div className="sec-rule" />}
+    {desc && <div className="sec-sub">{desc}</div>}
   </>;
 }
 
-function SubHd({ title, price, style: s }: { title: string; price?: number; style: StyleKey }) {
-  return <>
-    <div className="sub-hd">
-      {title}{price != null && <span style={{ marginLeft: 8, fontWeight: 700 }}>{fmtPrice(price)}</span>}
-    </div>
-    {s === 'rustic' && <div className="sub-rule" />}
-  </>;
-}
-
-function Footer() {
-  return <div className="pg-foot">American Heroes &amp; Brew · 300 Carlsbad Village Dr, Suite 101, Carlsbad CA 92008 · (760) 994-0187</div>;
-}
-
-/** Render a variant group the way the site does:
- *  Name $price → description → variant pills (no prices if same) → choices → addons */
 function VGroup({ g, style: s }: { g: MenuGroup; style: StyleKey }) {
   const allSame = g.items.every(i => i.price === g.basePrice);
   return (
-    <div className="vgroup">
-      <div className="vgroup-head">
-        <span className="vgroup-name">{g.name}</span>
-        {g.basePrice != null && <span className="vgroup-price">{fmtPrice(g.basePrice)}</span>}
+    <div className="grp">
+      <div className="grp-head">
+        <span className="grp-nm">{g.name}</span>
+        {g.basePrice != null && <span className="grp-pr">{fmtPrice(g.basePrice)}</span>}
       </div>
-      {g.description && <div className="vgroup-desc">{g.description}</div>}
+      {g.description && <div className="grp-desc">{g.description}</div>}
       {g.items.length > 1 && (
         <div className="pills">
           {g.items.map(i => (
             <span key={i.id} className="pill">
-              {i.name}{i.subtitle ? ` · ${i.subtitle}` : ''}
-              {!allSame && i.price !== g.basePrice ? ` ${fmtPrice(i.price)}` : ''}
+              {i.name}{i.subtitle ? ` · ${i.subtitle}` : ''}{!allSame && i.price !== g.basePrice ? ` ${fmtPrice(i.price)}` : ''}
             </span>
           ))}
         </div>
       )}
-      {g.choices?.map(c => (
-        <div key={c.label} className="choice-row"><span className="choice-lbl">{c.label}: </span>{c.options.join(' · ')}</div>
-      ))}
+      {g.choices?.map(c => <div key={c.label} className="ch-row"><span className="ch-lbl">{c.label}: </span>{c.options.join(' · ')}</div>)}
       {g.addOns && g.addOns.length > 0 && (
-        <div style={{ marginTop: 4 }}>
-          {g.addOns.map(a => <span key={a.name} className="addon-itm">{s === 'rustic' && <span style={{ color: '#bf2a2a', marginRight: 2 }}>★</span>}{a.name} <strong>{a.price}</strong></span>)}
+        <div style={{ marginTop: 3 }}>
+          {g.addOns.map(a => <span key={a.name} className="addon">{a.name} <strong>{a.price}</strong></span>)}
         </div>
       )}
     </div>
   );
 }
 
-/** Item row with optional dots and description */
-function ItemLine({ name, sub, desc, price, style: s }: { name: string; sub?: string; desc?: string; price: number; style: StyleKey }) {
+function ItemRow({ name, sub, desc, price }: { name: string; sub?: string; desc?: string; price: number }) {
   return <>
-    <div className="item-row">
-      <span className="item-nm">{name}</span>
-      {sub && <span className="item-sub">{s === 'rustic' ? `— ${sub}` : `(${sub})`}</span>}
-      <span className="item-fill" />
-      {s === 'minimal' && <span style={{ flex: 1 }} />}
-      <span className="item-pr">{fmtPrice(price)}</span>
+    <div className="row">
+      <span className="row-nm">{name}</span>
+      {sub && <span className="row-sub">{sub}</span>}
+      <span className="row-dots" />
+      <span className="row-pr">{fmtPrice(price)}</span>
     </div>
-    {desc && <div className="item-desc">{desc}</div>}
+    {desc && <div className="row-desc">{desc}</div>}
   </>;
 }
 
-function AddOnBox({ addOns, label, style: s }: { addOns?: { name: string; price: string }[]; label?: string; style: StyleKey }) {
+function AddOnBox({ addOns, label }: { addOns?: { name: string; price: string }[]; label?: string }) {
   if (!addOns?.length) return null;
   return (
-    <div className="addon-wrap">
-      <div className="addon-lbl">{label || 'Sides'}</div>
-      {addOns.map(a => <span key={a.name} className="addon-itm">{s === 'rustic' && <span style={{ color: '#bf2a2a', marginRight: 2 }}>★</span>}{a.name} <strong>{a.price}</strong></span>)}
+    <div className="addons">
+      <div className="addons-lbl">{label || 'Sides'}</div>
+      {addOns.map(a => <span key={a.name} className="addon">{a.name} <strong>{a.price}</strong></span>)}
+    </div>
+  );
+}
+
+function Footer() {
+  return <div className="ft">American Heroes &amp; Brew · 300 Carlsbad Village Dr, Suite 101, Carlsbad CA 92008 · (760) 994-0187</div>;
+}
+
+function PageWrap({ style: s, children }: { style: StyleKey; children: React.ReactNode }) {
+  if (s === 'editorial') return (
+    <div className="pg">
+      <Header style={s} />
+      <div className="pg-body">{children}<Footer /></div>
+    </div>
+  );
+  return (
+    <div className="pg">
+      {s === 'dark' && <><Orn type="corner-tl" style={s} /><Orn type="corner-tr" style={s} /><Orn type="corner-bl" style={s} /><Orn type="corner-br" style={s} /></>}
+      {s === 'dark' ? <div className="pg-inner"><Header style={s} />{children}<Footer /></div> : <><Header style={s} />{children}<Footer /></>}
     </div>
   );
 }
 
 /* ============================================================
-   SECTION RENDERERS — 2-column flow, mirroring site patterns
+   SECTIONS
    ============================================================ */
-
 function DailySection({ style: s }: { style: StyleKey }) {
   return (
-    <div className="page">
-      <Header style={s} />
-      <SecTitle title="Daily Lineup" style={s} />
-      {s === 'rustic' && <div className="orn">★ ★ ★</div>}
+    <PageWrap style={s}>
+      <SecHead title="Daily Lineup" desc="Specials available all day, every day." style={s} />
       <div className="daily-grid">
         {DAILY_SPECIALS.map(d => (
-          <div key={d.day} className="daily-card">
+          <div key={d.day} className="d-card">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-              <div><div className="daily-nm">{d.name}</div><div className="daily-day">{d.day}</div></div>
-              <div className="daily-pr">{d.price}</div>
+              <div><div className="d-nm">{d.name}</div><div className="d-day">{d.day}</div></div>
+              <div className="d-pr">{d.price}</div>
             </div>
-            <div style={{ marginTop: 6 }}>{d.lines.map(l => <div key={l} style={{ fontSize: 12 }}>{l}</div>)}</div>
+            <div style={{ marginTop: 5 }}>{d.lines.map(l => <div key={l} className="d-line">{l}</div>)}</div>
           </div>
         ))}
       </div>
-      <Footer />
-    </div>
+    </PageWrap>
   );
 }
 
 function StartersSection({ group, style: s }: { group: MenuGroup; style: StyleKey }) {
   return (
-    <div className="page">
-      <Header style={s} />
-      <SecTitle title="Starters" style={s} />
-      <div className="cols-2">
-        {group.subGroups?.map(sub => <VGroup key={sub.id} g={sub} style={s} />)}
-      </div>
-      <Footer />
-    </div>
+    <PageWrap style={s}>
+      <SecHead title="Starters" desc="Shareable favorites to kick things off." style={s} />
+      <div className="c2">{group.subGroups?.map(sub => <VGroup key={sub.id} g={sub} style={s} />)}</div>
+    </PageWrap>
   );
 }
 
 function SaladsSection({ group, style: s }: { group: MenuGroup; style: StyleKey }) {
   return (
-    <div className="page">
-      <Header style={s} />
-      <SecTitle title="Salads" style={s} />
-      {group.items.map(it => <ItemLine key={it.id} name={it.name} desc={it.description} price={it.price} style={s} />)}
-      <AddOnBox addOns={group.addOns} label={group.addOnLabel} style={s} />
-      <Footer />
-    </div>
+    <PageWrap style={s}>
+      <SecHead title="Salads" style={s} />
+      {group.items.map(it => <ItemRow key={it.id} name={it.name} desc={it.description} price={it.price} />)}
+      <AddOnBox addOns={group.addOns} label={group.addOnLabel} />
+    </PageWrap>
   );
 }
 
 function BurgersSection({ group, style: s }: { group: MenuGroup; style: StyleKey }) {
-  /* All burgers are same price — show once at top, then 2-col list */
   return (
-    <div className="page">
-      <Header style={s} />
-      <SecTitle title="Burgers" style={s} />
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 4 }}>
-        <div className="vgroup-desc" style={{ fontSize: 12 }}>{group.description}</div>
-        {group.basePrice != null && <span className="vgroup-price" style={{ fontSize: 18 }}>{fmtPrice(group.basePrice)}</span>}
+    <PageWrap style={s}>
+      <SecHead title="Burgers" style={s} />
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8 }}>
+        <div className="grp-desc" style={{ fontSize: 11 }}>{group.description}</div>
+        {group.basePrice != null && <span className="grp-pr" style={{ fontSize: 18 }}>{fmtPrice(group.basePrice)}</span>}
       </div>
-      {s === 'rustic' && <div className="orn">— ★ —</div>}
-      <div className="cols-2">
+      <div className="c2">
         {group.items.map(it => (
-          <div key={it.id} style={{ marginBottom: 10, breakInside: 'avoid' }}>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-              <span className="item-nm">{it.name}</span>
-              {it.subtitle && <span className="item-sub">{s === 'rustic' ? `— ${it.subtitle}` : `(${it.subtitle})`}</span>}
+          <div key={it.id} style={{ marginBottom: 8, breakInside: 'avoid' }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 5 }}>
+              <span className="row-nm">{it.name}</span>
+              {it.subtitle && <span className="row-sub">{it.subtitle}</span>}
             </div>
-            {it.description && <div className="item-desc">{it.description}</div>}
+            {it.description && <div className="row-desc">{it.description}</div>}
           </div>
         ))}
       </div>
-      <AddOnBox addOns={group.addOns} label={group.addOnLabel} style={s} />
-      <Footer />
-    </div>
+      <AddOnBox addOns={group.addOns} label={group.addOnLabel} />
+    </PageWrap>
   );
 }
 
 function HeroesSection({ heroesGroup, handheldsGroup, style: s }: { heroesGroup: MenuGroup; handheldsGroup: MenuGroup; style: StyleKey }) {
   return (
-    <div className="page">
-      <Header style={s} />
-      <SecTitle title="Heroes & Handhelds" style={s} />
-      <div className="cols-2">
-        {/* Philly */}
+    <PageWrap style={s}>
+      <SecHead title="Heroes & Handhelds" style={s} />
+      <div className="c2">
         {heroesGroup.subGroups?.map(sub => <VGroup key={sub.id} g={sub} style={s} />)}
-        {/* Hero sandwiches */}
         {heroesGroup.items.map(it => (
-          <div key={it.id} style={{ marginBottom: 10, breakInside: 'avoid' }}>
-            <div className="item-row">
-              <span className="item-nm">{it.name}</span>
-              {it.subtitle && <span className="item-sub">{s === 'rustic' ? `— ${it.subtitle}` : `(${it.subtitle})`}</span>}
-              <span className="item-fill" />{s === 'minimal' && <span style={{ flex: 1 }} />}
-              <span className="item-pr">{fmtPrice(it.price)}</span>
-            </div>
-            {it.description && <div className="item-desc">{it.description}</div>}
+          <div key={it.id} style={{ marginBottom: 6, breakInside: 'avoid' }}>
+            <div className="row"><span className="row-nm">{it.name}</span>{it.subtitle && <span className="row-sub">{it.subtitle}</span>}<span className="row-dots" /><span className="row-pr">{fmtPrice(it.price)}</span></div>
+            {it.description && <div className="row-desc">{it.description}</div>}
           </div>
         ))}
       </div>
-      <AddOnBox addOns={heroesGroup.addOns} label={heroesGroup.addOnLabel} style={s} />
-
-      {s === 'rustic' ? <div className="orn" style={{ margin: '10px 0' }}>★ ★ ★</div> : <div style={{ borderTop: '2px solid #ddd', margin: '12px 0' }} />}
-
-      <SubHd title="Handhelds" style={s} />
-      <div className="cols-2">
-        {handheldsGroup.subGroups?.map(sub => <VGroup key={sub.id} g={sub} style={s} />)}
-      </div>
-      <AddOnBox addOns={handheldsGroup.addOns} label={handheldsGroup.addOnLabel} style={s} />
-      <Footer />
-    </div>
+      <AddOnBox addOns={heroesGroup.addOns} label={heroesGroup.addOnLabel} />
+      <Orn type="divider" style={s} />
+      {s === 'editorial' ? <div className="sub-hd">Handhelds</div> : s === 'heritage' ? <><div className="sub-hd">Handhelds</div><div className="sub-rule" /></> : <div className="sub-hd">Handhelds</div>}
+      <div className="c2">{handheldsGroup.subGroups?.map(sub => <VGroup key={sub.id} g={sub} style={s} />)}</div>
+      <AddOnBox addOns={handheldsGroup.addOns} label={handheldsGroup.addOnLabel} />
+    </PageWrap>
   );
 }
 
 function SweetSection({ group, style: s }: { group: MenuGroup; style: StyleKey }) {
   return (
-    <div className="page">
-      <Header style={s} />
-      <SecTitle title="Sweet Stuff" style={s} />
-      <div className="cols-2">
-        {group.items.map(it => <ItemLine key={it.id} name={it.name} desc={it.description} price={it.price} style={s} />)}
-      </div>
-      <Footer />
-    </div>
+    <PageWrap style={s}>
+      <SecHead title="Sweet Stuff" style={s} />
+      <div className="c2">{group.items.map(it => <ItemRow key={it.id} name={it.name} desc={it.description} price={it.price} />)}</div>
+    </PageWrap>
   );
 }
 
-/* ============================================================
-   KIDS — Single-page activity placemat: menu + coloring + games
-   ============================================================ */
-function KidsSection({ group, style: s }: { group: MenuGroup; style: StyleKey }) {
+function KidsSection({ group, style: s, mode: m }: { group: MenuGroup; style: StyleKey; mode: ModeKey }) {
   return (
-    <div className="page" style={{ padding: s === 'minimal' ? '12mm 14mm' : '10mm 12mm', overflow: 'hidden' }}>
-      {/* Fun header */}
-      <div style={{ textAlign: 'center', marginBottom: 8 }}>
-        <div style={{ fontSize: 24, fontWeight: 900, fontFamily: s === 'rustic' ? "'Alfa Slab One',cursive" : s === 'classic' ? "'Oswald',sans-serif" : "'Playfair Display',serif", textTransform: s === 'minimal' ? 'none' : 'uppercase', letterSpacing: s === 'minimal' ? 4 : 2, color: s === 'rustic' ? '#1b2a4a' : '#222' }}>
-          Heroes Kids Menu
+    <PageWrap style={s}>
+      <SecHead title="Kids Menu" desc={group.basePrice ? `All items ${fmtPrice(group.basePrice)} · Includes drink and side.` : undefined} style={s} />
+      {group.basePrice != null && (
+        <div style={{ textAlign: 'center', marginBottom: 10 }}>
+          <span className="grp-pr" style={{ fontSize: 28 }}>{fmtPrice(group.basePrice)}</span>
         </div>
-        <div style={{ fontSize: 10, color: '#888', letterSpacing: 2, marginTop: 2 }}>
-          AMERICAN HEROES &amp; BREW · CARLSBAD, CA
-        </div>
-      </div>
-
-      {/* ── Top section: Menu items grid + choices ── */}
-      <div style={{ border: s === 'rustic' ? '2px solid #1b2a4a' : '2px solid #222', borderRadius: 8, padding: '8px 10px', marginBottom: 8, background: s === 'rustic' ? '#fafbfd' : '#fafafa' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-          <span style={{ fontWeight: 800, fontSize: 14, fontFamily: s === 'rustic' ? "'Alfa Slab One',cursive" : s === 'classic' ? "'Oswald',sans-serif" : "'Playfair Display',serif", textTransform: 'uppercase', letterSpacing: 1 }}>
-            Pick Your Meal!
-          </span>
-          <span style={{ fontWeight: 800, fontSize: 18, color: s === 'rustic' ? '#bf2a2a' : '#222' }}>{group.basePrice ? fmtPrice(group.basePrice) : ''}</span>
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 6, textAlign: 'center' }}>
-          {group.items.map(it => (
-            <div key={it.id} style={{ border: '1px solid #ddd', borderRadius: 6, padding: '6px 2px', background: '#fff' }}>
-              <div style={{ fontSize: 24 }}>
-                {it.name === 'Mac & Cheese' ? '🧀' : it.name === 'Corn Dog' ? '🌽' : it.name === 'Chicken Tenders' ? '🍗' : it.name === 'Burger' ? '🍔' : '🌭'}
-              </div>
-              <div style={{ fontSize: 10, fontWeight: 700, marginTop: 2 }}>{it.name}</div>
+      )}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8, textAlign: 'center', marginBottom: 12 }}>
+        {group.items.map(it => (
+          <div key={it.id} style={{ borderRadius: 8, padding: '10px 4px', border: m === 'dark' ? (s === 'dark' ? '1px solid #c9a84c33' : s === 'editorial' ? '2px solid #444' : '1.5px solid #3a4f7a') : (s === 'dark' ? '1px solid #8b691433' : s === 'editorial' ? '2px solid #1a1a1a' : '1.5px solid #1b2a4a'), background: m === 'dark' ? (s === 'dark' ? '#c9a84c08' : s === 'editorial' ? '#2a2a2a' : '#1e2d48') : (s === 'dark' ? '#8b69140a' : s === 'editorial' ? '#fafafa' : '#faf7f0') }}>
+            <div style={{ fontSize: 30, lineHeight: 1 }}>
+              {it.name === 'Mac & Cheese' ? '🧀' : it.name === 'Corn Dog' ? '🌽' : it.name === 'Chicken Tenders' ? '🍗' : it.name === 'Burger' ? '🍔' : '🌭'}
             </div>
-          ))}
-        </div>
-        <div style={{ display: 'flex', gap: 16, marginTop: 6, fontSize: 9 }}>
-          {group.choices?.map(c => (
-            <div key={c.label}><span style={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1 }}>{c.label}: </span>{c.options.join(' · ')}</div>
-          ))}
-          {group.addOns && <div><span style={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1 }}>{group.addOnLabel}: </span>{group.addOns.map(a => `${a.name} ${a.price}`).join(' · ')}</div>}
-        </div>
-      </div>
-
-      {/* ── Bottom section: 2 columns — coloring left, games right ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, height: 'calc(100% - 180px)' }}>
-        {/* LEFT: Coloring */}
-        <div style={{ border: '1.5px dashed #ccc', borderRadius: 8, padding: 6, display: 'flex', flexDirection: 'column' }}>
-          <div style={{ textAlign: 'center', fontWeight: 800, fontSize: 12, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4, color: s === 'rustic' ? '#bf2a2a' : '#444' }}>
-            Color Me In!
+            <div className="grp-nm" style={{ fontSize: 12, marginTop: 4 }}>{it.name}</div>
           </div>
-          <svg viewBox="0 0 300 380" style={{ flex: 1, width: '100%' }}>
-            {/* Shield */}
-            <path d="M150 20 L220 55 L220 160 Q220 230 150 270 Q80 230 80 160 L80 55 Z" fill="none" stroke="#333" strokeWidth="2.5"/>
-            <path d="M150 45 L200 70 L200 160 Q200 215 150 245 Q100 215 100 160 L100 70 Z" fill="none" stroke="#333" strokeWidth="1.5"/>
-            {/* H */}
-            <text x="150" y="175" textAnchor="middle" fontFamily="serif" fontSize="56" fontWeight="bold" fill="none" stroke="#333" strokeWidth="2">H</text>
-            {/* Stars */}
-            <polygon points="150,10 154,22 167,22 157,30 160,42 150,35 140,42 143,30 133,22 146,22" fill="none" stroke="#333" strokeWidth="1.5"/>
-            <polygon points="70,35 74,47 87,47 77,55 80,67 70,60 60,67 63,55 53,47 66,47" fill="none" stroke="#333" strokeWidth="1.5"/>
-            <polygon points="230,35 234,47 247,47 237,55 240,67 230,60 220,67 223,55 213,47 226,47" fill="none" stroke="#333" strokeWidth="1.5"/>
-            {/* Banner */}
-            <path d="M70 280 Q150 260 230 280 L220 305 Q150 285 80 305 Z" fill="none" stroke="#333" strokeWidth="2"/>
-            <text x="150" y="298" textAnchor="middle" fontFamily="serif" fontSize="12" fill="none" stroke="#333" strokeWidth="1">HEROES &amp; BREW</text>
-            {/* Burger */}
-            <path d="M90 330 Q150 310 210 330 Z" fill="none" stroke="#333" strokeWidth="2"/>
-            <ellipse cx="150" cy="330" rx="4" ry="3" fill="none" stroke="#333" strokeWidth="1"/>
-            <ellipse cx="170" cy="325" rx="4" ry="3" fill="none" stroke="#333" strokeWidth="1"/>
-            <ellipse cx="130" cy="325" rx="4" ry="3" fill="none" stroke="#333" strokeWidth="1"/>
-            <path d="M85 335 Q100 330 115 335 Q130 330 145 335 Q160 330 175 335 Q190 330 205 335 Q215 330 220 335" fill="none" stroke="#333" strokeWidth="1.5"/>
-            <rect x="88" y="338" width="124" height="14" rx="3" fill="none" stroke="#333" strokeWidth="2"/>
-            <rect x="88" y="354" width="124" height="8" fill="none" stroke="#333" strokeWidth="1.5"/>
-            <path d="M85 364 L215 364 Q215 378 150 378 Q85 378 85 364 Z" fill="none" stroke="#333" strokeWidth="2"/>
-          </svg>
-        </div>
-
-        {/* RIGHT: Games */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          {/* Word Search */}
-          <div style={{ border: '1.5px dashed #ccc', borderRadius: 8, padding: 6, flex: 1 }}>
-            <div style={{ textAlign: 'center', fontWeight: 800, fontSize: 11, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 3, color: s === 'rustic' ? '#1b2a4a' : '#444' }}>
-              Word Search
-            </div>
-            <svg viewBox="0 0 280 195" style={{ width: '100%' }}>
-              {(() => {
-                const grid = [
-                  'BURGERSWINGS',
-                  'TACOSHEROFLY',
-                  'NACHOSFRIESK',
-                  'CSLIDERSALAD',
-                  'HCHURROSBREW',
-                  'EPHILLYCKDOG',
-                  'ECARLSBADPIE',
-                  'SAUCEPICKLES',
-                ];
-                const sz = 16;
-                const ox = 8;
-                const oy = 2;
-                const cells: string[] = [];
-                grid.forEach((row, ri) => {
-                  [...row].forEach((ch, ci) => {
-                    const x = ox + ci * sz;
-                    const y = oy + ri * sz;
-                    cells.push(`<rect x="${x}" y="${y}" width="${sz}" height="${sz}" fill="none" stroke="#e0e0e0" stroke-width=".5"/>`);
-                    cells.push(`<text x="${x + sz / 2}" y="${y + sz / 2 + 4}" text-anchor="middle" font-family="monospace" font-size="10" font-weight="600">${ch}</text>`);
-                  });
-                });
-                cells.push(`<text x="8" y="145" font-family="sans-serif" font-size="8" font-weight="700">Find:</text>`);
-                cells.push(`<text x="8" y="157" font-family="sans-serif" font-size="7.5">BURGERS · WINGS · TACOS · NACHOS</text>`);
-                cells.push(`<text x="8" y="168" font-family="sans-serif" font-size="7.5">FRIES · HEROES · PHILLY · BREW</text>`);
-                cells.push(`<text x="8" y="179" font-family="sans-serif" font-size="7.5">CHURROS · SALAD · CARLSBAD · PIE</text>`);
-                return <g dangerouslySetInnerHTML={{ __html: cells.join('') }} />;
-              })()}
-            </svg>
-          </div>
-
-          {/* Maze */}
-          <div style={{ border: '1.5px dashed #ccc', borderRadius: 8, padding: 6, flex: 1 }}>
-            <div style={{ textAlign: 'center', fontWeight: 800, fontSize: 11, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 3, color: s === 'rustic' ? '#1b2a4a' : '#444' }}>
-              Help the Hero Find the Burger!
-            </div>
-            <svg viewBox="0 0 280 160" style={{ width: '100%' }}>
-              {/* Start/End */}
-              <text x="14" y="16" fontSize="14">🦸</text>
-              <text x="255" y="152" fontSize="14">🍔</text>
-              {/* Maze border */}
-              <rect x="8" y="22" width="264" height="120" fill="none" stroke="#333" strokeWidth="2"/>
-              {/* Horizontal walls */}
-              <line x1="8" y1="42" x2="80" y2="42" stroke="#333" strokeWidth="1.8"/>
-              <line x1="110" y1="42" x2="200" y2="42" stroke="#333" strokeWidth="1.8"/>
-              <line x1="230" y1="42" x2="272" y2="42" stroke="#333" strokeWidth="1.8"/>
-              <line x1="40" y1="62" x2="140" y2="62" stroke="#333" strokeWidth="1.8"/>
-              <line x1="170" y1="62" x2="240" y2="62" stroke="#333" strokeWidth="1.8"/>
-              <line x1="8" y1="82" x2="70" y2="82" stroke="#333" strokeWidth="1.8"/>
-              <line x1="100" y1="82" x2="180" y2="82" stroke="#333" strokeWidth="1.8"/>
-              <line x1="210" y1="82" x2="272" y2="82" stroke="#333" strokeWidth="1.8"/>
-              <line x1="40" y1="102" x2="120" y2="102" stroke="#333" strokeWidth="1.8"/>
-              <line x1="150" y1="102" x2="230" y2="102" stroke="#333" strokeWidth="1.8"/>
-              <line x1="8" y1="122" x2="90" y2="122" stroke="#333" strokeWidth="1.8"/>
-              <line x1="120" y1="122" x2="200" y2="122" stroke="#333" strokeWidth="1.8"/>
-              {/* Vertical walls */}
-              <line x1="80" y1="22" x2="80" y2="42" stroke="#333" strokeWidth="1.8"/>
-              <line x1="200" y1="22" x2="200" y2="42" stroke="#333" strokeWidth="1.8"/>
-              <line x1="140" y1="42" x2="140" y2="62" stroke="#333" strokeWidth="1.8"/>
-              <line x1="70" y1="62" x2="70" y2="82" stroke="#333" strokeWidth="1.8"/>
-              <line x1="240" y1="62" x2="240" y2="82" stroke="#333" strokeWidth="1.8"/>
-              <line x1="180" y1="82" x2="180" y2="102" stroke="#333" strokeWidth="1.8"/>
-              <line x1="120" y1="102" x2="120" y2="122" stroke="#333" strokeWidth="1.8"/>
-              <line x1="230" y1="102" x2="230" y2="142" stroke="#333" strokeWidth="1.8"/>
-            </svg>
-          </div>
-
-          {/* Tic Tac Toe */}
-          <div style={{ border: '1.5px dashed #ccc', borderRadius: 8, padding: 6 }}>
-            <div style={{ textAlign: 'center', fontWeight: 800, fontSize: 11, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 2, color: s === 'rustic' ? '#1b2a4a' : '#444' }}>
-              Tic-Tac-Toe
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'center', gap: 16 }}>
-              {[0, 1].map(n => (
-                <svg key={n} viewBox="0 0 90 90" style={{ width: 70, height: 70 }}>
-                  <line x1="30" y1="5" x2="30" y2="85" stroke="#333" strokeWidth="2"/>
-                  <line x1="60" y1="5" x2="60" y2="85" stroke="#333" strokeWidth="2"/>
-                  <line x1="5" y1="30" x2="85" y2="30" stroke="#333" strokeWidth="2"/>
-                  <line x1="5" y1="60" x2="85" y2="60" stroke="#333" strokeWidth="2"/>
-                </svg>
-              ))}
-            </div>
-          </div>
-        </div>
+        ))}
       </div>
-
-      <div style={{ textAlign: 'center', fontSize: 7, color: '#aaa', marginTop: 4 }}>
-        American Heroes &amp; Brew · 300 Carlsbad Village Dr, Carlsbad CA · Ask your server for crayons!
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        {group.choices?.map(c => (
+          <div key={c.label}>
+            <div className="addons-lbl" style={{ marginBottom: 4 }}>{c.label}</div>
+            <div className="pills">{c.options.map(o => <span key={o} className="pill">{o}</span>)}</div>
+          </div>
+        ))}
       </div>
-    </div>
+      {group.addOns && <AddOnBox addOns={group.addOns} label={group.addOnLabel} />}
+    </PageWrap>
   );
 }
 
 /* ============================================================
-   MAIN COMPONENT
+   MAIN
    ============================================================ */
 export default function PrintableMenuClient({ menus }: { menus: Menu[] }) {
   const [selected, setSelected] = useState<Set<SectionKey>>(new Set(SECTIONS.map(s => s.key)));
-  const [style, setStyle] = useState<StyleKey>('classic');
+  const [style, setStyle] = useState<StyleKey>('dark');
+  const [mode, setMode] = useState<ModeKey>('dark');
 
   const groups = menus[0]?.groups || [];
   const find = (id: string) => groups.find(g => g.id === id)!;
 
-  const toggle = (key: SectionKey) => {
-    setSelected(prev => {
-      const next = new Set(prev);
-      next.has(key) ? next.delete(key) : next.add(key);
-      return next;
-    });
-  };
+  const toggle = (key: SectionKey) => setSelected(prev => { const n = new Set(prev); n.has(key) ? n.delete(key) : n.add(key); return n; });
 
   return (
     <>
-      <style dangerouslySetInnerHTML={{ __html: getStyleCSS(style) }} />
-
-      {/* ── Control Bar ── */}
-      <div className="no-print" style={{ position: 'sticky', top: 0, zIndex: 50, background: '#111827', color: '#fff', padding: '10px 16px', boxShadow: '0 4px 12px rgba(0,0,0,.3)', fontFamily: 'system-ui,sans-serif' }}>
-        <div style={{ maxWidth: 800, margin: '0 auto' }}>
+      <style dangerouslySetInnerHTML={{ __html: getStyleCSS(style, mode) }} />
+      <div className="no-print" style={{ position: 'sticky', top: 0, zIndex: 50, background: '#111827', color: '#fff', padding: '10px 16px', boxShadow: '0 4px 16px rgba(0,0,0,.4)', fontFamily: 'system-ui,sans-serif' }}>
+        <div style={{ maxWidth: 820, margin: '0 auto' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
             <h1 style={{ fontSize: 16, fontWeight: 700, margin: 0 }}>Print Menus</h1>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               {STYLES.map(st => (
-                <button key={st.key} onClick={() => setStyle(st.key)} title={st.desc} style={{ padding: '5px 10px', borderRadius: 5, border: 'none', fontSize: 11, fontWeight: 600, cursor: 'pointer', background: style === st.key ? '#f59e0b' : '#374151', color: style === st.key ? '#000' : '#9ca3af' }}>
+                <button key={st.key} onClick={() => setStyle(st.key)} style={{ padding: '5px 10px', borderRadius: 5, border: 'none', fontSize: 11, fontWeight: 600, cursor: 'pointer', background: style === st.key ? '#f59e0b' : '#374151', color: style === st.key ? '#000' : '#9ca3af', transition: 'all .15s' }}>
                   {st.label}
                 </button>
               ))}
-              <button onClick={() => window.print()} style={{ background: '#f59e0b', color: '#000', fontWeight: 700, padding: '6px 16px', borderRadius: 6, border: 'none', fontSize: 13, cursor: 'pointer', marginLeft: 4 }}>
-                🖨️ Print
-              </button>
+              <span style={{ color: '#4b5563', margin: '0 2px' }}>|</span>
+              {(['light', 'dark'] as ModeKey[]).map(mk => (
+                <button key={mk} onClick={() => setMode(mk)} style={{ padding: '5px 10px', borderRadius: 5, border: 'none', fontSize: 11, fontWeight: 600, cursor: 'pointer', background: mode === mk ? '#f59e0b' : '#374151', color: mode === mk ? '#000' : '#9ca3af', transition: 'all .15s' }}>
+                  {mk === 'light' ? '☀️ Light' : '🌙 Dark'}
+                </button>
+              ))}
+              <button onClick={() => window.print()} style={{ background: '#f59e0b', color: '#000', fontWeight: 700, padding: '6px 18px', borderRadius: 6, border: 'none', fontSize: 13, cursor: 'pointer', marginLeft: 4 }}>🖨️ Print</button>
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', fontSize: 12 }}>
@@ -608,16 +593,13 @@ export default function PrintableMenuClient({ menus }: { menus: Menu[] }) {
             <span style={{ color: '#4b5563' }}>|</span>
             {SECTIONS.map(sec => (
               <label key={sec.key} style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer' }}>
-                <input type="checkbox" checked={selected.has(sec.key)} onChange={() => toggle(sec.key)} style={{ accentColor: '#f59e0b', width: 14, height: 14 }} />
-                {sec.label}
+                <input type="checkbox" checked={selected.has(sec.key)} onChange={() => toggle(sec.key)} style={{ accentColor: '#f59e0b', width: 14, height: 14 }} />{sec.label}
               </label>
             ))}
           </div>
-          <div style={{ fontSize: 10, color: '#6b7280', marginTop: 4 }}>Style: {STYLES.find(st => st.key === style)?.desc}</div>
+          <div style={{ fontSize: 10, color: '#6b7280', marginTop: 4 }}>{STYLES.find(st => st.key === style)?.desc}</div>
         </div>
       </div>
-
-      {/* ── Pages ── */}
       <div style={{ minHeight: '100vh', padding: '20px 16px' }}>
         {selected.has('daily') && <DailySection style={style} />}
         {selected.has('starters') && <StartersSection group={find('g-starters')} style={style} />}
@@ -625,7 +607,7 @@ export default function PrintableMenuClient({ menus }: { menus: Menu[] }) {
         {selected.has('burgers') && <BurgersSection group={find('g-burgers')} style={style} />}
         {selected.has('heroes') && <HeroesSection heroesGroup={find('g-heroes')} handheldsGroup={find('g-handhelds')} style={style} />}
         {selected.has('sweet') && <SweetSection group={find('g-sweet')} style={style} />}
-        {selected.has('kids') && <KidsSection group={find('g-kids')} style={style} />}
+        {selected.has('kids') && <KidsSection group={find('g-kids')} style={style} mode={mode} />}
         {selected.size === 0 && <div style={{ textAlign: 'center', color: '#9ca3af', marginTop: 80, fontSize: 16 }}>Select sections above to preview &amp; print</div>}
       </div>
     </>
