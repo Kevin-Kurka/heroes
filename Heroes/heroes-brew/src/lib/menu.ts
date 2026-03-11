@@ -320,7 +320,7 @@ export function getMenus(): Menu[] {
               items: [
                 { id: 'bp1', name: 'American Hero Breakfast', description: 'Bacon, sausage patty, or ham, 2 eggs any style, hashbrowns. Choice of biscuit, white, wheat, or rye toast.', price: 12 },
                 { id: 'bp2', name: 'Fallbrook', description: 'Avocado toast served with 2 poached eggs, tomato, and sprouts on white, wheat, or rye toast.', price: 16 },
-                { id: 'bp3', name: 'Toasty Toast', description: 'French toast topped with syrup & powdered sugar.', price: 13 },
+                { id: 'bp3', name: 'Toasty Toast', description: 'French toast topped with syrup & powdered sugar.', price: 15 },
               ],
             },
             {
