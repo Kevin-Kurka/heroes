@@ -148,7 +148,7 @@ export function getMenus(): Menu[] {
             { id: 'b5', name: 'Hollywood', subtitle: 'Patty Melt', description: 'White American cheese, grilled onions, Hero sauce on toasted rye bread.', price: 18 },
             { id: 'b6', name: 'Leucadia', subtitle: 'Smash Burger', description: 'Grilled onion, white American cheese, pickles, Hero sauce on a potato bun.', price: 18 },
             { id: 'b7', name: 'Austin', subtitle: 'Jalapeño Burger', description: 'Pepper jack, wiz, red pepper relish, grilled onions, jalapeño poppers on a brioche bun.', price: 18 },
-            { id: 'b8', name: 'Irwindale', subtitle: 'Sriracha Honey', description: 'Caramelized onions, pickles, slaw, garlic aioli, Sriracha Honey sauce on a brioche bun.', price: 18 },
+            { id: 'b8', name: 'Irwindale', subtitle: 'Sriracha Honey', description: 'Fresh onions, slaw, pickles, Swiss cheese, garlic aioli, Sriracha Honey sauce on a brioche bun.', price: 18 },
           ],
         },
         {
