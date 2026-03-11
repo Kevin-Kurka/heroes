@@ -49,12 +49,12 @@ export function getMenus(): Menu[] {
               name: 'Sliders',
               description: '3 juicy sliders served your way on a mini brioche bun.',
               displayMode: 'variants',
-              basePrice: 16,
+              basePrice: 18,
               choices: [
                 { label: 'Select', options: ['Pulled Pork', 'Cheeseburger', 'Hamburger'] },
               ],
               items: [
-                { id: 'sl1', name: 'Sliders', price: 16 },
+                { id: 'sl1', name: 'Sliders', price: 18 },
               ],
             },
             {
