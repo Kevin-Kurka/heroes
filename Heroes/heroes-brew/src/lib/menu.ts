@@ -280,6 +280,71 @@ export function getMenus(): Menu[] {
             { id: 'k6', name: 'Grilled Cheese', price: 12 },
           ],
         },
+        {
+          id: 'g-breakfast',
+          name: 'Breakfast',
+          description: 'Served Friday – Sunday',
+          displayMode: 'starters',
+          items: [],
+          subGroups: [
+            {
+              id: 'br-handhelds',
+              name: 'Handhelds',
+              description: 'Bagel Melts, served with an egg any style, melted cheddar cheese.',
+              displayMode: 'variants',
+              basePrice: 14,
+              choices: [
+                { label: 'Bagel', options: ['Jalapeño', 'Everything', 'Plain'] },
+                { label: 'Meat', options: ['Ham', 'Bacon', 'Sausage', 'Pastrami +4'] },
+                { label: 'Toppings', options: ['Onion', 'Tomato', 'Avocado +3'] },
+              ],
+              items: [
+                { id: 'bh1', name: 'Bagel Melt', price: 14 },
+              ],
+            },
+            {
+              id: 'br-omelettes',
+              name: 'Omelettes',
+              displayMode: 'variants',
+              basePrice: 18,
+              items: [
+                { id: 'bo1', name: 'Denver', description: 'Ham, bell pepper, grilled onions, cheddar/jack cheese.', price: 18 },
+                { id: 'bo2', name: 'Boulder', description: 'Ribeye steak, mushrooms, grilled onions, American cheese, topped with sausage gravy.', price: 18 },
+                { id: 'bo3', name: 'Hamtown', description: 'Ham and cheddar/jack cheese.', price: 18 },
+                { id: 'bo4', name: 'Veggieville', description: 'Bell peppers, onions, mushrooms, tomato, avocado, goat cheese.', price: 18 },
+              ],
+            },
+            {
+              id: 'br-plates',
+              name: 'Plates',
+              items: [
+                { id: 'bp1', name: 'American Hero Breakfast', description: 'Bacon, sausage patty, or ham, 2 eggs any style, hashbrowns. Choice of biscuit, white, wheat, or rye toast.', price: 12 },
+                { id: 'bp2', name: 'Fallbrook', description: 'Avocado toast served with 2 poached eggs, tomato, and sprouts on white, wheat, or rye toast.', price: 16 },
+                { id: 'bp3', name: 'Toasty Toast', description: 'French toast topped with syrup & powdered sugar.', price: 13 },
+              ],
+            },
+            {
+              id: 'br-bennies',
+              name: 'Bennies',
+              description: 'Two poached eggs on top of biscuits, hollandaise sauce.',
+              displayMode: 'variants',
+              basePrice: 18,
+              choices: [
+                { label: 'Style', options: ['Philly Cheesesteak', 'Chicken & Avocado', 'Tomato Avocado', 'Oven Baked Ham'] },
+              ],
+              items: [
+                { id: 'bb1', name: 'Bennies', price: 18 },
+              ],
+            },
+          ],
+          addOnLabel: 'Sides',
+          addOns: [
+            { name: 'Avocado', price: '+3' },
+            { name: 'Sausage', price: '+4' },
+            { name: 'Bacon', price: '+5' },
+            { name: 'Biscuits & Gravy', price: '+7' },
+          ],
+        },
       ],
     },
   ];

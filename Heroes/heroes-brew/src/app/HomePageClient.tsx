@@ -343,9 +343,12 @@ export default function HomePageClient({ events }: Props) {
           className="relative overflow-hidden bg-card border border-accent/30 rounded-lg p-6"
         >
           <div className="absolute top-0 left-0 w-1 h-full bg-accent" />
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-2">
             <h3 className="text-lg font-bold text-foreground">2 Breakfast Entrées</h3>
             <span className="text-lg font-bold text-accent">22</span>
+          </div>
+          <div className="border-t border-border/50 pt-3 text-sm text-muted">
+            <span>Breakfast served Friday – Sunday</span>
           </div>
         </motion.div>
       </section>
