@@ -58,6 +58,7 @@ export interface MenuGroup {
   basePrice?: number;
   addOns?: MenuGroupAddOn[];
   addOnLabel?: string;
+  mods?: MenuGroupAddOn[];
   choices?: MenuGroupChoice[];
   subGroups?: MenuGroup[];
 }

@@ -130,6 +130,23 @@ export default function MenuPageClient({ menus }: Props) {
                   <MenuCard key={item.id} item={item} index={i} />
                 ))}
               </div>
+              {currentGroup?.mods && currentGroup.mods.length > 0 && (
+                <div className="border-t border-border pt-3 mt-4">
+                  <span className="text-xs uppercase tracking-wider text-muted font-semibold mb-2 block">Mods</span>
+                  <div className="flex flex-wrap gap-2">
+                    {currentGroup.mods.map((mod) => (
+                      <span
+                        key={mod.name}
+                        className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-sm"
+                        title={mod.description || undefined}
+                      >
+                        <span className="text-foreground/70">{mod.name}</span>
+                        <span className="text-accent font-mono font-semibold text-xs">{mod.price}</span>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
               {currentGroup?.addOns && currentGroup.addOns.length > 0 && (
                 <div className="border-t border-border pt-3 mt-4">
                   <span className="text-xs uppercase tracking-wider text-muted font-semibold mb-2 block">{currentGroup.addOnLabel || 'Sides'}</span>

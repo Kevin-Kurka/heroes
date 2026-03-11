@@ -487,7 +487,8 @@ function BurgersSection({ group, style: s }: { group: MenuGroup; style: StyleKey
           </div>
         ))}
       </div>
-      <AddOnBox addOns={group.addOns} label={group.addOnLabel} />
+      <AddOnBox addOns={group.mods} label="Mods" />
+      <AddOnBox addOns={group.addOns} label={group.addOnLabel || 'Sides'} />
     </PageWrap>
   );
 }

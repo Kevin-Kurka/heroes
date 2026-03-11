@@ -126,6 +126,11 @@ export function getMenus(): Menu[] {
           description: 'Best burgers in Carlsbad. Make it a double +4.',
           displayMode: 'variants',
           basePrice: 18,
+          mods: [
+            { name: 'Avocado', price: '+3' },
+            { name: 'Bacon', price: '+4' },
+          ],
+          addOnLabel: 'Sides',
           addOns: [
             { name: 'Potato Salad', price: '+2' },
             { name: 'Macaroni Salad', price: '+3' },
