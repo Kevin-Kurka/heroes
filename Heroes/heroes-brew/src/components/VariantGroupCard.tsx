@@ -22,7 +22,7 @@ export default function VariantGroupCard({ group, elevated }: VariantGroupCardPr
         </h2>
         {group.basePrice != null && (
           <span className="text-accent font-mono font-bold text-lg shrink-0">
-            ${group.basePrice}
+            {group.basePrice}
           </span>
         )}
       </div>
@@ -76,6 +76,24 @@ export default function VariantGroupCard({ group, elevated }: VariantGroupCardPr
               ))}
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Mods */}
+      {group.mods && group.mods.length > 0 && (
+        <div className="border-t border-border pt-3 mb-2">
+          <span className="text-xs uppercase tracking-wider text-muted font-semibold mb-2 block">Mods</span>
+          <div className="flex flex-wrap gap-2">
+            {group.mods.map((mod) => (
+              <span
+                key={mod.name}
+                className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-sm"
+              >
+                <span className="text-foreground/70">{mod.name}</span>
+                <span className="text-accent font-mono font-semibold text-xs">{mod.price}</span>
+              </span>
+            ))}
+          </div>
         </div>
       )}
 

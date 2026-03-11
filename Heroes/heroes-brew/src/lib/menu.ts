@@ -223,10 +223,10 @@ export function getMenus(): Menu[] {
             },
             {
               id: 'g-dogs',
-              name: 'Dodger Dogs',
-              description: '2 dodger dogs with your choice of topping.',
+              name: 'Frier Franks',
+              description: '2 franks with your choice of topping.',
               displayMode: 'variants',
-              basePrice: 15,
+              basePrice: 16,
               choices: [
                 { label: 'Toppings', options: ['Ketchup', 'Mustard', 'Onions', 'Relish'] },
               ],
@@ -236,7 +236,7 @@ export function getMenus(): Menu[] {
                 { name: 'Chili', price: '+3' },
               ],
               items: [
-                { id: 'hh1', name: 'Dodger Dogs', price: 15 },
+                { id: 'hh1', name: 'Frier Franks', price: 16 },
               ],
             },
           ],
