@@ -2,14 +2,14 @@
 
 :root {
   --background: #0a0e1a;
-  --foreground: #e8e8ec;
-  --card: #111827;
-  --card-elevated: #172033;
-  --card-hover: #1a2236;
+  --foreground: #f1f1f5;
+  --card: #131a2b;
+  --card-elevated: #1a2440;
+  --card-hover: #1e2a46;
   --accent: #bf0a30;
   --accent-dim: #8b0722;
-  --muted: #71717a;
-  --border: #1e2a3a;
+  --muted: #9ca3af;
+  --border: #2a3a52;
   --success: #22c55e;
   --sports: #3b82f6;
   --holiday: #f43f5e;
