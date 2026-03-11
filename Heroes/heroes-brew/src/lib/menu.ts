@@ -252,6 +252,7 @@ export function getMenus(): Menu[] {
             { id: 'ss4', name: 'Ice Cream Sandwich', description: 'Ice cream sandwich.', price: 6 },
             { id: 'ss5', name: 'Ice Cream', description: 'Scoop of ice cream.', price: 4 },
             { id: 'ss6', name: 'Chocolate Chip Cookie', description: 'Fresh baked chocolate chip cookie.', price: 3 },
+            { id: 'ss7', name: 'Caramel Brownie Sundae', description: 'Chocolate brownie, vanilla ice cream, topped with whipped cream, hot fudge and caramel.', price: 12 },
           ],
         },
         {

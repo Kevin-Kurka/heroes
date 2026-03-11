@@ -4,7 +4,7 @@ import { useRef, useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
-import { UtensilsCrossed, CalendarDays, MapPin, ChevronRight, Trophy, Flame, IceCreamCone, GraduationCap, Egg } from 'lucide-react';
+import { UtensilsCrossed, CalendarDays, MapPin, ChevronRight, Trophy, Flame, GraduationCap, Egg } from 'lucide-react';
 import { UnifiedEvent } from '@/types';
 import Ticker from '@/components/Ticker';
 import EventCard from '@/components/EventCard';
@@ -347,27 +347,6 @@ export default function HomePageClient({ events }: Props) {
             <h3 className="text-lg font-bold text-foreground">2 Breakfast Entrées</h3>
             <span className="text-lg font-bold text-accent">22</span>
           </div>
-        </motion.div>
-      </section>
-
-      {/* Caramel Brownie Sundae */}
-      <section className="max-w-4xl mx-auto px-4 py-12">
-        <div className="flex items-center gap-2 mb-6">
-          <IceCreamCone size={20} className="text-accent" />
-          <h2 className="text-2xl font-bold text-foreground">Caramel Brownie Sundae</h2>
-        </div>
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.25, ease: [0, 0, 0.2, 1] }}
-          className="relative overflow-hidden bg-card border border-accent/30 rounded-lg p-6"
-        >
-          <div className="absolute top-0 left-0 w-1 h-full bg-accent" />
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-lg font-bold text-foreground">Caramel Brownie Sundae</h3>
-            <span className="text-lg font-bold text-accent">12</span>
-          </div>
-          <p className="text-foreground/70 text-sm">Chocolate brownie, vanilla ice cream, topped with whipped cream, hot fudge and caramel</p>
         </motion.div>
       </section>
 
