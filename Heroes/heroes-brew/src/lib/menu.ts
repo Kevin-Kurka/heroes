@@ -51,7 +51,7 @@ export function getMenus(): Menu[] {
               displayMode: 'variants',
               basePrice: 18,
               choices: [
-                { label: 'Select', options: ['Pulled Pork', 'Cheeseburger', 'Hamburger'] },
+                { label: 'Select', options: ['Pulled Pork', 'Cheeseburger', 'Hot Chicken'] },
               ],
               items: [
                 { id: 'sl1', name: 'Sliders', price: 18 },
