@@ -283,7 +283,7 @@ export function getMenus(): Menu[] {
         {
           id: 'g-breakfast',
           name: 'Breakfast',
-          description: 'Served Friday – Sunday',
+          description: 'Available Friday – Sunday · 9 AM – 1 PM',
           displayMode: 'starters',
           items: [],
           subGroups: [

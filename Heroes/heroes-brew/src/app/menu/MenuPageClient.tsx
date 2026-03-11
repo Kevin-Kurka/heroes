@@ -102,9 +102,25 @@ export default function MenuPageClient({ menus }: Props) {
         <div key={activeGroup}>
           {currentGroup?.displayMode === 'starters' && currentGroup.subGroups ? (
             <div className="space-y-4">
+              {currentGroup.description && (
+                <p className="text-sm text-accent font-semibold uppercase tracking-wide mb-2">{currentGroup.description}</p>
+              )}
               {currentGroup.subGroups.map((sub) => (
                 <VariantGroupCard key={sub.id} group={sub} elevated />
               ))}
+              {currentGroup.addOns && currentGroup.addOns.length > 0 && (
+                <div className="border-t border-border pt-3 mt-2">
+                  <span className="text-xs uppercase tracking-wider text-muted font-semibold mb-2 block">{currentGroup.addOnLabel || 'Sides'}</span>
+                  <div className="flex flex-wrap gap-2">
+                    {currentGroup.addOns.map((addOn) => (
+                      <span key={addOn.name} className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-sm">
+                        <span className="text-foreground/70">{addOn.name}</span>
+                        <span className="text-accent font-mono font-semibold text-xs">{addOn.price}</span>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           ) : currentGroup?.displayMode === 'variants' ? (
             <VariantGroupCard group={currentGroup} />
