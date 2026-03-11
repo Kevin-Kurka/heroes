@@ -276,6 +276,7 @@ export function getMenus(): Menu[] {
             { id: 'k3', name: 'Chicken Tenders', price: 12 },
             { id: 'k4', name: 'Burger', price: 12 },
             { id: 'k5', name: 'Hot Dog', price: 12 },
+            { id: 'k6', name: 'Grilled Cheese', price: 12 },
           ],
         },
       ],
