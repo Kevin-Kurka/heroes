@@ -13,7 +13,7 @@ const DAILY_SPECIALS = [
   {
     day: 'Monday',
     name: 'Monday Madness',
-    unifiedPrice: '$4',
+    unifiedPrice: '4',
     deals: [
       { item: 'Sliders', detail: '[Pulled Pork, Beef]' },
       { item: 'Beer', detail: '[Select Drafts]' },
@@ -22,7 +22,7 @@ const DAILY_SPECIALS = [
   {
     day: 'Tuesday',
     name: 'Taco Tuesday',
-    unifiedPrice: '$3',
+    unifiedPrice: '3',
     deals: [
       { item: 'Tacos', detail: '[Carnitas, Carne Asada]' },
       { item: 'Beer', detail: '[Modelo, Ultra]' },
@@ -31,7 +31,7 @@ const DAILY_SPECIALS = [
   {
     day: 'Wednesday',
     name: 'Wings & Well Wednesday',
-    unifiedPrice: '$2',
+    unifiedPrice: '2',
     deals: [
       { item: 'Signature Wings', price: 'each' },
       { item: 'Drinks', price: 'off' },
@@ -40,7 +40,7 @@ const DAILY_SPECIALS = [
   {
     day: 'Thursday',
     name: 'Thirsty Thursday',
-    unifiedPrice: '$5',
+    unifiedPrice: '5',
     deals: [
       { item: 'Burgers', price: 'off' },
       { item: 'Select Drafts', price: 'each' },

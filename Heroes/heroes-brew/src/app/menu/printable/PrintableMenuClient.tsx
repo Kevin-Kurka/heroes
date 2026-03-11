@@ -25,10 +25,10 @@ const SECTIONS: { key: SectionKey; label: string }[] = [
 ];
 
 const DAILY_SPECIALS = [
-  { day: 'Monday', name: 'Monday Madness', price: '$4', lines: ['Sliders · Pulled Pork, Beef', 'Beer · Select Drafts'] },
-  { day: 'Tuesday', name: 'Taco Tuesday', price: '$3', lines: ['Tacos · Carnitas, Carne Asada', 'Beer · Modelo, Ultra'] },
-  { day: 'Wednesday', name: 'Wings Wednesday', price: '$2', lines: ['Signature Wings each', 'Well Drinks off'] },
-  { day: 'Thursday', name: 'Thirsty Thursday', price: '$5', lines: ['Burgers off', 'Select Drafts each'] },
+  { day: 'Monday', name: 'Monday Madness', price: '4', lines: ['Sliders · Pulled Pork, Beef', 'Beer · Select Drafts'] },
+  { day: 'Tuesday', name: 'Taco Tuesday', price: '3', lines: ['Tacos · Carnitas, Carne Asada', 'Beer · Modelo, Ultra'] },
+  { day: 'Wednesday', name: 'Wings Wednesday', price: '2', lines: ['Signature Wings each', 'Well Drinks off'] },
+  { day: 'Thursday', name: 'Thirsty Thursday', price: '5', lines: ['Burgers off', 'Select Drafts each'] },
 ];
 
 /* SVG ornaments */
@@ -321,7 +321,7 @@ function getStyleCSS(s: StyleKey, m: ModeKey): string {
 /* ============================================================
    SHARED RENDERERS
    ============================================================ */
-function fmtPrice(p: number) { return `$${p}`; }
+function fmtPrice(p: number) { return `${p}`; }
 
 function Orn({ type, style: s }: { type: 'corner-tl' | 'corner-tr' | 'corner-bl' | 'corner-br' | 'divider' | 'star'; style: StyleKey; mode?: ModeKey }) {
   if (s === 'editorial') return null;
