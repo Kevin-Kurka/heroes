@@ -6,7 +6,7 @@ import { Menu, MenuGroup } from '@/types';
 /* ─── Types ─── */
 type StyleKey = 'americana' | 'editorial' | 'heritage';
 type ModeKey = 'light' | 'dark';
-type SectionKey = 'daily' | 'starters' | 'salads' | 'burgers' | 'heroes' | 'sweet' | 'kids';
+type SectionKey = 'daily' | 'starters' | 'salads' | 'burgers' | 'heroes' | 'sweet' | 'kids' | 'combo-burgers-heroes' | 'combo-starters-salads' | 'combo-sweet-kids';
 
 const STYLES: { key: StyleKey; label: string; desc: string }[] = [
   { key: 'americana', label: 'Bold Americana', desc: 'Navy & red banners · strong sans-serif · patriotic palette' },
@@ -22,6 +22,9 @@ const SECTIONS: { key: SectionKey; label: string }[] = [
   { key: 'heroes', label: 'Heroes & Handhelds' },
   { key: 'sweet', label: 'Sweet Stuff' },
   { key: 'kids', label: 'Kids' },
+  { key: 'combo-burgers-heroes', label: 'Burgers + Heroes + Handhelds' },
+  { key: 'combo-starters-salads', label: 'Starters + Salads' },
+  { key: 'combo-sweet-kids', label: 'Sweet Stuff + Kids' },
 ];
 
 const DAILY_SPECIALS = [
@@ -521,6 +524,7 @@ function SweetSection({ group, style: s }: { group: MenuGroup; style: StyleKey }
   return (
     <PageWrap style={s}>
       <SecHead title="Sweet Stuff" style={s} />
+      {group.subGroups?.map(sub => <VGroup key={sub.id} g={sub} style={s} />)}
       <div className="c2">{group.items.map(it => <ItemRow key={it.id} name={it.name} desc={it.description} price={it.price} />)}</div>
     </PageWrap>
   );
@@ -535,11 +539,11 @@ function KidsSection({ group, style: s, mode: m }: { group: MenuGroup; style: St
           <span className="grp-pr" style={{ fontSize: 28 }}>{fmtPrice(group.basePrice)}</span>
         </div>
       )}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8, textAlign: 'center', marginBottom: 12 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, textAlign: 'center', marginBottom: 12 }}>
         {group.items.map(it => (
           <div key={it.id} style={{ borderRadius: 8, padding: '10px 4px', border: m === 'dark' ? (s === 'americana' ? '1px solid #bf1b1b33' : s === 'editorial' ? '2px solid #444' : '1.5px solid #3a4f7a') : (s === 'americana' ? '1px solid #1b2a4a33' : s === 'editorial' ? '2px solid #1a1a1a' : '1.5px solid #1b2a4a'), background: m === 'dark' ? (s === 'americana' ? '#bf1b1b08' : s === 'editorial' ? '#2a2a2a' : '#1e2d48') : (s === 'americana' ? '#f0f4fa' : s === 'editorial' ? '#fafafa' : '#faf7f0') }}>
             <div style={{ fontSize: 30, lineHeight: 1 }}>
-              {it.name === 'Mac & Cheese' ? '🧀' : it.name === 'Corn Dog' ? '🌽' : it.name === 'Chicken Tenders' ? '🍗' : it.name === 'Burger' ? '🍔' : '🌭'}
+              {it.name === 'Mac & Cheese' ? '🧀' : it.name === 'Corn Dog' ? '🌽' : it.name === 'Chicken Tenders' ? '🍗' : it.name === 'Burger' ? '🍔' : it.name === 'Grilled Cheese' ? '🧈' : '🌭'}
             </div>
             <div className="grp-nm" style={{ fontSize: 12, marginTop: 4 }}>{it.name}</div>
           </div>
@@ -554,6 +558,116 @@ function KidsSection({ group, style: s, mode: m }: { group: MenuGroup; style: St
         ))}
       </div>
       {group.addOns && <AddOnBox addOns={group.addOns} label={group.addOnLabel} />}
+    </PageWrap>
+  );
+}
+
+/* ============================================================
+   COMBINED PAGE SECTIONS
+   ============================================================ */
+function ComboBurgersHeroesHandhelds({ burgersGroup, heroesGroup, handheldsGroup, style: s }: { burgersGroup: MenuGroup; heroesGroup: MenuGroup; handheldsGroup: MenuGroup; style: StyleKey }) {
+  return (
+    <PageWrap style={s}>
+      {/* Burgers */}
+      <SecHead title="Burgers" style={s} />
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 4 }}>
+        <div className="grp-desc" style={{ fontSize: 10 }}>{burgersGroup.description}</div>
+        {burgersGroup.basePrice != null && <span className="grp-pr" style={{ fontSize: 16 }}>{fmtPrice(burgersGroup.basePrice)}</span>}
+      </div>
+      <div className="c2">
+        {burgersGroup.items.map(it => (
+          <div key={it.id} style={{ marginBottom: 5, breakInside: 'avoid' }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
+              <span className="row-nm" style={{ fontSize: 12 }}>{it.name}</span>
+              {it.subtitle && <span className="row-sub" style={{ fontSize: 10 }}>{it.subtitle}</span>}
+            </div>
+            {it.description && <div className="row-desc" style={{ fontSize: 9, marginBottom: 4 }}>{it.description}</div>}
+          </div>
+        ))}
+      </div>
+      <AddOnBox addOns={burgersGroup.mods} label="Mods" />
+      <AddOnBox addOns={burgersGroup.addOns} label={burgersGroup.addOnLabel || 'Sides'} />
+
+      {/* Heroes */}
+      <div style={{ marginTop: 14 }}>
+        <SecHead title="Heroes" style={s} />
+        <div className="c2">
+          {heroesGroup.subGroups?.map(sub => <VGroup key={sub.id} g={sub} style={s} />)}
+          {heroesGroup.items.map(it => (
+            <div key={it.id} style={{ marginBottom: 4, breakInside: 'avoid' }}>
+              <div className="row"><span className="row-nm" style={{ fontSize: 12 }}>{it.name}</span>{it.subtitle && <span className="row-sub" style={{ fontSize: 10 }}>{it.subtitle}</span>}<span className="row-dots" /><span className="row-pr" style={{ fontSize: 12 }}>{fmtPrice(it.price)}</span></div>
+              {it.description && <div className="row-desc" style={{ fontSize: 9, marginBottom: 4 }}>{it.description}</div>}
+            </div>
+          ))}
+        </div>
+        <AddOnBox addOns={heroesGroup.addOns} label={heroesGroup.addOnLabel} />
+      </div>
+
+      {/* Handhelds */}
+      <div style={{ marginTop: 14 }}>
+        {s === 'heritage' ? <><div className="sub-hd">Handhelds</div><div className="sub-rule" /></> : <div className="sub-hd">Handhelds</div>}
+        <div className="c2">{handheldsGroup.subGroups?.map(sub => <VGroup key={sub.id} g={sub} style={s} />)}</div>
+        <AddOnBox addOns={handheldsGroup.addOns} label={handheldsGroup.addOnLabel} />
+      </div>
+    </PageWrap>
+  );
+}
+
+function ComboStartersSalads({ startersGroup, saladsGroup, style: s }: { startersGroup: MenuGroup; saladsGroup: MenuGroup; style: StyleKey }) {
+  return (
+    <PageWrap style={s}>
+      {/* Starters */}
+      <SecHead title="Starters" desc="Shareable favorites to kick things off." style={s} />
+      <div className="c2">{startersGroup.subGroups?.map(sub => <VGroup key={sub.id} g={sub} style={s} />)}</div>
+
+      {/* Salads */}
+      <div style={{ marginTop: 14 }}>
+        <SecHead title="Salads" style={s} />
+        {saladsGroup.items.map(it => <ItemRow key={it.id} name={it.name} desc={it.description} price={it.price} />)}
+        <AddOnBox addOns={saladsGroup.addOns} label={saladsGroup.addOnLabel} />
+      </div>
+    </PageWrap>
+  );
+}
+
+function ComboSweetKids({ sweetGroup, kidsGroup, style: s, mode: m }: { sweetGroup: MenuGroup; kidsGroup: MenuGroup; style: StyleKey; mode: ModeKey }) {
+  return (
+    <PageWrap style={s}>
+      {/* Sweet Stuff — half page */}
+      <SecHead title="Sweet Stuff" style={s} />
+      {sweetGroup.subGroups?.map(sub => <VGroup key={sub.id} g={sub} style={s} />)}
+      <div className="c2">{sweetGroup.items.map(it => <ItemRow key={it.id} name={it.name} desc={it.description} price={it.price} />)}</div>
+
+      {/* Divider */}
+      <Orn type="divider" style={s} />
+      <div style={{ marginTop: 18 }} />
+
+      {/* Kids — half page */}
+      <SecHead title="Kids Menu" desc={kidsGroup.basePrice ? `All items ${fmtPrice(kidsGroup.basePrice)} · Includes drink and side.` : undefined} style={s} />
+      {kidsGroup.basePrice != null && (
+        <div style={{ textAlign: 'center', marginBottom: 8 }}>
+          <span className="grp-pr" style={{ fontSize: 24 }}>{fmtPrice(kidsGroup.basePrice)}</span>
+        </div>
+      )}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6, textAlign: 'center', marginBottom: 10 }}>
+        {kidsGroup.items.map(it => (
+          <div key={it.id} style={{ borderRadius: 8, padding: '8px 4px', border: m === 'dark' ? (s === 'americana' ? '1px solid #bf1b1b33' : s === 'editorial' ? '2px solid #444' : '1.5px solid #3a4f7a') : (s === 'americana' ? '1px solid #1b2a4a33' : s === 'editorial' ? '2px solid #1a1a1a' : '1.5px solid #1b2a4a'), background: m === 'dark' ? (s === 'americana' ? '#bf1b1b08' : s === 'editorial' ? '#2a2a2a' : '#1e2d48') : (s === 'americana' ? '#f0f4fa' : s === 'editorial' ? '#fafafa' : '#faf7f0') }}>
+            <div style={{ fontSize: 26, lineHeight: 1 }}>
+              {it.name === 'Mac & Cheese' ? '🧀' : it.name === 'Corn Dog' ? '🌽' : it.name === 'Chicken Tenders' ? '🍗' : it.name === 'Burger' ? '🍔' : it.name === 'Grilled Cheese' ? '🧈' : '🌭'}
+            </div>
+            <div className="grp-nm" style={{ fontSize: 11, marginTop: 3 }}>{it.name}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+        {kidsGroup.choices?.map(c => (
+          <div key={c.label}>
+            <div className="addons-lbl" style={{ marginBottom: 4 }}>{c.label}</div>
+            <div className="pills">{c.options.map(o => <span key={o} className="pill">{o}</span>)}</div>
+          </div>
+        ))}
+      </div>
+      {kidsGroup.addOns && <AddOnBox addOns={kidsGroup.addOns} label={kidsGroup.addOnLabel} />}
     </PageWrap>
   );
 }
@@ -614,6 +728,9 @@ export default function PrintableMenuClient({ menus }: { menus: Menu[] }) {
         {selected.has('heroes') && <HeroesSection heroesGroup={find('g-heroes')} handheldsGroup={find('g-handhelds')} style={style} />}
         {selected.has('sweet') && <SweetSection group={find('g-sweet')} style={style} />}
         {selected.has('kids') && <KidsSection group={find('g-kids')} style={style} mode={mode} />}
+        {selected.has('combo-burgers-heroes') && <ComboBurgersHeroesHandhelds burgersGroup={find('g-burgers')} heroesGroup={find('g-heroes')} handheldsGroup={find('g-handhelds')} style={style} />}
+        {selected.has('combo-starters-salads') && <ComboStartersSalads startersGroup={find('g-starters')} saladsGroup={find('g-salads')} style={style} />}
+        {selected.has('combo-sweet-kids') && <ComboSweetKids sweetGroup={find('g-sweet')} kidsGroup={find('g-kids')} style={style} mode={mode} />}
         {selected.size === 0 && <div style={{ textAlign: 'center', color: '#9ca3af', marginTop: 80, fontSize: 16 }}>Select sections above to preview &amp; print</div>}
       </div>
     </>
