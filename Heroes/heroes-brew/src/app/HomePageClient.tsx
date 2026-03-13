@@ -15,7 +15,7 @@ const DAILY_SPECIALS = [
     name: 'Mahalo Monday',
     unifiedPrice: '4',
     deals: [
-      { item: 'Sliders', detail: '[Kalua Pork, Beef]' },
+      { item: 'Sliders', detail: '[Kalua Pork]' },
       { item: 'Beer', detail: '[Select Drafts]' },
     ],
   },
