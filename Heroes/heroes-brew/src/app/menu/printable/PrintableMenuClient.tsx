@@ -28,7 +28,7 @@ const SECTIONS: { key: SectionKey; label: string }[] = [
 ];
 
 const DAILY_SPECIALS = [
-  { day: 'Monday', name: 'Monday Madness', price: '4', lines: ['Sliders · Pulled Pork, Beef', 'Beer · Select Drafts'] },
+  { day: 'Monday', name: 'Mahalo Monday', price: '4', lines: ['Sliders · Kalua Pork, Beef', 'Beer · Select Drafts'] },
   { day: 'Tuesday', name: 'Taco Tuesday', price: '3', lines: ['Tacos · Carnitas, Carne Asada', 'Beer · Modelo, Ultra'] },
   { day: 'Wednesday', name: 'Wings Wednesday', price: '2', lines: ['Signature Wings each', 'Well Drinks off'] },
   { day: 'Thursday', name: 'Thirsty Thursday', price: '5', lines: ['Burgers off', 'Select Drafts each'] },

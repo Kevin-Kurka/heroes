@@ -12,10 +12,10 @@ import EventCard from '@/components/EventCard';
 const DAILY_SPECIALS = [
   {
     day: 'Monday',
-    name: 'Monday Madness',
+    name: 'Mahalo Monday',
     unifiedPrice: '4',
     deals: [
-      { item: 'Sliders', detail: '[Pulled Pork, Beef]' },
+      { item: 'Sliders', detail: '[Kalua Pork, Beef]' },
       { item: 'Beer', detail: '[Select Drafts]' },
     ],
   },
