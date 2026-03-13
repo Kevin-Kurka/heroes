@@ -323,6 +323,8 @@ export default function HomePageClient({ events }: Props) {
           </div>
           <p className="text-foreground/80 text-sm mb-2">With a free cookie!</p>
           <div className="border-t border-border/50 pt-3 flex flex-wrap gap-3 text-sm text-muted">
+            <span>Ages 10 &amp; under</span>
+            <span className="text-border">·</span>
             <span>Monday – Friday</span>
             <span className="text-border">·</span>
             <span>With purchase of adult entrée</span>
