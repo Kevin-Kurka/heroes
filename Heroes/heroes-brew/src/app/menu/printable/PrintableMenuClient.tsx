@@ -6,7 +6,7 @@ import { Menu, MenuGroup } from '@/types';
 /* ─── Types ─── */
 type StyleKey = 'americana' | 'editorial' | 'heritage';
 type ModeKey = 'light' | 'dark';
-type SectionKey = 'daily' | 'starters' | 'salads' | 'burgers' | 'heroes' | 'sweet' | 'kids' | 'combo-burgers-heroes' | 'combo-starters-salads' | 'combo-sweet-kids';
+type SectionKey = 'daily' | 'starters' | 'salads' | 'burgers' | 'heroes' | 'sweet' | 'drinks' | 'kids' | 'combo-burgers-heroes' | 'combo-starters-salads' | 'combo-sweet-kids';
 
 const STYLES: { key: StyleKey; label: string; desc: string }[] = [
   { key: 'americana', label: 'Bold Americana', desc: 'Navy & red banners · strong sans-serif · patriotic palette' },
@@ -19,19 +19,21 @@ const SECTIONS: { key: SectionKey; label: string }[] = [
   { key: 'starters', label: 'Starters' },
   { key: 'salads', label: 'Salads' },
   { key: 'burgers', label: 'Burgers' },
-  { key: 'heroes', label: 'Heroes & Handhelds' },
+  { key: 'heroes', label: 'Heroes' },
   { key: 'sweet', label: 'Sweet Stuff' },
+  { key: 'drinks', label: 'Drinks' },
   { key: 'kids', label: 'Kids' },
-  { key: 'combo-burgers-heroes', label: 'Burgers + Heroes + Handhelds' },
+  { key: 'combo-burgers-heroes', label: 'Burgers + Heroes' },
   { key: 'combo-starters-salads', label: 'Starters + Salads' },
   { key: 'combo-sweet-kids', label: 'Sweet Stuff + Kids' },
 ];
 
 const DAILY_SPECIALS = [
-  { day: 'Monday', name: 'Mahalo Monday', price: '4', lines: ['Sliders · Kalua Pork', 'Beer · Select Drafts'] },
-  { day: 'Tuesday', name: 'Taco Tuesday', price: '3', lines: ['Tacos · Carnitas, Carne Asada', 'Beer · Modelo, Ultra'] },
-  { day: 'Wednesday', name: 'Wings Wednesday', price: '2', lines: ['Signature Wings each', 'Well Drinks off'] },
-  { day: 'Thursday', name: 'Thirsty Thursday', price: '5', lines: ['Burgers off', 'Select Drafts each'] },
+  { day: 'Monday', name: 'Mahalo Monday', price: '4ea', lines: ['Kalua Pork Sliders $4ea', 'Select Cans $3ea'] },
+  { day: 'Tuesday', name: 'Taco Tuesday', price: '4ea', lines: ['Tacos $4ea', 'Tequila $2 off'] },
+  { day: 'Wednesday', name: 'Wings & Wells', price: '$6', lines: ['Wings $6 off', 'Wells $6ea'] },
+  { day: 'Thursday', name: 'Burgers & Beer', price: '$5', lines: ['Burgers $5 off', 'Select Drafts $5ea'] },
+  { day: 'Friday', name: 'Friday Funday', price: '$2 off', lines: ['1-4pm', 'Drinks & Appetizers $2 off'] },
 ];
 
 /* SVG ornaments */
@@ -498,10 +500,10 @@ function BurgersSection({ group, style: s }: { group: MenuGroup; style: StyleKey
   );
 }
 
-function HeroesSection({ heroesGroup, handheldsGroup, style: s }: { heroesGroup: MenuGroup; handheldsGroup: MenuGroup; style: StyleKey }) {
+function HeroesSection({ heroesGroup, style: s }: { heroesGroup: MenuGroup; style: StyleKey }) {
   return (
     <PageWrap style={s}>
-      <SecHead title="Heroes & Handhelds" style={s} />
+      <SecHead title="Heroes" style={s} />
       <div className="c2">
         {heroesGroup.subGroups?.map(sub => <VGroup key={sub.id} g={sub} style={s} />)}
         {heroesGroup.items.map(it => (
@@ -512,10 +514,6 @@ function HeroesSection({ heroesGroup, handheldsGroup, style: s }: { heroesGroup:
         ))}
       </div>
       <AddOnBox addOns={heroesGroup.addOns} label={heroesGroup.addOnLabel} />
-      <Orn type="divider" style={s} />
-      {s === 'editorial' ? <div className="sub-hd">Handhelds</div> : s === 'heritage' ? <><div className="sub-hd">Handhelds</div><div className="sub-rule" /></> : <div className="sub-hd">Handhelds</div>}
-      <div className="c2">{handheldsGroup.subGroups?.map(sub => <VGroup key={sub.id} g={sub} style={s} />)}</div>
-      <AddOnBox addOns={handheldsGroup.addOns} label={handheldsGroup.addOnLabel} />
     </PageWrap>
   );
 }
@@ -565,7 +563,17 @@ function KidsSection({ group, style: s, mode: m }: { group: MenuGroup; style: St
 /* ============================================================
    COMBINED PAGE SECTIONS
    ============================================================ */
-function ComboBurgersHeroesHandhelds({ burgersGroup, heroesGroup, handheldsGroup, style: s }: { burgersGroup: MenuGroup; heroesGroup: MenuGroup; handheldsGroup: MenuGroup; style: StyleKey }) {
+function DrinksSection({ group, style: s }: { group: MenuGroup; style: StyleKey }) {
+  return (
+    <PageWrap style={s}>
+      <SecHead title="Drinks" style={s} />
+      <div className="c2">{group.subGroups?.map(sub => <VGroup key={sub.id} g={sub} style={s} />)}</div>
+      <AddOnBox addOns={group.addOns} label={group.addOnLabel} />
+    </PageWrap>
+  );
+}
+
+function ComboBurgersHeroes({ burgersGroup, heroesGroup, style: s }: { burgersGroup: MenuGroup; heroesGroup: MenuGroup; style: StyleKey }) {
   return (
     <PageWrap style={s}>
       {/* Burgers */}
@@ -601,13 +609,6 @@ function ComboBurgersHeroesHandhelds({ burgersGroup, heroesGroup, handheldsGroup
           ))}
         </div>
         <AddOnBox addOns={heroesGroup.addOns} label={heroesGroup.addOnLabel} />
-      </div>
-
-      {/* Handhelds */}
-      <div style={{ marginTop: 14 }}>
-        {s === 'heritage' ? <><div className="sub-hd">Handhelds</div><div className="sub-rule" /></> : <div className="sub-hd">Handhelds</div>}
-        <div className="c2">{handheldsGroup.subGroups?.map(sub => <VGroup key={sub.id} g={sub} style={s} />)}</div>
-        <AddOnBox addOns={handheldsGroup.addOns} label={handheldsGroup.addOnLabel} />
       </div>
     </PageWrap>
   );
@@ -725,10 +726,11 @@ export default function PrintableMenuClient({ menus }: { menus: Menu[] }) {
         {selected.has('starters') && <StartersSection group={find('g-starters')} style={style} />}
         {selected.has('salads') && <SaladsSection group={find('g-salads')} style={style} />}
         {selected.has('burgers') && <BurgersSection group={find('g-burgers')} style={style} />}
-        {selected.has('heroes') && <HeroesSection heroesGroup={find('g-heroes')} handheldsGroup={find('g-handhelds')} style={style} />}
+        {selected.has('heroes') && <HeroesSection heroesGroup={find('g-heroes')} style={style} />}
         {selected.has('sweet') && <SweetSection group={find('g-sweet')} style={style} />}
+        {selected.has('drinks') && <DrinksSection group={find('g-drinks')} style={style} />}
         {selected.has('kids') && <KidsSection group={find('g-kids')} style={style} mode={mode} />}
-        {selected.has('combo-burgers-heroes') && <ComboBurgersHeroesHandhelds burgersGroup={find('g-burgers')} heroesGroup={find('g-heroes')} handheldsGroup={find('g-handhelds')} style={style} />}
+        {selected.has('combo-burgers-heroes') && <ComboBurgersHeroes burgersGroup={find('g-burgers')} heroesGroup={find('g-heroes')} style={style} />}
         {selected.has('combo-starters-salads') && <ComboStartersSalads startersGroup={find('g-starters')} saladsGroup={find('g-salads')} style={style} />}
         {selected.has('combo-sweet-kids') && <ComboSweetKids sweetGroup={find('g-sweet')} kidsGroup={find('g-kids')} style={style} mode={mode} />}
         {selected.size === 0 && <div style={{ textAlign: 'center', color: '#9ca3af', marginTop: 80, fontSize: 16 }}>Select sections above to preview &amp; print</div>}
