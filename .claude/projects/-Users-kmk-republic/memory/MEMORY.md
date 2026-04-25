@@ -157,6 +157,19 @@
 - **Shard endpoints**: 5 REST endpoints wired (manifest, shard, delta, proofs, submit_entry) — MEMORY.md previously said "4"
 - **CLAUDE.md kernel methods**: all 6 confirmed exported from citizen-app-wasm/src/vault.rs (initiate_send, process_incoming_proposal, process_acceptance, process_commitment, finalize_settlement, get_kernel_state + DNN helpers prepare_rotation, get_dnn_state)
 
+## Hardening Plan Completion (April 2026 — `resolute-hardening-anvil`)
+- Plan: `/Users/kmk/.claude/plans/resolute-hardening-anvil.md` — 27 tasks, all completed on branch `hardening/resolute-anvil`
+- 15 commits from `91188fc` baseline
+- Test totals: 709 main + 230 demo + 738 frontend = **1,677 tests passing**
+- Phase 1 (docs): CLAUDE.md migration range refreshed to 001–029, SECURITY_AUDIT_STATUS flagged 7 unaudited subsystems, STARK verification boundary documented
+- Phase 2 (citizenship tests): 12 new vitest tests covering SponsorSelection, BiometricCapture, ApplicationReview, EnhancedProcessingStatus. Found that EnhancedProcessingStatus uses **hardcoded mock data** instead of real API fetch — frontend gap to address.
+- Phase 3 (cleanup): deleted 2,274 LOC of orphaned code in `src/core/protocol/` (simple_lib + crypto_stubs + compression). Workspace builds clean.
+- Phase 4 (DNN tests): 5 new pure-helper tests for rotation validation, padding, rate-limit math, expiry math. Required minor refactor to extract pure helpers from handlers.
+- Phase 5 (panic audit): baseline = 1693 unwraps + 126 expects + 19 panics. Original audit was wrong about hotspots — `nullifier_handlers`, `dnn_handlers`, `shard_handlers`, `vault_handlers` all already clean (`unwrap_or` only). Real hotspots: metrics.rs (42), treasury_protocol.rs (41), protocol_wallet.rs (37), stark_verifier.rs (24). Deferred conversion to follow-up plan. Added `DemoError` type ready for use.
+- Phase 5 (FK constraints): migration 030 backfilled FKs on `vaults` and `vault_backups`; 13 other tables documented in `fk_audit_pending` table for follow-up data-hygiene pass.
+- Phase 6 (ops docs): added `docs/operations/DEPLOYMENT.md`, `docs/operations/DISASTER_RECOVERY.md`, `docs/security/AUDIT_SCOPE.md`.
+- Critical re-framings: (1) STARK proofs are audit artifacts not validation gates per intentional design, (2) demo server is signaling-only — no settlement processing, no STARK verification gate to add, (3) nullifier endpoint is opaque-hash-only by privacy design.
+
 ## Active Plan
 - **Full feature plan**: `/Users/kmk/.claude/plans/virtual-growing-wilkinson.md` — ALL PHASES COMPLETE
 - **Production readiness**: `/Users/kmk/.claude/plans/production-readiness.md` — security hardening + decentralization
@@ -165,3 +178,4 @@
 - **DNN**: `/Users/kmk/.claude/plans/majestic-forging-lightning.md` — ALL 4 PHASES COMPLETE (A-D)
 - **RDNP v2**: Phase 1-2 complete. Phase 3-5 pending (gossip protocol, peer discovery, shard rebalancing).
 - **Production readiness**: `/Users/kmk/.claude/plans/sparkling-growing-wave.md` — Phase 0-1 are production gates
+- **Hardening anvil**: `/Users/kmk/.claude/plans/resolute-hardening-anvil.md` — ALL 27 TASKS COMPLETE
