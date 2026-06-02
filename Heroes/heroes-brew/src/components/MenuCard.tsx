@@ -1,6 +1,7 @@
 'use client';
 
 import { MenuItem } from '@/types';
+import { SHOW_PRICES, stripPriceTokens } from '@/lib/config';
 
 interface MenuCardProps {
   item: MenuItem;
@@ -18,7 +19,7 @@ export default function MenuCard({ item }: MenuCardProps) {
           </h3>
           {item.description && (
             <div className="text-sm text-muted mt-1">
-              {item.description.split('\n').map((line, li) => (
+              {stripPriceTokens(item.description).split('\n').map((line, li) => (
                 <p key={li} className={li > 0 ? 'mt-1' : ''}>
                   {line.split(/(\+\d+)/).map((part, i) =>
                     /^\+\d+$/.test(part)
@@ -30,9 +31,11 @@ export default function MenuCard({ item }: MenuCardProps) {
             </div>
           )}
         </div>
-        <span className="text-accent font-mono font-semibold text-sm shrink-0">
-          {item.price}
-        </span>
+        {SHOW_PRICES && (
+          <span className="text-accent font-mono font-semibold text-sm shrink-0">
+            {item.price}
+          </span>
+        )}
       </div>
     </div>
   );

@@ -6,6 +6,7 @@ import { Menu } from '@/types';
 import MenuCard from '@/components/MenuCard';
 import VariantGroupCard from '@/components/VariantGroupCard';
 import PageTransition from '@/components/PageTransition';
+import { SHOW_PRICES } from '@/lib/config';
 
 interface Props {
   menus: Menu[];
@@ -115,7 +116,7 @@ export default function MenuPageClient({ menus }: Props) {
                     {currentGroup.addOns.map((addOn) => (
                       <span key={addOn.name} className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-sm">
                         <span className="text-foreground/70">{addOn.name}</span>
-                        <span className="text-accent font-mono font-semibold text-xs">{addOn.price}</span>
+                        {SHOW_PRICES && <span className="text-accent font-mono font-semibold text-xs">{addOn.price}</span>}
                       </span>
                     ))}
                   </div>
@@ -157,7 +158,7 @@ export default function MenuPageClient({ menus }: Props) {
                         title={mod.description || undefined}
                       >
                         <span className="text-foreground/70">{mod.name}</span>
-                        <span className="text-accent font-mono font-semibold text-xs">{mod.price}</span>
+                        {SHOW_PRICES && <span className="text-accent font-mono font-semibold text-xs">{mod.price}</span>}
                       </span>
                     ))}
                   </div>
@@ -174,7 +175,7 @@ export default function MenuPageClient({ menus }: Props) {
                         title={addOn.description || undefined}
                       >
                         <span className="text-foreground/70">{addOn.name}</span>
-                        <span className="text-accent font-mono font-semibold text-xs">{addOn.price}</span>
+                        {SHOW_PRICES && <span className="text-accent font-mono font-semibold text-xs">{addOn.price}</span>}
                       </span>
                     ))}
                   </div>

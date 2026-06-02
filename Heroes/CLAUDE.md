@@ -4,9 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**American Heroes & Brew** — a mobile-first, dark-themed website for a sports bar in Carlsbad, CA. Built with Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4, and framer-motion. The site auto-syncs menu/location data from the Toast POS system and aggregates sports schedules + holidays into a unified events feed.
+**American Heroes & Brew** — a mobile-first, dark-themed website for a sports bar in Carlsbad, CA. Built with Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4, and framer-motion. The site serves a curated menu + restaurant info, aggregates live sports schedules + holidays into a unified events feed, and pulls recent posts from Instagram.
 
-The full product requirements document is at `/prd.md`.
+**Live:** production at `https://americanheroesandbrew.com` (also `https://heroes-tau-neon.vercel.app`), deployed on Vercel from `github.com/Kevin-Kurka/heroes`.
+
+The original product requirements document is at `/prd.md`. Note: the PRD specifies a live Toast POS menu sync, but the shipped app uses a hand-curated static menu instead (see Data Layer below) — treat the PRD as historical intent, not current behavior.
 
 ## Commands
 
@@ -27,29 +29,34 @@ npm start        # Serve production build
 Every page follows the same pattern: a **server component** (`page.tsx`) fetches data at build/ISR time, then passes it as props to a **client component** (`*PageClient.tsx`) that handles interactivity.
 
 ```
-src/app/menu/page.tsx          → Server: calls getMenus(), sets revalidate=900
+src/app/menu/page.tsx          → Server: calls getMenus() (static data)
 src/app/menu/MenuPageClient.tsx → Client: sticky category nav, animated menu cards
 ```
 
-Pages: `/` (home), `/menu`, `/events`, `/social`, `/location`
+Pages: `/` (home), `/menu` (+ `/menu/printable`), `/events` (labeled "Scoreboard" in nav), `/social`, `/location`
 
-### ISR (Incremental Static Regeneration)
+### Rendering Strategy (per page — not uniform)
 
-All data-driven pages use `export const revalidate = 900` (15-minute cache). External APIs are only called server-side during rebuild — never from the browser.
+Rendering mode is chosen per page based on whether it touches a live external API:
+
+- **`/` and `/events`** — `export const dynamic = 'force-dynamic'`. They call the live sports/holiday APIs (`getUpcomingEvents()` / `getAllEvents()`) on every request so scores stay current.
+- **`/social`** — `export const revalidate = 900` (15-min ISR). Instagram posts are refreshed on a 15-minute cache.
+- **`/menu` and `/location`** — fully static. `getMenus()` / `getRestaurantInfo()` return hardcoded data with no external fetch, so these pages are static-rendered at build time.
 
 ### Data Layer (`src/lib/`)
 
-- **`toast.ts`** — Toast POS integration. OAuth2 client-credentials flow (`getAccessToken()`), token caching, and authenticated fetches via `toastFetch()`. Provides `getMenus()` and `getRestaurantInfo()`. Falls back to hardcoded mock data on API failure.
-- **`events.ts`** — Aggregates from 3 sources in parallel (`Promise.all`):
+- **`menu.ts`** — Hand-curated **static** menu and restaurant data. `getMenus(): Menu[]` and `getRestaurantInfo(): Restaurant` return hardcoded objects (kept in sync with the restaurant's printed PDF menus). No Toast/POS integration exists in the running app — this replaced the Toast sync described in the PRD.
+- **`events.ts`** — Live. Aggregates from 3 sources in parallel (`Promise.all`), normalizing all into `UnifiedEvent` sorted chronologically:
   - MLB Stats API (`statsapi.mlb.com`) — all games for the week
   - ESPN API (`site.api.espn.com`) — NFL and NBA scoreboards
   - Nager.at Holiday API — US public holidays within 2 weeks
 
-  All sources normalize into `UnifiedEvent` and sort chronologically.
+  Exports `getAllEvents()`, `getUpcomingEvents(limit)`, and `getAllHolidays()`.
+- **`instagram.ts`** — Live Instagram **Graph API** integration. `getInstagramPosts(limit=12)` fetches recent posts via `INSTAGRAM_ACCESS_TOKEN`; `refreshInstagramToken()` rotates the long-lived token (called by the cron route below). Returns `[]` gracefully when no token is set.
 
 ### Type System (`src/types/index.ts`)
 
-Core types: `UnifiedEvent` (normalized events with `EventType: 'SPORTS' | 'HOLIDAY'`), `ToastMenu`/`ToastMenuGroup`/`ToastMenuItem` (flattened from Toast's nested JSON), `ToastRestaurant`/`DaySchedule`.
+Core types: `UnifiedEvent` (`EventType: 'SPORTS' | 'HOLIDAY'`, `SportLeague: 'MLB' | 'NFL' | 'NBA' | 'NHL' | 'MLS' | 'CFB'`); menu types `Menu` → `MenuGroup` (with nested `subGroups`, `displayMode: 'starters' | 'variants'`, `choices`, `addOns`, `basePrice`) → `MenuItem`, plus `MenuGroupChoice` / `MenuGroupAddOn`; `Restaurant` + `DaySchedule` (hours); `InstagramPost`; `NavItem`. There are **no** Toast-specific types.
 
 ### Shared Components (`src/components/`)
 
@@ -60,6 +67,7 @@ Core types: `UnifiedEvent` (normalized events with `EventType: 'SPORTS' | 'HOLID
 | `Ticker` | Horizontal scrolling sports marquee with CSS animation (`ticker-animate`) |
 | `EventCard` | Color-coded by league (MLB red, NFL green, NBA orange) or holiday (pink). Shows live scores when available. |
 | `MenuCard` | Menu item card with name, description, price |
+| `VariantGroupCard` | Renders a `MenuGroup` with variant `choices`/`addOns` and a `basePrice` (used for `displayMode: 'variants'`) |
 | `PageTransition` | framer-motion fade+slide wrapper |
 
 ### Theming
@@ -68,20 +76,25 @@ Dark mode only. Custom CSS variables defined in `globals.css` `:root` and mapped
 
 ### Social Page
 
-The Instagram integration uses a placeholder for an **Elfsight widget** embed (not a custom Meta Graph API integration). The widget code should replace the shimmer grid in `SocialPageClient.tsx`, and the Elfsight script goes in `layout.tsx` with `strategy="lazyOnload"`.
+`/social` is server-rendered (`getInstagramPosts(12)`) and passes `InstagramPost[]` into `SocialPageClient.tsx`, which renders the grid (shimmer placeholders when the array is empty). It links to `@americanheroesandbrew`. This is a real **Instagram Graph API** integration, not the Elfsight widget the PRD originally described (the `NEXT_PUBLIC_ELFSIGHT_APP_ID` var in `.env.local` is vestigial and unused by the code).
+
+### Instagram Token Cron
+
+`vercel.json` registers a cron (`/api/cron/instagram-refresh`, schedule `0 6 1,15 * *` — 6am on the 1st & 15th) that calls `refreshInstagramToken()` to rotate the long-lived Instagram token before it expires. The route is guarded by `CRON_SECRET` (Vercel sends it as a Bearer header) and uses `VERCEL_TOKEN` / `VERCEL_PROJECT_ID` to write the refreshed token back into the project's env vars.
 
 ## Environment Variables
 
-Required in `heroes-brew/.env.local`:
+Used by the running app (set in `heroes-brew/.env.local` locally and in Vercel project settings for prod):
 
 ```
-TOAST_API_HOST=https://ws-api.toasttab.com
-TOAST_CLIENT_ID=<client_id>
-TOAST_CLIENT_SECRET=<client_secret>
-TOAST_RESTAURANT_GUID=<restaurant_guid>
+NEXT_PUBLIC_GOOGLE_MAPS_KEY=<maps_key>   # location page map
+INSTAGRAM_ACCESS_TOKEN=<long_lived_token> # social page; getInstagramPosts() returns [] if unset
+CRON_SECRET=<secret>                      # guards the Instagram refresh cron route
+VERCEL_TOKEN=<token>                      # cron writes refreshed token back to Vercel
+VERCEL_PROJECT_ID=<project_id>            # target project for the env-var write
 ```
 
-The `TOAST_RESTAURANT_GUID` is currently empty — the app uses mock data until this is configured.
+No Toast credentials are used — the menu is static. `NEXT_PUBLIC_ELFSIGHT_APP_ID` may appear in `.env.local` but is unused.
 
 ## Key Patterns
 
@@ -89,4 +102,4 @@ The `TOAST_RESTAURANT_GUID` is currently empty — the app uses mock data until 
 - All client components are marked with `'use client'` directive
 - framer-motion is used for all animations (page transitions, card entrances, hover effects, nav indicators with `layoutId`)
 - Tailwind classes use the custom color tokens directly (e.g., `bg-card`, `text-accent`, `border-border`)
-- Mock fallbacks exist in `toast.ts` for both menu and restaurant data — the site works without Toast credentials
+- Menu and restaurant data are hardcoded in `menu.ts` — the site renders fully without any API credentials; only `/events`, `/social`, and the location map need external services

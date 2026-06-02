@@ -1,6 +1,7 @@
 'use client';
 
 import { MenuGroup } from '@/types';
+import { SHOW_PRICES, stripPriceTokens } from '@/lib/config';
 
 interface VariantGroupCardProps {
   group: MenuGroup;
@@ -20,7 +21,7 @@ export default function VariantGroupCard({ group, elevated }: VariantGroupCardPr
         <h2 className="text-xl font-bold text-foreground uppercase tracking-wide">
           {group.name}
         </h2>
-        {group.basePrice != null && (
+        {SHOW_PRICES && group.basePrice != null && (
           <span className="text-accent font-mono font-bold text-lg shrink-0">
             {group.basePrice}
           </span>
@@ -30,7 +31,7 @@ export default function VariantGroupCard({ group, elevated }: VariantGroupCardPr
       {/* Description */}
       {group.description && (
         <p className="text-sm text-muted mb-4">
-          {group.description.split(/(\+\d+)/).map((part, i) =>
+          {stripPriceTokens(group.description).split(/(\+\d+)/).map((part, i) =>
             /^\+\d+$/.test(part)
               ? <span key={i} className="text-accent font-mono font-semibold">{part}</span>
               : part
@@ -51,7 +52,7 @@ export default function VariantGroupCard({ group, elevated }: VariantGroupCardPr
                   {item.name}
                   {item.subtitle && <span className="text-xs font-bold text-muted ml-1">[{item.subtitle}]</span>}
                 </span>
-                {group.basePrice == null && item.price != null && (
+                {SHOW_PRICES && group.basePrice == null && item.price != null && (
                   <span className="text-accent font-mono font-semibold text-sm shrink-0">{item.price}</span>
                 )}
               </span>
@@ -95,7 +96,7 @@ export default function VariantGroupCard({ group, elevated }: VariantGroupCardPr
                 className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-sm"
               >
                 <span className="text-foreground/70">{mod.name}</span>
-                <span className="text-accent font-mono font-semibold text-xs">{mod.price}</span>
+                {SHOW_PRICES && <span className="text-accent font-mono font-semibold text-xs">{mod.price}</span>}
               </span>
             ))}
           </div>
@@ -114,7 +115,7 @@ export default function VariantGroupCard({ group, elevated }: VariantGroupCardPr
                 title={addOn.description || undefined}
               >
                 <span className="text-foreground/70">{addOn.name}</span>
-                <span className="text-accent font-mono font-semibold text-xs">{addOn.price}</span>
+                {SHOW_PRICES && <span className="text-accent font-mono font-semibold text-xs">{addOn.price}</span>}
               </span>
             ))}
           </div>
