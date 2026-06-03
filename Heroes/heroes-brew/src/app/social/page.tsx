@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import PageTransition from '@/components/PageTransition';
 import SocialPageClient from './SocialPageClient';
 import { getInstagramPosts } from '@/lib/instagram';
-import { INSTAGRAM_PERMALINKS } from '@/lib/social-config';
+import { CURATED_POSTS } from '@/lib/social-posts';
 
 export const revalidate = 900; // ISR: 15 min
 
@@ -12,7 +12,8 @@ export const metadata: Metadata = {
 };
 
 export default async function SocialPage() {
-  const posts = await getInstagramPosts(12);
+  const live = await getInstagramPosts(16);
+  const posts = live.length > 0 ? live : CURATED_POSTS;
 
   return (
     <PageTransition>
@@ -23,7 +24,7 @@ export default async function SocialPage() {
             Follow us on Instagram for the latest from Heroes.
           </p>
         </div>
-        <SocialPageClient posts={posts} permalinks={INSTAGRAM_PERMALINKS} />
+        <SocialPageClient posts={posts} />
       </div>
     </PageTransition>
   );
