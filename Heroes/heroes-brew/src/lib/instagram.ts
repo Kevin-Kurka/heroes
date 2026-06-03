@@ -3,21 +3,23 @@ import { InstagramPost } from '@/types';
 const GRAPH_URL = 'https://graph.instagram.com';
 
 /**
- * Fetch recent Instagram posts for @americanheroesandbrew.
- *
- * Two sources are supported, checked in order. This account has no linked
- * Facebook Page, and Meta shut down the no-Facebook Basic Display API in
- * Dec 2024, so the primary path is a Behold.so feed — it connects with
- * Instagram login only (no Facebook required).
- *
- *   1. BEHOLD_FEED_URL        – a https://feeds.behold.so/<id> JSON feed.
- *   2. INSTAGRAM_ACCESS_TOKEN – a graph.instagram.com token (Instagram Login API).
- *
- * Returns [] (page shows its placeholder state) when neither is configured.
+ * Behold.so JSON feed for @americanheroesandbrew (connected via Instagram
+ * login — no Facebook). The feed URL is a public, read-only endpoint, so it's
+ * safe to default here; override with BEHOLD_FEED_URL if it ever changes.
+ * Behold hosts the images (behold.pictures), so they never expire.
+ */
+const BEHOLD_FEED =
+  process.env.BEHOLD_FEED_URL ?? 'https://feeds.behold.so/HWw9TQYi878ljLKQwx7K';
+
+const REVALIDATE = 86_400; // 24h — matches Behold free-tier daily updates
+
+/**
+ * Fetch recent Instagram posts. Prefers the Behold feed; falls back to a
+ * graph.instagram.com token if one is set. Returns [] on failure so the page
+ * can fall back to its curated self-hosted posts.
  */
 export async function getInstagramPosts(limit = 12): Promise<InstagramPost[]> {
-  const beholdUrl = process.env.BEHOLD_FEED_URL;
-  if (beholdUrl) return getFromBehold(beholdUrl, limit);
+  if (BEHOLD_FEED) return getFromBehold(BEHOLD_FEED, limit);
 
   const token = process.env.INSTAGRAM_ACCESS_TOKEN;
   if (token) return getFromGraph(token, limit);
@@ -26,6 +28,9 @@ export async function getInstagramPosts(limit = 12): Promise<InstagramPost[]> {
 }
 
 // ── Behold.so (Instagram-login feed, no Facebook) ─────────────────────────
+interface BeholdSize {
+  mediaUrl?: string;
+}
 interface BeholdPost {
   id?: string;
   caption?: string;
@@ -35,11 +40,12 @@ interface BeholdPost {
   permalink?: string;
   timestamp?: string;
   mediaType?: string;
+  sizes?: { small?: BeholdSize; medium?: BeholdSize; large?: BeholdSize; full?: BeholdSize };
 }
 
 async function getFromBehold(feedUrl: string, limit: number): Promise<InstagramPost[]> {
   try {
-    const res = await fetch(feedUrl, { next: { revalidate: 900 } }); // ISR: 15 min
+    const res = await fetch(feedUrl, { next: { revalidate: REVALIDATE } });
     if (!res.ok) {
       console.error(`Behold feed error: ${res.status}`);
       return [];
@@ -55,16 +61,25 @@ async function getFromBehold(feedUrl: string, limit: number): Promise<InstagramP
   }
 }
 
-/** Behold uses camelCase field names; normalise to our InstagramPost shape. */
+/** Normalise a Behold post to our InstagramPost. Prefer Behold-hosted image
+ *  renditions (behold.pictures) so images never expire or hotlink-break. */
 function mapBeholdPost(p: BeholdPost): InstagramPost {
+  const hosted =
+    p.sizes?.large?.mediaUrl ??
+    p.sizes?.medium?.mediaUrl ??
+    p.sizes?.full?.mediaUrl ??
+    p.sizes?.small?.mediaUrl ??
+    p.thumbnailUrl ??
+    p.mediaUrl ??
+    '';
   const rawType = (p.mediaType ?? 'IMAGE').toUpperCase();
   const media_type: InstagramPost['media_type'] =
     rawType === 'VIDEO' || rawType === 'CAROUSEL_ALBUM' ? rawType : 'IMAGE';
   return {
-    id: p.id ?? p.permalink ?? p.mediaUrl ?? crypto.randomUUID(),
-    caption: p.caption ?? p.prunedCaption,
-    media_url: p.mediaUrl ?? p.thumbnailUrl ?? '',
-    thumbnail_url: p.thumbnailUrl,
+    id: p.id ?? p.permalink ?? hosted,
+    caption: p.prunedCaption ?? p.caption,
+    media_url: hosted,
+    thumbnail_url: hosted,
     permalink: p.permalink ?? 'https://www.instagram.com/americanheroesandbrew/',
     timestamp: p.timestamp ?? '',
     media_type,
@@ -77,7 +92,7 @@ async function getFromGraph(token: string, limit: number): Promise<InstagramPost
     const fields = 'id,caption,media_url,thumbnail_url,permalink,timestamp,media_type';
     const res = await fetch(
       `${GRAPH_URL}/me/media?fields=${fields}&limit=${limit}&access_token=${token}`,
-      { next: { revalidate: 900 } } // ISR: 15 min
+      { next: { revalidate: REVALIDATE } }
     );
     if (!res.ok) {
       console.error(`Instagram API error: ${res.status}`);
@@ -92,10 +107,8 @@ async function getFromGraph(token: string, limit: number): Promise<InstagramPost
 }
 
 /**
- * Refresh a long-lived Instagram token. Tokens last ~60 days;
- * call this every ~30 days via cron to stay ahead of expiration.
- * Only relevant to the INSTAGRAM_ACCESS_TOKEN path (Behold manages its own).
- * Returns the new token string or null on failure.
+ * Refresh a long-lived Instagram token (only relevant to the
+ * INSTAGRAM_ACCESS_TOKEN path; Behold manages its own auth).
  */
 export async function refreshInstagramToken(): Promise<string | null> {
   const token = process.env.INSTAGRAM_ACCESS_TOKEN;
@@ -105,13 +118,11 @@ export async function refreshInstagramToken(): Promise<string | null> {
     const res = await fetch(
       `${GRAPH_URL}/refresh_access_token?grant_type=ig_refresh_token&access_token=${token}`
     );
-
     if (!res.ok) {
       const body = await res.text();
       console.error(`Instagram token refresh failed: ${res.status}`, body);
       return null;
     }
-
     const data = await res.json();
     return data.access_token || null;
   } catch (err) {

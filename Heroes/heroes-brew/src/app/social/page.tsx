@@ -4,16 +4,25 @@ import SocialPageClient from './SocialPageClient';
 import { getInstagramPosts } from '@/lib/instagram';
 import { CURATED_POSTS } from '@/lib/social-posts';
 
-export const revalidate = 900; // ISR: 15 min
+export const revalidate = 86_400; // 24h — matches Behold free-tier daily updates
 
 export const metadata: Metadata = {
   title: 'Social | American Heroes & Brew',
   description: 'Follow American Heroes & Brew on Instagram for specials, events, and vibes.',
 };
 
+/** Extract an Instagram shortcode from a permalink for de-duplication. */
+function shortcode(permalink: string): string {
+  return permalink.match(/\/(?:p|reel|tv)\/([^/?]+)/)?.[1] ?? permalink;
+}
+
 export default async function SocialPage() {
+  // Behold's free tier returns the 6 most-recent posts; top up to 16 with the
+  // curated, self-hosted set (deduped), so the grid stays full and auto-updates.
   const live = await getInstagramPosts(16);
-  const posts = live.length > 0 ? live : CURATED_POSTS;
+  const seen = new Set(live.map((p) => shortcode(p.permalink)));
+  const merged = [...live, ...CURATED_POSTS.filter((p) => !seen.has(shortcode(p.permalink)))].slice(0, 16);
+  const posts = merged.length > 0 ? merged : CURATED_POSTS;
 
   return (
     <PageTransition>
