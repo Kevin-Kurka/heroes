@@ -57,9 +57,10 @@ export const metadata: Metadata = {
   verification: { google: process.env.GOOGLE_SITE_VERIFICATION },
 };
 
-// Google Analytics 4. Set NEXT_PUBLIC_GA_ID (e.g. "G-XXXXXXXXXX") in Vercel to
-// enable; with no ID the tag is never rendered.
-const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
+// Google Analytics 4 for americanheroesandbrew.com. The Measurement ID is
+// public (it ships in the page HTML), so it's safe to default here; override
+// with NEXT_PUBLIC_GA_ID in Vercel if the GA property ever changes.
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID ?? 'G-F46WF78TNT';
 
 export default function RootLayout({
   children,
