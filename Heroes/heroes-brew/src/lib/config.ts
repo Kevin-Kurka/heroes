@@ -5,7 +5,7 @@
  * asked to suppress prices on the website; flip this to `true` to restore them
  * everywhere at once (MenuCard, VariantGroupCard, MenuPageClient).
  */
-export const SHOW_PRICES = false;
+export const SHOW_PRICES = true;
 
 /**
  * Strip inline "+N" upcharge tokens (e.g. "Add Carnitas +3") from menu copy when

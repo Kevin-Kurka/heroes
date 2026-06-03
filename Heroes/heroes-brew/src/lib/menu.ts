@@ -112,9 +112,9 @@ export function getMenus(): Menu[] {
         {
           id: 'g-burgers',
           name: 'Burgers',
-          description: 'Best burgers in Carlsbad. Make it a double +5.',
+          description: 'Best burgers in Carlsbad. Make it a double +4.',
           displayMode: 'variants',
-          basePrice: 17,
+          basePrice: 18,
           addOnLabel: 'Sides',
           addOns: [
             { name: 'Potato Salad', price: '5' },
@@ -127,12 +127,12 @@ export function getMenus(): Menu[] {
             { name: 'Frings', price: '11' },
           ],
           items: [
-            { id: 'b1', name: 'Pasadena', subtitle: 'the "OG"', description: 'Lettuce, tomato, pickle, red onion, Hero sauce, cheese, on a brioche bun.', price: 17 },
-            { id: 'b2', name: 'Austin', subtitle: 'Jalapeno', description: 'Pepper jack, wiz, jalapenos, grilled onions, Hero sauce, on a brioche bun with a jalapeno popper.', price: 17 },
+            { id: 'b1', name: 'Pasadena', subtitle: 'the "OG"', description: 'Lettuce, tomato, pickle, red onion, Hero sauce, cheese, on a brioche bun.', price: 18 },
+            { id: 'b2', name: 'Austin', subtitle: 'Jalapeno', description: 'Pepper jack, wiz, jalapenos, grilled onions, Hero sauce, on a brioche bun with a jalapeno popper.', price: 18 },
             { id: 'b3', name: 'Minneapolis', subtitle: 'Juicy Lucy +5', description: 'Double stuffed cheese patties, cheese skirt, grilled onions, Hero sauce on a brioche bun.', price: 22 },
-            { id: 'b4', name: 'Tombstone', subtitle: 'Cowboy', description: 'Bacon, grilled onion, cheddar, BBQ sauce, topped with onion rings on a brioche bun.', price: 17 },
-            { id: 'b5', name: 'Irwindale', subtitle: 'Sriracha Honey', description: 'Crispy onions, slaw, pickles, Swiss cheese, garlic aioli, sriracha honey sauce on a brioche bun.', price: 17 },
-            { id: 'b6', name: 'Leucadia', subtitle: 'Smash', description: 'Grilled onion, white American cheese, pickles, Hero sauce on a brioche bun.', price: 17 },
+            { id: 'b4', name: 'Tombstone', subtitle: 'Cowboy', description: 'Bacon, grilled onion, cheddar, BBQ sauce, topped with onion rings on a brioche bun.', price: 18 },
+            { id: 'b5', name: 'Irwindale', subtitle: 'Sriracha Honey', description: 'Crispy onions, slaw, pickles, Swiss cheese, garlic aioli, sriracha honey sauce on a brioche bun.', price: 18 },
+            { id: 'b6', name: 'Leucadia', subtitle: 'Smash', description: 'Grilled onion, white American cheese, pickles, Hero sauce on a brioche bun.', price: 18 },
           ],
         },
 
