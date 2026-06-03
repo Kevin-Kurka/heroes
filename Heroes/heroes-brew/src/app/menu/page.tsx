@@ -3,8 +3,10 @@ import { getMenus } from '@/lib/menu';
 import MenuPageClient from './MenuPageClient';
 
 export const metadata: Metadata = {
-  title: 'Menu | American Heroes & Brew',
-  description: 'Burgers, wings, craft brews and more at American Heroes & Brew in Carlsbad, CA.',
+  title: 'Menu — Burgers, Wings & Craft Beer',
+  description:
+    'Our full menu of burgers, wings, sandwiches, and craft brews at American Heroes & Brew — the best sports bar in Carlsbad & North County.',
+  alternates: { canonical: '/menu' },
 };
 
 export default function MenuPage() {

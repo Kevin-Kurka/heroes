@@ -3,8 +3,9 @@ import { getMenus } from '@/lib/menu';
 import PrintableMenuClient from './PrintableMenuClient';
 
 export const metadata: Metadata = {
-  title: 'Printable Menus | American Heroes & Brew',
+  title: 'Printable Menus',
   description: 'Print-ready menu pages for staff use.',
+  robots: { index: false, follow: false },
 };
 
 export default function PrintableMenuPage() {

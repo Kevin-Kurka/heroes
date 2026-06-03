@@ -3,8 +3,10 @@ import { getAllEvents, getAllHolidays } from '@/lib/events';
 import EventsPageClient from './EventsPageClient';
 
 export const metadata: Metadata = {
-  title: 'Scoreboard | American Heroes & Brew',
-  description: 'Live sports, game schedules, and upcoming events at American Heroes & Brew in Carlsbad, CA.',
+  title: 'Scoreboard — Every Game, Every Day',
+  description:
+    'Live scores, game schedules, and upcoming events on the big screens at American Heroes & Brew in Carlsbad. Catch every game.',
+  alternates: { canonical: '/events' },
 };
 
 export const dynamic = 'force-dynamic';

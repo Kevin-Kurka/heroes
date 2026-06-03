@@ -7,8 +7,10 @@ import { CURATED_POSTS } from '@/lib/social-posts';
 export const revalidate = 86_400; // 24h — matches Behold free-tier daily updates
 
 export const metadata: Metadata = {
-  title: 'Social | American Heroes & Brew',
-  description: 'Follow American Heroes & Brew on Instagram for specials, events, and vibes.',
+  title: 'Follow Us on Instagram',
+  description:
+    "Follow @americanheroesandbrew for daily specials, game-day events, and the vibe at Carlsbad's best sports bar.",
+  alternates: { canonical: '/social' },
 };
 
 /** Extract an Instagram shortcode from a permalink for de-duplication. */

@@ -3,8 +3,10 @@ import { getRestaurantInfo } from '@/lib/menu';
 import LocationPageClient from './LocationPageClient';
 
 export const metadata: Metadata = {
-  title: 'Location & Hours | American Heroes & Brew',
-  description: 'Find American Heroes & Brew at 300 Carlsbad Village Drive, Carlsbad, CA. Hours, directions, and contact info.',
+  title: 'Location & Hours in Carlsbad Village',
+  description:
+    'Find American Heroes & Brew at 300 Carlsbad Village Drive, Carlsbad, CA 92008. Hours, directions, parking, and contact info.',
+  alternates: { canonical: '/location' },
 };
 
 export default function LocationPage() {
