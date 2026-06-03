@@ -14,7 +14,6 @@ export const INSTAGRAM_PERMALINKS: string[] = [
   'https://www.instagram.com/p/DGyS3AqS180/',
   'https://www.instagram.com/p/DDiDL5KSZJB/',
   'https://www.instagram.com/p/DCPVnFxyAyP/',
-  'https://www.instagram.com/reel/DB_9JVYynce/',
   'https://www.instagram.com/p/DAyba3Pv4fV/',
   'https://www.instagram.com/reel/DAWfKcCSfHU/',
   'https://www.instagram.com/reel/DAWcxPUy9ws/',
