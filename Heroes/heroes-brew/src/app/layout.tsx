@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import { GoogleAnalytics } from '@next/third-parties/google';
 import TopNav from '@/components/TopNav';
 import BottomNav from '@/components/BottomNav';
 import { getRestaurantJsonLd, SITE_URL } from '@/lib/structured-data';
@@ -51,7 +52,14 @@ export const metadata: Metadata = {
     title: 'American Heroes & Brew | Best Sports Bar in Carlsbad',
     description: 'Carlsbad & North County\'s go-to sports bar. Every game, every day.',
   },
+  // Google Search Console (HTML-tag method). Set GOOGLE_SITE_VERIFICATION in
+  // Vercel to the token from Search Console; omitted entirely when unset.
+  verification: { google: process.env.GOOGLE_SITE_VERIFICATION },
 };
+
+// Google Analytics 4. Set NEXT_PUBLIC_GA_ID (e.g. "G-XXXXXXXXXX") in Vercel to
+// enable; with no ID the tag is never rendered.
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 
 export default function RootLayout({
   children,
@@ -76,6 +84,7 @@ export default function RootLayout({
         <Analytics />
         <SpeedInsights />
       </body>
+      {GA_ID ? <GoogleAnalytics gaId={GA_ID} /> : null}
     </html>
   );
 }
