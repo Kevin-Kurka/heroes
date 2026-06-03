@@ -108,11 +108,16 @@ export default function SocialPageClient({ posts }: Props) {
               ))}
             </div>
             <p className="text-muted text-sm">
-              Instagram feed will appear once connected.
+              Our latest Instagram posts will appear here soon.
             </p>
-            <p className="text-muted/60 text-xs mt-1">
-              Set INSTAGRAM_ACCESS_TOKEN in environment variables to enable.
-            </p>
+            <a
+              href="https://www.instagram.com/americanheroesandbrew/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-pink-400 text-xs mt-1 inline-block hover:underline"
+            >
+              In the meantime, follow @americanheroesandbrew →
+            </a>
           </div>
         </div>
       )}

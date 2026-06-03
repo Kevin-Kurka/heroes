@@ -2,13 +2,14 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, UtensilsCrossed, CalendarDays, MapPin } from 'lucide-react';
+import { Home, UtensilsCrossed, CalendarDays, Camera, MapPin } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const navItems = [
   { label: 'Home', href: '/', icon: Home },
   { label: 'Menu', href: '/menu', icon: UtensilsCrossed },
   { label: 'Scoreboard', href: '/events', icon: CalendarDays },
+  { label: 'Social', href: '/social', icon: Camera },
   { label: 'Location', href: '/location', icon: MapPin },
 ];
 
