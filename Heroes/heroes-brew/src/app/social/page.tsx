@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import PageTransition from '@/components/PageTransition';
 import SocialPageClient from './SocialPageClient';
 import { getInstagramPosts } from '@/lib/instagram';
+import { INSTAGRAM_PERMALINKS } from '@/lib/social-config';
 
 export const revalidate = 900; // ISR: 15 min
 
@@ -22,7 +23,7 @@ export default async function SocialPage() {
             Follow us on Instagram for the latest from Heroes.
           </p>
         </div>
-        <SocialPageClient posts={posts} />
+        <SocialPageClient posts={posts} permalinks={INSTAGRAM_PERMALINKS} />
       </div>
     </PageTransition>
   );

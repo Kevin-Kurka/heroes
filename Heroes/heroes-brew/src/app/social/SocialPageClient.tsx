@@ -3,12 +3,14 @@
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import { Instagram, ExternalLink, Play } from 'lucide-react';
 import { InstagramPost } from '@/types';
+import InstagramEmbeds from '@/components/InstagramEmbeds';
 
 interface Props {
   posts: InstagramPost[];
+  permalinks?: string[];
 }
 
-export default function SocialPageClient({ posts }: Props) {
+export default function SocialPageClient({ posts, permalinks = [] }: Props) {
   const { scrollY } = useScroll();
   const springConfig = { stiffness: 100, damping: 30, mass: 0.5 };
   const rawBgY = useTransform(scrollY, [0, 2000], [0, 50]);
@@ -93,6 +95,8 @@ export default function SocialPageClient({ posts }: Props) {
             </motion.a>
           ))}
         </div>
+      ) : permalinks.length > 0 ? (
+        <InstagramEmbeds permalinks={permalinks} />
       ) : (
         <div className="rounded-md border border-border overflow-hidden">
           <div className="p-8 text-center">
