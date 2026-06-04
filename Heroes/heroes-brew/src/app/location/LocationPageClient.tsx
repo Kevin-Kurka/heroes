@@ -7,15 +7,16 @@ import PageTransition from '@/components/PageTransition';
 
 interface Props {
   restaurant: Restaurant;
+  /** Current weekday in Carlsbad (Pacific), computed server-side in page.tsx so
+   *  the highlighted hours row is correct and hydration-safe. */
+  today: string;
 }
 
-export default function LocationPageClient({ restaurant }: Props) {
+export default function LocationPageClient({ restaurant, today }: Props) {
   const fullAddress = `${restaurant.address1}${restaurant.address2 ? ', ' + restaurant.address2 : ''}, ${restaurant.city}, ${restaurant.stateCode} ${restaurant.zipCode}`;
   const mapsQuery = encodeURIComponent(fullAddress);
   const mapsUrl = 'https://www.google.com/maps/dir//American+Heroes+%26+Brew,+300+Carlsbad+Village+Dr+STE+120,+Carlsbad,+CA+92008';
   const embedUrl = `https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY}&q=${mapsQuery}`;
-
-  const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
 
   const { scrollY } = useScroll();
   const springConfig = { stiffness: 100, damping: 30, mass: 0.5 };

@@ -9,7 +9,15 @@ export const metadata: Metadata = {
   alternates: { canonical: '/location' },
 };
 
+// Re-evaluate per request so the highlighted "today" hours row reflects the
+// real current day in Carlsbad — not the day the page was statically built.
+export const dynamic = 'force-dynamic';
+
 export default function LocationPage() {
   const restaurant = getRestaurantInfo();
-  return <LocationPageClient restaurant={restaurant} />;
+  const today = new Date().toLocaleDateString('en-US', {
+    weekday: 'long',
+    timeZone: 'America/Los_Angeles',
+  });
+  return <LocationPageClient restaurant={restaurant} today={today} />;
 }

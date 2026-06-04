@@ -29,7 +29,7 @@ function TickerItem({ event }: { event: UnifiedEvent }) {
         </span>
       ) : isScheduled ? (
         <span className="text-muted text-[10px] font-mono">
-          {new Date(event.eventTimestamp).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
+          {new Date(event.eventTimestamp).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: 'America/Los_Angeles' })}
         </span>
       ) : (
         <span className="text-muted text-[8px]">vs</span>

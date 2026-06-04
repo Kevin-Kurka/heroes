@@ -39,8 +39,11 @@ export default function EventCard({ event, index }: EventCardProps) {
 
   const date = new Date(event.eventTimestamp);
   const now = new Date();
-  const dayStr = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-  const timeStr = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+  // Pin to the venue's timezone so the SSR (UTC) and client (browser) renders
+  // produce identical strings — otherwise the text mismatches and React throws
+  // hydration error #418. Pacific is also the correct time to show for the bar.
+  const dayStr = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'America/Los_Angeles' });
+  const timeStr = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: 'America/Los_Angeles' });
 
   const hasScore = event.homeScore !== undefined && event.awayScore !== undefined;
   const isFinal = !event.isLive && hasScore && date < now;
