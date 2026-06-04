@@ -345,7 +345,7 @@ function Header({ style: s }: { style: StyleKey }) {
   if (s === 'editorial') return (
     <div className="pg-banner">
       <div className="logo">American Heroes &amp; Brew</div>
-      <div className="tagline">300 Carlsbad Village Dr, Suite 101 · Carlsbad, CA · (760) 994-0187</div>
+      <div className="tagline">300 Carlsbad Village Dr, Suite 120 · Carlsbad, CA · (760) 994-0187</div>
     </div>
   );
   const inner = <>
@@ -416,7 +416,7 @@ function AddOnBox({ addOns, label }: { addOns?: { name: string; price: string }[
 }
 
 function Footer() {
-  return <div className="ft">American Heroes &amp; Brew · 300 Carlsbad Village Dr, Suite 101, Carlsbad CA 92008 · (760) 994-0187</div>;
+  return <div className="ft">American Heroes &amp; Brew · 300 Carlsbad Village Dr, Suite 120, Carlsbad CA 92008 · (760) 994-0187</div>;
 }
 
 function PageWrap({ style: s, children }: { style: StyleKey; children: React.ReactNode }) {

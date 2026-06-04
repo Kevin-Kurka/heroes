@@ -478,13 +478,13 @@ export function getRestaurantInfo(): Restaurant {
   return {
     name: 'American Heroes & Brew',
     address1: '300 Carlsbad Village Drive',
-    address2: 'Suite 101',
+    address2: 'Suite 120',
     city: 'Carlsbad',
     stateCode: 'CA',
     zipCode: '92008',
     phone: '(760) 994-0187',
-    latitude: 33.1581,
-    longitude: -117.3506,
+    latitude: 33.1592675,
+    longitude: -117.3502525,
     hours: [
       { dayOfWeek: 'Monday', open: '10:00 AM', close: '10:00 PM' },
       { dayOfWeek: 'Tuesday', open: '10:00 AM', close: '10:00 PM' },

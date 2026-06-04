@@ -2,6 +2,7 @@ import { getRestaurantInfo } from './menu';
 
 export const SITE_URL = 'https://americanheroesandbrew.com';
 const INSTAGRAM_URL = 'https://www.instagram.com/americanheroesandbrew/';
+const GOOGLE_MAPS_URL = 'https://maps.app.goo.gl/kDDzKioKVaNBcUjN8';
 
 /** Convert a 12-hour clock string ("10:00 AM", "12:00 AM") to 24-hour "HH:MM". */
 function to24Hour(time: string): string {
@@ -51,7 +52,8 @@ export function getRestaurantJsonLd() {
       { '@type': 'AdministrativeArea', name: 'North County San Diego' },
     ],
     hasMenu: `${SITE_URL}/menu`,
-    sameAs: [INSTAGRAM_URL],
+    hasMap: GOOGLE_MAPS_URL,
+    sameAs: [INSTAGRAM_URL, GOOGLE_MAPS_URL],
     openingHoursSpecification: r.hours.map((day) => ({
       '@type': 'OpeningHoursSpecification',
       dayOfWeek: day.dayOfWeek,
