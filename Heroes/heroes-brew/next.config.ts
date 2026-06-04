@@ -22,6 +22,11 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "a.espncdn.com",
       },
+      {
+        // Behold-hosted Instagram renditions used on /social
+        protocol: "https",
+        hostname: "behold.pictures",
+      },
     ],
   },
 };

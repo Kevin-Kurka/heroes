@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState, useEffect } from 'react';
+import { useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
@@ -48,23 +48,14 @@ const DAILY_SPECIALS = [
   },
 ] as const;
 
-// Map JS getDay() (0=Sun) to specials index (0=Mon). Returns -1 for Fri–Sun.
-function getTodaySpecialIndex(jsDay: number): number {
-  if (jsDay >= 1 && jsDay <= 4) return jsDay - 1;
-  return -1;
-}
-
 interface Props {
   events: UnifiedEvent[];
+  /** Index into DAILY_SPECIALS for today (Pacific), or -1 on Fri–Sun. Computed
+   *  server-side in page.tsx so the right special shows on first paint. */
+  todayIndex: number;
 }
 
-export default function HomePageClient({ events }: Props) {
-  const [todayIndex, setTodayIndex] = useState(-1);
-
-  useEffect(() => {
-    setTodayIndex(getTodaySpecialIndex(new Date().getDay()));
-  }, []);
-
+export default function HomePageClient({ events, todayIndex }: Props) {
   const heroRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -124,9 +115,12 @@ export default function HomePageClient({ events }: Props) {
             transition={{ duration: 0.4, ease: [0, 0, 0.2, 1] }}
             style={{ y: logoY, scale: logoScale, opacity: logoOpacity }}
           >
-            <img
+            <Image
               src="/badge-clean.png"
-              alt="American Heroes & Brew"
+              alt="American Heroes & Brew logo"
+              width={360}
+              height={361}
+              priority
               className="mx-auto mb-4 w-[240px] sm:w-[300px] md:w-[360px] h-auto"
               style={{ filter: 'drop-shadow(0 0 6px rgba(0,0,0,0.9)) drop-shadow(0 0 16px rgba(0,0,0,0.7)) drop-shadow(0 2px 30px rgba(0,0,0,0.5))' }}
             />
@@ -146,7 +140,7 @@ export default function HomePageClient({ events }: Props) {
               className="text-foreground/80 text-base md:text-lg max-w-md mx-auto mt-1"
               style={{ textShadow: '0 2px 8px rgba(0,0,0,0.8), 0 4px 16px rgba(0,0,0,0.5)' }}
             >
-              Everyones favorites, all day - Everyday!
+              Everyone&apos;s favorites, all day — every day!
             </p>
           </motion.div>
 

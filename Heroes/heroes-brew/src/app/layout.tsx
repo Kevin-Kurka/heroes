@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { Analytics } from '@vercel/analytics/next';
@@ -55,6 +55,12 @@ export const metadata: Metadata = {
   // Google Search Console (HTML-tag method). Set GOOGLE_SITE_VERIFICATION in
   // Vercel to the token from Search Console; omitted entirely when unset.
   verification: { google: process.env.GOOGLE_SITE_VERIFICATION },
+  appleWebApp: { capable: true, title: 'Heroes & Brew', statusBarStyle: 'black-translucent' },
+};
+
+export const viewport: Viewport = {
+  themeColor: '#0a0a0a',
+  colorScheme: 'dark',
 };
 
 // Google Analytics 4 for americanheroesandbrew.com. The Measurement ID is

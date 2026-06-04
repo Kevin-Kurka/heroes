@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import { Instagram, ExternalLink, Play } from 'lucide-react';
 import { InstagramPost } from '@/types';
@@ -60,11 +61,12 @@ export default function SocialPageClient({ posts }: Props) {
               transition={{ duration: 0.2, delay: i * 0.03, ease: [0, 0, 0.2, 1] }}
               className="group relative aspect-square rounded-md overflow-hidden bg-card/70 backdrop-blur-md border border-white/10 hover:border-purple-500/40 transition-all"
             >
-              <img
+              <Image
                 src={post.media_type === 'VIDEO' ? (post.thumbnail_url || post.media_url) : post.media_url}
-                alt={post.caption?.slice(0, 100) || 'Instagram post'}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                loading="lazy"
+                alt={post.caption?.slice(0, 100) || 'American Heroes & Brew Instagram post'}
+                fill
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                className="object-cover group-hover:scale-105 transition-transform duration-300"
               />
 
               {/* Video indicator */}
