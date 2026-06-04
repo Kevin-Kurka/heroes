@@ -1,5 +1,7 @@
 import { getUpcomingEvents } from '@/lib/events';
+import { getFaqJsonLd } from '@/lib/structured-data';
 import HomePageClient from './HomePageClient';
+import AboutFaqSection from '@/components/AboutFaqSection';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,5 +23,15 @@ function getPacificSpecialIndex(): number {
 
 export default async function HomePage() {
   const events = await getUpcomingEvents(6);
-  return <HomePageClient events={events} todayIndex={getPacificSpecialIndex()} />;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        // FAQ rich-result data; mirrors the visible FAQ (no user input).
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(getFaqJsonLd()) }}
+      />
+      <HomePageClient events={events} todayIndex={getPacificSpecialIndex()} />
+      <AboutFaqSection />
+    </>
+  );
 }

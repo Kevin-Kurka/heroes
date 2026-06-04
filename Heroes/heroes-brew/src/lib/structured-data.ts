@@ -1,4 +1,6 @@
-import { getRestaurantInfo } from './menu';
+import { getRestaurantInfo, getMenus } from './menu';
+import { FAQ } from './faq';
+import type { MenuGroup } from '@/types';
 
 export const SITE_URL = 'https://americanheroesandbrew.com';
 const INSTAGRAM_URL = 'https://www.instagram.com/americanheroesandbrew/';
@@ -59,6 +61,80 @@ export function getRestaurantJsonLd() {
       dayOfWeek: day.dayOfWeek,
       opens: to24Hour(day.open),
       closes: to24Hour(day.close),
+    })),
+  };
+}
+
+/**
+ * FAQPage JSON-LD for the homepage, mirroring the visible FAQ (faq.ts). Drives
+ * Google's FAQ rich results and gives answer engines clean Q&A pairs to quote.
+ */
+export function getFaqJsonLd() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    '@id': `${SITE_URL}/#faq`,
+    mainEntity: FAQ.map((f) => ({
+      '@type': 'Question',
+      name: f.question,
+      acceptedAnswer: { '@type': 'Answer', text: f.answer },
+    })),
+  };
+}
+
+/** Recursively convert a MenuGroup (and its subGroups/items) into a MenuSection. */
+function groupToMenuSection(group: MenuGroup): Record<string, unknown> {
+  const section: Record<string, unknown> = {
+    '@type': 'MenuSection',
+    name: group.name,
+    ...(group.description ? { description: group.description } : {}),
+  };
+  const items = group.items.map((item) => ({
+    '@type': 'MenuItem',
+    name: item.name,
+    ...(item.description ? { description: item.description } : {}),
+    offers: {
+      '@type': 'Offer',
+      price: item.price.toFixed(2),
+      priceCurrency: 'USD',
+    },
+  }));
+  if (items.length) section.hasMenuItem = items;
+  if (group.subGroups?.length) {
+    section.hasMenuSection = group.subGroups.map(groupToMenuSection);
+  }
+  return section;
+}
+
+/**
+ * schema.org/Menu JSON-LD for /menu, built from the curated menu so AI search
+ * can cite specific dishes and prices. Linked to the Restaurant via inLanguage
+ * + the shared SITE_URL identity.
+ */
+export function getMenuJsonLd() {
+  const menus = getMenus();
+  const sections = menus.flatMap((menu) => menu.groups.map(groupToMenuSection));
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Menu',
+    '@id': `${SITE_URL}/menu#menu`,
+    name: 'American Heroes & Brew Menu',
+    url: `${SITE_URL}/menu`,
+    inLanguage: 'en-US',
+    hasMenuSection: sections,
+  };
+}
+
+/** BreadcrumbList JSON-LD from an ordered list of [name, path] pairs. */
+export function getBreadcrumbJsonLd(trail: Array<{ name: string; path: string }>) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: trail.map((crumb, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: crumb.name,
+      item: `${SITE_URL}${crumb.path}`,
     })),
   };
 }

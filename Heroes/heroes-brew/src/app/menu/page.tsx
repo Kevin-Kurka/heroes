@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { getMenus } from '@/lib/menu';
+import { getMenuJsonLd } from '@/lib/structured-data';
 import MenuPageClient from './MenuPageClient';
 
 export const metadata: Metadata = {
@@ -11,5 +12,14 @@ export const metadata: Metadata = {
 
 export default function MenuPage() {
   const menus = getMenus();
-  return <MenuPageClient menus={menus} />;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        // schema.org/Menu built from the curated menu (no user input).
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(getMenuJsonLd()) }}
+      />
+      <MenuPageClient menus={menus} />
+    </>
+  );
 }
