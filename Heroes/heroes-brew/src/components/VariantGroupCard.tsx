@@ -50,7 +50,7 @@ export default function VariantGroupCard({ group, elevated }: VariantGroupCardPr
               <span className="font-medium text-foreground text-sm flex items-baseline justify-between gap-2">
                 <span>
                   {item.name}
-                  {item.subtitle && <span className="text-xs font-bold text-muted ml-1">[{item.subtitle}]</span>}
+                  {item.subtitle && <span className="text-xs font-bold text-muted ml-1">{item.subtitle}</span>}
                 </span>
                 {SHOW_PRICES && group.basePrice == null && item.price != null && (
                   <span className="text-accent font-mono font-semibold text-sm shrink-0">{item.price}</span>
