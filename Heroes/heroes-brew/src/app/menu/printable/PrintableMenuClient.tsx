@@ -562,42 +562,44 @@ function ComboSweetKids({ sweetGroup, kidsGroup, style: s, mode: m }: { sweetGro
 }
 
 /* ============================================================
-   MAIN
+   CSV EXPORT — flatten the menu into a spreadsheet that mirrors the
+   app's Tab → Section → Item hierarchy. One row per item, plus one
+   row per option / add-on beneath it. Tabs are the top-level menu
+   groups; Sections are their sub-groups (blank when items sit
+   directly under a tab, e.g. Salads, Kids).
    ============================================================ */
-/* ============================================================
-   CSV EXPORT — flatten every category, item, and option into a
-   spreadsheet the owner can edit. One row per item, plus one row
-   per option / add-on beneath it.
-   ============================================================ */
-const CSV_HEADERS = ['Category', 'Item', 'Price', 'Description', 'Option Group', 'Option', 'Option Price'];
+const CSV_HEADERS = ['Tab', 'Section', 'Item', 'Price', 'Description', 'Option Group', 'Option', 'Option Price'];
 
 function csvEscape(value: string | number): string {
   const s = String(value ?? '');
   return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 }
 
-function groupToRows(g: MenuGroup, parentPath: string): string[][] {
-  const path = parentPath ? `${parentPath} / ${g.name}` : g.name;
+/** Emit rows for a group, recursing sub-groups deeper into the Section path. */
+function groupToRows(g: MenuGroup, tab: string, section: string): string[][] {
   const rows: string[][] = [];
 
   g.items.forEach((item: MenuItem) => {
     const name = item.subtitle ? `${item.name} ${item.subtitle}` : item.name;
-    rows.push([path, name, String(item.price), item.description ?? '', '', '', '']);
+    rows.push([tab, section, name, String(item.price), item.description ?? '', '', '', '']);
   });
 
   // Variant groups list their options/upcharges at the group level.
   g.choices?.forEach((choice) => {
-    choice.options.forEach((opt) => rows.push([path, '', '', '', choice.label, opt, '']));
+    choice.options.forEach((opt) => rows.push([tab, section, '', '', '', choice.label, opt, '']));
   });
-  g.addOns?.forEach((a) => rows.push([path, '', '', '', g.addOnLabel ?? 'Add-on', a.name, a.price]));
-  g.mods?.forEach((m) => rows.push([path, '', '', '', 'Mod', m.name, m.price]));
+  g.addOns?.forEach((a) => rows.push([tab, section, '', '', '', g.addOnLabel ?? 'Add-on', a.name, a.price]));
+  g.mods?.forEach((m) => rows.push([tab, section, '', '', '', 'Mod', m.name, m.price]));
 
-  g.subGroups?.forEach((sub) => rows.push(...groupToRows(sub, path)));
+  g.subGroups?.forEach((sub) =>
+    rows.push(...groupToRows(sub, tab, section ? `${section} / ${sub.name}` : sub.name)),
+  );
   return rows;
 }
 
 function buildMenuCsv(menus: Menu[]): string {
-  const rows = [CSV_HEADERS, ...(menus[0]?.groups ?? []).flatMap((g) => groupToRows(g, ''))];
+  // Each top-level group is a Tab; its own items have no Section.
+  const rows = [CSV_HEADERS, ...(menus[0]?.groups ?? []).flatMap((g) => groupToRows(g, g.name, ''))];
   return rows.map((r) => r.map(csvEscape).join(',')).join('\r\n');
 }
 
