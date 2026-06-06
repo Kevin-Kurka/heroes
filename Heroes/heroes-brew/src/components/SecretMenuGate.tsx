@@ -102,7 +102,7 @@ export default function SecretMenuGate({ onClose, onUnlock }: Props) {
           </button>
         </div>
         <p className="text-sm text-muted mb-4">
-          You found it. 🤫 Drop your info to unlock the off-menu items — first one&apos;s on the house if you mention it.
+          You found it. 🤫 Drop your info to unlock the off-menu items.
         </p>
 
         <form onSubmit={submit} className="space-y-2.5">
