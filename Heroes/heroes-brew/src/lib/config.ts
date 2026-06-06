@@ -8,6 +8,14 @@
 export const SHOW_PRICES = true;
 
 /**
+ * Gates the QR-unlocked Secret Menu tab end-to-end. While `false`, the tab never
+ * appears — not via the `?secret` QR link, not from a prior cached unlock — and
+ * the lead-capture gate never opens. Flip to `true` once the secret menu items
+ * are confirmed.
+ */
+export const SECRET_MENU_ENABLED = false;
+
+/**
  * Strip inline "+N" upcharge tokens (e.g. "Add Carnitas +3") from menu copy when
  * prices are hidden, so descriptions don't leak partial pricing. No-op when
  * prices are shown.

@@ -8,7 +8,7 @@ import MenuCard from '@/components/MenuCard';
 import VariantGroupCard from '@/components/VariantGroupCard';
 import PageTransition from '@/components/PageTransition';
 import SecretMenuGate, { type SecretUnlock } from '@/components/SecretMenuGate';
-import { SHOW_PRICES } from '@/lib/config';
+import { SHOW_PRICES, SECRET_MENU_ENABLED } from '@/lib/config';
 
 const SECRET_TAB = '__secret__';
 const SECRET_CACHE_KEY = 'heroes_secret_menu_v1';
@@ -38,6 +38,8 @@ export default function MenuPageClient({ menus }: Props) {
   // would mismatch the prerendered HTML, which has no secret tab.
   /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
+    // Secret menu is suppressed until items are confirmed — skip all reveal paths.
+    if (!SECRET_MENU_ENABLED) return;
     let isUnlocked = false;
     try {
       const cached = JSON.parse(localStorage.getItem(SECRET_CACHE_KEY) ?? 'null');
