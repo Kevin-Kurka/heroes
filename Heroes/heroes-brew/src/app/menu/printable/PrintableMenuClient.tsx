@@ -569,11 +569,7 @@ function ComboSweetKids({ sweetGroup, kidsGroup, style: s, mode: m }: { sweetGro
    directly under a tab, e.g. Salads, Kids).
    ============================================================ */
 const CSV_HEADERS = ['Tab', 'Section', 'Item', 'Price', 'Description', 'Option Group', 'Option', 'Option Price'];
-
-function csvEscape(value: string | number): string {
-  const s = String(value ?? '');
-  return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
-}
+const EXPORT_FILE = 'american-heroes-brew-menu';
 
 /** Emit rows for a group, recursing sub-groups deeper into the Section path. */
 function groupToRows(g: MenuGroup, tab: string, section: string): string[][] {
@@ -597,33 +593,101 @@ function groupToRows(g: MenuGroup, tab: string, section: string): string[][] {
   return rows;
 }
 
-function buildMenuCsv(menus: Menu[]): string {
-  // Each top-level group is a Tab; its own items have no Section.
-  const rows = [CSV_HEADERS, ...(menus[0]?.groups ?? []).flatMap((g) => groupToRows(g, g.name, ''))];
-  return rows.map((r) => r.map(csvEscape).join(',')).join('\r\n');
+/** Flatten the menu into header + body rows (each top-level group is a Tab). */
+function menuRows(menus: Menu[]): string[][] {
+  return (menus[0]?.groups ?? []).flatMap((g) => groupToRows(g, g.name, ''));
 }
 
-function downloadMenuCsv(menus: Menu[]) {
-  const blob = new Blob([`﻿${buildMenuCsv(menus)}`], { type: 'text/csv;charset=utf-8;' });
+function csvEscape(value: string): string {
+  return /[",\n]/.test(value) ? `"${value.replace(/"/g, '""')}"` : value;
+}
+function htmlEscape(value: string): string {
+  return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function rowsToCsv(rows: string[][]): string {
+  return [CSV_HEADERS, ...rows].map((r) => r.map(csvEscape).join(',')).join('\r\n');
+}
+function rowsToTsv(rows: string[][]): string {
+  return [CSV_HEADERS, ...rows].map((r) => r.map((c) => c.replace(/\t/g, ' ')).join('\t')).join('\n');
+}
+function rowsToHtmlTable(rows: string[][]): string {
+  const th = CSV_HEADERS.map((h) => `<th>${htmlEscape(h)}</th>`).join('');
+  const body = rows
+    .map((r) => `<tr>${r.map((c) => `<td>${htmlEscape(c)}</td>`).join('')}</tr>`)
+    .join('');
+  return `<table border="1" cellspacing="0" cellpadding="4"><thead><tr>${th}</tr></thead><tbody>${body}</tbody></table>`;
+}
+function rowsToHtmlDoc(rows: string[][]): string {
+  return `<!doctype html><html><head><meta charset="utf-8"><title>American Heroes & Brew — Menu</title>
+<style>body{font-family:system-ui,sans-serif;margin:24px}h1{font-size:20px}table{border-collapse:collapse;font-size:13px}th,td{border:1px solid #ccc;padding:4px 8px;text-align:left}th{background:#1b2a4a;color:#fff}</style>
+</head><body><h1>American Heroes &amp; Brew — Menu</h1>${rowsToHtmlTable(rows)}</body></html>`;
+}
+
+function triggerDownload(content: string, filename: string, mime: string) {
+  const blob = new Blob([content], { type: mime });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'american-heroes-brew-menu.csv';
+  a.download = filename;
   document.body.appendChild(a);
   a.click();
   a.remove();
   URL.revokeObjectURL(url);
 }
 
+/** Copy rows to the clipboard (rich HTML table + TSV fallback) so they can be
+ *  pasted straight into a freshly opened Google Sheet or Doc. */
+async function copyRowsToClipboard(rows: string[][]): Promise<boolean> {
+  const tsv = rowsToTsv(rows);
+  try {
+    if (typeof ClipboardItem !== 'undefined' && navigator.clipboard?.write) {
+      await navigator.clipboard.write([
+        new ClipboardItem({
+          'text/html': new Blob([rowsToHtmlTable(rows)], { type: 'text/html' }),
+          'text/plain': new Blob([tsv], { type: 'text/plain' }),
+        }),
+      ]);
+      return true;
+    }
+    await navigator.clipboard.writeText(tsv);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export default function PrintableMenuClient({ menus }: { menus: Menu[] }) {
   const [selected, setSelected] = useState<Set<SectionKey>>(new Set(SECTIONS.map(s => s.key)));
   const [style, setStyle] = useState<StyleKey>('americana');
   const [mode, setMode] = useState<ModeKey>('dark');
+  const [dlOpen, setDlOpen] = useState(false);
+  const [hint, setHint] = useState('');
 
   const groups = menus[0]?.groups || [];
   const find = (id: string) => groups.find(g => g.id === id)!;
 
   const toggle = (key: SectionKey) => setSelected(prev => { const n = new Set(prev); n.has(key) ? n.delete(key) : n.add(key); return n; });
+
+  const showHint = (msg: string) => { setHint(msg); window.setTimeout(() => setHint(''), 7000); };
+  const onDownloadCsv = () => { triggerDownload(`﻿${rowsToCsv(menuRows(menus))}`, `${EXPORT_FILE}.csv`, 'text/csv;charset=utf-8;'); setDlOpen(false); };
+  const onDownloadHtml = () => { triggerDownload(rowsToHtmlDoc(menuRows(menus)), `${EXPORT_FILE}.html`, 'text/html;charset=utf-8;'); setDlOpen(false); };
+  const onOpenGoogle = async (kind: 'sheets' | 'docs') => {
+    setDlOpen(false);
+    const copied = await copyRowsToClipboard(menuRows(menus));
+    const app = kind === 'sheets' ? 'Sheet' : 'Doc';
+    const win = window.open(kind === 'sheets' ? 'https://sheets.new' : 'https://docs.new', '_blank');
+    const pasteKey = typeof navigator !== 'undefined' && /Mac/i.test(navigator.platform) ? '⌘V' : 'Ctrl+V';
+    if (copied) showHint(win ? `Menu copied — press ${pasteKey} in the new Google ${app} to paste.` : `Menu copied to clipboard — open a Google ${app} and press ${pasteKey} to paste.`);
+    else showHint('Could not copy to clipboard — use the CSV or HTML download instead.');
+  };
+
+  const DL_OPTIONS: { label: string; onClick: () => void }[] = [
+    { label: 'CSV (.csv)', onClick: onDownloadCsv },
+    { label: 'HTML (.html)', onClick: onDownloadHtml },
+    { label: 'Google Sheets', onClick: () => onOpenGoogle('sheets') },
+    { label: 'Google Doc', onClick: () => onOpenGoogle('docs') },
+  ];
 
   return (
     <>
@@ -644,10 +708,31 @@ export default function PrintableMenuClient({ menus }: { menus: Menu[] }) {
                   {mk === 'light' ? '☀️ Light' : '🌙 Dark'}
                 </button>
               ))}
-              <button onClick={() => downloadMenuCsv(menus)} title="Download the full menu (all categories, items, options & prices) as a CSV spreadsheet" style={{ background: '#374151', color: '#fff', fontWeight: 700, padding: '6px 14px', borderRadius: 6, border: 'none', fontSize: 13, cursor: 'pointer', marginLeft: 4 }}>⬇️ CSV</button>
+              <div style={{ position: 'relative', marginLeft: 4 }}>
+                <button onClick={() => setDlOpen(o => !o)} title="Download the full menu (all tabs, sections, items, options & prices)" style={{ background: '#374151', color: '#fff', fontWeight: 700, padding: '6px 14px', borderRadius: 6, border: 'none', fontSize: 13, cursor: 'pointer' }}>⬇️ Download ▾</button>
+                {dlOpen && (
+                  <>
+                    <div onClick={() => setDlOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 60 }} />
+                    <div style={{ position: 'absolute', top: 'calc(100% + 4px)', right: 0, zIndex: 61, background: '#1f2937', border: '1px solid #374151', borderRadius: 8, boxShadow: '0 8px 24px rgba(0,0,0,.5)', minWidth: 170, overflow: 'hidden' }}>
+                      {DL_OPTIONS.map(o => (
+                        <button
+                          key={o.label}
+                          onClick={o.onClick}
+                          onMouseOver={e => { e.currentTarget.style.background = '#374151'; }}
+                          onMouseOut={e => { e.currentTarget.style.background = 'transparent'; }}
+                          style={{ display: 'block', width: '100%', textAlign: 'left', padding: '9px 14px', background: 'transparent', border: 'none', color: '#e5e7eb', fontSize: 13, cursor: 'pointer' }}
+                        >
+                          {o.label}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
               <button onClick={() => window.print()} style={{ background: '#f59e0b', color: '#000', fontWeight: 700, padding: '6px 18px', borderRadius: 6, border: 'none', fontSize: 13, cursor: 'pointer' }}>🖨️ Print</button>
             </div>
           </div>
+          {hint && <div style={{ fontSize: 12, color: '#34d399', marginBottom: 6 }}>{hint}</div>}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', fontSize: 12 }}>
             <button onClick={() => setSelected(new Set(SECTIONS.map(s => s.key)))} style={{ background: 'none', border: 'none', color: '#f59e0b', fontSize: 11, cursor: 'pointer', padding: 0 }}>All</button>
             <button onClick={() => setSelected(new Set())} style={{ background: 'none', border: 'none', color: '#f59e0b', fontSize: 11, cursor: 'pointer', padding: 0 }}>None</button>
