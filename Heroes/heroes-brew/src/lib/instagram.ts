@@ -13,6 +13,12 @@ const BEHOLD_FEED =
 
 const REVALIDATE = 86_400; // 24h — matches Behold free-tier daily updates
 
+/** Newest-first by post timestamp; posts without a timestamp (curated filler)
+ *  sort to the end so the live, latest posts always lead the grid. */
+export function byNewest(a: InstagramPost, b: InstagramPost): number {
+  return (Date.parse(b.timestamp || '') || 0) - (Date.parse(a.timestamp || '') || 0);
+}
+
 /**
  * Fetch recent Instagram posts. Prefers the Behold feed; falls back to a
  * graph.instagram.com token if one is set. Returns [] on failure so the page
@@ -54,7 +60,7 @@ async function getFromBehold(feedUrl: string, limit: number): Promise<InstagramP
     const posts: BeholdPost[] = Array.isArray(data)
       ? (data as BeholdPost[])
       : ((data as { posts?: BeholdPost[] }).posts ?? []);
-    return posts.slice(0, limit).map(mapBeholdPost);
+    return posts.map(mapBeholdPost).sort(byNewest).slice(0, limit);
   } catch (err) {
     console.error('Behold fetch error:', err);
     return [];
@@ -99,7 +105,7 @@ async function getFromGraph(token: string, limit: number): Promise<InstagramPost
       return [];
     }
     const data = await res.json();
-    return (data.data || []) as InstagramPost[];
+    return ((data.data || []) as InstagramPost[]).sort(byNewest);
   } catch (err) {
     console.error('Instagram fetch error:', err);
     return [];

@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { UnifiedEvent } from '@/types';
 import { Calendar, MapPin, Clock } from 'lucide-react';
-import EventActions from '@/components/EventActions';
+import LetsGoChip from '@/components/LetsGoChip';
 
 interface EventCardProps {
   event: UnifiedEvent;
@@ -76,9 +76,12 @@ export default function EventCard({ event, index }: EventCardProps) {
             </div>
             <p className="text-sm text-muted">{event.displayMessage}</p>
           </div>
-          <div className="flex items-center gap-1 text-muted text-xs shrink-0">
-            <Calendar size={12} />
-            <span>{dayStr}</span>
+          <div className="flex flex-col items-end gap-1.5 shrink-0">
+            <div className="flex items-center gap-1 text-muted text-xs">
+              <Calendar size={12} />
+              <span>{dayStr}</span>
+            </div>
+            <LetsGoChip event={event} />
           </div>
         </div>
       </motion.div>
@@ -115,15 +118,18 @@ export default function EventCard({ event, index }: EventCardProps) {
             <span className="text-[10px] font-bold text-muted tracking-wide">FINAL</span>
           )}
         </div>
-        <div className="flex items-center gap-2 text-muted text-xs">
-          <Calendar size={11} />
-          <span>{dayStr}</span>
-          {isUpcoming && (
-            <>
-              <Clock size={11} />
-              <span className="font-mono">{timeStr}</span>
-            </>
-          )}
+        <div className="flex flex-col items-end gap-1.5">
+          <div className="flex items-center gap-2 text-muted text-xs">
+            <Calendar size={11} />
+            <span>{dayStr}</span>
+            {isUpcoming && (
+              <>
+                <Clock size={11} />
+                <span className="font-mono">{timeStr}</span>
+              </>
+            )}
+          </div>
+          {!isFinal && <LetsGoChip event={event} />}
         </div>
       </div>
 
@@ -178,9 +184,6 @@ export default function EventCard({ event, index }: EventCardProps) {
         </div>
       )}
 
-      {/* Calendar + share — drives fans to come watch (and invite friends).
-          Skipped on finished games, which need no reminder or invite. */}
-      {!isFinal && <EventActions event={event} showCalendar={isUpcoming} />}
     </motion.div>
   );
 }

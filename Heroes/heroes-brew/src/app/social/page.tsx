@@ -1,8 +1,9 @@
 import type { Metadata } from 'next';
 import PageTransition from '@/components/PageTransition';
 import SocialPageClient from './SocialPageClient';
-import { getInstagramPosts } from '@/lib/instagram';
+import { getInstagramPosts, byNewest } from '@/lib/instagram';
 import { CURATED_POSTS } from '@/lib/social-posts';
+import ReviewCTA from '@/components/ReviewCTA';
 
 export const revalidate = 86_400; // 24h — matches Behold free-tier daily updates
 
@@ -23,7 +24,9 @@ export default async function SocialPage() {
   // curated, self-hosted set (deduped), so the grid stays full and auto-updates.
   const live = await getInstagramPosts(16);
   const seen = new Set(live.map((p) => shortcode(p.permalink)));
-  const merged = [...live, ...CURATED_POSTS.filter((p) => !seen.has(shortcode(p.permalink)))].slice(0, 16);
+  const merged = [...live, ...CURATED_POSTS.filter((p) => !seen.has(shortcode(p.permalink)))]
+    .sort(byNewest)
+    .slice(0, 16);
   const posts = merged.length > 0 ? merged : CURATED_POSTS;
 
   return (
@@ -36,6 +39,11 @@ export default async function SocialPage() {
           </p>
         </div>
         <SocialPageClient posts={posts} />
+
+        {/* Review ask — social visitors are warm fans; one tap to Google reviews. */}
+        <div className="mt-8">
+          <ReviewCTA source="social" />
+        </div>
       </div>
     </PageTransition>
   );
