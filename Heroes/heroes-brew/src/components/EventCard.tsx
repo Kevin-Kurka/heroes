@@ -1,9 +1,11 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import type { KeyboardEvent } from 'react';
 import { UnifiedEvent } from '@/types';
 import { Calendar, MapPin, Clock } from 'lucide-react';
 import LetsGoChip from '@/components/LetsGoChip';
+import { useEventShare } from '@/lib/use-event-share';
 
 interface EventCardProps {
   event: UnifiedEvent;
@@ -52,6 +54,26 @@ export default function EventCard({ event, index }: EventCardProps) {
   // Card opacity for final games
   const cardOpacity = isFinal ? 'opacity-60' : '';
 
+  // The whole card is the share target (not just the chip). Finished games have
+  // nothing to invite to, so they stay non-interactive.
+  const { share, copied, prefetchImage } = useEventShare(event);
+  const interactive = !isFinal;
+  const shareProps = interactive
+    ? {
+        onClick: share,
+        onPointerEnter: prefetchImage,
+        onKeyDown: (e: KeyboardEvent) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            share();
+          }
+        },
+        role: 'button' as const,
+        tabIndex: 0,
+        'aria-label': `Invite friends — ${event.eventTitle}`,
+      }
+    : {};
+
   if (isHoliday) {
     const emoji = event.emoji || '🎉';
     const themeColors = HOLIDAY_THEMES[event.holidayTheme || 'rose'] || HOLIDAY_THEMES.rose;
@@ -61,7 +83,10 @@ export default function EventCard({ event, index }: EventCardProps) {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.2, delay: index * 0.03, ease: [0, 0, 0.2, 1] as const }}
-        className={`rounded-md border backdrop-blur-md p-4 ${themeColors.border} ${themeColors.bg}`}
+        {...shareProps}
+        className={`rounded-md border backdrop-blur-md p-4 ${themeColors.border} ${themeColors.bg} ${
+          interactive ? 'cursor-pointer hover:brightness-110 transition-all' : ''
+        }`}
       >
         <div className="flex items-center gap-3">
           <div className={`w-12 h-12 rounded-md flex items-center justify-center text-2xl ${themeColors.iconBg}`}>
@@ -81,7 +106,7 @@ export default function EventCard({ event, index }: EventCardProps) {
               <Calendar size={12} />
               <span>{dayStr}</span>
             </div>
-            <LetsGoChip event={event} />
+            <LetsGoChip copied={copied} />
           </div>
         </div>
       </motion.div>
@@ -94,9 +119,10 @@ export default function EventCard({ event, index }: EventCardProps) {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2, delay: index * 0.03, ease: [0, 0, 0.2, 1] as const }}
+      {...shareProps}
       className={`rounded-md border border-white/10 bg-card/70 backdrop-blur-md p-4 ${cardOpacity} ${
         event.isLive ? 'ring-1 ring-red-500/40 border-red-500/30' : ''
-      }`}
+      } ${interactive ? 'cursor-pointer hover:border-accent/30 transition-colors' : ''}`}
     >
       {/* Top row: badges + date/time */}
       <div className="flex items-center justify-between mb-3">
@@ -129,7 +155,7 @@ export default function EventCard({ event, index }: EventCardProps) {
               </>
             )}
           </div>
-          {!isFinal && <LetsGoChip event={event} />}
+          {!isFinal && <LetsGoChip copied={copied} />}
         </div>
       </div>
 

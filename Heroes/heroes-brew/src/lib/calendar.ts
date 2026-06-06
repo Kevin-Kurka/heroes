@@ -62,8 +62,8 @@ export function formatEventWhen(event: UnifiedEvent): string {
 export function buildInviteText(event: UnifiedEvent): string {
   const hasMatchup = Boolean(event.awayTeam && event.homeTeam);
   const headline = hasMatchup
-    ? `Watch ${event.awayTeam} vs ${event.homeTeam} at ${VENUE_NAME} 🍻📺`
-    : `Join us for ${event.eventTitle} at ${VENUE_NAME} 🍻📺`;
+    ? `Watch ${event.awayTeam} vs ${event.homeTeam} at ${VENUE_NAME}`
+    : `Join us for ${event.eventTitle} at ${VENUE_NAME}`;
   return [
     headline,
     `📅 ${formatEventWhen(event)}`,
@@ -87,4 +87,19 @@ export function buildGoogleCalendarUrl(event: UnifiedEvent): string {
     details: eventDescription(event),
   });
   return `https://calendar.google.com/calendar/render?${params.toString()}`;
+}
+
+/**
+ * Same-origin URL for the branded matchup-card PNG (team logos + Heroes badge +
+ * date/location), shared as the image in the MMS. Server-rendered and cached, so
+ * the client just fetches it — see /api/og/event.
+ */
+export function buildEventImageUrl(event: UnifiedEvent): string {
+  const params = new URLSearchParams({ title: event.eventTitle, when: formatEventWhen(event) });
+  if (event.awayTeam) params.set('away', event.awayTeam);
+  if (event.homeTeam) params.set('home', event.homeTeam);
+  if (event.awayLogo) params.set('aw', event.awayLogo);
+  if (event.homeLogo) params.set('hm', event.homeLogo);
+  if (event.league) params.set('league', event.league);
+  return `/api/og/event?${params.toString()}`;
 }
