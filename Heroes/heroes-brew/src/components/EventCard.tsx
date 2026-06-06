@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { UnifiedEvent } from '@/types';
 import { Calendar, MapPin, Clock } from 'lucide-react';
+import EventActions from '@/components/EventActions';
 
 interface EventCardProps {
   event: UnifiedEvent;
@@ -35,7 +36,6 @@ const HOLIDAY_THEMES: Record<string, { border: string; bg: string; iconBg: strin
 
 export default function EventCard({ event, index }: EventCardProps) {
   const isHoliday = event.eventType === 'HOLIDAY';
-  const isSports = event.eventType === 'SPORTS';
 
   const date = new Date(event.eventTimestamp);
   const now = new Date();
@@ -177,6 +177,10 @@ export default function EventCard({ event, index }: EventCardProps) {
           <span className="truncate">{event.venue}</span>
         </div>
       )}
+
+      {/* Calendar + share — drives fans to come watch (and invite friends).
+          Skipped on finished games, which need no reminder or invite. */}
+      {!isFinal && <EventActions event={event} showCalendar={isUpcoming} />}
     </motion.div>
   );
 }

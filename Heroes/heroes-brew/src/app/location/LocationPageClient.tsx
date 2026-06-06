@@ -4,6 +4,8 @@ import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import { MapPin, Phone, Clock, Navigation, ExternalLink } from 'lucide-react';
 import { Restaurant } from '@/types';
 import PageTransition from '@/components/PageTransition';
+import ReviewCTA from '@/components/ReviewCTA';
+import { trackEvent } from '@/lib/analytics';
 
 interface Props {
   restaurant: Restaurant;
@@ -60,6 +62,7 @@ export default function LocationPageClient({ restaurant, today }: Props) {
               href={mapsUrl}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => trackEvent('get_directions', { source: 'location' })}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.2, delay: 0.05, ease: [0, 0, 0.2, 1] }}
@@ -83,6 +86,7 @@ export default function LocationPageClient({ restaurant, today }: Props) {
             {/* Phone */}
             <motion.a
               href={`tel:${restaurant.phone.replace(/\D/g, '')}`}
+              onClick={() => trackEvent('call', { source: 'location' })}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.2, delay: 0.1, ease: [0, 0, 0.2, 1] }}
@@ -131,6 +135,12 @@ export default function LocationPageClient({ restaurant, today }: Props) {
               </div>
             </motion.div>
           </div>
+        </div>
+
+        {/* Review ask — most location-page visitors are deciding whether to come
+            in or have just been; prime moment to ask for a Google review. */}
+        <div className="mt-6">
+          <ReviewCTA source="location" />
         </div>
       </div>
     </PageTransition>

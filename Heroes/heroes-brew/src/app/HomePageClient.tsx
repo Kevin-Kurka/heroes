@@ -8,6 +8,8 @@ import { UtensilsCrossed, CalendarDays, MapPin, ChevronRight, Trophy, Flame, Gra
 import { UnifiedEvent } from '@/types';
 import Ticker from '@/components/Ticker';
 import EventCard from '@/components/EventCard';
+import ReviewCTA from '@/components/ReviewCTA';
+import { trackEvent } from '@/lib/analytics';
 
 const DAILY_SPECIALS = [
   {
@@ -153,6 +155,7 @@ export default function HomePageClient({ events, todayIndex }: Props) {
           >
             <Link
               href="/menu"
+              onClick={() => trackEvent('view_menu', { source: 'home_hero' })}
               className="inline-flex items-center justify-center gap-2 bg-accent text-white font-semibold px-6 py-3 rounded-sm hover:bg-accent-dim transition-all shadow-[0_4px_16px_rgba(0,0,0,0.5),0_2px_8px_rgba(245,158,11,0.3)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.6),0_2px_12px_rgba(245,158,11,0.4)]"
             >
               <UtensilsCrossed size={18} />
@@ -162,6 +165,7 @@ export default function HomePageClient({ events, todayIndex }: Props) {
               href="https://www.google.com/maps/dir//American+Heroes+%26+Brew,+300+Carlsbad+Village+Dr+STE+120,+Carlsbad,+CA+92008"
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => trackEvent('get_directions', { source: 'home_hero' })}
               className="inline-flex items-center justify-center gap-2 bg-navy border border-navy text-white font-medium px-6 py-3 rounded-sm hover:bg-navy/80 transition-all shadow-[0_4px_16px_rgba(0,0,0,0.5),0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.6)]"
             >
               <MapPin size={18} />
@@ -407,6 +411,12 @@ export default function HomePageClient({ events, todayIndex }: Props) {
             </motion.div>
           ))}
         </div>
+      </section>
+
+      {/* Review ask — converts happy visitors into Google reviews, the top
+          local-ranking signal for "best sports bar near me". */}
+      <section className="max-w-4xl mx-auto px-4 pb-16">
+        <ReviewCTA source="home" />
       </section>
       </div>
     </div>
