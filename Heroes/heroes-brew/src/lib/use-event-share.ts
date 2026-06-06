@@ -22,14 +22,23 @@ import { trackEvent } from '@/lib/analytics';
 export function useEventShare(event: UnifiedEvent) {
   const [copied, setCopied] = useState(false);
   const fileRef = useRef<File | null>(null);
+  const cachedUrlRef = useRef<string | null>(null);
+
+  // Image URL is derived from the live event data (teams, logos, date/time), so
+  // it changes whenever the feed does. Keyed against the prefetched file below
+  // so a refreshed/rescheduled game always shares its current card, never a
+  // stale one — even if React keeps the same card instance (same event id).
+  const imageUrl = buildEventImageUrl(event);
 
   const prefetchImage = async (): Promise<void> => {
-    if (fileRef.current || typeof window === 'undefined') return;
+    if (typeof window === 'undefined') return;
+    if (fileRef.current && cachedUrlRef.current === imageUrl) return;
     try {
-      const res = await fetch(buildEventImageUrl(event));
+      const res = await fetch(imageUrl);
       if (res.ok) {
         const blob = await res.blob();
         fileRef.current = new File([blob], `heroes-${event.id}.png`, { type: 'image/png' });
+        cachedUrlRef.current = imageUrl;
       }
     } catch {
       // Image is a nice-to-have — the share still works without it.
@@ -42,7 +51,7 @@ export function useEventShare(event: UnifiedEvent) {
     const calendarUrl = buildGoogleCalendarUrl(event);
     trackEvent('lets_go', { event_id: event.id, league: event.league ?? 'NA' });
 
-    if (!fileRef.current) await prefetchImage();
+    if (!fileRef.current || cachedUrlRef.current !== imageUrl) await prefetchImage();
     const file = fileRef.current;
 
     if (typeof navigator !== 'undefined' && navigator.share) {

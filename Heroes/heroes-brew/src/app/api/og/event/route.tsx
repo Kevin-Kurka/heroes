@@ -84,6 +84,9 @@ export function GET(req: Request) {
         </div>
       </div>
     ),
-    { ...SIZE, headers: { 'cache-control': 'public, max-age=86400, s-maxage=86400, immutable' } },
+    // The URL params fully determine the card, so a changed feed (new matchup,
+    // rescheduled time) yields a new URL and a fresh image. Cache per-URL for
+    // speed; stale-while-revalidate lets a future card-design change refresh too.
+    { ...SIZE, headers: { 'cache-control': 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=86400' } },
   );
 }
