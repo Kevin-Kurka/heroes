@@ -24,7 +24,7 @@ const DAILY_SPECIALS = [
   {
     day: 'Tuesday',
     name: 'Taco Tuesday',
-    unifiedPrice: '3',
+    unifiedPrice: '4',
     deals: [
       { item: 'Tacos', detail: 'Carnitas, Carne Asada' },
       { item: 'Beer', detail: 'Modelo, Ultra' },
