@@ -3,6 +3,10 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
+import DoorDashIcon from '@/components/DoorDashIcon';
+import { DOORDASH_URL, DOORDASH_RED } from '@/lib/doordash';
+import { useDoorDashAvailable } from '@/hooks/use-doordash-available';
+import { trackEvent } from '@/lib/analytics';
 
 const navItems = [
   { label: 'Social', href: '/social' },
@@ -13,6 +17,7 @@ const navItems = [
 
 export default function TopNav() {
   const pathname = usePathname();
+  const doordashAvailable = useDoorDashAvailable();
 
   return (
     <header className="hidden md:block fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-card/60 backdrop-blur-md">
@@ -48,6 +53,22 @@ export default function TopNav() {
               </Link>
             );
           })}
+
+          {doordashAvailable && (
+            <a
+              href={DOORDASH_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Order on DoorDash"
+              title="Order delivery on DoorDash"
+              onClick={() => trackEvent('order_doordash', { source: 'top_nav' })}
+              className="ml-2 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-semibold text-white transition-all hover:brightness-110"
+              style={{ backgroundColor: DOORDASH_RED }}
+            >
+              <DoorDashIcon size={16} />
+              DoorDash
+            </a>
+          )}
         </nav>
       </div>
     </header>

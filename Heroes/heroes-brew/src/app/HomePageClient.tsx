@@ -9,7 +9,10 @@ import { UnifiedEvent } from '@/types';
 import Ticker from '@/components/Ticker';
 import EventCard from '@/components/EventCard';
 import ReviewCTA from '@/components/ReviewCTA';
+import DoorDashIcon from '@/components/DoorDashIcon';
 import { trackEvent } from '@/lib/analytics';
+import { DOORDASH_URL, DOORDASH_RED } from '@/lib/doordash';
+import { useDoorDashAvailable } from '@/hooks/use-doordash-available';
 
 const DAILY_SPECIALS = [
   {
@@ -59,6 +62,7 @@ interface Props {
 
 export default function HomePageClient({ events, todayIndex }: Props) {
   const heroRef = useRef<HTMLElement>(null);
+  const doordashAvailable = useDoorDashAvailable();
   const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ['start start', 'end start'],
@@ -153,14 +157,30 @@ export default function HomePageClient({ events, todayIndex }: Props) {
             transition={{ duration: 0.3, delay: 0.15, ease: [0, 0, 0.2, 1] }}
             className="mt-8 flex flex-col sm:flex-row gap-3 justify-center"
           >
-            <Link
-              href="/menu"
-              onClick={() => trackEvent('view_menu', { source: 'home_hero' })}
-              className="inline-flex items-center justify-center gap-2 bg-accent text-white font-semibold px-6 py-3 rounded-sm hover:bg-accent-dim transition-all shadow-[0_4px_16px_rgba(0,0,0,0.5),0_2px_8px_rgba(245,158,11,0.3)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.6),0_2px_12px_rgba(245,158,11,0.4)]"
-            >
-              <UtensilsCrossed size={18} />
-              View Menu
-            </Link>
+            <div className="inline-flex rounded-sm overflow-hidden shadow-[0_4px_16px_rgba(0,0,0,0.5),0_2px_8px_rgba(245,158,11,0.3)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.6),0_2px_12px_rgba(245,158,11,0.4)] transition-all">
+              <Link
+                href="/menu"
+                onClick={() => trackEvent('view_menu', { source: 'home_hero' })}
+                className="inline-flex items-center justify-center gap-2 bg-accent text-white font-semibold px-6 py-3 hover:bg-accent-dim transition-colors"
+              >
+                <UtensilsCrossed size={18} />
+                View Menu
+              </Link>
+              {doordashAvailable && (
+                <a
+                  href={DOORDASH_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Order on DoorDash"
+                  title="Order delivery on DoorDash"
+                  onClick={() => trackEvent('order_doordash', { source: 'home_hero' })}
+                  className="inline-flex items-center justify-center px-4 py-3 text-white transition-colors border-l border-black/20 hover:brightness-110"
+                  style={{ backgroundColor: DOORDASH_RED }}
+                >
+                  <DoorDashIcon size={20} />
+                </a>
+              )}
+            </div>
             <a
               href="https://www.google.com/maps/dir//American+Heroes+%26+Brew,+300+Carlsbad+Village+Dr+STE+120,+Carlsbad,+CA+92008"
               target="_blank"

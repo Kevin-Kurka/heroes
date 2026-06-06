@@ -4,6 +4,10 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, UtensilsCrossed, CalendarDays, Camera, MapPin } from 'lucide-react';
 import { motion } from 'framer-motion';
+import DoorDashIcon from '@/components/DoorDashIcon';
+import { DOORDASH_URL, DOORDASH_RED } from '@/lib/doordash';
+import { useDoorDashAvailable } from '@/hooks/use-doordash-available';
+import { trackEvent } from '@/lib/analytics';
 
 const navItems = [
   { label: 'Home', href: '/', icon: Home },
@@ -15,6 +19,7 @@ const navItems = [
 
 export default function BottomNav() {
   const pathname = usePathname();
+  const doordashAvailable = useDoorDashAvailable();
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card/95 backdrop-blur-md md:hidden">
@@ -49,6 +54,21 @@ export default function BottomNav() {
             </Link>
           );
         })}
+
+        {doordashAvailable && (
+          <a
+            href={DOORDASH_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Order on DoorDash"
+            onClick={() => trackEvent('order_doordash', { source: 'bottom_nav' })}
+            className="relative flex flex-col items-center gap-0.5 px-3 py-1"
+            style={{ color: DOORDASH_RED }}
+          >
+            <DoorDashIcon size={20} />
+            <span className="text-[10px] font-medium">DoorDash</span>
+          </a>
+        )}
       </div>
     </nav>
   );
