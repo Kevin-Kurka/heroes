@@ -1,11 +1,12 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import type { KeyboardEvent } from 'react';
+import { useState, type KeyboardEvent } from 'react';
 import { UnifiedEvent } from '@/types';
 import { Calendar, MapPin, Clock } from 'lucide-react';
 import LetsGoChip from '@/components/LetsGoChip';
-import { useEventShare } from '@/lib/use-event-share';
+import ShareDialog from '@/components/ShareDialog';
+import { trackEvent } from '@/lib/analytics';
 
 interface EventCardProps {
   event: UnifiedEvent;
@@ -56,21 +57,24 @@ export default function EventCard({ event, index }: EventCardProps) {
 
   // The whole card is the share target (not just the chip). Finished games have
   // nothing to invite to, so they stay non-interactive.
-  const { share, copied, prefetchImage } = useEventShare(event);
+  const [shareOpen, setShareOpen] = useState(false);
   const interactive = !isFinal;
+  const openShare = () => {
+    trackEvent('open_share', { event_id: event.id, league: event.league ?? 'NA' });
+    setShareOpen(true);
+  };
   const shareProps = interactive
     ? {
-        onClick: share,
-        onPointerEnter: prefetchImage,
+        onClick: openShare,
         onKeyDown: (e: KeyboardEvent) => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
-            share();
+            openShare();
           }
         },
         role: 'button' as const,
         tabIndex: 0,
-        'aria-label': `Invite friends — ${event.eventTitle}`,
+        'aria-label': `Share — ${event.eventTitle}`,
       }
     : {};
 
@@ -106,9 +110,10 @@ export default function EventCard({ event, index }: EventCardProps) {
               <Calendar size={12} />
               <span>{dayStr}</span>
             </div>
-            <LetsGoChip copied={copied} />
+            <LetsGoChip />
           </div>
         </div>
+        {shareOpen && <ShareDialog event={event} onClose={() => setShareOpen(false)} />}
       </motion.div>
     );
   }
@@ -155,7 +160,7 @@ export default function EventCard({ event, index }: EventCardProps) {
               </>
             )}
           </div>
-          {!isFinal && <LetsGoChip copied={copied} />}
+          {!isFinal && <LetsGoChip />}
         </div>
       </div>
 
@@ -210,6 +215,7 @@ export default function EventCard({ event, index }: EventCardProps) {
         </div>
       )}
 
+      {shareOpen && <ShareDialog event={event} onClose={() => setShareOpen(false)} />}
     </motion.div>
   );
 }

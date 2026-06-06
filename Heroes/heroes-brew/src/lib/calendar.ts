@@ -88,18 +88,3 @@ export function buildGoogleCalendarUrl(event: UnifiedEvent): string {
   });
   return `https://calendar.google.com/calendar/render?${params.toString()}`;
 }
-
-/**
- * Same-origin URL for the branded matchup-card PNG (team logos + Heroes badge +
- * date/location), shared as the image in the MMS. Server-rendered and cached, so
- * the client just fetches it — see /api/og/event.
- */
-export function buildEventImageUrl(event: UnifiedEvent): string {
-  const params = new URLSearchParams({ title: event.eventTitle, when: formatEventWhen(event) });
-  if (event.awayTeam) params.set('away', event.awayTeam);
-  if (event.homeTeam) params.set('home', event.homeTeam);
-  if (event.awayLogo) params.set('aw', event.awayLogo);
-  if (event.homeLogo) params.set('hm', event.homeLogo);
-  if (event.league) params.set('league', event.league);
-  return `/api/og/event?${params.toString()}`;
-}

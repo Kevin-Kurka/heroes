@@ -24,6 +24,9 @@ export function GET(req: Request) {
   const league = searchParams.get('league') ?? '';
   const title = searchParams.get('title') ?? 'Game Day';
   const when = searchParams.get('when') ?? '';
+  // `social=1` bakes the promo footer (handle, link, hashtags) into the image so
+  // Instagram/TikTok posts carry context even when the caption isn't pre-filled.
+  const social = searchParams.get('social') === '1';
   const badge = `${origin}/badge-clean.png`;
   const isMatchup = Boolean(away && home);
   const footer = when ? `${when}  ·  ${ADDRESS}` : ADDRESS;
@@ -78,9 +81,19 @@ export function GET(req: Request) {
         </div>
 
         {/* Footer */}
-        <div style={{ display: 'flex', flexDirection: 'column', borderTop: '3px solid #f59e0b', paddingTop: 22, gap: 8 }}>
-          <div style={{ display: 'flex', fontSize: 34, fontWeight: 800, color: '#ffffff' }}>WATCH IT ON THE BIG SCREENS</div>
-          <div style={{ display: 'flex', fontSize: 26, color: '#e5e5e5' }}>{footer}</div>
+        <div style={{ display: 'flex', flexDirection: 'column', borderTop: '3px solid #f59e0b', paddingTop: 20, gap: 6 }}>
+          <div style={{ display: 'flex', fontSize: 32, fontWeight: 800, color: '#ffffff' }}>WATCH IT ON THE BIG SCREENS</div>
+          <div style={{ display: 'flex', fontSize: 25, color: '#e5e5e5' }}>{footer}</div>
+          {social && (
+            <div style={{ display: 'flex', fontSize: 22, fontWeight: 700, color: '#f59e0b', marginTop: 2 }}>
+              @americanheroesandbrew · americanheroesandbrew.com
+            </div>
+          )}
+          {social && (
+            <div style={{ display: 'flex', fontSize: 20, color: '#a3a3a3' }}>
+              #AmericanHeroesAndBrew #CarlsbadEats #CarlsbadVillage #SportsBar #GameDay
+            </div>
+          )}
         </div>
       </div>
     ),
