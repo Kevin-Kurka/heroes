@@ -1,6 +1,6 @@
-import { getRestaurantInfo, getMenus } from './menu';
+import { getRestaurantInfo } from './menu';
 import { FAQ } from './faq';
-import type { MenuGroup } from '@/types';
+import type { Menu, MenuGroup } from '@/types';
 
 export const SITE_URL = 'https://americanheroesandbrew.com';
 const INSTAGRAM_URL = 'https://www.instagram.com/americanheroesandbrew/';
@@ -111,8 +111,7 @@ function groupToMenuSection(group: MenuGroup): Record<string, unknown> {
  * can cite specific dishes and prices. Linked to the Restaurant via inLanguage
  * + the shared SITE_URL identity.
  */
-export function getMenuJsonLd() {
-  const menus = getMenus();
+export function getMenuJsonLd(menus: Menu[]) {
   const sections = menus.flatMap((menu) => menu.groups.map(groupToMenuSection));
   return {
     '@context': 'https://schema.org',

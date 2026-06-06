@@ -19,8 +19,8 @@ export default async function MenuPage() {
     <>
       <script
         type="application/ld+json"
-        // schema.org/Menu built from the curated menu (no user input).
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(getMenuJsonLd()) }}
+        // schema.org/Menu built from the live (sheet-driven) menu.
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(getMenuJsonLd(menus)) }}
       />
       <MenuPageClient menus={menus} />
     </>
