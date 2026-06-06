@@ -92,7 +92,11 @@ INSTAGRAM_ACCESS_TOKEN=<long_lived_token> # social page; getInstagramPosts() ret
 CRON_SECRET=<secret>                      # guards the Instagram refresh cron route
 VERCEL_TOKEN=<token>                      # cron writes refreshed token back to Vercel
 VERCEL_PROJECT_ID=<project_id>            # target project for the env-var write
+PROMOS_SECRET=<secret>                    # guards POST /api/promos/publish-instagram (Bearer header)
+INSTAGRAM_USER_ID=<ig_user_id>            # IG account id targeted by the publish route's /media calls
 ```
+
+**Instagram publishing** (`POST /api/promos/publish-instagram`): publishes posters from `public/promos/` via the Graph API content-publishing flow (`/media` → `/media_publish`). The `INSTAGRAM_ACCESS_TOKEN` must carry the **`instagram_content_publish`** permission — if the current token is a Basic-Display/Instagram-login token without that scope, publishing will 403 and the token must be reissued via a Facebook app with the IG account linked.
 
 No Toast credentials are used — the menu is static. `NEXT_PUBLIC_ELFSIGHT_APP_ID` may appear in `.env.local` but is unused.
 
