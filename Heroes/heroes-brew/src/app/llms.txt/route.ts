@@ -58,7 +58,6 @@ Full menu: ${SITE_URL}/menu
 - Tue: Taco Tuesday
 - Wed: Wings & Well Wednesday
 - Thu: Thirsty Thursday (burger & draft deals)
-- After School Special: $5 kids meals + free cookie, Mon–Fri
 - Breakfast: served Fri–Sun, incl. 2-for-$22 breakfast
 
 ## FAQ

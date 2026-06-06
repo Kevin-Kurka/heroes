@@ -35,7 +35,7 @@ export const FAQ: FaqEntry[] = [
   {
     question: 'Is American Heroes & Brew family- and kid-friendly?',
     answer:
-      'Absolutely. We’re a family-friendly sports bar with a kids’ menu, and our After School Special offers $5 kids meals (with a free cookie) Monday through Friday.',
+      'Absolutely. We’re a family-friendly sports bar with a kids’ menu, so the whole family is welcome.',
   },
   {
     question: 'Does American Heroes & Brew serve breakfast?',

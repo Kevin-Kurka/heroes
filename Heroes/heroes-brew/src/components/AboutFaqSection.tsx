@@ -30,8 +30,7 @@ export default function AboutFaqSection() {
             cheesesteaks and sandwiches, nachos, salads, and weekend breakfast — alongside a full
             bar and craft beer on tap. With <strong className="text-foreground">16 TVs</strong>{' '}
             showing every game from the NFL and NBA to college football and pay-per-view UFC,
-            it&apos;s the go-to spot in Carlsbad to catch the game, grab lunch, or bring the family
-            for the After School Special.
+            it&apos;s the go-to spot in Carlsbad to catch the game, grab lunch, or bring the family.
           </p>
         </div>
       </section>

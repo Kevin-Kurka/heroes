@@ -466,7 +466,6 @@ export function getMenus(): Menu[] {
             { id: 'sp-thu', name: 'Burgers & Beer Thursday', description: 'Burgers $5 off · Select Drafts $5ea.', price: 5 },
             { id: 'sp-fri', name: 'Friday Funday', subtitle: '1–4pm', description: 'Drinks and Appetizers $2 off.', price: 2 },
             { id: 'sp-padre', name: 'Padre Games', subtitle: 'Hot Dogs & Beer', description: 'Friar Franks $6 · Heroes Drafts $2 off.', price: 6 },
-            { id: 'sp-kids', name: 'After School Special', subtitle: 'Mon–Fri · Ages 12 & Under', description: 'Kids Meals $5 · Cookies $1 · With adult entree.', price: 5 },
           ],
         },
       ],
