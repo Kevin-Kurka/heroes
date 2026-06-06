@@ -4,44 +4,44 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { CalendarPlus, Navigation, ListChecks, UtensilsCrossed } from 'lucide-react';
 import { SITE_URL } from '@/lib/structured-data';
-import { buildGoogleCalendarUrl } from '@/lib/calendar';
+import { getAllEvents, getAllHolidays } from '@/lib/events';
+import { buildGoogleCalendarUrl, formatEventWhen, eventCalendarTitle } from '@/lib/calendar';
+import { buildEventImagePath, MAPS_URL } from '@/lib/share-content';
 import type { UnifiedEvent } from '@/types';
 
-type SearchParams = Record<string, string | string[] | undefined>;
+// Re-fetch the feed at most every 5 minutes; the looked-up event fully determines
+// the page, so a changed/rescheduled game refreshes within that window.
+export const revalidate = 300;
 
-const MAPS_URL =
-  'https://www.google.com/maps/dir//American+Heroes+%26+Brew,+300+Carlsbad+Village+Dr+STE+120,+Carlsbad,+CA+92008';
-const IMAGE_KEYS = ['title', 'when', 'away', 'home', 'aw', 'hm', 'league'] as const;
-
-function str(value: string | string[] | undefined): string | undefined {
-  return typeof value === 'string' && value.length > 0 ? value : undefined;
-}
-
-/** Rebuild the /api/og/event query from the landing params (excludes ts). */
-function imageQuery(sp: SearchParams): string {
-  const p = new URLSearchParams();
-  for (const key of IMAGE_KEYS) {
-    const v = str(sp[key]);
-    if (v) p.set(key, v);
+/** Find a shared event by id across sports + holidays. Returns null if the game
+ *  has rotated out of the feed window (link then degrades to a generic landing). */
+async function findEvent(id: string): Promise<UnifiedEvent | null> {
+  try {
+    const [events, holidays] = await Promise.all([getAllEvents(), Promise.resolve(getAllHolidays())]);
+    return [...events, ...holidays].find((e) => e.id === id) ?? null;
+  } catch {
+    return null;
   }
-  return p.toString();
 }
 
 export async function generateMetadata({
-  searchParams,
+  params,
 }: {
-  searchParams: Promise<SearchParams>;
+  params: Promise<{ id: string }>;
 }): Promise<Metadata> {
-  const sp = await searchParams;
-  const away = str(sp.away);
-  const home = str(sp.home);
-  const when = str(sp.when);
-  const title = str(sp.title) ?? 'Game Day at American Heroes & Brew';
-  const headline = away && home ? `Watch ${away} vs ${home} at American Heroes & Brew` : title;
-  const description = when
-    ? `${when} · 300 Carlsbad Village Dr, Carlsbad. Every game on the big screens — let's go!`
-    : 'Carlsbad & North County\'s go-to sports bar. Every game on the big screens.';
-  const image = `${SITE_URL}/api/og/event?${imageQuery(sp)}`;
+  const { id } = await params;
+  const event = await findEvent(id);
+  if (!event) {
+    return {
+      title: 'Game Day at American Heroes & Brew',
+      description: 'Carlsbad & North County\'s go-to sports bar. Every game on the big screens.',
+      alternates: { canonical: '/events' },
+    };
+  }
+
+  const headline = eventCalendarTitle(event).replace(' @ ', ' at ');
+  const description = `${formatEventWhen(event)} · 300 Carlsbad Village Dr, Carlsbad. Every game on the big screens — let's go!`;
+  const image = `${SITE_URL}${buildEventImagePath(event)}`;
 
   return {
     title: headline,
@@ -50,7 +50,7 @@ export async function generateMetadata({
     openGraph: {
       title: headline,
       description,
-      url: `${SITE_URL}/share`,
+      url: `${SITE_URL}/g/${id}`,
       siteName: 'American Heroes & Brew',
       type: 'website',
       images: [{ url: image, width: 1200, height: 630, alt: headline }],
@@ -59,64 +59,41 @@ export async function generateMetadata({
   };
 }
 
-export default async function SharePage({
-  searchParams,
-}: {
-  searchParams: Promise<SearchParams>;
-}) {
-  const sp = await searchParams;
-  const away = str(sp.away);
-  const home = str(sp.home);
-  const awayLogo = str(sp.aw);
-  const homeLogo = str(sp.hm);
-  const league = str(sp.league);
-  const when = str(sp.when);
-  const title = str(sp.title);
-  const ts = str(sp.ts);
-  const isMatchup = Boolean(away && home);
-
-  // Reconstruct a minimal event so we can reuse the calendar-link builder.
-  const calendarUrl =
-    ts && title
-      ? buildGoogleCalendarUrl({
-          id: '',
-          eventType: isMatchup ? 'SPORTS' : 'HOLIDAY',
-          eventTimestamp: ts,
-          eventTitle: title,
-          displayMessage: '',
-          awayTeam: away,
-          homeTeam: home,
-          league: league as UnifiedEvent['league'],
-        })
-      : null;
+export default async function GameSharePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const event = await findEvent(id);
+  const isMatchup = Boolean(event?.awayTeam && event?.homeTeam);
+  const calendarUrl = event ? buildGoogleCalendarUrl(event) : null;
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
       <div className="rounded-xl border border-accent/30 bg-card/70 backdrop-blur-md p-6 sm:p-8 text-center">
         <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-accent">
-          {league ? `${league} · Watch Party` : 'Watch Party'}
+          {event?.league ? `${event.league} · Watch Party` : 'Watch Party'}
         </div>
 
-        {isMatchup ? (
+        {event && isMatchup ? (
           <div className="mt-6 flex items-center justify-center gap-5">
             <div className="flex flex-col items-center w-28">
-              {awayLogo && <img src={awayLogo} alt="" className="w-16 h-16 object-contain" />}
-              <span className="text-sm font-semibold text-foreground mt-2">{away}</span>
+              {event.awayLogo && <img src={event.awayLogo} alt="" className="w-16 h-16 object-contain" />}
+              <span className="text-sm font-semibold text-foreground mt-2">{event.awayTeam}</span>
             </div>
             <span className="text-2xl font-extrabold text-accent">VS</span>
             <div className="flex flex-col items-center w-28">
-              {homeLogo && <img src={homeLogo} alt="" className="w-16 h-16 object-contain" />}
-              <span className="text-sm font-semibold text-foreground mt-2">{home}</span>
+              {event.homeLogo && <img src={event.homeLogo} alt="" className="w-16 h-16 object-contain" />}
+              <span className="text-sm font-semibold text-foreground mt-2">{event.homeTeam}</span>
             </div>
           </div>
         ) : (
-          <h1 className="mt-4 text-2xl font-extrabold text-foreground">{title ?? 'Game Day'}</h1>
+          <h1 className="mt-4 text-2xl font-extrabold text-foreground">
+            {event?.eventTitle ?? 'Every Game, Every Day'}
+          </h1>
         )}
 
         <p className="mt-6 text-base font-semibold text-foreground">
-          {isMatchup ? 'Catch it on the big screens at American Heroes & Brew' : 'Join us at American Heroes & Brew'}
+          {event ? 'Catch it on the big screens at American Heroes & Brew' : 'Catch every game at American Heroes & Brew'}
         </p>
-        {when && <p className="mt-1 text-sm text-muted">{when}</p>}
+        {event && <p className="mt-1 text-sm text-muted">{formatEventWhen(event)}</p>}
         <p className="text-sm text-muted">300 Carlsbad Village Dr #120, Carlsbad · Carlsbad Village</p>
 
         <div className="mt-7 grid grid-cols-2 gap-3">

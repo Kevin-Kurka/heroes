@@ -1,17 +1,12 @@
 import { UnifiedEvent } from '@/types';
 import { SITE_URL } from '@/lib/structured-data';
-import {
-  eventCalendarTitle,
-  formatEventWhen,
-  buildInviteText,
-  buildGoogleCalendarUrl,
-} from '@/lib/calendar';
+import { eventCalendarTitle, formatEventWhen, buildInviteText } from '@/lib/calendar';
 
 /**
  * Channel-specific share content for the "Let's Go" dialog. Every message is
  * built to *promote Heroes*: it carries the venue geotag, the site link, the
- * @handle, and hashtags, and it points at a /share landing page whose OG preview
- * is the branded matchup image — so a texted/tweeted link shows the game card.
+ * @handle, and hashtags. The texted/emailed link is a short /g/<id> URL (kept
+ * clean for the message) whose OG preview is the branded matchup image.
  */
 
 const HANDLE = '@americanheroesandbrew';
@@ -24,7 +19,7 @@ const HASHTAGS = [
   'GameDay',
   'NorthCountySD',
 ];
-const MAPS_URL =
+export const MAPS_URL =
   'https://www.google.com/maps/dir//American+Heroes+%26+Brew,+300+Carlsbad+Village+Dr+STE+120,+Carlsbad,+CA+92008';
 
 /** Params that fully describe the matchup card (used by the OG image + landing). */
@@ -45,11 +40,10 @@ export function buildEventImagePath(event: UnifiedEvent, social = false): string
   return `/api/og/event?${p.toString()}`;
 }
 
-/** Absolute URL of the per-event landing page (its OG preview is the card). */
+/** Short, clean per-event landing URL (e.g. .../g/mlb-746123). The page looks the
+ *  game up from the live feed and its OG preview is the matchup card. */
 export function buildShareLandingUrl(event: UnifiedEvent): string {
-  const p = imageParams(event);
-  p.set('ts', event.eventTimestamp);
-  return `${SITE_URL}/share?${p.toString()}`;
+  return `${SITE_URL}/g/${encodeURIComponent(event.id)}`;
 }
 
 /** Caption for image-first channels (Instagram/TikTok): promo-loaded, no link clutter up top. */
@@ -76,27 +70,18 @@ export interface ShareContent {
   socialImagePath: string;
 }
 
-/** Build everything the dialog needs for one event. */
+/** Build everything the dialog needs for one event. The link sits on its own
+ *  labeled line ("Let's go 👉 <short url>") so the message reads clean — the
+ *  landing page carries the add-to-calendar and directions buttons. */
 export function buildShareContent(event: UnifiedEvent): ShareContent {
   const landingUrl = buildShareLandingUrl(event);
   const invite = buildInviteText(event);
-  const calendarUrl = buildGoogleCalendarUrl(event);
-
-  const smsBody = `${invite}\n${landingUrl}`;
-
-  const emailBody = [
-    invite,
-    '',
-    `Details & add to calendar: ${landingUrl}`,
-    `Add to your calendar: ${calendarUrl}`,
-    `Directions: ${MAPS_URL}`,
-  ].join('\n');
 
   return {
     landingUrl,
-    smsBody,
+    smsBody: `${invite}\nLet's go 👉 ${landingUrl}`,
     emailSubject: eventCalendarTitle(event),
-    emailBody,
+    emailBody: `${invite}\n\nLet's go 👉 ${landingUrl}`,
     socialCaption: buildSocialCaption(event),
     socialImagePath: buildEventImagePath(event, true),
   };

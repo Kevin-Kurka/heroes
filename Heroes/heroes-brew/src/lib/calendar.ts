@@ -64,12 +64,7 @@ export function buildInviteText(event: UnifiedEvent): string {
   const headline = hasMatchup
     ? `Watch ${event.awayTeam} vs ${event.homeTeam} at ${VENUE_NAME}`
     : `Join us for ${event.eventTitle} at ${VENUE_NAME}`;
-  return [
-    headline,
-    `📅 ${formatEventWhen(event)}`,
-    `📍 ${VENUE_ADDRESS}`,
-    `Let's go!`,
-  ].join('\n');
+  return [headline, `📅 ${formatEventWhen(event)}`, `📍 ${VENUE_ADDRESS}`].join('\n');
 }
 
 /**
