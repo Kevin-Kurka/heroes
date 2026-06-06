@@ -1,29 +1,21 @@
 import { UnifiedEvent } from '@/types';
 
 /**
- * Helpers behind the Scoreboard "Let's Go" chip. One tap should let a fan invite
- * friends *and* add the game to a calendar — so everything here frames the event
- * as "watch it at the bar": the location is pinned to the venue (not the game's
- * stadium) and the title reads "Watch X vs Y @ American Heroes & Brew". A game
- * reminder thereby becomes a reminder to come in, and an invite becomes a watch
- * party.
+ * Helpers behind the Scoreboard "Let's Go" chip. One tap lets a fan invite
+ * friends and add the game to a calendar — all as plain text + a calendar link
+ * (modern messaging renders rich previews, so no .ics attachment is needed).
+ * Everything frames the event as "watch it at the bar": the location is the
+ * venue (not the game's stadium) and the title reads "Watch X vs Y @ American
+ * Heroes & Brew", so a game reminder becomes a reminder to come in.
  */
 
 const VENUE_NAME = 'American Heroes & Brew';
 const VENUE_ADDRESS = '300 Carlsbad Village Dr #120, Carlsbad, CA 92008';
+const TZ = 'America/Los_Angeles';
 /** Typical broadcast window — used for the end time since APIs give only a start. */
 const GAME_DURATION_MS = 3 * 60 * 60 * 1000;
 
-/** RFC 5545 escaping for TEXT values (backslash, semicolon, comma, newline). */
-function escapeIcsText(value: string): string {
-  return value
-    .replace(/\\/g, '\\\\')
-    .replace(/;/g, '\\;')
-    .replace(/,/g, '\\,')
-    .replace(/\r?\n/g, '\\n');
-}
-
-/** Date → iCal/Google UTC stamp, e.g. 20260605T013000Z. */
+/** Date → Google Calendar UTC stamp, e.g. 20260605T013000Z. */
 function toCalendarUtc(date: Date): string {
   return date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
 }
@@ -46,48 +38,44 @@ export function eventCalendarTitle(event: UnifiedEvent): string {
   return `${event.eventTitle} @ ${VENUE_NAME}`;
 }
 
-/** Ready-to-send invite message for the native share sheet / clipboard. */
-export function buildInviteText(event: UnifiedEvent): string {
-  const matchup =
-    event.awayTeam && event.homeTeam
-      ? `${event.awayTeam} vs ${event.homeTeam}`
-      : event.eventTitle;
-  const when = new Date(event.eventTimestamp).toLocaleString('en-US', {
+/** Full local date + time range, e.g. "Sat, Jun 7 · 6:30–9:30 PM" (Pacific). */
+export function formatEventWhen(event: UnifiedEvent): string {
+  const start = new Date(event.eventTimestamp);
+  const end = eventEnd(start);
+  const day = start.toLocaleDateString('en-US', {
     weekday: 'short',
     month: 'short',
     day: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-    timeZone: 'America/Los_Angeles',
+    timeZone: TZ,
   });
-  return `${matchup} on the big screens at ${VENUE_NAME} — ${when}. Let's go! 🍻📺`;
+  const fmtTime = (d: Date) =>
+    d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: TZ });
+  let startTime = fmtTime(start);
+  const endTime = fmtTime(end);
+  // Drop the redundant meridiem on the start when both sides share it
+  // ("6:30 PM–9:30 PM" → "6:30–9:30 PM").
+  if (startTime.slice(-2) === endTime.slice(-2)) startTime = startTime.slice(0, -3);
+  return `${day} · ${startTime}–${endTime}`;
 }
 
-/** Single-event .ics document (shared as a file so it lands in any calendar app). */
-export function buildEventIcs(event: UnifiedEvent): string {
-  const start = new Date(event.eventTimestamp);
+/** Polished, ready-to-send invite for the native share sheet / clipboard. */
+export function buildInviteText(event: UnifiedEvent): string {
+  const hasMatchup = Boolean(event.awayTeam && event.homeTeam);
+  const headline = hasMatchup
+    ? `Watch ${event.awayTeam} vs ${event.homeTeam} at ${VENUE_NAME} 🍻📺`
+    : `Join us for ${event.eventTitle} at ${VENUE_NAME} 🍻📺`;
   return [
-    'BEGIN:VCALENDAR',
-    'VERSION:2.0',
-    'PRODID:-//American Heroes & Brew//Scoreboard//EN',
-    'CALSCALE:GREGORIAN',
-    'BEGIN:VEVENT',
-    `UID:${event.id}@americanheroesandbrew.com`,
-    `DTSTAMP:${toCalendarUtc(new Date())}`,
-    `DTSTART:${toCalendarUtc(start)}`,
-    `DTEND:${toCalendarUtc(eventEnd(start))}`,
-    `SUMMARY:${escapeIcsText(eventCalendarTitle(event))}`,
-    `LOCATION:${escapeIcsText(VENUE_ADDRESS)}`,
-    `DESCRIPTION:${escapeIcsText(eventDescription(event))}`,
-    'END:VEVENT',
-    'END:VCALENDAR',
-  ].join('\r\n');
+    headline,
+    `📅 ${formatEventWhen(event)}`,
+    `📍 ${VENUE_ADDRESS}`,
+    `Let's go!`,
+  ].join('\n');
 }
 
 /**
- * Google Calendar "add event" link — used as the share URL (so recipients can
- * one-tap add the game) and the desktop fallback when the Web Share API is
- * unavailable. Opens the prefilled event composer in any browser.
+ * Google Calendar "add event" link — shared as the invite URL so recipients can
+ * one-tap add the game (date, time, title, and venue are baked into the link),
+ * and used as the desktop fallback. Opens the prefilled composer in any browser.
  */
 export function buildGoogleCalendarUrl(event: UnifiedEvent): string {
   const start = new Date(event.eventTimestamp);
