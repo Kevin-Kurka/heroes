@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Menu, MenuGroup, MenuItem } from '@/types';
+import { rowsToXlsxBlob, rowsToDocxBlob } from '@/lib/office';
 
 /* ─── Types ─── */
 type StyleKey = 'americana' | 'editorial';
@@ -608,9 +609,6 @@ function htmlEscape(value: string): string {
 function rowsToCsv(rows: string[][]): string {
   return [CSV_HEADERS, ...rows].map((r) => r.map(csvEscape).join(',')).join('\r\n');
 }
-function rowsToTsv(rows: string[][]): string {
-  return [CSV_HEADERS, ...rows].map((r) => r.map((c) => c.replace(/\t/g, ' ')).join('\t')).join('\n');
-}
 function rowsToHtmlTable(rows: string[][]): string {
   const th = CSV_HEADERS.map((h) => `<th>${htmlEscape(h)}</th>`).join('');
   const body = rows
@@ -624,8 +622,7 @@ function rowsToHtmlDoc(rows: string[][]): string {
 </head><body><h1>American Heroes &amp; Brew — Menu</h1>${rowsToHtmlTable(rows)}</body></html>`;
 }
 
-function triggerDownload(content: string, filename: string, mime: string) {
-  const blob = new Blob([content], { type: mime });
+function downloadBlob(blob: Blob, filename: string) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
@@ -635,26 +632,8 @@ function triggerDownload(content: string, filename: string, mime: string) {
   a.remove();
   URL.revokeObjectURL(url);
 }
-
-/** Copy rows to the clipboard (rich HTML table + TSV fallback) so they can be
- *  pasted straight into a freshly opened Google Sheet or Doc. */
-async function copyRowsToClipboard(rows: string[][]): Promise<boolean> {
-  const tsv = rowsToTsv(rows);
-  try {
-    if (typeof ClipboardItem !== 'undefined' && navigator.clipboard?.write) {
-      await navigator.clipboard.write([
-        new ClipboardItem({
-          'text/html': new Blob([rowsToHtmlTable(rows)], { type: 'text/html' }),
-          'text/plain': new Blob([tsv], { type: 'text/plain' }),
-        }),
-      ]);
-      return true;
-    }
-    await navigator.clipboard.writeText(tsv);
-    return true;
-  } catch {
-    return false;
-  }
+function triggerDownload(content: string, filename: string, mime: string) {
+  downloadBlob(new Blob([content], { type: mime }), filename);
 }
 
 export default function PrintableMenuClient({ menus }: { menus: Menu[] }) {
@@ -662,31 +641,18 @@ export default function PrintableMenuClient({ menus }: { menus: Menu[] }) {
   const [style, setStyle] = useState<StyleKey>('americana');
   const [mode, setMode] = useState<ModeKey>('dark');
   const [dlOpen, setDlOpen] = useState(false);
-  const [hint, setHint] = useState('');
 
   const groups = menus[0]?.groups || [];
   const find = (id: string) => groups.find(g => g.id === id)!;
 
   const toggle = (key: SectionKey) => setSelected(prev => { const n = new Set(prev); n.has(key) ? n.delete(key) : n.add(key); return n; });
 
-  const showHint = (msg: string) => { setHint(msg); window.setTimeout(() => setHint(''), 7000); };
-  const onDownloadCsv = () => { triggerDownload(`﻿${rowsToCsv(menuRows(menus))}`, `${EXPORT_FILE}.csv`, 'text/csv;charset=utf-8;'); setDlOpen(false); };
-  const onDownloadHtml = () => { triggerDownload(rowsToHtmlDoc(menuRows(menus)), `${EXPORT_FILE}.html`, 'text/html;charset=utf-8;'); setDlOpen(false); };
-  const onOpenGoogle = async (kind: 'sheets' | 'docs') => {
-    setDlOpen(false);
-    const copied = await copyRowsToClipboard(menuRows(menus));
-    const app = kind === 'sheets' ? 'Sheet' : 'Doc';
-    const win = window.open(kind === 'sheets' ? 'https://sheets.new' : 'https://docs.new', '_blank');
-    const pasteKey = typeof navigator !== 'undefined' && /Mac/i.test(navigator.platform) ? '⌘V' : 'Ctrl+V';
-    if (copied) showHint(win ? `Menu copied — press ${pasteKey} in the new Google ${app} to paste.` : `Menu copied to clipboard — open a Google ${app} and press ${pasteKey} to paste.`);
-    else showHint('Could not copy to clipboard — use the CSV or HTML download instead.');
-  };
-
+  const download = (fn: () => void) => () => { fn(); setDlOpen(false); };
   const DL_OPTIONS: { label: string; onClick: () => void }[] = [
-    { label: 'CSV (.csv)', onClick: onDownloadCsv },
-    { label: 'HTML (.html)', onClick: onDownloadHtml },
-    { label: 'Google Sheets', onClick: () => onOpenGoogle('sheets') },
-    { label: 'Google Doc', onClick: () => onOpenGoogle('docs') },
+    { label: 'CSV (.csv)', onClick: download(() => triggerDownload(`﻿${rowsToCsv(menuRows(menus))}`, `${EXPORT_FILE}.csv`, 'text/csv;charset=utf-8;')) },
+    { label: 'Excel / Google Sheets (.xlsx)', onClick: download(() => downloadBlob(rowsToXlsxBlob(CSV_HEADERS, menuRows(menus)), `${EXPORT_FILE}.xlsx`)) },
+    { label: 'HTML (.html)', onClick: download(() => triggerDownload(rowsToHtmlDoc(menuRows(menus)), `${EXPORT_FILE}.html`, 'text/html;charset=utf-8;')) },
+    { label: 'Word / Google Doc (.docx)', onClick: download(() => downloadBlob(rowsToDocxBlob(CSV_HEADERS, menuRows(menus), 'American Heroes & Brew — Menu'), `${EXPORT_FILE}.docx`)) },
   ];
 
   return (
@@ -713,7 +679,7 @@ export default function PrintableMenuClient({ menus }: { menus: Menu[] }) {
                 {dlOpen && (
                   <>
                     <div onClick={() => setDlOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 60 }} />
-                    <div style={{ position: 'absolute', top: 'calc(100% + 4px)', right: 0, zIndex: 61, background: '#1f2937', border: '1px solid #374151', borderRadius: 8, boxShadow: '0 8px 24px rgba(0,0,0,.5)', minWidth: 170, overflow: 'hidden' }}>
+                    <div style={{ position: 'absolute', top: 'calc(100% + 4px)', right: 0, zIndex: 61, background: '#1f2937', border: '1px solid #374151', borderRadius: 8, boxShadow: '0 8px 24px rgba(0,0,0,.5)', minWidth: 230, overflow: 'hidden' }}>
                       {DL_OPTIONS.map(o => (
                         <button
                           key={o.label}
@@ -732,7 +698,6 @@ export default function PrintableMenuClient({ menus }: { menus: Menu[] }) {
               <button onClick={() => window.print()} style={{ background: '#f59e0b', color: '#000', fontWeight: 700, padding: '6px 18px', borderRadius: 6, border: 'none', fontSize: 13, cursor: 'pointer' }}>🖨️ Print</button>
             </div>
           </div>
-          {hint && <div style={{ fontSize: 12, color: '#34d399', marginBottom: 6 }}>{hint}</div>}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', fontSize: 12 }}>
             <button onClick={() => setSelected(new Set(SECTIONS.map(s => s.key)))} style={{ background: 'none', border: 'none', color: '#f59e0b', fontSize: 11, cursor: 'pointer', padding: 0 }}>All</button>
             <button onClick={() => setSelected(new Set())} style={{ background: 'none', border: 'none', color: '#f59e0b', fontSize: 11, cursor: 'pointer', padding: 0 }}>None</button>
