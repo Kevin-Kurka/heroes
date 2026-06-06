@@ -140,7 +140,7 @@ export default function HomePageClient({ events, todayIndex }: Props) {
               className="text-2xl md:text-3xl font-bold text-foreground"
               style={{ textShadow: '0 2px 8px rgba(0,0,0,0.8), 0 4px 20px rgba(0,0,0,0.6)' }}
             >
-              Best in Carlsbad
+              North County&apos;s Best Sports Bar
             </h2>
             <p
               className="text-foreground/80 text-base md:text-lg max-w-md mx-auto mt-1"
