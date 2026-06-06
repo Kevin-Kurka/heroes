@@ -4,7 +4,7 @@ import { useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
-import { UtensilsCrossed, CalendarDays, MapPin, ChevronRight, Trophy, Flame, GraduationCap, Egg } from 'lucide-react';
+import { UtensilsCrossed, CalendarDays, MapPin, ChevronRight, Trophy, Flame, Egg } from 'lucide-react';
 import { UnifiedEvent } from '@/types';
 import Ticker from '@/components/Ticker';
 import EventCard from '@/components/EventCard';
@@ -300,34 +300,6 @@ export default function HomePageClient({ events, todayIndex }: Props) {
             </div>
           </>
         )}
-      </section>
-
-      {/* After School Special */}
-      <section className="max-w-4xl mx-auto px-4 py-12">
-        <div className="flex items-center gap-2 mb-6">
-          <GraduationCap size={20} className="text-accent" />
-          <h2 className="text-2xl font-bold text-foreground">After School Special</h2>
-        </div>
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.25, ease: [0, 0, 0.2, 1] }}
-          className="relative overflow-hidden bg-card border border-accent/30 rounded-lg p-6"
-        >
-          <div className="absolute top-0 left-0 w-1 h-full bg-accent" />
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-lg font-bold text-foreground">Kids Meals</h3>
-            <span className="text-lg font-bold text-accent">5</span>
-          </div>
-          <p className="text-foreground/80 text-sm mb-2">With a free cookie!</p>
-          <div className="border-t border-border/50 pt-3 flex flex-wrap gap-3 text-sm text-muted">
-            <span>Ages 10 &amp; under</span>
-            <span className="text-border">·</span>
-            <span>Monday – Friday</span>
-            <span className="text-border">·</span>
-            <span>With purchase of adult entrée</span>
-          </div>
-        </motion.div>
       </section>
 
       {/* 2 for 22 Breakfast */}

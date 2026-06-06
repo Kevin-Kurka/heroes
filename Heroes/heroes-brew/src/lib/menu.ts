@@ -431,7 +431,7 @@ export function getMenus(): Menu[] {
           id: 'g-kids',
           name: 'Kids',
           displayMode: 'variants',
-          basePrice: 12,
+          basePrice: 10,
           choices: [
             { label: 'Drink', options: ['Milk', 'Soda', 'Apple Juice'] },
             { label: 'Side', options: ['Fries', 'Fruit'] },
@@ -444,12 +444,12 @@ export function getMenus(): Menu[] {
             { name: 'Churros', price: '+8' },
           ],
           items: [
-            { id: 'k1', name: 'Mac & Cheese', price: 12 },
-            { id: 'k2', name: 'Corn Dog', price: 12 },
-            { id: 'k3', name: 'Chicken Tenders', price: 12 },
-            { id: 'k4', name: 'Burger', price: 12 },
-            { id: 'k5', name: 'Hot Dog', price: 12 },
-            { id: 'k6', name: 'Grilled Cheese', price: 12 },
+            { id: 'k1', name: 'Mac & Cheese', price: 10 },
+            { id: 'k2', name: 'Corn Dog', price: 10 },
+            { id: 'k3', name: 'Chicken Tenders', price: 10 },
+            { id: 'k4', name: 'Burger', price: 10 },
+            { id: 'k5', name: 'Hot Dog', price: 10 },
+            { id: 'k6', name: 'Grilled Cheese', price: 10 },
           ],
         },
 
