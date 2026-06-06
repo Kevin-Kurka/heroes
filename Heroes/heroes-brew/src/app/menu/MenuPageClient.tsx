@@ -2,11 +2,16 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion, LayoutGroup, useScroll, useTransform, useSpring } from 'framer-motion';
-import { Menu } from '@/types';
+import { Lock } from 'lucide-react';
+import { Menu, MenuItem } from '@/types';
 import MenuCard from '@/components/MenuCard';
 import VariantGroupCard from '@/components/VariantGroupCard';
 import PageTransition from '@/components/PageTransition';
+import SecretMenuGate, { type SecretUnlock } from '@/components/SecretMenuGate';
 import { SHOW_PRICES } from '@/lib/config';
+
+const SECRET_TAB = '__secret__';
+const SECRET_CACHE_KEY = 'heroes_secret_menu_v1';
 
 interface Props {
   menus: Menu[];
@@ -19,6 +24,57 @@ export default function MenuPageClient({ menus }: Props) {
   const categoryRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const [isSticky, setIsSticky] = useState(false);
+
+  // Secret menu: a hidden tab revealed by the QR link (?secret) or a prior unlock,
+  // gated behind a name + email/phone capture (saved to Google Sheets).
+  const [secretVisible, setSecretVisible] = useState(false);
+  const [unlocked, setUnlocked] = useState(false);
+  const [secretItems, setSecretItems] = useState<MenuItem[]>([]);
+  const [secretNote, setSecretNote] = useState('');
+  const [showGate, setShowGate] = useState(false);
+
+  // Client-only mount sync: restore a saved unlock and handle QR arrival. The
+  // synchronous setState is intentional and SSR-safe here — a lazy initializer
+  // would mismatch the prerendered HTML, which has no secret tab.
+  /* eslint-disable react-hooks/set-state-in-effect */
+  useEffect(() => {
+    let isUnlocked = false;
+    try {
+      const cached = JSON.parse(localStorage.getItem(SECRET_CACHE_KEY) ?? 'null');
+      if (cached?.items?.length) {
+        isUnlocked = true;
+        setUnlocked(true);
+        setSecretItems(cached.items);
+        setSecretNote(cached.note ?? '');
+        setSecretVisible(true);
+      }
+    } catch {
+      // Corrupt cache — ignore and re-gate.
+    }
+    if (new URLSearchParams(window.location.search).has('secret')) {
+      setSecretVisible(true);
+      setActiveGroup(SECRET_TAB);
+      if (!isUnlocked) setShowGate(true);
+    }
+  }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
+
+  const handleUnlock = (data: SecretUnlock) => {
+    setUnlocked(true);
+    setSecretItems(data.items);
+    setSecretNote(data.note);
+    setSecretVisible(true);
+    setShowGate(false);
+    setActiveGroup(SECRET_TAB);
+    try {
+      localStorage.setItem(
+        SECRET_CACHE_KEY,
+        JSON.stringify({ items: data.items, note: data.note, name: data.name, contact: data.contact, ts: Date.now() }),
+      );
+    } catch {
+      // Storage full/blocked — unlock still holds for this session.
+    }
+  };
 
   // Scroll active category into view
   useEffect(() => {
@@ -41,6 +97,11 @@ export default function MenuPageClient({ menus }: Props) {
   }, []);
 
   const currentGroup = groups.find(g => g.id === activeGroup) || groups[0];
+  const isSecret = activeGroup === SECRET_TAB;
+  const tabs = [
+    ...groups.map((g) => ({ id: g.id, name: g.name })),
+    ...(secretVisible ? [{ id: SECRET_TAB, name: '🔒 Secret' }] : []),
+  ];
 
   const { scrollY } = useScroll();
   const springConfig = { stiffness: 100, damping: 30, mass: 0.5 };
@@ -75,33 +136,73 @@ export default function MenuPageClient({ menus }: Props) {
               isSticky ? 'bg-card/60 backdrop-blur-md border-b border-white/10' : ''
             }`}
           >
-            {groups.map((group) => (
-              <button
-                key={group.id}
-                data-active={activeGroup === group.id}
-                onClick={() => setActiveGroup(group.id)}
-                className={`relative shrink-0 px-4 py-2 rounded-sm text-sm font-medium transition-colors duration-300 ${
-                  activeGroup === group.id
-                    ? 'text-white'
-                    : 'bg-white/5 text-muted hover:text-foreground hover:bg-white/10 border border-white/10'
-                }`}
-              >
-                {activeGroup === group.id && (
-                  <motion.div
-                    layoutId="menu-tab"
-                    className="absolute inset-0 bg-accent rounded-sm shadow-md shadow-accent/20"
-                    transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                  />
-                )}
-                <span className="relative z-10">{group.name}</span>
-              </button>
-            ))}
+            {tabs.map((tab) => {
+              const active = activeGroup === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  data-active={active}
+                  onClick={() => {
+                    if (tab.id === SECRET_TAB && !unlocked) {
+                      setActiveGroup(SECRET_TAB);
+                      setShowGate(true);
+                    } else {
+                      setActiveGroup(tab.id);
+                    }
+                  }}
+                  className={`relative shrink-0 px-4 py-2 rounded-sm text-sm font-medium transition-colors duration-300 ${
+                    active
+                      ? 'text-white'
+                      : 'bg-white/5 text-muted hover:text-foreground hover:bg-white/10 border border-white/10'
+                  }`}
+                >
+                  {active && (
+                    <motion.div
+                      layoutId="menu-tab"
+                      className="absolute inset-0 bg-accent rounded-sm shadow-md shadow-accent/20"
+                      transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                    />
+                  )}
+                  <span className="relative z-10">{tab.name}</span>
+                </button>
+              );
+            })}
           </div>
         </LayoutGroup>
 
         {/* Menu items */}
         <div key={activeGroup}>
-          {currentGroup?.displayMode === 'starters' && currentGroup.subGroups ? (
+          {isSecret ? (
+            unlocked ? (
+              <div>
+                {secretNote && (
+                  <p className="text-sm text-accent font-semibold mb-4">{secretNote}</p>
+                )}
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {secretItems.map((item, i) => (
+                    <MenuCard key={item.id} item={item} index={i} />
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-16 text-center">
+                <div className="w-14 h-14 rounded-full bg-accent/15 flex items-center justify-center mb-4">
+                  <Lock size={24} className="text-accent" />
+                </div>
+                <p className="text-lg font-semibold text-foreground">The Secret Menu is locked</p>
+                <p className="text-sm text-muted mt-1 mb-5">
+                  Enter your name + email or phone to unlock the off-menu items.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setShowGate(true)}
+                  className="inline-flex items-center gap-2 bg-accent text-white font-semibold px-5 py-2.5 rounded-md hover:bg-accent-dim transition-colors"
+                >
+                  <Lock size={16} /> Unlock Secret Menu
+                </button>
+              </div>
+            )
+          ) : currentGroup?.displayMode === 'starters' && currentGroup.subGroups ? (
             <div className="space-y-4">
               {currentGroup.description && (
                 <p className="text-sm text-accent font-semibold uppercase tracking-wide mb-2">{currentGroup.description}</p>
@@ -184,6 +285,8 @@ export default function MenuPageClient({ menus }: Props) {
             </>
           )}
         </div>
+
+        {showGate && <SecretMenuGate onClose={() => setShowGate(false)} onUnlock={handleUnlock} />}
       </div>
     </PageTransition>
   );
