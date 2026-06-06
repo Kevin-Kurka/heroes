@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { Home, UtensilsCrossed, CalendarDays, Camera, MapPin } from 'lucide-react';
 import { motion } from 'framer-motion';
 import DoorDashIcon from '@/components/DoorDashIcon';
-import { DOORDASH_URL, DOORDASH_RED } from '@/lib/doordash';
+import { DOORDASH_URL } from '@/lib/doordash';
 import { useDoorDashAvailable } from '@/hooks/use-doordash-available';
 import { trackEvent } from '@/lib/analytics';
 
@@ -62,8 +62,7 @@ export default function BottomNav() {
             rel="noopener noreferrer"
             aria-label="Order on DoorDash"
             onClick={() => trackEvent('order_doordash', { source: 'bottom_nav' })}
-            className="relative flex flex-col items-center gap-0.5 px-3 py-1"
-            style={{ color: DOORDASH_RED }}
+            className="relative flex flex-col items-center gap-0.5 px-3 py-1 text-accent"
           >
             <DoorDashIcon size={20} />
             <span className="text-[10px] font-medium">DoorDash</span>

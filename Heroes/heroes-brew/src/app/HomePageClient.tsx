@@ -11,7 +11,7 @@ import EventCard from '@/components/EventCard';
 import ReviewCTA from '@/components/ReviewCTA';
 import DoorDashIcon from '@/components/DoorDashIcon';
 import { trackEvent } from '@/lib/analytics';
-import { DOORDASH_URL, DOORDASH_RED } from '@/lib/doordash';
+import { DOORDASH_URL } from '@/lib/doordash';
 import { useDoorDashAvailable } from '@/hooks/use-doordash-available';
 
 const DAILY_SPECIALS = [
@@ -174,8 +174,7 @@ export default function HomePageClient({ events, todayIndex }: Props) {
                   aria-label="Order on DoorDash"
                   title="Order delivery on DoorDash"
                   onClick={() => trackEvent('order_doordash', { source: 'home_hero' })}
-                  className="inline-flex items-center justify-center px-4 py-3 text-white transition-colors border-l border-black/20 hover:brightness-110"
-                  style={{ backgroundColor: DOORDASH_RED }}
+                  className="inline-flex items-center justify-center px-4 py-3 text-white bg-accent-dim hover:bg-accent transition-colors border-l border-white/15"
                 >
                   <DoorDashIcon size={20} />
                 </a>

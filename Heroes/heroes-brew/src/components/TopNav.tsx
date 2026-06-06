@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
 import DoorDashIcon from '@/components/DoorDashIcon';
-import { DOORDASH_URL, DOORDASH_RED } from '@/lib/doordash';
+import { DOORDASH_URL } from '@/lib/doordash';
 import { useDoorDashAvailable } from '@/hooks/use-doordash-available';
 import { trackEvent } from '@/lib/analytics';
 
@@ -62,8 +62,7 @@ export default function TopNav() {
               aria-label="Order on DoorDash"
               title="Order delivery on DoorDash"
               onClick={() => trackEvent('order_doordash', { source: 'top_nav' })}
-              className="ml-2 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-semibold text-white transition-all hover:brightness-110"
-              style={{ backgroundColor: DOORDASH_RED }}
+              className="ml-2 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-semibold text-white bg-accent hover:bg-accent-dim transition-all"
             >
               <DoorDashIcon size={16} />
               DoorDash
