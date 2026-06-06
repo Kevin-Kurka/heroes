@@ -1,5 +1,7 @@
+import 'server-only';
 import { Menu, MenuGroup, MenuGroupAddOn, MenuGroupChoice, MenuItem } from '@/types';
 import { getMenus } from './menu';
+import { SECRET_MENU_ITEMS } from './secret-menu';
 
 /**
  * Google Sheet → live menu sync.
@@ -13,7 +15,19 @@ import { getMenus } from './menu';
  * Set `MENU_SHEET_CSV_URL` to the sheet's published / "anyone with link" CSV URL
  * and the menu pages will render from it (falling back to the bundled static menu
  * in src/lib/menu.ts whenever the URL is unset or the fetch fails).
+ *
+ * A tab named "Secret" / "Secret Menu" is treated specially: it is editable in the
+ * sheet but NEVER surfaced on any public page — `resolveMenus()` strips it out, and
+ * only `resolveSecretMenuItems()` (used by the gated /api/secret-menu route) reads
+ * it. This module is `server-only` so secret items can never reach a client bundle.
  */
+
+const SECRET_TAB_RE = /^secret(\s*menu)?$/i;
+const isSecretTab = (name: string) => SECRET_TAB_RE.test(name.trim());
+const flattenItems = (g: MenuGroup): MenuItem[] => [
+  ...g.items,
+  ...(g.subGroups?.flatMap(flattenItems) ?? []),
+];
 
 const SHEET_REVALIDATE_SECONDS = 60;
 
@@ -197,7 +211,20 @@ export async function fetchMenusFromSheet(): Promise<Menu[] | null> {
   }
 }
 
-/** Live menu from the sheet when configured, otherwise the bundled static menu. */
+/** Live PUBLIC menu — sheet when configured (minus the Secret tab), else static. */
 export async function resolveMenus(): Promise<Menu[]> {
-  return (await fetchMenusFromSheet()) ?? getMenus();
+  const sheet = await fetchMenusFromSheet();
+  if (!sheet) return getMenus();
+  const groups = sheet[0].groups.filter((g) => !isSecretTab(g.name));
+  return [{ ...sheet[0], groups }];
+}
+
+/**
+ * Secret-menu items from the sheet's "Secret"/"Secret Menu" tab (server-only,
+ * used by the gated /api/secret-menu route). Falls back to the static list.
+ */
+export async function resolveSecretMenuItems(): Promise<MenuItem[]> {
+  const sheet = await fetchMenusFromSheet();
+  const items = (sheet?.[0]?.groups ?? []).filter((g) => isSecretTab(g.name)).flatMap(flattenItems);
+  return items.length ? items : SECRET_MENU_ITEMS;
 }
