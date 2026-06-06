@@ -11,48 +11,48 @@ function TickerItem({ event }: { event: UnifiedEvent }) {
   const isScheduled = !event.isLive && !hasScore;
 
   return (
-    <span className="inline-flex items-center gap-1.5">
+    <span className="inline-flex items-center gap-2">
       {/* Away team name */}
-      <span className={`text-[8px] font-medium ${hasScore && event.awayScore! > event.homeScore! ? 'text-foreground' : 'text-foreground/70'}`}>
+      <span className={`text-sm font-medium ${hasScore && event.awayScore! > event.homeScore! ? 'text-foreground' : 'text-foreground/70'}`}>
         {event.awayTeam || 'Away'}
       </span>
 
       {/* Away logo */}
       {event.awayLogo && (
-        <img src={event.awayLogo} alt="" className="w-4 h-4 object-contain" />
+        <img src={event.awayLogo} alt="" className="w-6 h-6 object-contain" />
       )}
 
       {/* Score or time */}
       {hasScore ? (
-        <span className="font-mono text-[10px] font-bold text-foreground">
+        <span className="font-mono text-base font-bold text-foreground">
           {event.awayScore} – {event.homeScore}
         </span>
       ) : isScheduled ? (
-        <span className="text-muted text-[10px] font-mono">
+        <span className="text-muted text-sm font-mono">
           {new Date(event.eventTimestamp).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: 'America/Los_Angeles' })}
         </span>
       ) : (
-        <span className="text-muted text-[8px]">vs</span>
+        <span className="text-muted text-sm">vs</span>
       )}
 
       {/* Home logo */}
       {event.homeLogo && (
-        <img src={event.homeLogo} alt="" className="w-4 h-4 object-contain" />
+        <img src={event.homeLogo} alt="" className="w-6 h-6 object-contain" />
       )}
 
       {/* Home team name */}
-      <span className={`text-[8px] font-medium ${hasScore && event.homeScore! > event.awayScore! ? 'text-foreground' : 'text-foreground/70'}`}>
+      <span className={`text-sm font-medium ${hasScore && event.homeScore! > event.awayScore! ? 'text-foreground' : 'text-foreground/70'}`}>
         {event.homeTeam || 'Home'}
       </span>
 
       {/* Live indicator */}
       {event.isLive && (
-        <span className="text-[8px] font-bold text-red-500 animate-pulse">LIVE</span>
+        <span className="text-xs font-bold text-red-500 animate-pulse">LIVE</span>
       )}
 
       {/* Final indicator */}
       {!event.isLive && hasScore && (
-        <span className="text-muted text-[8px]">F</span>
+        <span className="text-muted text-xs">F</span>
       )}
     </span>
   );
