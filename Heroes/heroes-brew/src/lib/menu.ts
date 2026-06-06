@@ -20,7 +20,7 @@ export function getMenus(): Menu[] {
               displayMode: 'variants',
               basePrice: 18,
               choices: [
-                { label: 'Select', options: ['Kalua Pork', 'Cheeseburger', 'Spicy Chicken'] },
+                { label: 'Select', options: ['Kalua Pork', 'BBQ Pulled Pork', 'Cheeseburger', 'Spicy Chicken'] },
               ],
               items: [
                 { id: 'sl1', name: 'Sliders', price: 18 },
