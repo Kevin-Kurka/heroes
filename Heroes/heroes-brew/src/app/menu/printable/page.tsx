@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { getMenus } from '@/lib/menu';
+import { resolveMenus } from '@/lib/menu-sheet';
 import PrintableMenuClient from './PrintableMenuClient';
 
 export const metadata: Metadata = {
@@ -8,7 +8,9 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function PrintableMenuPage() {
-  const menus = getMenus();
+export const revalidate = 60;
+
+export default async function PrintableMenuPage() {
+  const menus = await resolveMenus();
   return <PrintableMenuClient menus={menus} />;
 }

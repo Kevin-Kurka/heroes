@@ -41,11 +41,12 @@ Rendering mode is chosen per page based on whether it touches a live external AP
 
 - **`/` and `/events`** — `export const dynamic = 'force-dynamic'`. They call the live sports/holiday APIs (`getUpcomingEvents()` / `getAllEvents()`) on every request so scores stay current.
 - **`/social`** — `export const revalidate = 900` (15-min ISR). Instagram posts are refreshed on a 15-minute cache.
-- **`/menu` and `/location`** — fully static. `getMenus()` / `getRestaurantInfo()` return hardcoded data with no external fetch, so these pages are static-rendered at build time.
+- **`/menu` and `/menu/printable`** — `export const revalidate = 60`. They call `resolveMenus()`, which renders from the live Google Sheet CSV when `MENU_SHEET_CSV_URL` is set, else the bundled static menu. **`/location`** — fully static (`getRestaurantInfo()` is hardcoded).
 
 ### Data Layer (`src/lib/`)
 
-- **`menu.ts`** — Hand-curated **static** menu and restaurant data. `getMenus(): Menu[]` and `getRestaurantInfo(): Restaurant` return hardcoded objects (kept in sync with the restaurant's printed PDF menus). No Toast/POS integration exists in the running app — this replaced the Toast sync described in the PRD.
+- **`menu.ts`** — Hand-curated **static** menu + restaurant data (the fallback/seed). `getMenus(): Menu[]` and `getRestaurantInfo(): Restaurant` return hardcoded objects. No Toast/POS integration — this replaced the Toast sync in the PRD.
+- **`menu-sheet.ts`** — Optional **Google Sheet sync**. `resolveMenus(): Promise<Menu[]>` fetches `MENU_SHEET_CSV_URL` (a published-CSV Google Sheet), parses it (inverse of the `/menu/printable` CSV export — columns `Tab,Section,Item,Price,Description,Option Group,Option,Option Price`), and returns it; falls back to `getMenus()` on any failure. Lets anyone with edit access to the sheet update the live menu. Setup: see `MENU-SHEET-SYNC.md`. Live sheet id: `1g0O_KjjbmMZ0NxkJ6-VQnXoz6u9tG73e55t4naxb4XI`.
 - **`events.ts`** — Live. Aggregates from 3 sources in parallel (`Promise.all`), normalizing all into `UnifiedEvent` sorted chronologically:
   - MLB Stats API (`statsapi.mlb.com`) — all games for the week
   - ESPN API (`site.api.espn.com`) — NFL and NBA scoreboards
@@ -94,11 +95,12 @@ VERCEL_TOKEN=<token>                      # cron writes refreshed token back to 
 VERCEL_PROJECT_ID=<project_id>            # target project for the env-var write
 PROMOS_SECRET=<secret>                    # guards POST /api/promos/publish-instagram (Bearer header)
 INSTAGRAM_USER_ID=<ig_user_id>            # IG account id targeted by the publish route's /media calls
+MENU_SHEET_CSV_URL=<published_csv_url>    # optional: live menu from a Google Sheet (see MENU-SHEET-SYNC.md)
 ```
 
 **Instagram publishing** (`POST /api/promos/publish-instagram`): publishes posters from `public/promos/` via the Graph API content-publishing flow (`/media` → `/media_publish`). The `INSTAGRAM_ACCESS_TOKEN` must carry the **`instagram_content_publish`** permission — if the current token is a Basic-Display/Instagram-login token without that scope, publishing will 403 and the token must be reissued via a Facebook app with the IG account linked.
 
-No Toast credentials are used — the menu is static. `NEXT_PUBLIC_ELFSIGHT_APP_ID` may appear in `.env.local` but is unused.
+No Toast credentials are used. The menu is static by default but can be driven live by a Google Sheet via `MENU_SHEET_CSV_URL` (see `MENU-SHEET-SYNC.md`). `NEXT_PUBLIC_ELFSIGHT_APP_ID` may appear in `.env.local` but is unused.
 
 ## Key Patterns
 

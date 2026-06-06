@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { getMenus } from '@/lib/menu';
+import { resolveMenus } from '@/lib/menu-sheet';
 import { getMenuJsonLd } from '@/lib/structured-data';
 import MenuPageClient from './MenuPageClient';
 
@@ -10,8 +10,11 @@ export const metadata: Metadata = {
   alternates: { canonical: '/menu' },
 };
 
-export default function MenuPage() {
-  const menus = getMenus();
+// Re-pull the live Google Sheet menu (when configured) at most once a minute.
+export const revalidate = 60;
+
+export default async function MenuPage() {
+  const menus = await resolveMenus();
   return (
     <>
       <script
