@@ -8,23 +8,7 @@ import { UnifiedEvent } from '@/types';
 import { buildShareContent, fetchEventImageFile } from '@/lib/share-content';
 import { trackEvent } from '@/lib/analytics';
 
-type Channel = 'sms' | 'instagram' | 'tiktok' | 'x' | 'email';
-
-/** Brand glyphs lucide doesn't ship (kept inline to avoid an icon dependency). */
-function XGlyph() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231 5.45-6.231Zm-1.16 17.52h1.833L7.084 4.126H5.117l11.967 15.644Z" />
-    </svg>
-  );
-}
-function TikTokGlyph() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M16.6 5.82a4.28 4.28 0 0 1-1.05-2.82h-3.2v12.86a2.59 2.59 0 0 1-2.59 2.46 2.59 2.59 0 0 1-.6-5.11v-3.27a5.77 5.77 0 0 0-5.42 5.76A5.77 5.77 0 0 0 9.76 21.5a5.77 5.77 0 0 0 5.77-5.77V9.01a7.46 7.46 0 0 0 4.36 1.4V7.2a4.28 4.28 0 0 1-3.29-1.38Z" />
-    </svg>
-  );
-}
+type Channel = 'sms' | 'instagram' | 'email';
 
 interface ChannelDef {
   id: Channel;
@@ -36,8 +20,6 @@ interface ChannelDef {
 const CHANNELS: ChannelDef[] = [
   { id: 'sms', label: 'Messages', icon: <MessageSquare size={22} />, tint: 'bg-green-500/15 text-green-400' },
   { id: 'instagram', label: 'Instagram', icon: <Instagram size={22} />, tint: 'bg-pink-500/15 text-pink-400' },
-  { id: 'tiktok', label: 'TikTok', icon: <TikTokGlyph />, tint: 'bg-cyan-500/15 text-cyan-300' },
-  { id: 'x', label: 'X', icon: <XGlyph />, tint: 'bg-white/10 text-foreground' },
   { id: 'email', label: 'Email', icon: <Mail size={22} />, tint: 'bg-amber-500/15 text-amber-400' },
 ];
 
@@ -58,12 +40,12 @@ interface Props {
 }
 
 /**
- * Channel picker for sharing a watch party. SMS/Email/X open the device's native
- * composer pre-filled (text, subject/body, or tweet with hashtags + the /share
- * link whose OG preview is the matchup image). Instagram/TikTok can't take a
- * pre-filled caption from the web, so they use the native share sheet with the
- * promo matchup image attached (caption copied + image downloaded as a desktop
- * fallback).
+ * Channel picker for sharing a watch party. SMS and Email open the device's
+ * native composer pre-filled (text, or subject/body) with the /share link whose
+ * OG preview is the matchup image. Instagram can't take a pre-filled caption from
+ * the web, so it uses the native share sheet with the promo matchup image
+ * attached (caption copied + image downloaded as a desktop fallback). X/TikTok
+ * are intentionally omitted — Heroes has no presence there.
  */
 export default function ShareDialog({ event, onClose }: Props) {
   const [status, setStatus] = useState<string | null>(null);
@@ -71,13 +53,12 @@ export default function ShareDialog({ event, onClose }: Props) {
   const content = buildShareContent(event);
 
   useEffect(() => {
-    // Warm the social image so Instagram/TikTok shares fire promptly.
+    // Warm the social image so the Instagram share fires promptly.
     fetchEventImageFile(event, true).then((f) => {
       fileRef.current = f;
     });
   }, [event]);
 
-  // Close on Escape.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -86,7 +67,7 @@ export default function ShareDialog({ event, onClose }: Props) {
     return () => window.removeEventListener('keydown', onKey);
   }, [onClose]);
 
-  const shareToApp = async (channel: 'instagram' | 'tiktok') => {
+  const shareToInstagram = async () => {
     const file = fileRef.current ?? (await fetchEventImageFile(event, true));
     if (file && typeof navigator !== 'undefined' && navigator.canShare?.({ files: [file] })) {
       try {
@@ -104,14 +85,8 @@ export default function ShareDialog({ event, onClose }: Props) {
       // Clipboard blocked — the download below still gives them the asset.
     }
     if (file) triggerDownload(file);
-    window.open(
-      channel === 'instagram'
-        ? 'https://www.instagram.com/americanheroesandbrew/'
-        : 'https://www.tiktok.com/',
-      '_blank',
-      'noopener,noreferrer',
-    );
-    setStatus('Caption copied + image saved — paste it in the app.');
+    window.open('https://www.instagram.com/americanheroesandbrew/', '_blank', 'noopener,noreferrer');
+    setStatus('Caption copied + image saved — paste it in Instagram.');
   };
 
   const handle = async (channel: Channel) => {
@@ -129,13 +104,8 @@ export default function ShareDialog({ event, onClose }: Props) {
         );
         onClose();
         break;
-      case 'x':
-        window.open(content.xUrl, '_blank', 'noopener,noreferrer');
-        onClose();
-        break;
       case 'instagram':
-      case 'tiktok':
-        await shareToApp(channel);
+        await shareToInstagram();
         break;
     }
   };

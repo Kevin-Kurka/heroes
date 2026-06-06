@@ -72,7 +72,6 @@ export interface ShareContent {
   smsBody: string;
   emailSubject: string;
   emailBody: string;
-  xUrl: string;
   socialCaption: string;
   socialImagePath: string;
 }
@@ -82,10 +81,6 @@ export function buildShareContent(event: UnifiedEvent): ShareContent {
   const landingUrl = buildShareLandingUrl(event);
   const invite = buildInviteText(event);
   const calendarUrl = buildGoogleCalendarUrl(event);
-  const matchup =
-    event.awayTeam && event.homeTeam
-      ? `${event.awayTeam} vs ${event.homeTeam}`
-      : event.eventTitle;
 
   const smsBody = `${invite}\n${landingUrl}`;
 
@@ -97,17 +92,11 @@ export function buildShareContent(event: UnifiedEvent): ShareContent {
     `Directions: ${MAPS_URL}`,
   ].join('\n');
 
-  const xText = `${matchup} watch party at American Heroes & Brew — ${formatEventWhen(event)}. Who's in?`;
-  const xUrl =
-    `https://twitter.com/intent/tweet?text=${encodeURIComponent(xText)}` +
-    `&url=${encodeURIComponent(landingUrl)}&hashtags=${encodeURIComponent(HASHTAGS.join(','))}`;
-
   return {
     landingUrl,
     smsBody,
     emailSubject: eventCalendarTitle(event),
     emailBody,
-    xUrl,
     socialCaption: buildSocialCaption(event),
     socialImagePath: buildEventImagePath(event, true),
   };
