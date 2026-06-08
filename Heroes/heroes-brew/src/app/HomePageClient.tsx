@@ -157,7 +157,7 @@ export default function HomePageClient({ events, todayIndex }: Props) {
             transition={{ duration: 0.3, delay: 0.15, ease: [0, 0, 0.2, 1] }}
             className="mt-8 flex flex-col sm:flex-row gap-3 justify-center"
           >
-            <div className="flex w-full sm:w-auto rounded-sm overflow-hidden shadow-[0_4px_16px_rgba(0,0,0,0.5),0_2px_8px_rgba(245,158,11,0.3)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.6),0_2px_12px_rgba(245,158,11,0.4)] transition-all">
+            <div className="flex w-full sm:w-auto rounded-sm overflow-hidden border border-accent shadow-[0_4px_16px_rgba(0,0,0,0.5),0_2px_8px_rgba(245,158,11,0.3)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.6),0_2px_12px_rgba(245,158,11,0.4)] transition-all">
               <Link
                 href="/menu"
                 onClick={() => trackEvent('view_menu', { source: 'home_hero' })}
