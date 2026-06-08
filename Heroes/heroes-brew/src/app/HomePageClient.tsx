@@ -157,11 +157,11 @@ export default function HomePageClient({ events, todayIndex }: Props) {
             transition={{ duration: 0.3, delay: 0.15, ease: [0, 0, 0.2, 1] }}
             className="mt-8 flex flex-col sm:flex-row gap-3 justify-center"
           >
-            <div className="inline-flex rounded-sm overflow-hidden shadow-[0_4px_16px_rgba(0,0,0,0.5),0_2px_8px_rgba(245,158,11,0.3)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.6),0_2px_12px_rgba(245,158,11,0.4)] transition-all">
+            <div className="flex w-full sm:w-auto rounded-sm overflow-hidden shadow-[0_4px_16px_rgba(0,0,0,0.5),0_2px_8px_rgba(245,158,11,0.3)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.6),0_2px_12px_rgba(245,158,11,0.4)] transition-all">
               <Link
                 href="/menu"
                 onClick={() => trackEvent('view_menu', { source: 'home_hero' })}
-                className="inline-flex items-center justify-center gap-2 bg-accent text-white font-semibold px-6 py-3 hover:bg-accent-dim transition-colors"
+                className="flex-1 inline-flex items-center justify-center gap-2 bg-accent text-white font-semibold px-6 py-3 hover:bg-accent-dim transition-colors"
               >
                 <UtensilsCrossed size={18} />
                 View Menu
@@ -174,7 +174,7 @@ export default function HomePageClient({ events, todayIndex }: Props) {
                   aria-label="Order on DoorDash"
                   title="Order delivery on DoorDash"
                   onClick={() => trackEvent('order_doordash', { source: 'home_hero' })}
-                  className="inline-flex items-center justify-center px-4 py-3 text-white bg-accent-dim hover:bg-accent transition-colors border-l border-white/15"
+                  className="shrink-0 inline-flex items-center justify-center px-4 py-3 text-white bg-accent-dim hover:bg-accent transition-colors border-l border-white/15"
                 >
                   <DoorDashIcon size={20} />
                 </a>
@@ -185,7 +185,7 @@ export default function HomePageClient({ events, todayIndex }: Props) {
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => trackEvent('get_directions', { source: 'home_hero' })}
-              className="inline-flex items-center justify-center gap-2 bg-navy border border-navy text-white font-medium px-6 py-3 rounded-sm hover:bg-navy/80 transition-all shadow-[0_4px_16px_rgba(0,0,0,0.5),0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.6)]"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-navy border border-navy text-white font-medium px-6 py-3 rounded-sm hover:bg-navy/80 transition-all shadow-[0_4px_16px_rgba(0,0,0,0.5),0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.6)]"
             >
               <MapPin size={18} />
               Get Directions
