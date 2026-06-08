@@ -106,6 +106,38 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // ── Step 1.5: wait for the container to finish processing ────────────────
+  // media_publish fails with "Media ID is not available" when called before the
+  // container is FINISHED, so poll status_code first (images are usually quick).
+  const containerId = containerData.id;
+  let status = '';
+  for (let attempt = 0; attempt < 15; attempt++) {
+    const statusRes = await fetch(
+      `${GRAPH_URL}/${containerId}?fields=status_code&access_token=${encodeURIComponent(accessToken)}`
+    );
+    const statusData = (await statusRes.json().catch(() => ({}))) as
+      GraphError & { status_code?: string };
+    status = statusData.status_code ?? '';
+
+    if (status === 'FINISHED') break;
+    if (status === 'ERROR' || status === 'EXPIRED') {
+      const message = statusData.error?.message ?? `container status ${status}`;
+      console.error('Instagram container processing error:', message);
+      return NextResponse.json(
+        { error: `Instagram Graph API: ${message}` },
+        { status: 502 }
+      );
+    }
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+  }
+
+  if (status !== 'FINISHED') {
+    return NextResponse.json(
+      { error: 'Instagram Graph API: media container did not finish processing in time' },
+      { status: 504 }
+    );
+  }
+
   // ── Step 2: publish the container ────────────────────────────────────────
   const publishRes = await fetch(`${GRAPH_URL}/${userId}/media_publish`, {
     method: 'POST',
