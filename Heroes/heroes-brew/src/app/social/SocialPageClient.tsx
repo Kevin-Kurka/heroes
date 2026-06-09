@@ -66,6 +66,9 @@ export default function SocialPageClient({ posts }: Props) {
                 alt={post.caption?.slice(0, 100) || 'American Heroes & Brew Instagram post'}
                 fill
                 sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                // Instagram serves signed, short-lived CDN URLs the Next optimizer
+                // rejects; load them directly so the grid always renders.
+                unoptimized
                 className="object-cover group-hover:scale-105 transition-transform duration-300"
               />
 
