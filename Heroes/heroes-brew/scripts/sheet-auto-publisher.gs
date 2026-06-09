@@ -93,14 +93,29 @@ function clearPublishTriggers_() {
   });
 }
 
-/** Arm a single one-off trigger at the earliest upcoming approved/unposted post. */
+/** Midnight today in the script's (PT) timezone. */
+function startOfTodayPT_() {
+  const tz = Session.getScriptTimeZone();
+  const d = Utilities.formatDate(new Date(), tz, 'yyyy-MM-dd').split('-');
+  return new Date(Number(d[0]), Number(d[1]) - 1, Number(d[2]), 0, 0, 0);
+}
+
+/**
+ * Arm a single one-off trigger at the earliest TODAY-or-future approved/unposted post.
+ * Rows dated before today are intentionally ignored (stale) — to re-trigger one,
+ * move its Post Date to today or a future date in the sheet.
+ */
 function scheduleNext() {
   clearPublishTriggers_();
-  const list = rows_().list.filter(isLive_).sort(function (a, b) { return a.when - b.when; });
+  const start = startOfTodayPT_();
+  const list = rows_().list
+    .filter(isLive_)
+    .filter(function (r) { return r.when >= start; })
+    .sort(function (a, b) { return a.when - b.when; });
   if (!list.length) return;
   let at = list[0].when;
   const soon = new Date(Date.now() + 60 * 1000);
-  if (at < soon) at = soon; // past-due (e.g. just approved) → fire ~1 minute out
+  if (at < soon) at = soon; // today but time already passed → fire ~1 minute out
   ScriptApp.newTrigger(PUBLISH_FN).timeBased().at(at).create();
 }
 
@@ -112,8 +127,10 @@ function publishDue() {
   const site = p.getProperty('SITE') || 'https://americanheroesandbrew.com';
   const data = rows_();
   const now = new Date();
+  const start = startOfTodayPT_();
 
-  data.list.filter(isLive_).filter(function (r) { return r.when <= now; }).forEach(function (row) {
+  // Due = approved, unposted, dated today, and the time has arrived. Never stale (pre-today) rows.
+  data.list.filter(isLive_).filter(function (r) { return r.when >= start && r.when <= now; }).forEach(function (row) {
     const caption = row.hashtags ? row.caption + '\n\n' + row.hashtags : row.caption;
     const res = UrlFetchApp.fetch(url, {
       method: 'post',
