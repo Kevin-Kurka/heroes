@@ -11,7 +11,7 @@ const GRAPH_URL = 'https://graph.instagram.com';
 const BEHOLD_FEED =
   process.env.BEHOLD_FEED_URL ?? 'https://feeds.behold.so/HWw9TQYi878ljLKQwx7K';
 
-const REVALIDATE = 86_400; // 24h — matches Behold free-tier daily updates
+const REVALIDATE = 900; // 15 min — keep the live feed current (and ahead of IG CDN URL expiry)
 
 /** Newest-first by post timestamp; posts without a timestamp (curated filler)
  *  sort to the end so the live, latest posts always lead the grid. */
@@ -20,16 +20,18 @@ export function byNewest(a: InstagramPost, b: InstagramPost): number {
 }
 
 /**
- * Fetch recent Instagram posts. Prefers the Behold feed; falls back to a
- * graph.instagram.com token if one is set. Returns [] on failure so the page
- * can fall back to its curated self-hosted posts.
+ * Fetch recent Instagram posts — live from the Instagram Graph API
+ * (graph.instagram.com) when INSTAGRAM_ACCESS_TOKEN is set, so the feed always
+ * reflects the real account. Falls back to the Behold feed (then []) only if the
+ * token is missing or the live fetch returns nothing.
  */
 export async function getInstagramPosts(limit = 12): Promise<InstagramPost[]> {
-  if (BEHOLD_FEED) return getFromBehold(BEHOLD_FEED, limit);
-
   const token = process.env.INSTAGRAM_ACCESS_TOKEN;
-  if (token) return getFromGraph(token, limit);
-
+  if (token) {
+    const live = await getFromGraph(token, limit);
+    if (live.length) return live;
+  }
+  if (BEHOLD_FEED) return getFromBehold(BEHOLD_FEED, limit);
   return [];
 }
 
