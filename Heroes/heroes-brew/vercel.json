@@ -6,7 +6,7 @@
     },
     {
       "path": "/api/cron/publish-due",
-      "schedule": "5 16 * * *"
+      "schedule": "0 21 * * *"
     }
   ]
 }
