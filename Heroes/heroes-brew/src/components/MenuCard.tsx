@@ -31,7 +31,7 @@ export default function MenuCard({ item }: MenuCardProps) {
             </div>
           )}
         </div>
-        {SHOW_PRICES && (
+        {SHOW_PRICES && !!item.price && (
           <span className="text-accent font-mono font-semibold text-sm shrink-0">
             {item.price}
           </span>

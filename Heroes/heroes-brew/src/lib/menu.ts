@@ -20,7 +20,7 @@ export function getMenus(): Menu[] {
               displayMode: 'variants',
               basePrice: 18,
               choices: [
-                { label: 'Select', options: ['Kalua Pork', 'BBQ Pulled Pork', 'Cheeseburger', 'Spicy Chicken'] },
+                { label: 'Select', options: ['Kalua Pork', 'Cheeseburger', 'Spicy Chicken'] },
               ],
               items: [
                 { id: 'sl1', name: 'Sliders', price: 18 },
@@ -29,7 +29,7 @@ export function getMenus(): Menu[] {
             {
               id: 'g-nachos',
               name: 'Nachos',
-              description: 'Chips, cheddar, jack and nacho cheeses, with beans, sour cream, jalapenos, guacamole.',
+              description: 'Chips, cheddar, jack and nacho cheeses with beans, sour cream, jalapenos, guacamole and cilantro.',
               displayMode: 'variants',
               basePrice: 15,
               addOnLabel: 'Add',
@@ -112,26 +112,25 @@ export function getMenus(): Menu[] {
         {
           id: 'g-burgers',
           name: 'Burgers',
-          description: 'Best burgers in Carlsbad. Make it a double +4.',
+          description: 'Best burgers in Carlsbad. Make it a double +5.',
           displayMode: 'variants',
           basePrice: 18,
           addOnLabel: 'Sides',
           addOns: [
             { name: 'Potato Salad', price: '5' },
-            { name: 'Chips & Salsa', price: '6' },
             { name: 'Fries', price: '6' },
             { name: 'Rings', price: '7' },
             { name: 'Chili', price: '8' },
             { name: 'Mac & Cheese', price: '9' },
-            { name: 'Salad', price: '10' },
-            { name: 'Frings', price: '11' },
+            { name: 'House Salad', price: '10' },
+            { name: 'Frings', price: '12' },
           ],
           items: [
             { id: 'b1', name: 'Pasadena', subtitle: 'the "OG"', description: 'Lettuce, tomato, pickle, red onion, Hero sauce, cheese, on a brioche bun.', price: 18 },
             { id: 'b2', name: 'Austin', subtitle: 'Jalapeno', description: 'Pepper jack, wiz, jalapenos, grilled onions, Hero sauce, on a brioche bun with a jalapeno popper.', price: 18 },
             { id: 'b3', name: 'Minneapolis', subtitle: 'Juicy Lucy', description: 'Double stuffed cheese patties, cheese skirt, grilled onions, Hero sauce on a brioche bun.', price: 22 },
             { id: 'b4', name: 'Tombstone', subtitle: 'Cowboy', description: 'Bacon, grilled onion, cheddar, BBQ sauce, topped with onion rings on a brioche bun.', price: 18 },
-            { id: 'b5', name: 'Irwindale', subtitle: 'Sriracha Honey', description: 'Crispy onions, slaw, pickles, Swiss cheese, garlic aioli, sriracha honey sauce on a brioche bun.', price: 18 },
+            { id: 'b5', name: 'Irwindale', subtitle: 'Sriracha Honey', description: 'Fresh onions, slaw, pickles, Swiss cheese, garlic aioli, sriracha honey sauce on a brioche bun.', price: 18 },
             { id: 'b6', name: 'Leucadia', subtitle: 'Smash', description: 'Grilled onion, white American cheese, pickles, Hero sauce on a brioche bun.', price: 18 },
           ],
         },
@@ -143,13 +142,12 @@ export function getMenus(): Menu[] {
           addOnLabel: 'Sides',
           addOns: [
             { name: 'Potato Salad', price: '5' },
-            { name: 'Chips & Salsa', price: '6' },
             { name: 'Fries', price: '6' },
             { name: 'Rings', price: '7' },
             { name: 'Chili', price: '8' },
             { name: 'Mac & Cheese', price: '9' },
-            { name: 'Salad', price: '10' },
-            { name: 'Frings', price: '11' },
+            { name: 'House Salad', price: '10' },
+            { name: 'Frings', price: '12' },
           ],
           subGroups: [
             {
@@ -169,7 +167,7 @@ export function getMenus(): Menu[] {
             {
               id: 'g-tacos',
               name: 'Village Tacos',
-              description: 'Three tacos, topped with onion, cilantro, crema and queso fresco. Served with beans and chips.',
+              description: 'Three tacos, topped with onion, cilantro, crema, queso fresco. Served with chips and salsa.',
               displayMode: 'variants',
               basePrice: 17,
               choices: [
@@ -187,12 +185,12 @@ export function getMenus(): Menu[] {
             },
           ],
           items: [
-            { id: 'h1', name: 'Carlsbad', subtitle: 'BLT+', description: 'Grilled chicken, bacon, avocado, lettuce, tomato, garlic aioli, on an Italian roll.', price: 19 },
+            { id: 'h1', name: 'Carlsbad', subtitle: 'BLT+', description: 'Grilled chicken, bacon, avocado, lettuce, tomato, garlic aioli, on a long roll.', price: 19 },
             { id: 'h2', name: 'Manhattan', subtitle: 'Reuben', description: 'Pastrami, Russian dressing, sauerkraut, Swiss cheese on rye bread.', price: 22 },
             { id: 'h3', name: 'Maui', subtitle: 'Kalua Pork', description: 'Kalua pork, pineapple, slaw, aloha sauce on a brioche bun.', price: 18 },
-            { id: 'h4', name: 'Los Angeles', subtitle: 'French Dip', description: 'Slow-cooked roast beef, provolone cheese, horseradish aioli, with au jus, on an Italian roll.', price: 22 },
+            { id: 'h4', name: 'Los Angeles', subtitle: 'French Dip', description: 'Slow-cooked roast beef, Swiss cheese, horseradish aioli, with au jus, on an Italian roll.', price: 22 },
             { id: 'h5', name: 'Hoboken', subtitle: 'Italian', description: 'Capicola, salami, ham, mortadella, provolone, lettuce, tomato, onion, oregano, oil & vinegar, on an Italian roll.', price: 22 },
-            { id: 'h6', name: 'San Diego', subtitle: 'California Burrito', description: 'Carne asada, guacamole, fries, pico de gallo, cheese, sour cream, in a flour tortilla.', price: 20 },
+            { id: 'h6', name: 'San Diego', subtitle: 'California Burrito', description: 'Carne asada, guacamole, fries, pico de gallo, cheese, crema.', price: 20 },
           ],
         },
 
@@ -204,7 +202,7 @@ export function getMenus(): Menu[] {
             {
               id: 'g-sundae',
               name: 'Caramel Brownie Sundae',
-              description: 'Chocolate brownie, vanilla ice cream, topped with whipped cream, chocolate syrup and caramel.',
+              description: 'Chocolate brownie, vanilla ice cream, topped with whipped cream, hot fudge and caramel.',
               displayMode: 'variants',
               basePrice: 12,
               items: [
@@ -223,11 +221,11 @@ export function getMenus(): Menu[] {
           ],
           items: [
             { id: 'ss1', name: 'Key Lime Pie', price: 14 },
-            { id: 'ss2', name: 'Creamy Cheesecake', description: 'Proceeds donated to Shelter to Soldier.', price: 14 },
-            { id: 'ss3', name: 'Churros', description: 'Cinnamon sugar churros, ice cream, topped with whipped cream, chocolate syrup and caramel.', price: 10 },
+            { id: 'ss2', name: 'Creamy Cheesecake', description: 'Proceeds donated to Shelter to Soldier. sheltertosoldier.org', price: 14 },
+            { id: 'ss3', name: 'Churros', description: 'Cinnamon sugar churros, ice cream, topped with whipped cream, hot fudge and caramel.', price: 10 },
             { id: 'ss4', name: 'Ice Cream Sandwich', description: 'Two chocolate chip cookies with vanilla ice cream.', price: 6 },
-            { id: 'ss5', name: 'Chocolate Chip Cookie', price: 4 },
-            { id: 'ss6', name: 'Scoop of Ice Cream', price: 3 },
+            { id: 'ss5', name: 'Chocolate Chip Cookie', price: 3 },
+            { id: 'ss6', name: 'Scoop of Ice Cream', price: 2 },
           ],
         },
 
@@ -266,16 +264,16 @@ export function getMenus(): Menu[] {
               description: 'Pint | Pitcher',
               displayMode: 'variants',
               items: [
-                { id: 'd1', name: 'Coors Light', subtitle: 'Light Lager', description: '4.2% ABV · Coors Brewing · Pitcher 30', price: 8 },
-                { id: 'd2', name: '394', subtitle: 'Pale Ale', description: '6.0% ABV · AleSmith · Pitcher 30', price: 9 },
-                { id: 'd3', name: 'Fiesta Island', subtitle: 'Pilsner', description: '5.3% ABV · Bay City Brewing · Pitcher 30', price: 9 },
-                { id: 'd4', name: 'Pacifico', subtitle: 'Mexican Lager', description: '4.4% ABV · Anheuser-Busch · Pitcher 32', price: 9 },
-                { id: 'd5', name: 'IPA', subtitle: 'American Heroes', description: '7.2% ABV · Coronado Brewing · Pitcher 32', price: 9 },
-                { id: 'd6', name: 'Pupil', subtitle: 'West Coast IPA', description: '7.5% ABV · Societe Brewing · Pitcher 36', price: 10 },
-                { id: 'd7', name: 'Space Dust', subtitle: 'American IPA', description: '8.2% ABV · Elysian Brewing · Pitcher 36', price: 10 },
-                { id: 'd8', name: 'Blonde', subtitle: 'American Heroes', description: '4.5% ABV · Bay City Brewing · Pitcher 30', price: 8 },
-                { id: 'd9', name: 'Amber', subtitle: 'American Heroes', description: '5.6% ABV · Golden Road Brewing · Pitcher 30', price: 8 },
-                { id: 'd10', name: 'Cali Squeeze', subtitle: 'Citrus Wheat Ale', description: '5% ABV · Firestone Walker · Pitcher 36', price: 10 },
+                { id: 'd1', name: 'Coors Light', subtitle: 'Light Lager', description: '4.2% ABV · 10 IBU · Coors Brewing · Pitcher 30', price: 8 },
+                { id: 'd2', name: '394', subtitle: 'Pale Ale', description: '6.0% ABV · 13 IBU · AleSmith · Pitcher 30', price: 9 },
+                { id: 'd3', name: 'Fiesta Island', subtitle: 'Pilsner', description: '5.3% ABV · 16 IBU · Bay City Brewing · Pitcher 30', price: 9 },
+                { id: 'd4', name: 'Pacifico', subtitle: 'Mexican Lager', description: '4.4% ABV · 18 IBU · Anheuser-Busch · Pitcher 32', price: 9 },
+                { id: 'd5', name: 'IPA', subtitle: 'American Heroes', description: '7.2% ABV · 75 IBU · Coronado Brewing · Pitcher 32', price: 9 },
+                { id: 'd6', name: 'Pupil', subtitle: 'West Coast IPA', description: '7.5% ABV · 50 IBU · Societe Brewing · Pitcher 36', price: 10 },
+                { id: 'd7', name: 'Space Dust', subtitle: 'American IPA', description: '8.2% ABV · 62 IBU · Elysian Brewing · Pitcher 36', price: 10 },
+                { id: 'd8', name: 'Blonde', subtitle: 'American Heroes', description: '4.5% ABV · 18 IBU · Bay City Brewing · Pitcher 30', price: 8 },
+                { id: 'd9', name: 'Amber', subtitle: 'American Heroes', description: '5.6% ABV · 20 IBU · Golden Road Brewing · Pitcher 30', price: 8 },
+                { id: 'd10', name: 'Cali Squeeze', subtitle: 'Citrus Wheat Ale', description: '5% ABV · 15 IBU · Firestone Walker · Pitcher 36', price: 10 },
               ],
             },
             {
@@ -371,7 +369,7 @@ export function getMenus(): Menu[] {
                 { id: 'bo1', name: 'Denver', description: 'Ham, bell pepper, grilled onions with cheddar & jack cheese.', price: 17 },
                 { id: 'bo2', name: 'Hamtown', description: 'Ham with cheddar & jack cheese.', price: 17 },
                 { id: 'bo3', name: 'Boulder', description: 'Steak, mushrooms, onions, cheese topped with homemade sausage gravy.', price: 19 },
-                { id: 'bo4', name: 'Veggieville', description: 'Bell peppers, onions, mushrooms, tomato, avocado with cheese.', price: 16 },
+                { id: 'bo4', name: 'Veggieville', description: 'Bell peppers, onions, mushrooms, tomato, avocado with goat cheese.', price: 16 },
               ],
             },
             {
@@ -453,19 +451,22 @@ export function getMenus(): Menu[] {
           ],
         },
 
-        // ─── SPECIALS ───
+        // ─── DAILY LINEUP ───
         {
           id: 'g-specials',
-          name: 'Specials',
+          name: 'Daily Lineup',
           description: 'Daily deals at American Heroes & Brew.',
           items: [
-            { id: 'sp-lunch', name: 'Lunch Special', subtitle: 'Mon–Thu 10am–1pm', description: '1/2 Hoboken or Carlsbad sandwich.', price: 12 },
-            { id: 'sp-mon', name: 'Mahalo Monday', description: 'Kalua Pork Sliders $4ea · Select Cans $3ea.', price: 4 },
-            { id: 'sp-tue', name: 'Taco Tuesday', description: 'Tacos $4ea · Tequila $2 off.', price: 4 },
-            { id: 'sp-wed', name: 'Wings & Wells Wednesday', description: 'Wings $6 off · Wells $6ea.', price: 6 },
-            { id: 'sp-thu', name: 'Burgers & Beer Thursday', description: 'Burgers $5 off · Select Drafts $5ea.', price: 5 },
-            { id: 'sp-fri', name: 'Friday Funday', subtitle: '1–4pm', description: 'Drinks and Appetizers $2 off.', price: 2 },
-            { id: 'sp-padre', name: 'Padre Games', subtitle: 'Hot Dogs & Beer', description: 'Friar Franks $6 · Heroes Drafts $2 off.', price: 6 },
+            { id: 'sp-afterschool', name: 'After School Special', subtitle: 'Mon–Fri', description: 'Kids Meals $5 · Cookies $1. Ages 10 & under, with adult entrée.', price: 0 },
+            { id: 'sp-padre', name: 'Hot Dogs & Beer', subtitle: 'Padre Games', description: 'Friar Franks $6 · Heroes Drafts $2 off.', price: 0 },
+            { id: 'sp-lunch', name: 'Lunch Special', subtitle: 'Mon–Thu', description: '10am–1pm · 1/2 Hoboken or Carlsbad $15.', price: 0 },
+            { id: 'sp-mon', name: 'Mahalo Monday', subtitle: 'Monday', description: 'Kalua Pork Sliders $4ea · Select Cans $3ea.', price: 0 },
+            { id: 'sp-tue', name: 'Taco Tuesday', subtitle: 'Tuesday', description: 'Tacos $4ea · Tequila $2 off.', price: 0 },
+            { id: 'sp-wed', name: 'Wings & Wells', subtitle: 'Wednesday', description: 'Wings $6 off · Wells $6ea.', price: 0 },
+            { id: 'sp-thu', name: 'Burgers & Beer', subtitle: 'Thursday', description: 'Burgers $5 off · Select Drafts $5ea.', price: 0 },
+            { id: 'sp-fri', name: 'Friday Funday', subtitle: 'Friday', description: '1–4pm · Drinks & Appetizers $2 off.', price: 0 },
+            { id: 'sp-sat', name: 'Late Night Delight', subtitle: 'Saturday', description: '9pm–close · Drinks $2 off.', price: 0 },
+            { id: 'sp-sun', name: 'Sunday Send Off', subtitle: 'Sunday', description: '7pm–close · Drinks $2 off.', price: 0 },
           ],
         },
       ],
