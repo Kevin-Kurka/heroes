@@ -23,9 +23,19 @@ const nextConfig: NextConfig = {
         hostname: "a.espncdn.com",
       },
       {
-        // Behold-hosted Instagram renditions used on /social
+        // Behold-hosted Instagram renditions (legacy /social fallback)
         protocol: "https",
         hostname: "behold.pictures",
+      },
+      {
+        // Live Instagram Graph API media on /social
+        protocol: "https",
+        hostname: "**.cdninstagram.com",
+      },
+      {
+        // Instagram also serves some media via the Facebook CDN
+        protocol: "https",
+        hostname: "**.fbcdn.net",
       },
     ],
   },
