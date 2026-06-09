@@ -22,6 +22,43 @@ npm run lint     # ESLint with next/core-web-vitals + typescript rules
 npm start        # Serve production build
 ```
 
+## Deployment (READ BEFORE SHIPPING — non-obvious)
+
+The Vercel project (`prj_clmgcdScsUoDptrLuzgpsDljdPGM`, team `team_SrzLdmhAGbFLu0pesw86zK4L`)
+is git-linked to `Kevin-Kurka/heroes`, production branch `master`, **Root Directory
+`Heroes/heroes-brew`**. Despite that, deploys are NOT reliable by default:
+
+- **`git push` does NOT reliably auto-deploy** — the GitHub→Vercel webhook has been
+  observed not firing. Never assume a push went live; it usually does not.
+- **`vercel redeploy <url>` rebuilds a STALE frozen snapshot** (the target's last git
+  commit), NOT your latest commit. Using it to ship new code silently serves old code.
+  Do not use it for shipping changes.
+- **`vercel --prod` from `heroes-brew/` FAILS** — it appends the project Root Directory
+  again (`.../Heroes/heroes-brew/Heroes/heroes-brew`). Don't.
+
+**The reliable way to deploy `master` HEAD to production** — trigger a build of the git
+ref via the REST API (needs a Vercel token with project access, e.g. `VERCEL_TOKEN`):
+
+```bash
+TOKEN=<vercel_token>; TEAM=team_SrzLdmhAGbFLu0pesw86zK4L
+curl -s -X POST "https://api.vercel.com/v13/deployments?teamId=$TEAM&forceNew=1" \
+  -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"name":"heroes","project":"prj_clmgcdScsUoDptrLuzgpsDljdPGM","target":"production",
+       "gitSource":{"type":"github","org":"Kevin-Kurka","repo":"heroes","ref":"master"}}'
+```
+
+Then **poll `GET /v13/deployments/<id>` until `readyState:"READY"`** and **verify the
+change is actually live on `https://americanheroesandbrew.com`** before claiming done.
+
+**ISR cache caveat:** Vercel persists the ISR/data cache across deployments. Pages with
+`export const revalidate = N` (e.g. `/social`, `/menu`) may serve the PREVIOUS build's
+HTML for up to `N` seconds after a correct deploy. If a code change isn't visible, confirm
+the deployed commit is correct first, then allow the revalidate window (or the page's
+`force-dynamic` pages — `/`, `/events` — update immediately).
+
+**Always verify before declaring a deploy done:** fetch the live URL and confirm the
+change is present. A green build is not proof the change shipped.
+
 ## Architecture
 
 ### Server/Client Component Split
