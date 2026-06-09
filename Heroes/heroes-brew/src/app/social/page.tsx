@@ -4,7 +4,9 @@ import SocialPageClient from './SocialPageClient';
 import { getInstagramPosts } from '@/lib/instagram';
 import ReviewCTA from '@/components/ReviewCTA';
 
-export const revalidate = 900; // 15 min — live Instagram feed
+// Render fresh each request so code/feed changes show immediately; the Instagram
+// fetch itself is cached 15 min (see instagram.ts) so we don't hammer the API.
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Follow Us on Instagram',
