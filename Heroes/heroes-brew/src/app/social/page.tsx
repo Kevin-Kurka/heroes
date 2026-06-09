@@ -1,11 +1,10 @@
 import type { Metadata } from 'next';
 import PageTransition from '@/components/PageTransition';
 import SocialPageClient from './SocialPageClient';
-import { getInstagramPosts, byNewest } from '@/lib/instagram';
-import { CURATED_POSTS } from '@/lib/social-posts';
+import { getInstagramPosts } from '@/lib/instagram';
 import ReviewCTA from '@/components/ReviewCTA';
 
-export const revalidate = 86_400; // 24h — matches Behold free-tier daily updates
+export const revalidate = 900; // 15 min — live Instagram feed
 
 export const metadata: Metadata = {
   title: 'Follow Us on Instagram',
@@ -14,20 +13,9 @@ export const metadata: Metadata = {
   alternates: { canonical: '/social' },
 };
 
-/** Extract an Instagram shortcode from a permalink for de-duplication. */
-function shortcode(permalink: string): string {
-  return permalink.match(/\/(?:p|reel|tv)\/([^/?]+)/)?.[1] ?? permalink;
-}
-
 export default async function SocialPage() {
-  // Behold's free tier returns the 6 most-recent posts; top up to 16 with the
-  // curated, self-hosted set (deduped), so the grid stays full and auto-updates.
-  const live = await getInstagramPosts(16);
-  const seen = new Set(live.map((p) => shortcode(p.permalink)));
-  const merged = [...live, ...CURATED_POSTS.filter((p) => !seen.has(shortcode(p.permalink)))]
-    .sort(byNewest)
-    .slice(0, 16);
-  const posts = merged.length > 0 ? merged : CURATED_POSTS;
+  // The official account's latest 16 posts, live from the Instagram Graph API.
+  const posts = await getInstagramPosts(16);
 
   return (
     <PageTransition>

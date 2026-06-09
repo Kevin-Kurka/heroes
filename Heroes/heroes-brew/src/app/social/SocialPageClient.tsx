@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
-import { Instagram, ExternalLink, Play } from 'lucide-react';
+import { Instagram, ExternalLink, Play, Heart, MessageCircle } from 'lucide-react';
 import { InstagramPost } from '@/types';
 
 interface Props {
@@ -84,14 +84,24 @@ export default function SocialPageClient({ posts }: Props) {
                 </div>
               )}
 
-              {/* Hover overlay with caption */}
-              {post.caption && (
-                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end p-3">
+              {/* Hover overlay: engagement counts + caption. Tap/click opens the
+                  post on Instagram to like or comment. */}
+              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col justify-between p-3">
+                <div className="flex items-center gap-3 text-white text-xs font-semibold drop-shadow">
+                  <span className="flex items-center gap-1">
+                    <Heart size={14} className="fill-white" /> {post.like_count ?? 0}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <MessageCircle size={14} /> {post.comments_count ?? 0}
+                  </span>
+                  <ExternalLink size={12} className="ml-auto opacity-80" />
+                </div>
+                {post.caption && (
                   <p className="text-white text-xs line-clamp-3 leading-relaxed">
                     {post.caption}
                   </p>
-                </div>
-              )}
+                )}
+              </div>
             </motion.a>
           ))}
         </div>

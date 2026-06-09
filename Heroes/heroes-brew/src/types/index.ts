@@ -102,6 +102,8 @@ export interface InstagramPost {
   permalink: string;
   timestamp: string;
   media_type: 'IMAGE' | 'VIDEO' | 'CAROUSEL_ALBUM';
+  like_count?: number;
+  comments_count?: number;
 }
 
 // =====================
