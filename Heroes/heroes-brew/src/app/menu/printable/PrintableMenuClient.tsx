@@ -643,7 +643,12 @@ export default function PrintableMenuClient({ menus }: { menus: Menu[] }) {
   const [dlOpen, setDlOpen] = useState(false);
 
   const groups = menus[0]?.groups || [];
-  const find = (id: string) => groups.find(g => g.id === id)!;
+  // Flatten tabs + sections so sections nested under a tab (e.g. Hero Burgers
+  // inside Mains) are addressable; fall back to an empty group so a missing id
+  // renders an empty page instead of crashing.
+  const flatten = (gs: MenuGroup[]): MenuGroup[] => gs.flatMap(g => [g, ...flatten(g.subGroups ?? [])]);
+  const allGroups = flatten(groups);
+  const find = (id: string): MenuGroup => allGroups.find(g => g.id === id) ?? { id, name: '', items: [] };
 
   const toggle = (key: SectionKey) => setSelected(prev => { const n = new Set(prev); n.has(key) ? n.delete(key) : n.add(key); return n; });
 
@@ -713,16 +718,16 @@ export default function PrintableMenuClient({ menus }: { menus: Menu[] }) {
       </div>
       <div style={{ minHeight: '100vh', padding: '20px 16px' }}>
         {selected.has('daily') && <DailySection style={style} />}
-        {selected.has('starters') && <StartersSection group={find('g-starters')} style={style} />}
-        {selected.has('salads') && <SaladsSection group={find('g-salads')} style={style} />}
-        {selected.has('burgers') && <BurgersSection group={find('g-burgers')} style={style} />}
-        {selected.has('heroes') && <HeroesSection heroesGroup={find('g-heroes')} style={style} />}
-        {selected.has('sweet') && <SweetSection group={find('g-sweet')} style={style} />}
-        {selected.has('drinks') && <DrinksSection group={find('g-drinks')} style={style} />}
-        {selected.has('kids') && <KidsSection group={find('g-kids')} style={style} mode={mode} />}
-        {selected.has('combo-burgers-heroes') && <ComboBurgersHeroes burgersGroup={find('g-burgers')} heroesGroup={find('g-heroes')} style={style} />}
-        {selected.has('combo-starters-salads') && <ComboStartersSalads startersGroup={find('g-starters')} saladsGroup={find('g-salads')} style={style} />}
-        {selected.has('combo-sweet-kids') && <ComboSweetKids sweetGroup={find('g-sweet')} kidsGroup={find('g-kids')} style={style} mode={mode} />}
+        {selected.has('starters') && <StartersSection group={find('starting')} style={style} />}
+        {selected.has('salads') && <SaladsSection group={find('salads')} style={style} />}
+        {selected.has('burgers') && <BurgersSection group={find('mains-hero-burgers')} style={style} />}
+        {selected.has('heroes') && <HeroesSection heroesGroup={find('mains-hero-sandwiches')} style={style} />}
+        {selected.has('sweet') && <SweetSection group={find('sweets')} style={style} />}
+        {selected.has('drinks') && <DrinksSection group={find('drinks')} style={style} />}
+        {selected.has('kids') && <KidsSection group={find('kids')} style={style} mode={mode} />}
+        {selected.has('combo-burgers-heroes') && <ComboBurgersHeroes burgersGroup={find('mains-hero-burgers')} heroesGroup={find('mains-hero-sandwiches')} style={style} />}
+        {selected.has('combo-starters-salads') && <ComboStartersSalads startersGroup={find('starting')} saladsGroup={find('salads')} style={style} />}
+        {selected.has('combo-sweet-kids') && <ComboSweetKids sweetGroup={find('sweets')} kidsGroup={find('kids')} style={style} mode={mode} />}
         {selected.size === 0 && <div style={{ textAlign: 'center', color: '#9ca3af', marginTop: 80, fontSize: 16 }}>Select sections above to preview &amp; print</div>}
       </div>
     </>
