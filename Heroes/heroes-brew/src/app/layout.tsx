@@ -54,7 +54,12 @@ export const metadata: Metadata = {
   },
   // Google Search Console (HTML-tag method). Set GOOGLE_SITE_VERIFICATION in
   // Vercel to the token from Search Console; omitted entirely when unset.
-  verification: { google: process.env.GOOGLE_SITE_VERIFICATION },
+  // facebook-domain-verification: Meta Business Manager domain verification for
+  // americanheroesandbrew.com (Business Settings → Domains), added 2026-06-12.
+  verification: {
+    google: process.env.GOOGLE_SITE_VERIFICATION,
+    other: { 'facebook-domain-verification': 'fo9dqulqhnerq2vnyym5g7nhhooqm5' },
+  },
   appleWebApp: { capable: true, title: 'Heroes & Brew', statusBarStyle: 'black-translucent' },
 };
 
