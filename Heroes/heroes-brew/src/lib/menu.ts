@@ -48,16 +48,6 @@ export function getMenus(): Menu[] {
               ],
             },
             {
-              id: 'starting-friar-frank',
-              name: 'Friar Frank',
-              displayMode: 'variants',
-              basePrice: 8,
-              description: 'Stadium hot dog served with grilled onions, red pepper relish, ketchup & mustard.',
-              items: [
-                { id: 'starting-friar-frank-i0', name: 'Friar Frank', description: 'Stadium hot dog served with grilled onions, red pepper relish, ketchup & mustard.', price: 8 },
-              ],
-            },
-            {
               id: 'starting-loaded-fries',
               name: 'Loaded Fries',
               displayMode: 'variants',
@@ -120,9 +110,6 @@ export function getMenus(): Menu[] {
               id: 'mains-hero-sandwiches',
               name: 'Hero Sandwiches',
               displayMode: 'variants',
-              choices: [
-                { label: 'Note', options: ['Spinach Wrap, Gluten Free Bun, or Gluten Free Roll available'] },
-              ],
               items: [
                 { id: 'mains-hero-sandwiches-i0', name: 'San Diego (California Burrito)', description: 'Ribeye carne asada, fries, guacamole, sour cream, pico de gallo, melted cheddar/jack, wrapped in a flour tortilla.', price: 20 },
                 { id: 'mains-hero-sandwiches-i1', name: 'Carlsbad (BLT+)', description: 'Grilled all-natural chicken breast, bacon, avocado, lettuce, tomato, roasted garlic aioli on an Italian roll.', price: 19 },
@@ -156,9 +143,6 @@ export function getMenus(): Menu[] {
               id: 'mains-hero-burgers',
               name: 'Hero Burgers',
               displayMode: 'variants',
-              choices: [
-                { label: 'Note', options: ['All burgers served with 1/4lb patty · +5 Make it a Double Patty · +1 Beyond Meat Burger available · Gluten Free Bun available · Burgers cooked with Beef Tallow'] },
-              ],
               items: [
                 { id: 'mains-hero-burgers-i0', name: 'Pasadena (The OG Cheeseburger)', description: 'White American cheese, lettuce, tomato, pickle, red onion, AHB Hero sauce, on a brioche bun.', price: 18 },
                 { id: 'mains-hero-burgers-i1', name: 'Tombstone (Cowboy)', description: "Onion rings, bacon, grilled onions, and cheddar on a brioche bun with a side of AHB Kickn' BBQ sauce.", price: 18 },
@@ -192,6 +176,16 @@ export function getMenus(): Menu[] {
               ],
               items: [
                 { id: 'mains-village-tacos-i0', name: 'Village Tacos', description: '(3) Street tacos served on your choice of flour or corn tortillas with refried beans, chips & salsa.', price: 17 },
+              ],
+            },
+            {
+              id: 'mains-friar-frank',
+              name: 'Friar Frank',
+              displayMode: 'variants',
+              basePrice: 8,
+              description: 'Stadium hot dog served with grilled onions, red pepper relish, ketchup & mustard.',
+              items: [
+                { id: 'mains-friar-frank-i0', name: 'Friar Frank', description: 'Stadium hot dog served with grilled onions, red pepper relish, ketchup & mustard.', price: 8 },
               ],
             },
             {
