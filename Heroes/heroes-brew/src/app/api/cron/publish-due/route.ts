@@ -55,10 +55,11 @@ export async function GET(req: NextRequest) {
       const data = (await res.json().catch(() => ({}))) as {
         mediaId?: string;
         error?: string;
+        facebook?: unknown;
       };
       results.push(
         res.ok
-          ? { post: row.post, imageFile: row.imageFile, ok: true, mediaId: data.mediaId }
+          ? { post: row.post, imageFile: row.imageFile, ok: true, mediaId: data.mediaId, facebook: data.facebook }
           : { post: row.post, imageFile: row.imageFile, ok: false, error: data.error ?? `HTTP ${res.status}` }
       );
     } catch (err) {

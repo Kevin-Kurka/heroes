@@ -132,10 +132,14 @@ VERCEL_TOKEN=<token>                      # cron writes refreshed token back to 
 VERCEL_PROJECT_ID=<project_id>            # target project for the env-var write
 PROMOS_SECRET=<secret>                    # guards POST /api/promos/publish-instagram (Bearer header)
 INSTAGRAM_USER_ID=<ig_user_id>            # IG account id targeted by the publish route's /media calls
+FB_PAGE_ID=<fb_page_id>                   # optional: Facebook Page id for the cross-post step (skipped if unset)
+FB_PAGE_ACCESS_TOKEN=<page_token>         # optional: Page token w/ pages_manage_posts (the IG token CANNOT post to a Page)
 MENU_SHEET_CSV_URL=<published_csv_url>    # optional: live menu from a Google Sheet (see MENU-SHEET-SYNC.md)
 ```
 
 **Instagram publishing** (`POST /api/promos/publish-instagram`): publishes posters from `public/promos/` via the Graph API content-publishing flow (`/media` → `/media_publish`). The `INSTAGRAM_ACCESS_TOKEN` must carry the **`instagram_content_publish`** permission — if the current token is a Basic-Display/Instagram-login token without that scope, publishing will 403 and the token must be reissued via a Facebook app with the IG account linked.
+
+**Facebook Page cross-post**: after a successful IG publish, the same route posts the image + caption to the Facebook Page via `POST graph.facebook.com/v23.0/{FB_PAGE_ID}/photos`. Requires `FB_PAGE_ID` + `FB_PAGE_ACCESS_TOKEN` (a Page access token with `pages_manage_posts` + `pages_read_engagement` from a Facebook app linked to the Page — the Instagram-login token cannot post to a Page). If unset, the FB step is skipped and reported as `facebook.skipped` in the response; an FB failure never fails the request once IG has published (reported in `facebook.error`).
 
 No Toast credentials are used. The menu is static by default but can be driven live by a Google Sheet via `MENU_SHEET_CSV_URL` (see `MENU-SHEET-SYNC.md`). `NEXT_PUBLIC_ELFSIGHT_APP_ID` may appear in `.env.local` but is unused.
 
