@@ -232,7 +232,6 @@ export function getMenus(): Menu[] {
           name: 'Kids',
           displayMode: 'variants',
           choices: [
-            { label: 'Note', options: ['Ages 12 & Under'] },
             { label: 'Choice of Side', options: ['Fries', 'Fruit'] },
           ],
           items: [
@@ -440,24 +439,6 @@ export function getMenus(): Menu[] {
                 { id: 'drinks-white-wine-ros-i3', name: 'Wente Chardonnay', description: 'Central Coast, California · Bottle 40', price: 12 },
                 { id: 'drinks-white-wine-ros-i4', name: 'Santa Cristina Pinot Grigio', description: 'Delle Venezie, Italy · Bottle 36', price: 11 },
                 { id: 'drinks-white-wine-ros-i5', name: 'House Sparkling Brut', description: 'Bottle 32', price: 10 },
-              ],
-            },
-            {
-              id: 'drinks-soft-drinks',
-              name: 'Soft Drinks',
-              displayMode: 'variants',
-              basePrice: 4,
-              items: [
-                { id: 'drinks-soft-drinks-i0', name: 'Soft Drinks', price: 4 },
-              ],
-            },
-            {
-              id: 'drinks-bottomless-mimosas',
-              name: 'Bottomless Mimosas',
-              displayMode: 'variants',
-              basePrice: 25,
-              items: [
-                { id: 'drinks-bottomless-mimosas-i0', name: 'Bottomless Mimosas', price: 25 },
               ],
             },
           ],
