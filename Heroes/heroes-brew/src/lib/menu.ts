@@ -32,15 +32,6 @@ export function getMenus(): Menu[] {
               ],
             },
             {
-              id: 'starting-bar-snack-mix',
-              name: 'Bar Snack Mix',
-              displayMode: 'variants',
-              basePrice: 2,
-              items: [
-                { id: 'starting-bar-snack-mix-i0', name: 'Bar Snack Mix', price: 2 },
-              ],
-            },
-            {
               id: 'starting-nachos',
               name: 'Nachos',
               displayMode: 'variants',
