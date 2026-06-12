@@ -170,6 +170,13 @@ function leafToGroup(leaf: Leaf, id: string, name: string): MenuGroup {
   if (leaf.mods.length) group.mods = leaf.mods;
   // A shared base price + options renders as a variant card (pills + choices).
   if (samePrice && hasOptions) { group.basePrice = leaf.items[0].price; group.displayMode = 'variants'; }
+  // VariantGroupCard renders single-item sections from the group header only
+  // (it hides the item grid when items.length === 1), so hoist the lone item's
+  // price and blurb onto the group or they never show on the page.
+  if (leaf.items.length === 1) {
+    if (group.basePrice == null) group.basePrice = leaf.items[0].price;
+    if (leaf.items[0].description) group.description = leaf.items[0].description;
+  }
   return group;
 }
 

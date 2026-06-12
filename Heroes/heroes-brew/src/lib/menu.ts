@@ -35,6 +35,7 @@ export function getMenus(): Menu[] {
               id: 'starting-bar-snack-mix',
               name: 'Bar Snack Mix',
               displayMode: 'variants',
+              basePrice: 2,
               items: [
                 { id: 'starting-bar-snack-mix-i0', name: 'Bar Snack Mix', price: 2 },
               ],
@@ -44,6 +45,7 @@ export function getMenus(): Menu[] {
               name: 'Nachos',
               displayMode: 'variants',
               basePrice: 15,
+              description: 'House-made chips with cheddar jack cheese, AHB Wiz, refried beans, jalapenos, sour cream and guacamole.',
               addOnLabel: 'Add a Meat',
               addOns: [
                 { name: 'Carnitas', price: '+6' },
@@ -55,33 +57,11 @@ export function getMenus(): Menu[] {
               ],
             },
             {
-              id: 'starting-village-tacos',
-              name: 'Village Tacos',
-              displayMode: 'variants',
-              basePrice: 17,
-              choices: [
-                {
-                  label: 'Pick Your Tacos',
-                  options: [
-                    'Carnitas — Onion, Cilantro, Salsa Verde',
-                    'Carne Asada — Onion, Cilantro, Guacamole, Salsa',
-                    'Baja Fish — Cabbage, Pico de Gallo, Chipotle Tartar Sauce',
-                    'Grilled Chicken — Onion, Cilantro, Guacamole',
-                  ],
-                },
-              ],
-              addOnLabel: 'Add',
-              addOns: [
-                { name: 'Guacamole', price: '+4' },
-              ],
-              items: [
-                { id: 'starting-village-tacos-i0', name: 'Village Tacos', description: '(3) Street tacos served on your choice of flour or corn tortillas with refried beans, chips & salsa.', price: 17 },
-              ],
-            },
-            {
               id: 'starting-friar-frank',
               name: 'Friar Frank',
               displayMode: 'variants',
+              basePrice: 8,
+              description: 'Stadium hot dog served with grilled onions, red pepper relish, ketchup & mustard.',
               items: [
                 { id: 'starting-friar-frank-i0', name: 'Friar Frank', description: 'Stadium hot dog served with grilled onions, red pepper relish, ketchup & mustard.', price: 8 },
               ],
@@ -119,6 +99,7 @@ export function getMenus(): Menu[] {
               name: 'Sliders',
               displayMode: 'variants',
               basePrice: 18,
+              description: '(3) Juicy sliders served on a brioche bun.',
               choices: [
                 {
                   label: 'Select',
@@ -165,6 +146,7 @@ export function getMenus(): Menu[] {
               name: 'Philly Cheesesteak (Philly Billy)',
               displayMode: 'variants',
               basePrice: 22,
+              description: 'Thin-sliced, grilled ribeye. Your choice of wit or wit-out grilled onions.',
               choices: [
                 { label: 'Your Choice of Cheese', options: ['American', 'Provolone', 'AHB Whiz'] },
               ],
@@ -194,6 +176,31 @@ export function getMenus(): Menu[] {
                 { id: 'mains-hero-burgers-i4', name: 'Irwindale (Sriracha Honey)', description: 'Crispy onions, coleslaw, pickles, Swiss cheese, garlic aioli, sriracha honey sauce on a brioche bun.', price: 18 },
                 { id: 'mains-hero-burgers-i5', name: 'Leucadia (Smash)', description: 'Grilled onions, white American cheese, pickles, AHB Hero sauce, on a brioche bun.', price: 18 },
                 { id: 'mains-hero-burgers-i6', name: 'Bama Slama Jamma (PB&J)', description: 'Peanut butter, jelly, fried onion, bacon jelly, on a brioche bun.', price: 23 },
+              ],
+            },
+            {
+              id: 'mains-village-tacos',
+              name: 'Village Tacos',
+              displayMode: 'variants',
+              basePrice: 17,
+              description: '(3) Street tacos served on your choice of flour or corn tortillas with refried beans, chips & salsa.',
+              choices: [
+                {
+                  label: 'Pick Your Tacos',
+                  options: [
+                    'Carnitas — Onion, Cilantro, Salsa Verde',
+                    'Carne Asada — Onion, Cilantro, Guacamole, Salsa',
+                    'Baja Fish — Cabbage, Pico de Gallo, Chipotle Tartar Sauce',
+                    'Grilled Chicken — Onion, Cilantro, Guacamole',
+                  ],
+                },
+              ],
+              addOnLabel: 'Add',
+              addOns: [
+                { name: 'Guacamole', price: '+4' },
+              ],
+              items: [
+                { id: 'mains-village-tacos-i0', name: 'Village Tacos', description: '(3) Street tacos served on your choice of flour or corn tortillas with refried beans, chips & salsa.', price: 17 },
               ],
             },
             {
@@ -234,31 +241,6 @@ export function getMenus(): Menu[] {
           ],
         },
 
-        // ─── LUNCH ───
-        {
-          id: 'lunch',
-          name: 'Lunch',
-          displayMode: 'variants',
-          basePrice: 15,
-          choices: [
-            {
-              label: 'Choose a Sandwich',
-              options: [
-                'Hoboken — Italian (Cold or Grinder)',
-                'Carlsbad — Chicken BLTA with Garlic Aioli',
-                'Philly — Build your own toppings: Grilled Onions, Mushrooms, Cherry Peppers, Provolone, American, Wiz',
-              ],
-            },
-            {
-              label: 'Choose a Side',
-              options: ['Fries', 'Onion Rings', 'Potato Salad', 'Side Salad', 'Coleslaw'],
-            },
-          ],
-          items: [
-            { id: 'lunch-i0', name: '1/2 a Sandwich and a Side', description: 'Available Mon–Fri 10am–2pm. +5 Draft Beer.', price: 15 },
-          ],
-        },
-
         // ─── KIDS ───
         {
           id: 'kids',
@@ -290,17 +272,6 @@ export function getMenus(): Menu[] {
           ],
         },
 
-        // ─── DOGGOS ───
-        {
-          id: 'doggos',
-          name: 'Doggos',
-          items: [
-            { id: 'doggos-i0', name: 'Unseasoned Burger Patty', price: 5 },
-            { id: 'doggos-i1', name: 'Unseasoned Chicken Breast', price: 6 },
-            { id: 'doggos-i2', name: 'Bacon', price: 6 },
-          ],
-        },
-
         // ─── BREAKFAST ───
         {
           id: 'breakfast',
@@ -313,6 +284,7 @@ export function getMenus(): Menu[] {
               name: 'Handhelds',
               displayMode: 'variants',
               basePrice: 14,
+              description: 'Served with an egg any style, melted cheddar cheese.',
               choices: [
                 { label: 'Your Choice of Bagel', options: ['Jalapeno', 'Everything', 'Plain'] },
                 { label: 'Topped with Your Choice', options: ['Tomato Avocado', 'Oven Baked Ham', 'Bacon', 'Sausage', 'Pastrami'] },
@@ -489,6 +461,7 @@ export function getMenus(): Menu[] {
               id: 'drinks-soft-drinks',
               name: 'Soft Drinks',
               displayMode: 'variants',
+              basePrice: 4,
               items: [
                 { id: 'drinks-soft-drinks-i0', name: 'Soft Drinks', price: 4 },
               ],
@@ -497,6 +470,7 @@ export function getMenus(): Menu[] {
               id: 'drinks-bottomless-mimosas',
               name: 'Bottomless Mimosas',
               displayMode: 'variants',
+              basePrice: 25,
               items: [
                 { id: 'drinks-bottomless-mimosas-i0', name: 'Bottomless Mimosas', price: 25 },
               ],
