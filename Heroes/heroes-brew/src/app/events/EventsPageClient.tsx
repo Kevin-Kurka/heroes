@@ -12,7 +12,7 @@ interface Props {
   allHolidays: UnifiedEvent[];
 }
 
-type Filter = 'ALL' | 'MLB' | 'NFL' | 'NBA' | 'NHL' | 'MLS' | 'CFB' | 'HOLIDAY';
+type Filter = 'ALL' | 'MLB' | 'NFL' | 'NBA' | 'NHL' | 'MLS' | 'WORLDCUP' | 'CFB' | 'HOLIDAY';
 
 const LEAGUE_LOGO: Record<string, string> = {
   MLB: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/leagues/500/mlb.png&w=100&h=100&transparent=true',
@@ -20,6 +20,7 @@ const LEAGUE_LOGO: Record<string, string> = {
   NBA: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/leagues/500/nba.png&w=100&h=100&transparent=true',
   NHL: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/leagues/500/nhl.png&w=100&h=100&transparent=true',
   MLS: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/leagues/500/mls.png&w=100&h=100&transparent=true',
+  WORLDCUP: 'https://a.espncdn.com/combiner/i?img=/i/leaguelogos/soccer/500/4.png&w=100&h=100&transparent=true',
   CFB: 'https://a.espncdn.com/combiner/i?img=/i/espn/misc_logos/500/ncaa_football.png&w=100&h=100&transparent=true',
 };
 
@@ -29,6 +30,7 @@ const LEAGUE_NAME: Record<string, string> = {
   NBA: 'NBA',
   NHL: 'NHL',
   MLS: 'MLS',
+  WORLDCUP: 'World Cup',
   CFB: 'College Football',
 };
 
@@ -55,6 +57,7 @@ export default function EventsPageClient({ events, allHolidays }: Props) {
     { label: 'NBA', value: 'NBA' },
     { label: 'NHL', value: 'NHL' },
     { label: 'MLS', value: 'MLS' },
+    { label: 'FIFA', value: 'WORLDCUP' },
     { label: 'CFB', value: 'CFB' },
     { label: 'Holidays', value: 'HOLIDAY' },
   ];
