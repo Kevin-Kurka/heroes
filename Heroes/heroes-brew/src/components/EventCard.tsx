@@ -19,6 +19,7 @@ const LEAGUE_LOGO: Record<string, string> = {
   NBA: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/leagues/500/nba.png&w=48&h=48&transparent=true',
   NHL: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/leagues/500/nhl.png&w=48&h=48&transparent=true',
   MLS: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/leagues/500/mls.png&w=48&h=48&transparent=true',
+  WORLDCUP: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/leagues/500/fifa.world.png&w=48&h=48&transparent=true',
   CFB: 'https://a.espncdn.com/combiner/i?img=/i/espn/misc_logos/500/ncaa_football.png&w=48&h=48&transparent=true',
 };
 

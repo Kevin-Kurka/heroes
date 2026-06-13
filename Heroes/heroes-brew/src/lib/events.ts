@@ -35,6 +35,7 @@ const ESPN_SPORTS: { sport: string; league: SportLeague }[] = [
   { sport: 'basketball/nba', league: 'NBA' },
   { sport: 'hockey/nhl', league: 'NHL' },
   { sport: 'soccer/usa.1', league: 'MLS' },
+  { sport: 'soccer/fifa.world', league: 'WORLDCUP' },
   { sport: 'football/college-football', league: 'CFB' },
 ];
 
@@ -55,6 +56,7 @@ async function fetchESPNScoreboard(sport: string, league: SportLeague): Promise<
     const data = await res.json();
 
     const events: UnifiedEvent[] = [];
+    const isSoccer = sport.startsWith('soccer');
     for (const event of data.events || []) {
       const comp = event.competitions?.[0];
       const homeComp = comp?.competitors?.find((c: Record<string, unknown>) => c.homeAway === 'home');
@@ -76,7 +78,7 @@ async function fetchESPNScoreboard(sport: string, league: SportLeague): Promise<
       events.push({
         id: `${league.toLowerCase()}-${event.id}`,
         eventTimestamp: event.date,
-        eventTitle: `${away} @ ${home}`,
+        eventTitle: isSoccer ? `${away} vs ${home}` : `${away} @ ${home}`,
         eventType: 'SPORTS',
         league,
         displayMessage: isLive

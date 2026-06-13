@@ -2,7 +2,7 @@
 // Unified Event Types
 // =====================
 export type EventType = 'SPORTS' | 'HOLIDAY';
-export type SportLeague = 'MLB' | 'NFL' | 'NBA' | 'NHL' | 'MLS' | 'CFB';
+export type SportLeague = 'MLB' | 'NFL' | 'NBA' | 'NHL' | 'MLS' | 'CFB' | 'WORLDCUP';
 
 export interface UnifiedEvent {
   id: string;
