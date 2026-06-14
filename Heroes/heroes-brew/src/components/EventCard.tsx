@@ -196,9 +196,12 @@ export default function EventCard({ event, index }: EventCardProps) {
         {/* Score / VS */}
         <div className="shrink-0 text-center min-w-[48px] sm:min-w-[64px]">
           {hasScore ? (
-            <div className={`font-mono text-base sm:text-lg font-bold tracking-wider ${
-              isMarquee ? 'text-white' : isFinal ? 'text-muted' : 'text-foreground'
-            }`}>
+            <div
+              style={isMarquee ? { textShadow: '-2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000, 0 2px 0 #000, 0 -2px 0 #000, 2px 0 0 #000, -2px 0 0 #000, 0 0 6px rgba(0,0,0,0.7)' } : undefined}
+              className={`font-mono text-base sm:text-lg font-bold tracking-wider ${
+                isMarquee ? 'text-white' : isFinal ? 'text-muted' : 'text-foreground'
+              }`}
+            >
               {event.awayScore} – {event.homeScore}
             </div>
           ) : (
