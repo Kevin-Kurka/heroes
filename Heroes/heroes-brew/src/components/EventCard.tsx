@@ -56,6 +56,19 @@ export default function EventCard({ event, index }: EventCardProps) {
   // Card opacity for final games
   const cardOpacity = isFinal ? 'opacity-60' : '';
 
+  // Marquee: a gradient blended from the two teams' brand colors, over a dark base so the
+  // center (score) stays readable. Text + logos get shadows to lift off the color.
+  const isMarquee = event.tier === 'MARQUEE' && !event.isLive;
+  const awayColor = event.awayColor || '#1a1207';
+  const homeColor = event.homeColor || '#1a1207';
+  const marqueeStyle = isMarquee
+    ? {
+        background: `linear-gradient(to right, ${awayColor}aa 0%, transparent 42%, transparent 58%, ${homeColor}aa 100%), #0b0b0d`,
+        textShadow: '0 1px 4px rgba(0,0,0,0.9)',
+      }
+    : undefined;
+  const logoShadow = isMarquee ? 'drop-shadow-[0_2px_6px_rgba(0,0,0,0.85)]' : '';
+
   // The whole card is the share target (not just the chip). Finished games have
   // nothing to invite to, so they stay non-interactive.
   const [shareOpen, setShareOpen] = useState(false);
@@ -126,10 +139,9 @@ export default function EventCard({ event, index }: EventCardProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2, delay: index * 0.03, ease: [0, 0, 0.2, 1] as const }}
       {...shareProps}
+      style={marqueeStyle}
       className={`rounded-md border backdrop-blur-md p-4 ${cardOpacity} ${
-        event.tier === 'MARQUEE' && !event.isLive
-          ? 'border-accent/60 ring-1 ring-accent/30 bg-accent/[0.06] shadow-[0_0_22px_rgba(245,158,11,0.13)]'
-          : 'border-white/10 bg-card/70'
+        isMarquee ? 'border-white/20' : 'border-white/10 bg-card/70'
       } ${
         event.isLive ? 'ring-1 ring-red-500/40 border-red-500/30' : ''
       } ${interactive ? 'cursor-pointer hover:border-accent/40 transition-colors' : ''}`}
@@ -179,7 +191,7 @@ export default function EventCard({ event, index }: EventCardProps) {
         {/* Away team */}
         <div className="flex flex-col items-center flex-1 min-w-0">
           {event.awayLogo && (
-            <img src={event.awayLogo} alt="" className="w-10 h-10 sm:w-12 sm:h-12 object-contain" />
+            <img src={event.awayLogo} alt="" className={`w-10 h-10 sm:w-12 sm:h-12 object-contain ${logoShadow}`} />
           )}
           <span className={`text-[10px] font-medium truncate max-w-full mt-1 ${
             hasScore && event.awayScore! > event.homeScore! ? 'text-foreground' : 'text-muted'
@@ -207,7 +219,7 @@ export default function EventCard({ event, index }: EventCardProps) {
         {/* Home team */}
         <div className="flex flex-col items-center flex-1 min-w-0">
           {event.homeLogo && (
-            <img src={event.homeLogo} alt="" className="w-10 h-10 sm:w-12 sm:h-12 object-contain" />
+            <img src={event.homeLogo} alt="" className={`w-10 h-10 sm:w-12 sm:h-12 object-contain ${logoShadow}`} />
           )}
           <span className={`text-[10px] font-medium truncate max-w-full mt-1 ${
             hasScore && event.homeScore! > event.awayScore! ? 'text-foreground' : 'text-muted'

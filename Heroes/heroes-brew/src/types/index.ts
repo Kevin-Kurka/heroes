@@ -18,6 +18,8 @@ export interface UnifiedEvent {
   awayScore?: number;
   homeLogo?: string;
   awayLogo?: string;
+  homeColor?: string; // team primary brand color (hex) — used for marquee gradient
+  awayColor?: string;
   status?: string;
   isLive?: boolean;
   highlighted?: boolean;

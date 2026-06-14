@@ -11,6 +11,21 @@ const FOLLOWED_TEAMS = new Set([
 // Words in a title/status that signal a championship-caliber event → MARQUEE.
 const MARQUEE_KEYWORDS = /super bowl|world series|stanley cup|finals?|championship|playoff|wild ?card|world cup/i;
 
+// MLB team primary brand colors (MLB Stats API gives no colors; ESPN leagues do).
+const MLB_COLORS: Record<string, string> = {
+  'Arizona Diamondbacks': '#A71930', 'Atlanta Braves': '#CE1141', 'Baltimore Orioles': '#DF4601',
+  'Boston Red Sox': '#BD3039', 'Chicago Cubs': '#0E3386', 'Chicago White Sox': '#27251F',
+  'Cincinnati Reds': '#C6011F', 'Cleveland Guardians': '#00385D', 'Colorado Rockies': '#333366',
+  'Detroit Tigers': '#0C2340', 'Houston Astros': '#002D62', 'Kansas City Royals': '#004687',
+  'Los Angeles Angels': '#BA0021', 'Los Angeles Dodgers': '#005A9C', 'Miami Marlins': '#00A3E0',
+  'Milwaukee Brewers': '#12284B', 'Minnesota Twins': '#002B5C', 'New York Mets': '#002D72',
+  'New York Yankees': '#003087', 'Athletics': '#003831', 'Oakland Athletics': '#003831',
+  'Philadelphia Phillies': '#E81828', 'Pittsburgh Pirates': '#FDB827', 'San Diego Padres': '#FFC425',
+  'San Francisco Giants': '#FD5A1E', 'Seattle Mariners': '#0C2C56', 'St. Louis Cardinals': '#C41E3A',
+  'Tampa Bay Rays': '#092C5C', 'Texas Rangers': '#003278', 'Toronto Blue Jays': '#134A8E',
+  'Washington Nationals': '#AB0003',
+};
+
 // San Diego / SoCal area teams to highlight
 const SD_TEAMS = new Set([
   // MLB
@@ -122,6 +137,8 @@ async function fetchESPNScoreboard(sport: string, league: SportLeague): Promise<
       const away = awayComp?.team?.displayName || 'Away';
       const homeLogo = homeComp?.team?.logo as string | undefined;
       const awayLogo = awayComp?.team?.logo as string | undefined;
+      const homeColor = homeComp?.team?.color ? `#${homeComp.team.color}` : undefined;
+      const awayColor = awayComp?.team?.color ? `#${awayComp.team.color}` : undefined;
 
       const statusState = event.status?.type?.state;
       const statusDetail = event.status?.type?.detail || 'Scheduled';
@@ -149,6 +166,8 @@ async function fetchESPNScoreboard(sport: string, league: SportLeague): Promise<
         awayScore: hasScoreData ? parseInt(awayComp.score as string) : undefined,
         homeLogo,
         awayLogo,
+        homeColor,
+        awayColor,
         status: statusDetail,
         isLive,
         highlighted: isLocalTeam(home) || isLocalTeam(away),
@@ -212,6 +231,8 @@ async function fetchMLBGames(): Promise<UnifiedEvent[]> {
           awayScore: hasScoreData ? game.teams?.away?.score : undefined,
           homeLogo,
           awayLogo,
+          homeColor: MLB_COLORS[home],
+          awayColor: MLB_COLORS[away],
           status: game.status?.detailedState || 'Scheduled',
           isLive,
           highlighted: isLocalTeam(home) || isLocalTeam(away),
