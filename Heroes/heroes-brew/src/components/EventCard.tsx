@@ -144,10 +144,10 @@ export default function EventCard({ event, index }: EventCardProps) {
       transition={{ duration: 0.2, delay: index * 0.03, ease: [0, 0, 0.2, 1] as const }}
       {...shareProps}
       style={marqueeStyle}
-      className={`rounded-md border backdrop-blur-md p-4 ${cardOpacity} ${
-        isMarquee ? 'border-white/20' : 'border-white/10 bg-card/70'
+      className={`rounded-md backdrop-blur-md p-4 ${cardOpacity} ${
+        isMarquee ? '' : 'border border-white/10 bg-card/70'
       } ${
-        event.isLive ? 'ring-1 ring-red-500/40 border-red-500/30' : ''
+        event.isLive ? 'border ring-1 ring-red-500/40 border-red-500/30' : ''
       } ${interactive ? 'cursor-pointer hover:border-accent/40 transition-colors' : ''}`}
     >
       {/* Top row: badges + date/time */}
