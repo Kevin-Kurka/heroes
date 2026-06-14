@@ -398,17 +398,20 @@ function setupStoryTab() {
   if (sh.getLastRow() > 0) return;
   sh.appendRow(STORY_HEADERS);
   sh.setFrozenRows(1);
-  var T = '#AmericanHeroesAndBrew #CarlsbadEats #CarlsbadVillage #SportsBar #NorthCountySD';
-  var rows = [
-    [true, 'Mahalo Monday', 'Mon', '4:00 PM', 'mahalo-1.mp4, mahalo-2.mp4', 'Mahalo Monday - Kalua Pork Sliders $4 ea + select cans $3.', T],
-    [true, 'Taco Tuesday', 'Tue', '4:00 PM', 'taco-1.mp4, taco-2.mp4', 'Taco Tuesday - Tacos $4 ea + $2 off tequila.', T],
-    [true, 'Wings & Wells Wednesday', 'Wed', '4:00 PM', 'wings-1.mp4, wings-2.mp4', 'Wings & Wells Wednesday - Wings $6 off + wells $6.', T],
-    [true, 'Burgers & Beer Thursday', 'Thu', '4:00 PM', 'burgers-1.mp4, burgers-2.mp4', 'Burgers & Beer Thursday - Burgers $5 off + select drafts $5.', T],
-    [true, 'Friday Funday', 'Fri', '4:00 PM', 'funday-1.mp4, funday-2.mp4', 'Friday Funday 1-4pm - Drinks & appetizers $2 off.', T],
-    [true, 'Weekend Game Day', 'Sat, Sun', '11:00 AM', 'gameday-1.mp4, gameday-2.mp4', 'Game day at Heroes - every game on every screen.', T],
-    [false, 'Watch Party HQ', 'Daily', '12:00 PM', 'watch-1.mp4, watch-2.mp4', 'Your seat is waiting - every game, every screen at Heroes.', T],
-    [false, 'Fantasy Football', 'Sat', '10:00 AM', 'fantasy-1.mp4, fantasy-2.mp4', 'Draft your league at Heroes - apps on us. Football is back.', T]
+  var T = '#AmericanHeroesAndBrew #CarlsbadVillage #SportsBar';
+  var items = [
+    ['Mahalo Monday', 'Mon', '4:00 PM', 'mahalo-1.mp4, mahalo-2.mp4'],
+    ['Taco Tuesday', 'Tue', '4:00 PM', 'taco-1.mp4, taco-2.mp4'],
+    ['Wings & Wells Wednesday', 'Wed', '4:00 PM', 'wings-1.mp4, wings-2.mp4'],
+    ['Burgers & Beer Thursday', 'Thu', '4:00 PM', 'burgers-1.mp4, burgers-2.mp4'],
+    ['Friday Funday', 'Fri', '4:00 PM', 'funday-1.mp4, funday-2.mp4'],
+    ['Weekend Game Day', 'Sat, Sun', '11:00 AM', 'gameday-1.mp4, gameday-2.mp4'],
+    ['Watch Party HQ', 'Daily', '12:00 PM', 'watch-1.mp4, watch-2.mp4'],
+    ['Fantasy Football', 'Sat', '10:00 AM', 'fantasy-1.mp4, fantasy-2.mp4']
   ];
+  var rows = items.map(function (it, i) {
+    return [i < 6, it[0], it[1], it[2], it[3], it[0] + ' at Heroes.', T];
+  });
   sh.getRange(2, 1, rows.length, STORY_HEADERS.length).setValues(rows);
   sh.getRange(2, 1, rows.length, 1).insertCheckboxes();
 }
