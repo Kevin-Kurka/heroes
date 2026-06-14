@@ -63,8 +63,9 @@ export default function EventCard({ event, index }: EventCardProps) {
   const homeColor = event.homeColor || '#1a1207';
   const marqueeStyle = isMarquee
     ? {
-        background: `linear-gradient(to right, ${awayColor}aa 0%, transparent 42%, transparent 58%, ${homeColor}aa 100%), #0b0b0d`,
-        textShadow: '0 1px 4px rgba(0,0,0,0.9)',
+        // Away color fills the left, home color the right, meeting on an angled seam.
+        background: `linear-gradient(115deg, ${awayColor} 0%, ${awayColor} 49%, ${homeColor} 51%, ${homeColor} 100%)`,
+        textShadow: '0 1px 5px rgba(0,0,0,0.95)',
       }
     : undefined;
   const logoShadow = isMarquee ? 'drop-shadow-[0_2px_6px_rgba(0,0,0,0.85)]' : '';
