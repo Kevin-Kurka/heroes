@@ -53,22 +53,19 @@ export default function EventCard({ event, index }: EventCardProps) {
   const isFinal = !event.isLive && hasScore && date < now;
   const isUpcoming = !event.isLive && !isFinal;
 
-  // Card opacity for final games
-  const cardOpacity = isFinal ? 'opacity-60' : '';
-
-  // Marquee: a gradient blended from the two teams' brand colors, over a dark base so the
-  // center (score) stays readable. Text + logos get shadows to lift off the color.
+  // Marquee: the two teams' brand colors meet on a hard angled seam. A crisp black text
+  // outline (not a soft blur) + white text keep everything readable on the bright colors.
   const isMarquee = event.tier === 'MARQUEE' && !event.isLive;
+  const cardOpacity = isFinal ? (isMarquee ? 'opacity-95' : 'opacity-60') : '';
   const awayColor = event.awayColor || '#1a1207';
   const homeColor = event.homeColor || '#1a1207';
   const marqueeStyle = isMarquee
     ? {
-        // Away color fills the left, home color the right, meeting on an angled seam.
-        background: `linear-gradient(115deg, ${awayColor} 0%, ${awayColor} 49%, ${homeColor} 51%, ${homeColor} 100%)`,
-        textShadow: '0 1px 5px rgba(0,0,0,0.95)',
+        background: `linear-gradient(115deg, ${awayColor} 0%, ${awayColor} 50%, ${homeColor} 50%, ${homeColor} 100%)`,
+        textShadow: '-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, 0 0 4px rgba(0,0,0,0.55)',
       }
     : undefined;
-  const logoShadow = isMarquee ? 'drop-shadow-[0_2px_6px_rgba(0,0,0,0.85)]' : '';
+  const logoShadow = isMarquee ? 'drop-shadow-[0_2px_5px_rgba(0,0,0,0.9)]' : '';
 
   // The whole card is the share target (not just the chip). Finished games have
   // nothing to invite to, so they stay non-interactive.
@@ -195,7 +192,7 @@ export default function EventCard({ event, index }: EventCardProps) {
             <img src={event.awayLogo} alt="" className={`w-10 h-10 sm:w-12 sm:h-12 object-contain ${logoShadow}`} />
           )}
           <span className={`text-[10px] font-medium truncate max-w-full mt-1 ${
-            hasScore && event.awayScore! > event.homeScore! ? 'text-foreground' : 'text-muted'
+            isMarquee ? 'text-white font-semibold' : hasScore && event.awayScore! > event.homeScore! ? 'text-foreground' : 'text-muted'
           }`}>
             {event.awayTeam}
           </span>
@@ -205,7 +202,7 @@ export default function EventCard({ event, index }: EventCardProps) {
         <div className="shrink-0 text-center min-w-[48px] sm:min-w-[64px]">
           {hasScore ? (
             <div className={`font-mono text-base sm:text-lg font-bold tracking-wider ${
-              isFinal ? 'text-muted' : 'text-foreground'
+              isMarquee ? 'text-white' : isFinal ? 'text-muted' : 'text-foreground'
             }`}>
               {event.awayScore} – {event.homeScore}
             </div>
@@ -223,7 +220,7 @@ export default function EventCard({ event, index }: EventCardProps) {
             <img src={event.homeLogo} alt="" className={`w-10 h-10 sm:w-12 sm:h-12 object-contain ${logoShadow}`} />
           )}
           <span className={`text-[10px] font-medium truncate max-w-full mt-1 ${
-            hasScore && event.homeScore! > event.awayScore! ? 'text-foreground' : 'text-muted'
+            isMarquee ? 'text-white font-semibold' : hasScore && event.homeScore! > event.awayScore! ? 'text-foreground' : 'text-muted'
           }`}>
             {event.homeTeam}
           </span>
