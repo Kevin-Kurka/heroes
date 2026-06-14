@@ -77,7 +77,7 @@ function parseWhen_(dateStr, timeStr) {
   var ts = String(timeStr || '').trim();
   // Read the time from the Post Time cell, or fall back to a time inside the date cell
   // (so a single combined "Jun 14, 2026 — 1:00 PM" still works).
-  var t = ts.match(/(\d{1,2}):(\d{2})\s*([AaPp][Mm])?/) || ds.match(/(\d{1,2}):(\d{2})\s*([AaPp][Mm])?/);
+  var t = ts.match(/(\d{1,2}):(\d{2})(?::\d{2})?\s*([AaPp][Mm])?/) || ds.match(/(\d{1,2}):(\d{2})(?::\d{2})?\s*([AaPp][Mm])?/);
   if (t) {
     hh = Number(t[1]); mm = Number(t[2]);
     if (t[3]) { var pm = /p/i.test(t[3]); hh = hh % 12; if (pm) hh += 12; }
