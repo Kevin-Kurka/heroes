@@ -10,7 +10,12 @@ import { fetchPromoRows, isDueToday } from '@/lib/promos-sheet';
  * image-prefix validation + container→poll→publish flow).
  *
  * Guarded by CRON_SECRET (Vercel sends it as a Bearer header for vercel.json crons).
- * Runs once daily — see the idempotency note in promos-sheet.ts (no write-back in MVP).
+ *
+ * Role: late-night SAFETY NET (schedule 0 6 * * * ≈ 11 PM PT). The primary driver is
+ * the sheet-bound Apps Script (scripts/sheet-auto-publisher.gs), which fires at each
+ * post's exact time and writes Posted (IG) back. This cron only catches rows the Apps
+ * Script missed entirely (still unstamped) — running after all daily post times means it
+ * cannot double-post a row the Apps Script already stamped. See promos-sheet.ts.
  */
 export const dynamic = 'force-dynamic';
 
