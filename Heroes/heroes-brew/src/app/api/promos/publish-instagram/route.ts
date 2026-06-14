@@ -38,15 +38,21 @@ type FacebookResult =
   | { ok: true; postId: string }
   | { ok: false; error: string };
 
-/** Only self-hosted promo posters may be published. */
+/** Only self-hosted promo posters/videos may be published. */
 const ALLOWED_IMAGE_PREFIXES = [
   'https://americanheroesandbrew.com/promos/',
   'https://heroes-tau-neon.vercel.app/promos/',
 ];
+const ALLOWED_VIDEO_PREFIXES = [
+  'https://americanheroesandbrew.com/promos-video/',
+  'https://heroes-tau-neon.vercel.app/promos-video/',
+];
 
 interface PublishBody {
   imageUrl?: unknown;
+  videoUrl?: unknown;
   caption?: unknown;
+  mediaType?: unknown; // 'feed' (default) | 'story'
 }
 
 interface GraphError {
@@ -70,23 +76,34 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
   }
 
-  const { imageUrl, caption } = body;
+  const { imageUrl, videoUrl, caption } = body;
+  const isStory = body.mediaType === 'story';
+  const isVideo = typeof videoUrl === 'string' && videoUrl.length > 0;
 
-  if (typeof imageUrl !== 'string' || !isAllowedImageUrl(imageUrl)) {
+  // A post is either a video (video_url) or an image (image_url). Validate whichever
+  // is present against its allowed self-hosted prefix; require at least one.
+  if (isVideo) {
+    if (!isAllowedUrl(videoUrl as string, ALLOWED_VIDEO_PREFIXES)) {
+      return NextResponse.json(
+        { error: `videoUrl must start with one of: ${ALLOWED_VIDEO_PREFIXES.join(', ')}` },
+        { status: 400 }
+      );
+    }
+  } else if (typeof imageUrl !== 'string' || !isAllowedUrl(imageUrl, ALLOWED_IMAGE_PREFIXES)) {
     return NextResponse.json(
-      {
-        error: `imageUrl must start with one of: ${ALLOWED_IMAGE_PREFIXES.join(', ')}`,
-      },
+      { error: `imageUrl must start with one of: ${ALLOWED_IMAGE_PREFIXES.join(', ')}` },
       { status: 400 }
     );
   }
 
-  if (typeof caption !== 'string' || caption.trim().length === 0) {
+  // Stories don't display a caption, so it's optional there; feed/reel posts require one.
+  if (!isStory && (typeof caption !== 'string' || caption.trim().length === 0)) {
     return NextResponse.json(
       { error: 'caption must be a non-empty string' },
       { status: 400 }
     );
   }
+  const captionStr = typeof caption === 'string' ? caption : '';
 
   // ── Required Instagram credentials ───────────────────────────────────────
   const accessToken = process.env.INSTAGRAM_ACCESS_TOKEN;
@@ -100,14 +117,22 @@ export async function POST(req: NextRequest) {
   }
 
   // ── Step 1: create a media container ─────────────────────────────────────
+  // Shape varies by target: feed image (no media_type), Story image/video
+  // (media_type=STORIES), or feed video / Reel (media_type=REELS).
+  const containerParams: Record<string, string> = { access_token: accessToken };
+  if (captionStr) containerParams.caption = captionStr;
+  if (isVideo) {
+    containerParams.video_url = videoUrl as string;
+    containerParams.media_type = isStory ? 'STORIES' : 'REELS';
+  } else {
+    containerParams.image_url = imageUrl as string;
+    if (isStory) containerParams.media_type = 'STORIES';
+  }
+
   const containerRes = await fetch(`${GRAPH_URL}/${userId}/media`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      image_url: imageUrl,
-      caption,
-      access_token: accessToken,
-    }),
+    body: new URLSearchParams(containerParams),
   });
 
   const containerData = (await containerRes.json().catch(() => ({}))) as
@@ -128,8 +153,10 @@ export async function POST(req: NextRequest) {
   // media_publish fails with "Media ID is not available" when called before the
   // container is FINISHED, so poll status_code first (images are usually quick).
   const containerId = containerData.id;
+  // Video transcoding takes much longer than image hosting — give it up to ~60s.
+  const maxAttempts = isVideo ? 30 : 15;
   let status = '';
-  for (let attempt = 0; attempt < 15; attempt++) {
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
     const statusRes = await fetch(
       `${GRAPH_URL}/${containerId}?fields=status_code&access_token=${encodeURIComponent(accessToken)}`
     );
@@ -180,15 +207,19 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // ── Step 3: cross-post the same image + caption to the Facebook Page ─────
-  // Never fails the request — Instagram has already published at this point.
-  const facebook = await publishToFacebookPage(imageUrl, caption);
+  // ── Step 3: cross-post to the Facebook Page (feed image posts only) ──────
+  // Stories and videos are not cross-posted. Never fails the request — Instagram
+  // has already published at this point.
+  const facebook: FacebookResult =
+    !isStory && !isVideo && typeof imageUrl === 'string'
+      ? await publishToFacebookPage(imageUrl, captionStr)
+      : { skipped: true, reason: 'Facebook cross-post applies to feed image posts only' };
 
   return NextResponse.json({ ok: true, mediaId: publishData.id, facebook });
 }
 
-function isAllowedImageUrl(url: string): boolean {
-  return ALLOWED_IMAGE_PREFIXES.some((prefix) => url.startsWith(prefix));
+function isAllowedUrl(url: string, prefixes: string[]): boolean {
+  return prefixes.some((prefix) => url.startsWith(prefix));
 }
 
 /**

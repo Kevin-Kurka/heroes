@@ -49,13 +49,23 @@ export async function GET(req: NextRequest) {
   const results = [];
   for (const row of due) {
     try {
+      const payload: Record<string, string> = {
+        caption: row.igCaption,
+        mediaType: row.channel === 'Story' ? 'story' : 'feed',
+      };
+      if (row.media === 'video' && row.videoUrl) {
+        payload.videoUrl = row.videoUrl;
+        if (row.imageUrl) payload.imageUrl = row.imageUrl;
+      } else {
+        payload.imageUrl = row.imageUrl;
+      }
       const res = await fetch(`${SITE}/api/promos/publish-instagram`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${promosSecret}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ imageUrl: row.imageUrl, caption: row.igCaption }),
+        body: JSON.stringify(payload),
       });
       const data = (await res.json().catch(() => ({}))) as {
         mediaId?: string;

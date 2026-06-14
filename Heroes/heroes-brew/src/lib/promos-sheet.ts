@@ -14,8 +14,12 @@ import { parseCsv } from './menu-sheet';
 
 const SITE = 'https://americanheroesandbrew.com';
 
+export type PromoChannel = 'Feed' | 'Story';
+export type PromoMedia = 'image' | 'video';
+
 export interface PromoRow {
   imageFile: string;
+  videoFile: string;
   post: string;
   headline: string;
   caption: string;
@@ -23,7 +27,12 @@ export interface PromoRow {
   postDate: string; // raw, e.g. "Thu Jun 11, 2026 — 9:00 AM"
   approval: string;
   postedIg: string;
+  type: string; // Special | LocalGame | Marquee | Holiday | Evergreen
+  channel: PromoChannel; // Feed (permanent) | Story (24h)
+  media: PromoMedia; // image | video
+  marquee: boolean; // manual marquee tag (authoritative for Feed promotion)
   imageUrl: string; // derived public poster URL
+  videoUrl: string; // derived public video URL ('' when no video)
   igCaption: string; // caption + hashtags, ready for Instagram
 }
 
@@ -39,6 +48,7 @@ export async function fetchPromoRows(csvUrl: string): Promise<PromoRow[]> {
 
   const header = rows[0];
   const iImg = findIdx(header, (h) => h === 'image file');
+  const iVid = findIdx(header, (h) => h === 'video file');
   const iPost = findIdx(header, (h) => h === 'post');
   const iHead = findIdx(header, (h) => h === 'headline');
   const iCap = findIdx(header, (h) => h.startsWith('caption'));
@@ -46,18 +56,31 @@ export async function fetchPromoRows(csvUrl: string): Promise<PromoRow[]> {
   const iDate = findIdx(header, (h) => h.startsWith('post date'));
   const iAppr = findIdx(header, (h) => h === 'approval');
   const iPosted = findIdx(header, (h) => h.startsWith('posted (ig)'));
+  const iType = findIdx(header, (h) => h === 'type');
+  const iChan = findIdx(header, (h) => h === 'channel');
+  const iMedia = findIdx(header, (h) => h === 'media');
+  const iMarquee = findIdx(header, (h) => h === 'marquee');
 
   const cell = (r: string[], i: number) => (i >= 0 ? (r[i] ?? '').trim() : '');
 
   return rows
     .slice(1)
-    .filter((r) => cell(r, iImg))
+    .filter((r) => cell(r, iImg) || cell(r, iVid))
     .map((r) => {
       const imageFile = cell(r, iImg);
+      const videoFile = cell(r, iVid);
       const caption = cell(r, iCap);
       const hashtags = cell(r, iTags);
+      // Defaults keep older single-tab rows (no Channel/Media columns) working as
+      // feed image posts; a Video File implies a video unless Media says otherwise.
+      const channel: PromoChannel = /story/i.test(cell(r, iChan)) ? 'Story' : 'Feed';
+      const mediaRaw = cell(r, iMedia).toLowerCase();
+      const media: PromoMedia =
+        mediaRaw === 'video' || (!mediaRaw && !!videoFile) ? 'video' : 'image';
+      const marqueeCell = cell(r, iMarquee).toLowerCase();
       return {
         imageFile,
+        videoFile,
         post: cell(r, iPost),
         headline: cell(r, iHead),
         caption,
@@ -65,7 +88,12 @@ export async function fetchPromoRows(csvUrl: string): Promise<PromoRow[]> {
         postDate: cell(r, iDate),
         approval: cell(r, iAppr),
         postedIg: cell(r, iPosted),
-        imageUrl: `${SITE}/promos/${imageFile}`,
+        type: cell(r, iType),
+        channel,
+        media,
+        marquee: /^(x|y|yes|true|1|marquee)$/.test(marqueeCell),
+        imageUrl: imageFile ? `${SITE}/promos/${imageFile}` : '',
+        videoUrl: videoFile ? `${SITE}/promos-video/${videoFile}` : '',
         igCaption: hashtags ? `${caption}\n\n${hashtags}` : caption,
       };
     });
