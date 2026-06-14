@@ -1,17 +1,20 @@
-// American Heroes & Brew — content engine v2 (bound to the "Event Posters & Posts" sheet).
-// Reads every monthly tab and publishes approved, due rows. One "File" column holds the
-// poster (.jpg/.png) OR the video (.mp4) — the media type is detected from the extension.
-// Stamps Posted (IG), emails Jenee a weekly approval digest, and rotates a daily special
-// Story video. See heroes-brew/docs/CONTENT-STRATEGY.md.
+// American Heroes & Brew — content engine v3 (bound to the "Event Posters & Posts" sheet).
+// Reads every monthly tab and publishes approved, due rows to Instagram (Feed and/or Story,
+// image or video), stamps Posted, emails Jenee a weekly approval digest, rotates a daily
+// special Story video, and exposes a small web app so a Claude Code routine can "Polish"
+// (AI-revise) rows that Jenee flags. See heroes-brew/docs/CONTENT-STRATEGY.md.
 //
-// Columns (per month tab, matched by header name — order doesn't matter):
-//   Post Date & Time (PT) | Post | Channel | File | Caption | Approval | Posted (IG)
-//   - Channel: "Feed" (default) or "Story"
-//   - File:    <name>.jpg/.png  → posted from /promos/ ;  <name>.mp4 → posted from /promos-video/
+// Columns per month tab (matched by header name — order doesn't matter):
+//   Post Date | Post Time | Channel | Media | Headline | Caption | Tags | Approval | Posted | Notes
+//   - Channel: "Feed", "Story", or both ("Feed, Story") — posts to each.
+//   - Media:   <name>.jpg/.png -> /promos/ ;  <name>.mp4 -> /promos-video/  (or a full URL)
+//   - Approval: "Approve" publishes; "Polish" sends the row to the AI routine using Notes.
 //
-// SETUP: paste into the sheet's Apps Script; set Time zone = America/Los_Angeles; add Script
-// Properties PUBLISH_URL, PROMOS_SECRET, SITE, DIGEST_TO, DIGEST_DOW; run setupMonthlyTabs,
-// then setup, then (after special videos are deployed) enableSpecials.
+// SETUP: paste into the sheet's Apps Script; Time zone = America/Los_Angeles; Script
+// Properties PUBLISH_URL, PROMOS_SECRET, SITE, DIGEST_TO, DIGEST_DOW, POLISH_SECRET; run
+// setupMonthlyTabs, then setup, then enableSpecials. To enable Polish, also Deploy > New
+// deployment > Web app (execute as me, access: anyone with the link) and give the routine
+// that /exec URL.
 
 var PUBLISH_FN = 'publishDue';
 var DIGEST_FN = 'weeklyDigest';
@@ -21,7 +24,7 @@ var MONTH_NAMES = ['January','February','March','April','May','June','July','Aug
 var MONTH_TAB_RE = /^[A-Z][a-z]+ \d{4}$/;
 var VIDEO_RE = /\.(mp4|mov|m4v)$/i;
 
-var HEADERS = ['Post Date & Time (PT)', 'Post', 'Channel', 'File', 'Caption', 'Approval', 'Posted (IG)'];
+var HEADERS = ['Post Date', 'Post Time', 'Channel', 'Media', 'Headline', 'Caption', 'Tags', 'Approval', 'Posted', 'Notes'];
 
 var SPECIALS = {
   Mon: { name: 'Mahalo Monday', cap: 'Mahalo Monday — Kalua Pork Sliders $4 ea + select cans $3. 🌺' },
@@ -47,50 +50,84 @@ function cols_(header) {
   var norm = header.map(function (h) { return String(h).trim().toLowerCase(); });
   function find(pred) { return norm.findIndex(pred); }
   return {
-    post: find(function (h) { return h === 'post'; }),
-    channel: find(function (h) { return h === 'channel'; }),
-    file: find(function (h) { return h === 'file'; }),
-    cap: find(function (h) { return h.indexOf('caption') === 0; }),
     date: find(function (h) { return h.indexOf('post date') === 0; }),
-    appr: find(function (h) { return h === 'approval'; }),
-    posted: find(function (h) { return h.indexOf('posted (ig)') === 0; })
+    time: find(function (h) { return h.indexOf('post time') === 0; }),
+    channel: find(function (h) { return h === 'channel'; }),
+    media: find(function (h) { return h === 'media'; }),
+    headline: find(function (h) { return h === 'headline'; }),
+    cap: find(function (h) { return h.indexOf('caption') === 0; }),
+    tags: find(function (h) { return h.indexOf('tag') === 0; }),
+    appr: find(function (h) { return h.indexOf('approval') === 0; }),
+    posted: find(function (h) { return h.indexOf('posted') === 0; }),
+    notes: find(function (h) { return h.indexOf('note') === 0; })
   };
 }
 
-function parseWhen_(raw) {
-  var s = String(raw);
-  var d = s.match(/([A-Za-z]{3,})\s+(\d{1,2}),\s*(\d{4})/);
-  if (!d) return null;
-  var mo = MONTHS[d[1].slice(0, 3).toLowerCase()];
-  if (mo === undefined) return null;
+// Parse a displayed date ("Jun 14, 2026" or "6/14/2026") + time ("1:00 PM" or "13:00").
+function parseWhen_(dateStr, timeStr) {
+  var ds = String(dateStr || '').trim();
+  var y, mo, d;
+  var m1 = ds.match(/([A-Za-z]{3,})\s+(\d{1,2}),?\s*(\d{4})/);
+  var m2 = ds.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  if (m1) { mo = MONTHS[m1[1].slice(0, 3).toLowerCase()]; d = Number(m1[2]); y = Number(m1[3]); }
+  else if (m2) { mo = Number(m2[1]) - 1; d = Number(m2[2]); y = Number(m2[3]); }
+  else return null;
+  if (mo === undefined || mo === null || isNaN(mo)) return null;
   var hh = 9, mm = 0;
-  var t = s.match(/(\d{1,2}):(\d{2})\s*([AaPp])[Mm]/);
-  if (t) { hh = Number(t[1]) % 12; if (t[3].toLowerCase() === 'p') hh += 12; mm = Number(t[2]); }
-  return new Date(Number(d[3]), mo, Number(d[2]), hh, mm, 0);
+  var ts = String(timeStr || '').trim();
+  var t = ts.match(/(\d{1,2}):(\d{2})\s*([AaPp][Mm])?/);
+  if (t) {
+    hh = Number(t[1]); mm = Number(t[2]);
+    if (t[3]) { var pm = /p/i.test(t[3]); hh = hh % 12; if (pm) hh += 12; }
+  }
+  return new Date(y, mo, d, hh, mm, 0);
+}
+
+function channelsOf_(raw) {
+  var parts = String(raw || '').split(/[,/]/).map(function (s) { return s.trim(); }).filter(Boolean);
+  if (!parts.length) parts = ['Feed'];
+  var out = [];
+  parts.forEach(function (p) {
+    var ch = /story/i.test(p) ? 'Story' : 'Feed';
+    if (out.indexOf(ch) < 0) out.push(ch);
+  });
+  return out;
+}
+
+function composeCaption_(headline, caption, tags) {
+  var parts = [];
+  if (headline) parts.push(headline);
+  if (caption) parts.push(caption);
+  var body = parts.join('\n\n');
+  if (tags) body += (body ? '\n\n' : '') + tags;
+  return body;
 }
 
 function rows_() {
   var list = [];
   monthSheets_().forEach(function (sh) {
-    var values = sh.getDataRange().getValues();
+    var values = sh.getDataRange().getDisplayValues();
     if (values.length < 2) return;
     var c = cols_(values[0]);
-    if (c.file < 0) return;
+    if (c.media < 0) return;
     for (var i = 1; i < values.length; i++) {
       var r = values[i];
       var get = function (idx) { return idx >= 0 ? String(r[idx] || '').trim() : ''; };
-      var file = get(c.file);
-      if (!file) continue;
+      var media = get(c.media);
+      if (!media) continue;
       list.push({
-        sh: sh, c: c, rowNum: i + 1,
-        post: get(c.post),
-        channel: /story/i.test(get(c.channel)) ? 'Story' : 'Feed',
-        file: file,
-        isVideo: VIDEO_RE.test(file),
+        sh: sh, c: c, rowNum: i + 1, tab: sh.getName(),
+        channels: channelsOf_(get(c.channel)),
+        media: media,
+        isVideo: VIDEO_RE.test(media),
+        headline: get(c.headline),
         caption: get(c.cap),
+        tags: get(c.tags),
+        notes: get(c.notes),
         approval: get(c.appr),
         posted: get(c.posted),
-        when: parseWhen_(get(c.date))
+        igCaption: composeCaption_(get(c.headline), get(c.cap), get(c.tags)),
+        when: parseWhen_(get(c.date), get(c.time))
       });
     }
   });
@@ -113,10 +150,15 @@ function clearTriggers_(fn) {
   });
 }
 
-function payloadFor_(row, site) {
-  var p = { caption: row.caption, mediaType: row.channel === 'Story' ? 'story' : 'feed' };
-  if (row.isVideo) p.videoUrl = site + '/promos-video/' + row.file;
-  else p.imageUrl = site + '/promos/' + row.file;
+function mediaUrl_(row, site) {
+  if (/^https?:\/\//i.test(row.media)) return row.media;
+  return site + (row.isVideo ? '/promos-video/' : '/promos/') + row.media;
+}
+
+function payloadFor_(row, channel, site) {
+  var p = { caption: row.igCaption, mediaType: channel === 'Story' ? 'story' : 'feed' };
+  var url = mediaUrl_(row, site);
+  if (row.isVideo) p.videoUrl = url; else p.imageUrl = url;
   return p;
 }
 
@@ -145,18 +187,21 @@ function publishDue() {
     .filter(isLive_)
     .filter(function (r) { return r.when >= start && r.when <= now; })
     .forEach(function (row) {
-      var res = UrlFetchApp.fetch(url, {
-        method: 'post',
-        contentType: 'application/json',
-        headers: { Authorization: 'Bearer ' + secret },
-        payload: JSON.stringify(payloadFor_(row, site)),
-        muteHttpExceptions: true
+      var allOk = true;
+      row.channels.forEach(function (ch) {
+        var res = UrlFetchApp.fetch(url, {
+          method: 'post',
+          contentType: 'application/json',
+          headers: { Authorization: 'Bearer ' + secret },
+          payload: JSON.stringify(payloadFor_(row, ch, site)),
+          muteHttpExceptions: true
+        });
+        if (res.getResponseCode() !== 200) {
+          allOk = false;
+          Logger.log('Publish failed [' + row.tab + ' r' + row.rowNum + ' ' + ch + ']: ' + res.getContentText());
+        }
       });
-      if (res.getResponseCode() === 200) {
-        row.sh.getRange(row.rowNum, row.c.posted + 1).setValue(new Date());
-      } else {
-        Logger.log('Publish failed [' + row.sh.getName() + ' r' + row.rowNum + ']: ' + res.getContentText());
-      }
+      if (allOk) row.sh.getRange(row.rowNum, row.c.posted + 1).setValue(new Date());
     });
   scheduleNext();
 }
@@ -186,11 +231,11 @@ function weeklyDigest() {
     body += 'Nothing pending — everything for the coming week is already approved or posted.\n';
   } else {
     pending.forEach(function (r) {
-      body += '- ' + fmt(r.when) + '  [' + r.channel + ']  ' + (r.post || r.file) + '\n    '
+      body += '- ' + fmt(r.when) + '  [' + r.channels.join('+') + ']  ' + (r.headline || r.media) + '\n    '
         + (r.caption || '').slice(0, 120) + '\n';
     });
   }
-  body += '\nApprove by setting Approval = "Approve" in the sheet:\n' + link + '\n';
+  body += '\nApprove (or set "Polish" + a Notes comment to have AI revise) in the sheet:\n' + link + '\n';
   MailApp.sendEmail({ to: to, subject: 'Heroes weekly post approvals (' + pending.length + ' pending)', body: body });
 }
 
@@ -207,27 +252,27 @@ function seedTodaySpecial() {
   var sp = SPECIALS[dow];
   if (!sp) return;
   var sh = currentMonthSheet_();
-  var values = sh.getDataRange().getValues();
+  var values = sh.getDataRange().getDisplayValues();
   var header = values[0];
   var c = cols_(header);
-  if (c.file < 0 || c.date < 0) return; // tab not set up with the expected columns
+  if (c.media < 0 || c.date < 0) return;
   var todayKey = Utilities.formatDate(new Date(), tz, 'yyyy-MM-dd');
   var file = 'special-' + dow.toLowerCase() + '.mp4';
   for (var i = 1; i < values.length; i++) {
     var r = values[i];
-    var f = String(r[c.file]).trim();
-    var w = parseWhen_(r[c.date]);
+    var f = String(r[c.media]).trim();
+    var w = parseWhen_(c.date >= 0 ? r[c.date] : '', c.time >= 0 ? r[c.time] : '');
     if (f === file && w && Utilities.formatDate(w, tz, 'yyyy-MM-dd') === todayKey) return;
   }
-  var when = Utilities.formatDate(new Date(), tz, 'EEE MMM d, yyyy') + ' — 4:00 PM';
-  // Place each value at this tab's actual column index, so column order doesn't matter.
   var rowArr = [];
   for (var j = 0; j < header.length; j++) rowArr.push('');
-  if (c.date >= 0) rowArr[c.date] = when;
-  if (c.post >= 0) rowArr[c.post] = sp.name;
+  if (c.date >= 0) rowArr[c.date] = Utilities.formatDate(new Date(), tz, 'MMM d, yyyy');
+  if (c.time >= 0) rowArr[c.time] = '4:00 PM';
   if (c.channel >= 0) rowArr[c.channel] = 'Story';
-  if (c.file >= 0) rowArr[c.file] = file;
-  if (c.cap >= 0) rowArr[c.cap] = sp.cap + '\n\n' + HASHTAGS;
+  if (c.media >= 0) rowArr[c.media] = file;
+  if (c.headline >= 0) rowArr[c.headline] = sp.name;
+  if (c.cap >= 0) rowArr[c.cap] = sp.cap;
+  if (c.tags >= 0) rowArr[c.tags] = HASHTAGS;
   if (c.appr >= 0) rowArr[c.appr] = 'Approve';
   sh.appendRow(rowArr);
   scheduleNext();
@@ -267,4 +312,42 @@ function enableSpecials() {
 
 function disableSpecials() {
   clearTriggers_(SPECIAL_FN);
+}
+
+// ── Polish web app (for the Claude Code revision routine) ───────────────────────────
+// GET  ?secret=...            -> JSON list of rows where Approval = "Polish".
+// POST {secret,tab,row,headline,caption,tags} -> write revision back, clear Approval.
+function json_(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
+}
+
+function doGet(e) {
+  var secret = props_().getProperty('POLISH_SECRET');
+  if (!secret || !e || !e.parameter || e.parameter.secret !== secret) return json_({ error: 'unauthorized' });
+  var out = rows_()
+    .filter(function (r) { return /polish/i.test(r.approval); })
+    .map(function (r) {
+      return { tab: r.tab, row: r.rowNum, channel: r.channels.join(', '),
+        headline: r.headline, caption: r.caption, tags: r.tags, notes: r.notes };
+    });
+  return json_({ ok: true, rows: out });
+}
+
+function doPost(e) {
+  var secret = props_().getProperty('POLISH_SECRET');
+  var data;
+  try { data = JSON.parse(e.postData.contents); } catch (err) { return json_({ error: 'bad json' }); }
+  if (!secret || data.secret !== secret) return json_({ error: 'unauthorized' });
+  var sh = ss_().getSheetByName(data.tab);
+  if (!sh) return json_({ error: 'no such tab: ' + data.tab });
+  var header = sh.getDataRange().getDisplayValues()[0];
+  var c = cols_(header);
+  var row = Number(data.row);
+  if (!row || row < 2) return json_({ error: 'bad row' });
+  if (typeof data.headline === 'string' && c.headline >= 0) sh.getRange(row, c.headline + 1).setValue(data.headline);
+  if (typeof data.caption === 'string' && c.cap >= 0) sh.getRange(row, c.cap + 1).setValue(data.caption);
+  if (typeof data.tags === 'string' && c.tags >= 0) sh.getRange(row, c.tags + 1).setValue(data.tags);
+  if (c.appr >= 0) sh.getRange(row, c.appr + 1).setValue(''); // back to blank for re-review
+  scheduleNext();
+  return json_({ ok: true });
 }
