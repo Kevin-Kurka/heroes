@@ -74,11 +74,11 @@ export async function GET(req: NextRequest) {
       };
       results.push(
         res.ok
-          ? { post: row.post, imageFile: row.imageFile, ok: true, mediaId: data.mediaId, facebook: data.facebook }
-          : { post: row.post, imageFile: row.imageFile, ok: false, error: data.error ?? `HTTP ${res.status}` }
+          ? { post: row.post, file: row.file, ok: true, mediaId: data.mediaId, facebook: data.facebook }
+          : { post: row.post, file: row.file, ok: false, error: data.error ?? `HTTP ${res.status}` }
       );
     } catch (err) {
-      results.push({ post: row.post, imageFile: row.imageFile, ok: false, error: String(err) });
+      results.push({ post: row.post, file: row.file, ok: false, error: String(err) });
     }
   }
 

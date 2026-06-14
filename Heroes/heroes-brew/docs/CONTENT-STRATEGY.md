@@ -34,21 +34,21 @@ How we keep Instagram + Facebook active with the least manual work. Two channels
 
 ## The monthly sheet ("Event Posters & Posts")
 
-One **tab per month**, named like `July 2026`. Columns:
+One **tab per month**, named like `July 2026`. Seven columns:
 
-`Type` · `Channel` · `Media` · `Image File` · `Video File` · `Post` · `Headline` ·
-`Caption / CTA` · `Hashtags` · `Post Date & Time (PT)` · `Marquee` · `Approval` ·
-`Approval Notes` · `Posted (IG)`
+`Post Date & Time (PT)` · `Post` · `Channel` · `File` · `Caption` · `Approval` · `Posted (IG)`
 
-- **Channel** = `Feed` or `Story`; **Media** = `image` or `video`.
-- **Image File** → served from `public/promos/`; **Video File** → from `public/promos-video/`.
+- **Channel** = `Feed` (permanent, + Facebook) or `Story` (24h).
+- **File** = one filename. `*.jpg`/`*.png` → posted from `public/promos/`; `*.mp4` → posted from
+  `public/promos-video/`. The media type is detected from the extension — no separate columns.
+- **Caption** is the full caption, hashtags included.
 - A row publishes when **Approval = `Approve`**, **Posted (IG)** is empty, and its
   **Post Date** is today. After it posts, the script stamps `Posted (IG)` so it never repeats.
 
 ### Add a Feed post (designed poster)
 1. Put the poster (1080×1350 or 1080×1080, JPG) in `heroes-brew/public/promos/`, commit, deploy.
-2. In the current month tab, add a row: `Type=Marquee/Holiday/Evergreen`, `Channel=Feed`,
-   `Media=image`, `Image File=<name>.jpg`, `Caption / CTA`, `Hashtags`, `Post Date & Time (PT)`.
+2. In the current month tab, add a row: `Post=<label>`, `Channel=Feed`, `File=<name>.jpg`,
+   `Caption` (with hashtags), `Post Date & Time (PT)`.
 3. Jenee sets `Approval=Approve`. It posts at the scheduled time (IG + Facebook).
 
 ## Automation map
