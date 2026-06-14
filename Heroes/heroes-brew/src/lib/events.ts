@@ -1,5 +1,4 @@
 import { UnifiedEvent, SportLeague } from '@/types';
-import { buildEventImagePath } from '@/lib/share-content';
 
 // Headline teams the bar actively follows — their games are MARQUEE-tier (designed
 // Feed posts), the rest of the local teams below become LOCAL-tier Story invites.
@@ -79,18 +78,9 @@ function classifyTier(e: UnifiedEvent): 'MARQUEE' | 'LOCAL' | undefined {
   return isPromotable(e) ? 'LOCAL' : undefined;
 }
 
-/**
- * Decorate an event with its tier + a poster thumbnail. To keep the events page
- * light, only games we promote get auto matchup art; far-away games stay image-free.
- */
+/** Tag an event with its marketing tier (MARQUEE games get an accent treatment in the UI). */
 function decorateEvent(e: UnifiedEvent): UnifiedEvent {
-  const tier = classifyTier(e);
-  const wantsPoster = e.eventType === 'SPORTS' && !!e.homeTeam && !!e.awayTeam && !!tier;
-  return {
-    ...e,
-    tier,
-    posterUrl: wantsPoster ? buildEventImagePath(e) : undefined,
-  };
+  return { ...e, tier: classifyTier(e) };
 }
 
 // =====================
