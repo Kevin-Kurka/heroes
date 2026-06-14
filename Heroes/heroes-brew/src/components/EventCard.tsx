@@ -73,10 +73,10 @@ export default function EventCard({ event, index }: EventCardProps) {
     ? { background: `linear-gradient(115deg, ${awayColor} 0%, ${awayColor} 50%, ${homeColor} 50%, ${homeColor} 100%)` }
     : undefined;
 
-  // The whole card is the share target (not just the chip). Finished games have
-  // nothing to invite to, so they stay non-interactive.
+  // The whole card is the share target (not just the chip) — every game can be used to
+  // invite people to watch at Heroes, finished or not.
   const [shareOpen, setShareOpen] = useState(false);
-  const interactive = !isFinal;
+  const interactive = true;
   const openShare = () => {
     trackEvent('open_share', { event_id: event.id, league: event.league ?? 'NA' });
     setShareOpen(true);
@@ -181,7 +181,7 @@ export default function EventCard({ event, index }: EventCardProps) {
               </>
             )}
           </div>
-          {!isFinal && <LetsGoChip />}
+          <LetsGoChip />
         </div>
       </div>
 
