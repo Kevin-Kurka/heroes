@@ -68,14 +68,29 @@ the Apps Script web app (`doGet`/`doPost`, `POLISH_SECRET`) — no paid API.
 | IG token refresh | `/api/cron/instagram-refresh` | 1st & 15th, 6 AM |
 | Publish endpoint (IG feed/story + FB) | `/api/promos/publish-instagram` | Called by the above |
 
-## Regenerating the special videos
+## The `Story` tab — always-on rotation
 
-Specials change? Edit the data in `scripts/specials-video/render.mjs`, then:
+A separate **`Story`** tab drives the evergreen daily Story so something is always live.
+Columns: `Active` (checkbox) · `Name` · `Days` (`Mon` / `Mon-Fri` / `Daily` / `Sat, Sun`) ·
+`Time` · `Media` (comma-separated rotation pool) · `Caption` · `Tags`.
+
+- Toggle **`Active`** to pause/resume any item — that's the only control.
+- **`Media`** is a pool (e.g. `taco-1.mp4, taco-2.mp4`); a **different one posts each week**
+  (cycles by week number) so the post is never identical two weeks running.
+- An hourly Apps Script trigger (`postStoryRotation`) posts every Active item whose `Days`
+  include today at its `Time` — no approval needed.
+- Set up via `setupStoryTab` (creates + pre-fills the tab), turn on with `enableStory`. Run
+  `disableSpecials` once to retire the old single-video rotation.
+
+## Regenerating the Story / special videos
+
+Edit the `ITEMS` data in `scripts/specials-video/render.mjs` (each item lists `accents` —
+one per variant), then:
 
 ```bash
 cd heroes-brew
-npm run render:specials          # all 7 days → public/promos-video/special-<weekday>.mp4
-npm run render:specials tuesday  # just one
+npm run render:specials       # all items, all variants → public/promos-video/<key>-<n>.mp4
+npm run render:specials taco  # just one item's variants
 ```
 
 Commit the updated MP4s and deploy. Videos are 1080×1920 H.264/AAC, ~4s (IG Story spec).

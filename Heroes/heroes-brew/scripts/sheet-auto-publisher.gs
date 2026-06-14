@@ -316,6 +316,113 @@ function disableSpecials() {
   clearTriggers_(SPECIAL_FN);
 }
 
+// ── Always-on Story rotation (separate "Story" tab) ─────────────────────────────────
+// Tab columns: Active | Name | Days | Time | Media | Caption | Tags
+//   Active: checkbox (TRUE = on). Days: Mon/Tue/.., "Mon-Fri", "Daily", or "Sat, Sun".
+//   Media: comma-separated rotation pool (a different one posts each week).
+var STORY_TAB = 'Story';
+var STORY_HEADERS = ['Active', 'Name', 'Days', 'Time', 'Media', 'Caption', 'Tags'];
+var DOW_ORDER = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+
+function storyCols_(header) {
+  var norm = header.map(function (h) { return String(h).trim().toLowerCase(); });
+  function f(name) { return norm.indexOf(name); }
+  return { active: f('active'), name: f('name'), days: f('days'), time: f('time'),
+    media: f('media'), cap: f('caption'), tags: f('tags') };
+}
+
+function dayMatches_(spec, dow) {
+  var s = String(spec || '').trim().toLowerCase();
+  if (!s) return false;
+  if (s === 'daily' || s === 'everyday' || s === 'every day') return true;
+  var today = dow.slice(0, 3).toLowerCase();
+  var rangeM = s.match(/([a-z]{3})[a-z]*\s*-\s*([a-z]{3})/);
+  if (rangeM) {
+    var a = DOW_ORDER.indexOf(rangeM[1]), b = DOW_ORDER.indexOf(rangeM[2]), t = DOW_ORDER.indexOf(today);
+    if (a >= 0 && b >= 0 && t >= 0) return a <= b ? (t >= a && t <= b) : (t >= a || t <= b);
+  }
+  return s.split(/[,\s]+/).some(function (x) { return x.slice(0, 3) === today; });
+}
+
+function weekNum_(d) {
+  var jan1 = new Date(d.getFullYear(), 0, 1);
+  return Math.floor((((d - jan1) / 86400000) + jan1.getDay() + 1) / 7);
+}
+
+function timeHour_(s) {
+  var m = String(s || '').match(/(\d{1,2}):(\d{2})\s*([AaPp][Mm])?/);
+  if (!m) return -1;
+  var h = Number(m[1]);
+  if (m[3]) { h = h % 12; if (/p/i.test(m[3])) h += 12; }
+  return h;
+}
+
+function postStoryRotation() {
+  var sh = ss_().getSheetByName(STORY_TAB);
+  if (!sh) { Logger.log('postStoryRotation: no Story tab'); return; }
+  var p = props_();
+  var url = p.getProperty('PUBLISH_URL');
+  var secret = p.getProperty('PROMOS_SECRET');
+  var site = p.getProperty('SITE') || 'https://americanheroesandbrew.com';
+  var tz = Session.getScriptTimeZone();
+  var now = new Date();
+  var dow = Utilities.formatDate(now, tz, 'EEE');
+  var curHour = Number(Utilities.formatDate(now, tz, 'H'));
+  var wk = weekNum_(now);
+  var values = sh.getDataRange().getDisplayValues();
+  if (values.length < 2) return;
+  var c = storyCols_(values[0]);
+  if (c.media < 0) return;
+  for (var i = 1; i < values.length; i++) {
+    var r = values[i];
+    var get = function (idx) { return idx >= 0 ? String(r[idx] || '').trim() : ''; };
+    if (!/^(true|yes|y|x|on|✓)$/i.test(get(c.active))) continue;
+    if (!dayMatches_(get(c.days), dow)) continue;
+    if (timeHour_(get(c.time)) !== curHour) continue;
+    var pool = get(c.media).split(/[,\n]/).map(function (x) { return x.trim(); }).filter(Boolean);
+    if (!pool.length) continue;
+    var file = pool[wk % pool.length];
+    var tags = get(c.tags), caption = get(c.cap);
+    var payload = { caption: tags ? caption + '\n\n' + tags : caption, mediaType: 'story' };
+    if (/\.(mp4|mov|m4v)$/i.test(file)) payload.videoUrl = site + '/promos-video/' + file;
+    else payload.imageUrl = site + '/promos/' + file;
+    var res = UrlFetchApp.fetch(url, { method: 'post', contentType: 'application/json',
+      headers: { Authorization: 'Bearer ' + secret }, payload: JSON.stringify(payload), muteHttpExceptions: true });
+    Logger.log('Story ' + get(c.name) + ' -> ' + file + ': ' + res.getResponseCode());
+  }
+}
+
+function setupStoryTab() {
+  var sh = ss_().getSheetByName(STORY_TAB);
+  if (!sh) sh = ss_().insertSheet(STORY_TAB);
+  if (sh.getLastRow() > 0) return;
+  sh.appendRow(STORY_HEADERS);
+  sh.setFrozenRows(1);
+  var rows = [
+    [true, 'Mahalo Monday', 'Mon', '4:00 PM', 'mahalo-1.mp4, mahalo-2.mp4', 'Mahalo Monday — Kalua Pork Sliders $4 ea + select cans $3. 🌺', HASHTAGS],
+    [true, 'Taco Tuesday', 'Tue', '4:00 PM', 'taco-1.mp4, taco-2.mp4', 'Taco Tuesday — Tacos $4 ea + $2 off tequila. 🌮', HASHTAGS],
+    [true, 'Wings & Wells Wednesday', 'Wed', '4:00 PM', 'wings-1.mp4, wings-2.mp4', 'Wings & Wells Wednesday — Wings $6 off + wells $6. 🔥', HASHTAGS],
+    [true, 'Burgers & Beer Thursday', 'Thu', '4:00 PM', 'burgers-1.mp4, burgers-2.mp4', 'Burgers & Beer Thursday — Burgers $5 off + select drafts $5. 🍔', HASHTAGS],
+    [true, 'Friday Funday', 'Fri', '4:00 PM', 'funday-1.mp4, funday-2.mp4', 'Friday Funday 1–4pm — Drinks & appetizers $2 off. 🍻', HASHTAGS],
+    [true, 'Weekend Game Day', 'Sat, Sun', '11:00 AM', 'gameday-1.mp4, gameday-2.mp4', 'Game day at Heroes — every game on every screen. ⚾🏈', HASHTAGS],
+    [false, 'Watch Party HQ', 'Daily', '12:00 PM', 'watch-1.mp4, watch-2.mp4', 'Your seat is waiting — every game, every screen at Heroes. 📺', HASHTAGS],
+    [false, 'Fantasy Football', 'Sat', '10:00 AM', 'fantasy-1.mp4, fantasy-2.mp4', 'Draft your league at Heroes — apps on us. Football is back. 🏈', HASHTAGS]
+  ];
+  sh.getRange(2, 1, rows.length, STORY_HEADERS.length).setValues(rows);
+  sh.getRange(2, 1, rows.length, 1).insertCheckboxes();
+}
+
+function enableStory() {
+  disableStory();
+  ScriptApp.newTrigger('postStoryRotation').timeBased().everyHours(1).create();
+}
+
+function disableStory() {
+  ScriptApp.getProjectTriggers().forEach(function (t) {
+    if (t.getHandlerFunction() === 'postStoryRotation') ScriptApp.deleteTrigger(t);
+  });
+}
+
 // ── Polish web app (for the Claude Code revision routine) ───────────────────────────
 // GET  ?secret=...            -> JSON list of rows where Approval = "Polish".
 // POST {secret,tab,row,headline,caption,tags} -> write revision back, clear Approval.

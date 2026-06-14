@@ -1,12 +1,12 @@
 /**
- * Code-generated 9:16 special-of-the-day Story videos for American Heroes & Brew.
+ * Code-generated 9:16 Story videos for American Heroes & Brew — the always-on rotation.
  *
- * Data → branded poster (Canvas) → 4s animated MP4 (FFmpeg Ken-Burns + fades).
- * Mirrors the daily specials in src/lib/menu.ts. Output:
- *   public/promos-video/special-<weekday>.mp4   (1080×1920, H.264/AAC)
+ * Each recurring item (Taco Tuesday, etc.) gets N distinct variants so the Story isn't
+ * the same post twice in a row. Data -> branded poster (Canvas) -> 4s animated MP4 (FFmpeg).
+ * Output: public/promos-video/<key>-<n>.mp4  (1080x1920, H.264/AAC).
  *
- * Run:  node scripts/specials-video/render.mjs           # all 7 days
- *       node scripts/specials-video/render.mjs tuesday   # one day
+ * Run:  node scripts/specials-video/render.mjs          # all items, all variants
+ *       node scripts/specials-video/render.mjs taco      # one item's variants
  *
  * Requires: ffmpeg on PATH, devDependency @napi-rs/canvas.
  */
@@ -20,9 +20,8 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const OUT_DIR = join(HERE, '..', '..', 'public', 'promos-video');
 const TMP = join(HERE, '.tmp');
 
-// Register a condensed system face for a sporty headline; fall back silently.
 for (const p of ['/System/Library/Fonts/Avenir Next Condensed.ttc', '/System/Library/Fonts/Avenir Next.ttc']) {
-  try { GlobalFonts.registerFromPath(p); } catch { /* fall back to default sans */ }
+  try { GlobalFonts.registerFromPath(p); } catch { /* fall back */ }
 }
 const HEAD = GlobalFonts.families.some((f) => /Avenir Next Condensed/.test(f.family))
   ? 'Avenir Next Condensed'
@@ -30,15 +29,17 @@ const HEAD = GlobalFonts.families.some((f) => /Avenir Next Condensed/.test(f.fam
 
 const W = 1080, H = 1920;
 
-// weekday → content. accent drives the brand pop per day.
-const SPECIALS = {
-  monday:    { day: 'MONDAY',    name: 'MAHALO MONDAY',    deal: 'Kalua Pork Sliders $4 ea\nSelect Cans $3',      accent: '#2dd4bf' },
-  tuesday:   { day: 'TUESDAY',   name: 'TACO TUESDAY',     deal: 'Tacos $4 ea\n$2 off Tequila',                   accent: '#fb923c' },
-  wednesday: { day: 'WEDNESDAY', name: 'WINGS & WELLS',    deal: 'Wings $6 off\nWells $6',                        accent: '#f59e0b' },
-  thursday:  { day: 'THURSDAY',  name: 'BURGERS & BEER',   deal: 'Burgers $5 off\nSelect Drafts $5',              accent: '#f97316' },
-  friday:    { day: 'FRIDAY',    name: 'FRIDAY FUNDAY',    deal: '1–4PM\nDrinks & Apps $2 off',                   accent: '#fbbf24' },
-  saturday:  { day: 'SATURDAY',  name: 'GAME DAY',         deal: 'Every game. Every screen.\nFriar Franks $6',    accent: '#ef4444' },
-  sunday:    { day: 'SUNDAY',    name: 'FOOTBALL HQ',      deal: 'Sunday on the big screens\nDrafts & wings',     accent: '#3b82f6' },
+// key -> recurring item. `accents` length = number of variants rendered.
+// `subs` (optional) gives each variant a different sub-line for extra variety.
+const ITEMS = {
+  mahalo:  { kicker: 'MONDAY',    name: 'MAHALO MONDAY',  deal: 'Kalua Pork Sliders $4 ea\nSelect Cans $3', accents: ['#2dd4bf', '#14b8a6'], subs: ['Start the week right', 'Aloha pricing all day'] },
+  taco:    { kicker: 'TUESDAY',   name: 'TACO TUESDAY',   deal: 'Tacos $4 ea\n$2 off Tequila',              accents: ['#fb923c', '#ef4444'], subs: ['Taco ’bout a deal', 'Tequila + tacos = Tuesday'] },
+  wings:   { kicker: 'WEDNESDAY', name: 'WINGS & WELLS',  deal: 'Wings $6 off\nWells $6',                   accents: ['#f59e0b', '#eab308'], subs: ['Halfway-there happy', 'Sauce up midweek'] },
+  burgers: { kicker: 'THURSDAY',  name: 'BURGERS & BEER', deal: 'Burgers $5 off\nSelect Drafts $5',         accents: ['#f97316', '#ea580c'], subs: ['Stack it high', 'Burger + brew night'] },
+  funday:  { kicker: 'FRIDAY',    name: 'FRIDAY FUNDAY',  deal: '1–4PM\nDrinks & Apps $2 off',         accents: ['#fbbf24', '#f59e0b'], subs: ['Beat the rush', 'Kick off the weekend'] },
+  gameday: { kicker: 'GAME DAY',  name: 'EVERY GAME',     deal: 'Every screen.\nEvery game.',               accents: ['#ef4444', '#3b82f6'], subs: ['Your seat is ready', 'Big screens, cold beer'] },
+  watch:   { kicker: 'AT HEROES', name: 'YOUR SEAT AWAITS', deal: 'Every game\nBig screens',               accents: ['#22c55e', '#f59e0b'], subs: ['Come hang in the Village', 'We saved you a stool'] },
+  fantasy: { kicker: 'FOOTBALL',  name: 'FANTASY HQ',     deal: 'Draft your league here\nApps on us',       accents: ['#3b82f6', '#8b5cf6'], subs: ['Football is back', 'Host your draft at Heroes'] },
 };
 
 function roundRect(ctx, x, y, w, h, r) {
@@ -51,26 +52,27 @@ function roundRect(ctx, x, y, w, h, r) {
   ctx.closePath();
 }
 
-function drawPoster(spec) {
+function drawPoster(item, variant) {
+  const accent = item.accents[variant];
+  const sub = (item.subs && item.subs[variant]) || '';
   const c = createCanvas(W, H);
   const ctx = c.getContext('2d');
 
-  // Background gradient
   const g = ctx.createLinearGradient(0, 0, 0, H);
   g.addColorStop(0, '#0b0b0d');
   g.addColorStop(1, '#17171c');
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, W, H);
 
-  // Accent glow blob
-  const blob = ctx.createRadialGradient(W * 0.8, H * 0.18, 0, W * 0.8, H * 0.18, 620);
-  blob.addColorStop(0, spec.accent + '55');
+  // accent glow — alternate corner per variant for visible variety
+  const cx = variant % 2 === 0 ? W * 0.8 : W * 0.2;
+  const blob = ctx.createRadialGradient(cx, H * 0.18, 0, cx, H * 0.18, 640);
+  blob.addColorStop(0, accent + '55');
   blob.addColorStop(1, '#0b0b0d00');
   ctx.fillStyle = blob;
   ctx.fillRect(0, 0, W, H);
 
-  // Kicker
-  ctx.fillStyle = spec.accent;
+  ctx.fillStyle = accent;
   roundRect(ctx, 120, 250, 360, 70, 35);
   ctx.fill();
   ctx.fillStyle = '#0b0b0d';
@@ -79,15 +81,13 @@ function drawPoster(spec) {
   ctx.textAlign = 'left';
   ctx.fillText('TODAY AT HEROES', 150, 287);
 
-  // Weekday label
   ctx.fillStyle = '#9ca3af';
   ctx.font = `600 56px "${HEAD}"`;
-  ctx.fillText(spec.day, 120, 470);
+  ctx.fillText(item.kicker, 120, 470);
 
-  // Big special name (wrap on spaces, up to 2 lines)
   ctx.fillStyle = '#ffffff';
-  ctx.font = `800 168px "${HEAD}"`;
-  const words = spec.name.split(' ');
+  ctx.font = `800 150px "${HEAD}"`;
+  const words = item.name.split(' ');
   const lines = [];
   let cur = '';
   for (const w of words) {
@@ -96,38 +96,40 @@ function drawPoster(spec) {
     else cur = test;
   }
   if (cur) lines.push(cur);
-  let ty = 640;
-  for (const ln of lines) { ctx.fillText(ln, 120, ty); ty += 170; }
+  let ty = 620;
+  for (const ln of lines) { ctx.fillText(ln, 120, ty); ty += 158; }
 
-  // Accent divider
-  ctx.fillStyle = spec.accent;
-  ctx.fillRect(120, ty + 20, 200, 10);
+  if (sub) {
+    ctx.fillStyle = accent;
+    ctx.font = `600 44px "${HEAD}"`;
+    ctx.fillText(sub, 120, ty + 6);
+    ty += 70;
+  }
 
-  // Deal text (multi-line)
+  ctx.fillStyle = accent;
+  ctx.fillRect(120, ty + 24, 200, 10);
+
   ctx.fillStyle = '#e5e7eb';
-  ctx.font = `600 76px "${HEAD}"`;
-  let dy = ty + 140;
-  for (const ln of spec.deal.split('\n')) { ctx.fillText(ln, 120, dy); dy += 96; }
+  ctx.font = `600 74px "${HEAD}"`;
+  let dy = ty + 150;
+  for (const ln of item.deal.split('\n')) { ctx.fillText(ln, 120, dy); dy += 94; }
 
-  // Footer
   ctx.fillStyle = '#ffffff';
-  ctx.font = `800 60px "${HEAD}"`;
+  ctx.font = `800 58px "${HEAD}"`;
   ctx.fillText('AMERICAN HEROES & BREW', 120, H - 260);
-  ctx.fillStyle = spec.accent;
-  ctx.font = `600 46px "${HEAD}"`;
-  ctx.fillText('Carlsbad Village  ·  @americanheroesandbrew', 120, H - 180);
+  ctx.fillStyle = accent;
+  ctx.font = `600 44px "${HEAD}"`;
+  ctx.fillText('Carlsbad Village  ·  @americanheroesandbrew', 120, H - 184);
 
   return c.toBuffer('image/png');
 }
 
-function renderVideo(weekday, spec) {
+function renderVideo(key, item, variant) {
   mkdirSync(OUT_DIR, { recursive: true });
   mkdirSync(TMP, { recursive: true });
-  const png = join(TMP, `${weekday}.png`);
-  const out = join(OUT_DIR, `special-${weekday}.mp4`);
-  writeFileSync(png, drawPoster(spec));
-
-  // 4s Ken-Burns zoom + in/out fades, silent stereo audio track (IG video needs audio).
+  const png = join(TMP, `${key}-${variant + 1}.png`);
+  const out = join(OUT_DIR, `${key}-${variant + 1}.mp4`);
+  writeFileSync(png, drawPoster(item, variant));
   execFileSync('ffmpeg', [
     '-y',
     '-i', png,
@@ -144,10 +146,12 @@ function renderVideo(weekday, spec) {
 }
 
 const only = process.argv[2]?.toLowerCase();
-const days = only ? [only] : Object.keys(SPECIALS);
-for (const d of days) {
-  if (!SPECIALS[d]) { console.error(`unknown weekday: ${d}`); process.exit(1); }
-  const out = renderVideo(d, SPECIALS[d]);
-  console.log('rendered', out);
+const keys = only ? [only] : Object.keys(ITEMS);
+for (const key of keys) {
+  const item = ITEMS[key];
+  if (!item) { console.error(`unknown item: ${key}`); process.exit(1); }
+  for (let v = 0; v < item.accents.length; v++) {
+    console.log('rendered', renderVideo(key, item, v));
+  }
 }
 rmSync(TMP, { recursive: true, force: true });
