@@ -316,7 +316,7 @@ function disableSpecials() {
   clearTriggers_(SPECIAL_FN);
 }
 
-// ── Always-on Story rotation (separate "Story" tab) ─────────────────────────────────
+// Always-on Story rotation (separate "Story" tab).
 // Tab columns: Active | Name | Days | Time | Media | Caption | Tags
 //   Active: checkbox (TRUE = on). Days: Mon/Tue/.., "Mon-Fri", "Daily", or "Sat, Sun".
 //   Media: comma-separated rotation pool (a different one posts each week).
@@ -376,7 +376,7 @@ function postStoryRotation() {
   for (var i = 1; i < values.length; i++) {
     var r = values[i];
     var get = function (idx) { return idx >= 0 ? String(r[idx] || '').trim() : ''; };
-    if (!/^(true|yes|y|x|on|✓)$/i.test(get(c.active))) continue;
+    if (!/^(true|yes|y|x|on)$/i.test(get(c.active))) continue;
     if (!dayMatches_(get(c.days), dow)) continue;
     if (timeHour_(get(c.time)) !== curHour) continue;
     var pool = get(c.media).split(/[,\n]/).map(function (x) { return x.trim(); }).filter(Boolean);
@@ -398,15 +398,16 @@ function setupStoryTab() {
   if (sh.getLastRow() > 0) return;
   sh.appendRow(STORY_HEADERS);
   sh.setFrozenRows(1);
+  var T = '#AmericanHeroesAndBrew #CarlsbadEats #CarlsbadVillage #SportsBar #NorthCountySD';
   var rows = [
-    [true, 'Mahalo Monday', 'Mon', '4:00 PM', 'mahalo-1.mp4, mahalo-2.mp4', 'Mahalo Monday — Kalua Pork Sliders $4 ea + select cans $3. 🌺', HASHTAGS],
-    [true, 'Taco Tuesday', 'Tue', '4:00 PM', 'taco-1.mp4, taco-2.mp4', 'Taco Tuesday — Tacos $4 ea + $2 off tequila. 🌮', HASHTAGS],
-    [true, 'Wings & Wells Wednesday', 'Wed', '4:00 PM', 'wings-1.mp4, wings-2.mp4', 'Wings & Wells Wednesday — Wings $6 off + wells $6. 🔥', HASHTAGS],
-    [true, 'Burgers & Beer Thursday', 'Thu', '4:00 PM', 'burgers-1.mp4, burgers-2.mp4', 'Burgers & Beer Thursday — Burgers $5 off + select drafts $5. 🍔', HASHTAGS],
-    [true, 'Friday Funday', 'Fri', '4:00 PM', 'funday-1.mp4, funday-2.mp4', 'Friday Funday 1–4pm — Drinks & appetizers $2 off. 🍻', HASHTAGS],
-    [true, 'Weekend Game Day', 'Sat, Sun', '11:00 AM', 'gameday-1.mp4, gameday-2.mp4', 'Game day at Heroes — every game on every screen. ⚾🏈', HASHTAGS],
-    [false, 'Watch Party HQ', 'Daily', '12:00 PM', 'watch-1.mp4, watch-2.mp4', 'Your seat is waiting — every game, every screen at Heroes. 📺', HASHTAGS],
-    [false, 'Fantasy Football', 'Sat', '10:00 AM', 'fantasy-1.mp4, fantasy-2.mp4', 'Draft your league at Heroes — apps on us. Football is back. 🏈', HASHTAGS]
+    [true, 'Mahalo Monday', 'Mon', '4:00 PM', 'mahalo-1.mp4, mahalo-2.mp4', 'Mahalo Monday - Kalua Pork Sliders $4 ea + select cans $3.', T],
+    [true, 'Taco Tuesday', 'Tue', '4:00 PM', 'taco-1.mp4, taco-2.mp4', 'Taco Tuesday - Tacos $4 ea + $2 off tequila.', T],
+    [true, 'Wings & Wells Wednesday', 'Wed', '4:00 PM', 'wings-1.mp4, wings-2.mp4', 'Wings & Wells Wednesday - Wings $6 off + wells $6.', T],
+    [true, 'Burgers & Beer Thursday', 'Thu', '4:00 PM', 'burgers-1.mp4, burgers-2.mp4', 'Burgers & Beer Thursday - Burgers $5 off + select drafts $5.', T],
+    [true, 'Friday Funday', 'Fri', '4:00 PM', 'funday-1.mp4, funday-2.mp4', 'Friday Funday 1-4pm - Drinks & appetizers $2 off.', T],
+    [true, 'Weekend Game Day', 'Sat, Sun', '11:00 AM', 'gameday-1.mp4, gameday-2.mp4', 'Game day at Heroes - every game on every screen.', T],
+    [false, 'Watch Party HQ', 'Daily', '12:00 PM', 'watch-1.mp4, watch-2.mp4', 'Your seat is waiting - every game, every screen at Heroes.', T],
+    [false, 'Fantasy Football', 'Sat', '10:00 AM', 'fantasy-1.mp4, fantasy-2.mp4', 'Draft your league at Heroes - apps on us. Football is back.', T]
   ];
   sh.getRange(2, 1, rows.length, STORY_HEADERS.length).setValues(rows);
   sh.getRange(2, 1, rows.length, 1).insertCheckboxes();
