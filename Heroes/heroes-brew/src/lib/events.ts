@@ -1,4 +1,16 @@
 import { UnifiedEvent, SportLeague } from '@/types';
+import { buildEventImagePath } from '@/lib/share-content';
+
+// Headline teams the bar actively follows — their games are MARQUEE-tier (designed
+// Feed posts), the rest of the local teams below become LOCAL-tier Story invites.
+const FOLLOWED_TEAMS = new Set([
+  'San Diego Padres',
+  'Los Angeles Chargers',
+  'Las Vegas Raiders',
+]);
+
+// Words in a title/status that signal a championship-caliber event → MARQUEE.
+const MARQUEE_KEYWORDS = /super bowl|world series|stanley cup|finals?|championship|playoff|wild ?card|world cup/i;
 
 // San Diego / SoCal area teams to highlight
 const SD_TEAMS = new Set([
@@ -25,6 +37,60 @@ const SD_TEAMS = new Set([
 
 function isLocalTeam(name?: string): boolean {
   return !!name && SD_TEAMS.has(name);
+}
+
+function isFollowedTeam(name?: string): boolean {
+  return !!name && FOLLOWED_TEAMS.has(name);
+}
+
+/** True when the event kicks off on a Monday evening (PT) — i.e. Monday Night Football. */
+function isMondayNight(e: UnifiedEvent): boolean {
+  if (e.league !== 'NFL') return false;
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/Los_Angeles',
+    weekday: 'short',
+    hour: 'numeric',
+    hour12: false,
+  }).formatToParts(new Date(e.eventTimestamp));
+  const weekday = parts.find((p) => p.type === 'weekday')?.value;
+  const hour = Number(parts.find((p) => p.type === 'hour')?.value);
+  return weekday === 'Mon' && hour >= 16;
+}
+
+/** A game we promote: a local SoCal team OR a followed team (Padres/Chargers/Raiders). */
+function isPromotable(e: UnifiedEvent): boolean {
+  return !!e.highlighted || isFollowedTeam(e.homeTeam) || isFollowedTeam(e.awayTeam);
+}
+
+/**
+ * Marketing tier. MARQUEE is reserved for the big stuff we can actually detect —
+ * Monday Night Football and championship-keyword games (Finals, World Series, etc.).
+ * Regular games involving a promoted team are LOCAL (Story-invite material). The
+ * sheet's manual Marquee tag remains authoritative for publishing; playoff rounds
+ * aren't exposed by the schedule APIs, so the website only flags what it can prove.
+ */
+function classifyTier(e: UnifiedEvent): 'MARQUEE' | 'LOCAL' | undefined {
+  if (e.eventType !== 'SPORTS') {
+    return MARQUEE_KEYWORDS.test(e.eventTitle) ? 'MARQUEE' : undefined;
+  }
+  const isMarquee =
+    isMondayNight(e) || MARQUEE_KEYWORDS.test(`${e.eventTitle} ${e.status ?? ''}`);
+  if (isMarquee && isPromotable(e)) return 'MARQUEE';
+  return isPromotable(e) ? 'LOCAL' : undefined;
+}
+
+/**
+ * Decorate an event with its tier + a poster thumbnail. To keep the events page
+ * light, only games we promote get auto matchup art; far-away games stay image-free.
+ */
+function decorateEvent(e: UnifiedEvent): UnifiedEvent {
+  const tier = classifyTier(e);
+  const wantsPoster = e.eventType === 'SPORTS' && !!e.homeTeam && !!e.awayTeam && !!tier;
+  return {
+    ...e,
+    tier,
+    posterUrl: wantsPoster ? buildEventImagePath(e) : undefined,
+  };
 }
 
 // =====================
@@ -329,7 +395,7 @@ export async function getAllEvents(): Promise<UnifiedEvent[]> {
     return new Date(a.eventTimestamp).getTime() - new Date(b.eventTimestamp).getTime();
   });
 
-  return filtered;
+  return filtered.map(decorateEvent);
 }
 
 export async function getUpcomingEvents(limit = 5): Promise<UnifiedEvent[]> {

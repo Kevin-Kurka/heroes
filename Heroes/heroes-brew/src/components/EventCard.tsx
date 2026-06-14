@@ -130,6 +130,23 @@ export default function EventCard({ event, index }: EventCardProps) {
         event.isLive ? 'ring-1 ring-red-500/40 border-red-500/30' : ''
       } ${interactive ? 'cursor-pointer hover:border-accent/30 transition-colors' : ''}`}
     >
+      {/* Poster banner — auto matchup art for the games we promote (followed/marquee/local) */}
+      {event.posterUrl && (
+        <div className="-mt-4 -mx-4 mb-3 h-28 sm:h-36 overflow-hidden rounded-t-md relative">
+          <img
+            src={event.posterUrl}
+            alt={event.eventTitle}
+            loading="lazy"
+            className="w-full h-full object-cover"
+          />
+          {event.tier === 'MARQUEE' && (
+            <span className="absolute top-2 left-2 text-[10px] font-bold px-1.5 py-0.5 rounded-sm bg-accent text-black tracking-wide">
+              MARQUEE
+            </span>
+          )}
+        </div>
+      )}
+
       {/* Top row: badges + date/time */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">

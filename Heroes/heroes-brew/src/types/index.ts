@@ -21,6 +21,15 @@ export interface UnifiedEvent {
   status?: string;
   isLive?: boolean;
   highlighted?: boolean;
+  /**
+   * Emphasis tier for content/marketing. MARQUEE = headline draw (followed team,
+   * Monday Night Football, or a championship); LOCAL = any other local-team game.
+   * Best-effort on the website; the sheet's manual "Marquee" tag is authoritative
+   * for what becomes a designed Feed post vs an auto Story invite.
+   */
+  tier?: 'MARQUEE' | 'LOCAL';
+  /** Promo/preview image for this event (auto matchup art) — shown on the card. */
+  posterUrl?: string;
   emoji?: string;
   holidayTheme?: string;
 }
