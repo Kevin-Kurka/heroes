@@ -208,25 +208,27 @@ function seedTodaySpecial() {
   if (!sp) return;
   var sh = currentMonthSheet_();
   var values = sh.getDataRange().getValues();
-  var c = cols_(values[0]);
+  var header = values[0];
+  var c = cols_(header);
+  if (c.file < 0 || c.date < 0) return; // tab not set up with the expected columns
   var todayKey = Utilities.formatDate(new Date(), tz, 'yyyy-MM-dd');
   var file = 'special-' + dow.toLowerCase() + '.mp4';
   for (var i = 1; i < values.length; i++) {
     var r = values[i];
-    var f = c.file >= 0 ? String(r[c.file]).trim() : '';
-    var w = parseWhen_(c.date >= 0 ? r[c.date] : '');
+    var f = String(r[c.file]).trim();
+    var w = parseWhen_(r[c.date]);
     if (f === file && w && Utilities.formatDate(w, tz, 'yyyy-MM-dd') === todayKey) return;
   }
   var when = Utilities.formatDate(new Date(), tz, 'EEE MMM d, yyyy') + ' — 4:00 PM';
-  var rowArr = HEADERS.map(function (h) {
-    if (h === 'Post Date & Time (PT)') return when;
-    if (h === 'Post') return sp.name;
-    if (h === 'Channel') return 'Story';
-    if (h === 'File') return file;
-    if (h === 'Caption') return sp.cap + '\n\n' + HASHTAGS;
-    if (h === 'Approval') return 'Approve';
-    return '';
-  });
+  // Place each value at this tab's actual column index, so column order doesn't matter.
+  var rowArr = [];
+  for (var j = 0; j < header.length; j++) rowArr.push('');
+  if (c.date >= 0) rowArr[c.date] = when;
+  if (c.post >= 0) rowArr[c.post] = sp.name;
+  if (c.channel >= 0) rowArr[c.channel] = 'Story';
+  if (c.file >= 0) rowArr[c.file] = file;
+  if (c.cap >= 0) rowArr[c.cap] = sp.cap + '\n\n' + HASHTAGS;
+  if (c.appr >= 0) rowArr[c.appr] = 'Approve';
   sh.appendRow(rowArr);
   scheduleNext();
 }
