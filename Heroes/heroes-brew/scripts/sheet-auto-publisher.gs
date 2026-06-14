@@ -427,6 +427,71 @@ function disableStory() {
   });
 }
 
+// Add Approval (Polish) dropdown + Notes column to the Story tab, and link each media
+// filename to its hosted file. Run once after setupStoryTab.
+function upgradeStoryTab() {
+  var site = props_().getProperty('SITE') || 'https://americanheroesandbrew.com';
+  var sh = ss_().getSheetByName(STORY_TAB);
+  if (!sh) { Logger.log('upgradeStoryTab: no Story tab'); return; }
+  var lc = function () { return sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0]
+    .map(function (h) { return String(h).trim().toLowerCase(); }); };
+  if (lc().indexOf('approval') < 0) sh.getRange(1, sh.getLastColumn() + 1).setValue('Approval');
+  if (lc().indexOf('notes') < 0) sh.getRange(1, sh.getLastColumn() + 1).setValue('Notes');
+  var norm = lc();
+  var apIdx = norm.indexOf('approval'), mIdx = norm.indexOf('media');
+  var lastRow = sh.getLastRow();
+  if (apIdx >= 0 && lastRow >= 2) {
+    var apRule = SpreadsheetApp.newDataValidation().requireValueInList(['Approve', 'Polish'], true).setAllowInvalid(false).build();
+    sh.getRange(2, apIdx + 1, lastRow - 1, 1).setDataValidation(apRule);
+  }
+  if (mIdx >= 0) {
+    for (var i = 2; i <= lastRow; i++) {
+      var cell = sh.getRange(i, mIdx + 1);
+      var text = String(cell.getDisplayValue());
+      if (!text.trim()) continue;
+      var b = SpreadsheetApp.newRichTextValue().setText(text);
+      var re = /[^,\s]+\.(mp4|mov|m4v|jpg|jpeg|png)/gi, m;
+      while ((m = re.exec(text)) !== null) {
+        var name = m[0], start = m.index, end = start + name.length;
+        var url = site + (/\.(mp4|mov|m4v)$/i.test(name) ? '/promos-video/' : '/promos/') + name;
+        b.setLinkUrl(start, end, url);
+      }
+      cell.setRichTextValue(b.build());
+    }
+  }
+}
+
+// Manual one-shot: post today's first active Story item now (ignores the Time gate).
+function testStoryNow() {
+  var sh = ss_().getSheetByName(STORY_TAB);
+  if (!sh) return;
+  var p = props_();
+  var url = p.getProperty('PUBLISH_URL'), secret = p.getProperty('PROMOS_SECRET');
+  var site = p.getProperty('SITE') || 'https://americanheroesandbrew.com';
+  var tz = Session.getScriptTimeZone();
+  var now = new Date();
+  var dow = Utilities.formatDate(now, tz, 'EEE'), wk = weekNum_(now);
+  var vals = sh.getDataRange().getDisplayValues();
+  var c = storyCols_(vals[0]);
+  for (var i = 1; i < vals.length; i++) {
+    var r = vals[i];
+    var g = function (idx) { return idx >= 0 ? String(r[idx] || '').trim() : ''; };
+    if (!/^(true|yes|y|x|on)$/i.test(g(c.active))) continue;
+    if (!dayMatches_(g(c.days), dow)) continue;
+    var pool = g(c.media).split(/[,\n]/).map(function (x) { return x.trim(); }).filter(Boolean);
+    if (!pool.length) continue;
+    var file = pool[wk % pool.length], tags = g(c.tags), caption = g(c.cap);
+    var payload = { caption: tags ? caption + '\n\n' + tags : caption, mediaType: 'story' };
+    if (/\.(mp4|mov|m4v)$/i.test(file)) payload.videoUrl = site + '/promos-video/' + file;
+    else payload.imageUrl = site + '/promos/' + file;
+    var res = UrlFetchApp.fetch(url, { method: 'post', contentType: 'application/json',
+      headers: { Authorization: 'Bearer ' + secret }, payload: JSON.stringify(payload), muteHttpExceptions: true });
+    Logger.log('testStoryNow ' + g(c.name) + ' -> ' + file + ': ' + res.getResponseCode() + ' ' + res.getContentText());
+    return;
+  }
+  Logger.log('testStoryNow: no active item for today');
+}
+
 // ── Polish web app (for the Claude Code revision routine) ───────────────────────────
 // GET  ?secret=...            -> JSON list of rows where Approval = "Polish".
 // POST {secret,tab,row,headline,caption,tags} -> write revision back, clear Approval.
@@ -443,6 +508,21 @@ function doGet(e) {
       return { tab: r.tab, row: r.rowNum, channel: r.channels.join(', '),
         headline: r.headline, caption: r.caption, tags: r.tags, notes: r.notes };
     });
+  // also scan the Story tab for Polish-flagged rows
+  var sh = ss_().getSheetByName(STORY_TAB);
+  if (sh) {
+    var vals = sh.getDataRange().getDisplayValues();
+    if (vals.length >= 2) {
+      var c = cols_(vals[0]);
+      for (var i = 1; i < vals.length; i++) {
+        var r2 = vals[i];
+        var g = function (idx) { return idx >= 0 ? String(r2[idx] || '').trim() : ''; };
+        if (!/polish/i.test(g(c.appr))) continue;
+        out.push({ tab: STORY_TAB, row: i + 1, channel: 'Story',
+          headline: '', caption: g(c.cap), tags: g(c.tags), notes: g(c.notes) });
+      }
+    }
+  }
   return json_({ ok: true, rows: out });
 }
 
