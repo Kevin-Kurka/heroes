@@ -154,11 +154,6 @@ export default function EventCard({ event, index }: EventCardProps) {
               className="w-5 h-5 object-contain"
             />
           )}
-          {event.tier === 'MARQUEE' && (
-            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-sm bg-accent text-black tracking-wide">
-              MARQUEE
-            </span>
-          )}
           {event.isLive && (
             <span className="text-[10px] font-bold text-red-500 animate-pulse flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-red-500 inline-block" />
