@@ -38,10 +38,12 @@ type FacebookResult =
   | { ok: true; postId: string }
   | { ok: false; error: string };
 
-/** Only self-hosted promo posters/videos may be published. */
+/** Only self-hosted promo posters / generated OG cards may be published. */
 const ALLOWED_IMAGE_PREFIXES = [
   'https://americanheroesandbrew.com/promos/',
+  'https://americanheroesandbrew.com/api/og/', // auto matchup art (Story invites)
   'https://heroes-tau-neon.vercel.app/promos/',
+  'https://heroes-tau-neon.vercel.app/api/og/',
 ];
 const ALLOWED_VIDEO_PREFIXES = [
   'https://americanheroesandbrew.com/promos-video/',

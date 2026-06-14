@@ -40,6 +40,14 @@ export function buildEventImagePath(event: UnifiedEvent, social = false): string
   return `/api/og/event?${p.toString()}`;
 }
 
+/** Absolute 1080×1920 (9:16) Story image URL for an event — used by IG Story invites. */
+export function buildEventStoryImageUrl(event: UnifiedEvent): string {
+  const p = imageParams(event);
+  p.set('social', '1');
+  p.set('ratio', '9x16');
+  return `${SITE_URL}/api/og/event?${p.toString()}`;
+}
+
 /** Short, clean per-event landing URL (e.g. .../g/mlb-746123). The page looks the
  *  game up from the live feed and its OG preview is the matchup card. */
 export function buildShareLandingUrl(event: UnifiedEvent): string {

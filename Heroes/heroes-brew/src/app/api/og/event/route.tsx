@@ -27,6 +27,9 @@ export function GET(req: Request) {
   // `social=1` bakes the promo footer (handle, link, hashtags) into the image so
   // Instagram/TikTok posts carry context even when the caption isn't pre-filled.
   const social = searchParams.get('social') === '1';
+  // `ratio=9x16` renders a 1080×1920 Story frame (the flex layout adapts); default
+  // is the 1200×630 share/OG card.
+  const size = searchParams.get('ratio') === '9x16' ? { width: 1080, height: 1920 } : SIZE;
   const badge = `${origin}/badge-clean.png`;
   const isMatchup = Boolean(away && home);
   const footer = when ? `${when}  ·  ${ADDRESS}` : ADDRESS;
@@ -100,6 +103,6 @@ export function GET(req: Request) {
     // The URL params fully determine the card, so a changed feed (new matchup,
     // rescheduled time) yields a new URL and a fresh image. Cache per-URL for
     // speed; stale-while-revalidate lets a future card-design change refresh too.
-    { ...SIZE, headers: { 'cache-control': 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=86400' } },
+    { ...size, headers: { 'cache-control': 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=86400' } },
   );
 }
