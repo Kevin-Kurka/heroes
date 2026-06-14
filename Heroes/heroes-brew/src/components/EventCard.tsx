@@ -38,6 +38,14 @@ const HOLIDAY_THEMES: Record<string, { border: string; bg: string; iconBg: strin
   zinc:    { border: 'border-zinc-500/30', bg: 'bg-zinc-500/5', iconBg: 'bg-zinc-500/15', badge: 'bg-zinc-500 text-white' },
 };
 
+/** Black or white, whichever reads better on a given hex background (fallback text color). */
+function readableOn(hex: string): string {
+  const h = hex.replace('#', '');
+  if (h.length < 6) return '#ffffff';
+  const r = parseInt(h.slice(0, 2), 16), g = parseInt(h.slice(2, 4), 16), b = parseInt(h.slice(4, 6), 16);
+  return 0.299 * r + 0.587 * g + 0.114 * b > 150 ? '#0b0b0d' : '#ffffff';
+}
+
 export default function EventCard({ event, index }: EventCardProps) {
   const isHoliday = event.eventType === 'HOLIDAY';
 
@@ -53,19 +61,17 @@ export default function EventCard({ event, index }: EventCardProps) {
   const isFinal = !event.isLive && hasScore && date < now;
   const isUpcoming = !event.isLive && !isFinal;
 
-  // Marquee: the two teams' brand colors meet on a hard angled seam. A crisp black text
-  // outline (not a soft blur) + white text keep everything readable on the bright colors.
+  // Marquee: the two teams' primary colors meet on a hard angled seam, and every bit of
+  // text on each side uses that team's SECONDARY color (which contrasts its primary).
   const isMarquee = event.tier === 'MARQUEE' && !event.isLive;
   const cardOpacity = isFinal ? (isMarquee ? 'opacity-95' : 'opacity-60') : '';
   const awayColor = event.awayColor || '#1a1207';
   const homeColor = event.homeColor || '#1a1207';
+  const awayText = isMarquee ? (event.awayAltColor || readableOn(awayColor)) : undefined;
+  const homeText = isMarquee ? (event.homeAltColor || readableOn(homeColor)) : undefined;
   const marqueeStyle = isMarquee
-    ? {
-        background: `linear-gradient(115deg, ${awayColor} 0%, ${awayColor} 50%, ${homeColor} 50%, ${homeColor} 100%)`,
-        textShadow: '-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, 0 0 4px rgba(0,0,0,0.55)',
-      }
+    ? { background: `linear-gradient(115deg, ${awayColor} 0%, ${awayColor} 50%, ${homeColor} 50%, ${homeColor} 100%)` }
     : undefined;
-  const logoShadow = isMarquee ? 'drop-shadow-[0_2px_5px_rgba(0,0,0,0.9)]' : '';
 
   // The whole card is the share target (not just the chip). Finished games have
   // nothing to invite to, so they stay non-interactive.
@@ -161,11 +167,11 @@ export default function EventCard({ event, index }: EventCardProps) {
             </span>
           )}
           {isFinal && (
-            <span className="text-[10px] font-bold text-muted tracking-wide">FINAL</span>
+            <span style={isMarquee ? { color: awayText } : undefined} className="text-[10px] font-bold text-muted tracking-wide">FINAL</span>
           )}
         </div>
         <div className="flex flex-col items-end gap-1.5">
-          <div className="flex items-center gap-2 text-muted text-xs">
+          <div style={isMarquee ? { color: homeText } : undefined} className="flex items-center gap-2 text-muted text-xs">
             <Calendar size={11} />
             <span>{dayStr}</span>
             {isUpcoming && (
@@ -184,11 +190,14 @@ export default function EventCard({ event, index }: EventCardProps) {
         {/* Away team */}
         <div className="flex flex-col items-center flex-1 min-w-0">
           {event.awayLogo && (
-            <img src={event.awayLogo} alt="" className={`w-10 h-10 sm:w-12 sm:h-12 object-contain ${logoShadow}`} />
+            <img src={event.awayLogo} alt="" className="w-10 h-10 sm:w-12 sm:h-12 object-contain" />
           )}
-          <span className={`text-[10px] font-medium truncate max-w-full mt-1 ${
-            isMarquee ? 'text-white font-semibold' : hasScore && event.awayScore! > event.homeScore! ? 'text-foreground' : 'text-muted'
-          }`}>
+          <span
+            style={isMarquee ? { color: awayText } : undefined}
+            className={`text-[10px] font-medium truncate max-w-full mt-1 ${
+              isMarquee ? 'font-semibold' : hasScore && event.awayScore! > event.homeScore! ? 'text-foreground' : 'text-muted'
+            }`}
+          >
             {event.awayTeam}
           </span>
         </div>
@@ -196,16 +205,20 @@ export default function EventCard({ event, index }: EventCardProps) {
         {/* Score / VS */}
         <div className="shrink-0 text-center min-w-[48px] sm:min-w-[64px]">
           {hasScore ? (
-            <div
-              style={isMarquee ? { textShadow: '-2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000, 0 2px 0 #000, 0 -2px 0 #000, 2px 0 0 #000, -2px 0 0 #000, 0 0 6px rgba(0,0,0,0.7)' } : undefined}
-              className={`font-mono text-base sm:text-lg font-bold tracking-wider ${
-                isMarquee ? 'text-white' : isFinal ? 'text-muted' : 'text-foreground'
-              }`}
-            >
-              {event.awayScore} – {event.homeScore}
+            <div className={`font-mono text-base sm:text-lg font-bold tracking-wider ${
+              isMarquee ? '' : isFinal ? 'text-muted' : 'text-foreground'
+            }`}>
+              {isMarquee ? (
+                <>
+                  <span style={{ color: awayText }}>{event.awayScore}</span>
+                  <span style={{ color: homeText }}> – {event.homeScore}</span>
+                </>
+              ) : (
+                <>{event.awayScore} – {event.homeScore}</>
+              )}
             </div>
           ) : (
-            <span className="text-xs text-muted font-medium uppercase tracking-widest">vs</span>
+            <span style={isMarquee ? { color: homeText } : undefined} className="text-xs text-muted font-medium uppercase tracking-widest">vs</span>
           )}
           {event.isLive && event.status && (
             <span className="text-[10px] text-muted font-medium block mt-0.5">{event.status}</span>
@@ -215,11 +228,14 @@ export default function EventCard({ event, index }: EventCardProps) {
         {/* Home team */}
         <div className="flex flex-col items-center flex-1 min-w-0">
           {event.homeLogo && (
-            <img src={event.homeLogo} alt="" className={`w-10 h-10 sm:w-12 sm:h-12 object-contain ${logoShadow}`} />
+            <img src={event.homeLogo} alt="" className="w-10 h-10 sm:w-12 sm:h-12 object-contain" />
           )}
-          <span className={`text-[10px] font-medium truncate max-w-full mt-1 ${
-            isMarquee ? 'text-white font-semibold' : hasScore && event.homeScore! > event.awayScore! ? 'text-foreground' : 'text-muted'
-          }`}>
+          <span
+            style={isMarquee ? { color: homeText } : undefined}
+            className={`text-[10px] font-medium truncate max-w-full mt-1 ${
+              isMarquee ? 'font-semibold' : hasScore && event.homeScore! > event.awayScore! ? 'text-foreground' : 'text-muted'
+            }`}
+          >
             {event.homeTeam}
           </span>
         </div>
