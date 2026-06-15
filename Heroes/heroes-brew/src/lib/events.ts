@@ -102,8 +102,13 @@ function classifyTier(e: UnifiedEvent): 'MARQUEE' | 'LOCAL' | undefined {
   if (e.eventType !== 'SPORTS') {
     return MARQUEE_KEYWORDS.test(e.eventTitle) ? 'MARQUEE' : undefined;
   }
+  // Every game involving a followed team (Padres/Chargers/Raiders) is MARQUEE,
+  // plus Monday Night Football and championship-keyword games we can detect.
   const isMarquee =
-    isMondayNight(e) || MARQUEE_KEYWORDS.test(`${e.eventTitle} ${e.status ?? ''}`);
+    isFollowedTeam(e.homeTeam) ||
+    isFollowedTeam(e.awayTeam) ||
+    isMondayNight(e) ||
+    MARQUEE_KEYWORDS.test(`${e.eventTitle} ${e.status ?? ''}`);
   if (isMarquee && isPromotable(e)) return 'MARQUEE';
   return isPromotable(e) ? 'LOCAL' : undefined;
 }
