@@ -56,10 +56,11 @@ ${menuSections}
 Full menu: ${SITE_URL}/menu
 
 ## Specials
-- Mon: Mahalo Monday (Kalua pork sliders & draft deals)
-- Tue: Taco Tuesday
-- Wed: Wings & Well Wednesday
-- Thu: Thirsty Thursday (burger & draft deals)
+- Mon: Mahalo Monday — Kalua pork sliders $4ea, Modelo/Ultra/Coors/Miller Lite $3ea
+- Tue: Taco Tuesday — Village tacos $4ea, all tequila cocktails $2 off, industry drafts or wells $5ea (all day)
+- Wed: Wings & Well Wednesday — wings $6 off, well cocktails $6ea
+- Thu: Thirsty Thursday — all burgers $5 off, house drafts $5ea
+- Fri: Friday Funday 1–4pm — drinks & munchies $2 off
 - Breakfast: served Fri–Sun, incl. 2-for-$22 breakfast
 
 ## FAQ

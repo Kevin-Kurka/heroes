@@ -29,11 +29,11 @@ const SECTIONS: { key: SectionKey; label: string }[] = [
 ];
 
 const DAILY_SPECIALS = [
-  { day: 'Monday', name: 'Mahalo Monday', price: '4ea', lines: ['Kalua Pork Sliders $4ea', 'Select Cans $3ea'] },
-  { day: 'Tuesday', name: 'Taco Tuesday', price: '4ea', lines: ['Tacos $4ea', 'Tequila $2 off'] },
-  { day: 'Wednesday', name: 'Wings & Wells', price: '$6', lines: ['Wings $6 off', 'Wells $6ea'] },
-  { day: 'Thursday', name: 'Burgers & Beer', price: '$5', lines: ['Burgers $5 off', 'Select Drafts $5ea'] },
-  { day: 'Friday', name: 'Friday Funday', price: '$2 off', lines: ['1-4pm', 'Drinks & Appetizers $2 off'] },
+  { day: 'Monday', name: 'Mahalo Monday', price: '4ea', lines: ['Kalua Pork Sliders $4ea', 'Modelo, Ultra, Coors, Miller Lite $3ea'] },
+  { day: 'Tuesday', name: 'Taco Tuesday', price: '4ea', lines: ['Village Tacos $4ea', 'All Tequila Cocktails $2 off', 'Industry Drafts or Wells $5ea (all day)'] },
+  { day: 'Wednesday', name: 'Wings & Wells', price: '$6', lines: ['Wings $6 off', 'Well Cocktails $6ea'] },
+  { day: 'Thursday', name: 'Burgers & Beer', price: '$5', lines: ['All Burgers $5 off', 'House Drafts (Blonde, IPA, Amber, Lager) $5ea'] },
+  { day: 'Friday', name: 'Friday Funday', price: '$2 off', lines: ['1-4pm', 'Drinks & Munchies $2 off'] },
 ];
 
 
