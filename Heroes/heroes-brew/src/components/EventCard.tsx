@@ -13,6 +13,11 @@ interface EventCardProps {
   index: number;
 }
 
+// Mirrors the "Padre Games Hot Dogs & Beer" special in menu.ts (specials-i5):
+// shown as a promo footer on any upcoming/live Padres game card.
+const PADRES_TEAM = 'San Diego Padres';
+const PADRES_SPECIAL = 'Friar Franks $6 · Heroes Drafts $2 off';
+
 const LEAGUE_LOGO: Record<string, string> = {
   MLB: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/leagues/500/mlb.png&w=48&h=48&transparent=true',
   NFL: 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/leagues/500/nfl.png&w=48&h=48&transparent=true',
@@ -60,6 +65,11 @@ export default function EventCard({ event, index }: EventCardProps) {
   const hasScore = event.homeScore !== undefined && event.awayScore !== undefined;
   const isFinal = !event.isLive && hasScore && date < now;
   const isUpcoming = !event.isLive && !isFinal;
+
+  // Padres home/away game (not yet finished) → show the in-house game-day special.
+  const isPadresGame =
+    !isHoliday && (event.homeTeam === PADRES_TEAM || event.awayTeam === PADRES_TEAM);
+  const showPadresSpecial = isPadresGame && !isFinal;
 
   // Marquee: the two teams' primary colors meet on a hard angled seam, and every bit of
   // text on each side uses that team's SECONDARY color (which contrasts its primary).
@@ -246,6 +256,15 @@ export default function EventCard({ event, index }: EventCardProps) {
         <div className="flex items-center gap-1 text-muted text-[11px] mt-2.5">
           <MapPin size={10} />
           <span className="truncate">{event.venue}</span>
+        </div>
+      )}
+
+      {/* Padres game-day special — readable on both the marquee gradient and plain cards */}
+      {showPadresSpecial && (
+        <div className="mt-3 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 rounded-md bg-black/35 px-2.5 py-1.5 text-[11px] font-semibold backdrop-blur-sm">
+          <span aria-hidden>🌭</span>
+          <span className="text-accent">Padres Game Special:</span>
+          <span className="text-white/90">{PADRES_SPECIAL}</span>
         </div>
       )}
 
