@@ -58,7 +58,7 @@ const INNER = { x: PANEL.x + 46, y: PANEL.y + 46, w: PANEL.w - 92, h: PANEL.h - 
 const ITEMS = {
   mahalo:  { day: 'MONDAY',    hero: 'KALUA SLIDERS', price: '$4',     sub: 'Sliders $4  ·  Select Cans $3', accents: ['#2dd4bf', '#14b8a6'], taglines: ['Start the week right', 'Aloha pricing all day'] },
   taco:    { day: 'TUESDAY',   hero: 'TACOS',         price: '$4',     sub: 'Tacos $4  ·  $2 off Tequila',   accents: ['#fb923c', '#ef4444'], taglines: ['Taco ’bout a deal', 'Tequila + tacos'] },
-  wings:   { day: 'WEDNESDAY', hero: 'WINGS',         price: '$6 OFF', sub: 'Wings $6 off  ·  Wells $6',      accents: ['#f59e0b', '#eab308'], taglines: ['Halfway-there happy', 'Sauce up midweek'] },
+  wings:   { day: 'WEDNESDAY', hero: 'WINGS',         price: '$6 OFF', sub: 'Wings $6 off  ·  Wells $6',      accents: ['#f59e0b', '#eab308'], taglines: ['Halfway there, Happy Humpday', 'Sauce up midweek'] },
   burgers: { day: 'THURSDAY',  hero: 'BURGERS',       price: '$5 OFF', sub: 'Burgers $5 off  ·  Drafts $5',   accents: ['#f97316', '#ea580c'], taglines: ['Stack it high', 'Burger + brew night'] },
   funday:  { day: 'FRIDAY',    hero: 'HAPPY HOUR',    price: '$2 OFF', sub: '1–4PM  ·  Drinks & Apps $2 off', accents: ['#fbbf24', '#f59e0b'], taglines: ['Beat the rush', 'Kick off the weekend'] },
 };
