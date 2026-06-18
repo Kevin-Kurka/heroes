@@ -73,7 +73,7 @@ export default function EventCard({ event, index }: EventCardProps) {
 
   // Marquee: the two teams' primary colors meet on a hard angled seam, and every bit of
   // text on each side uses that team's SECONDARY color (which contrasts its primary).
-  const isMarquee = event.tier === 'MARQUEE' && !event.isLive;
+  const isMarquee = event.tier === 'MARQUEE';
   const cardOpacity = isFinal ? (isMarquee ? 'opacity-95' : 'opacity-60') : '';
   const awayColor = event.awayColor || '#1a1207';
   const homeColor = event.homeColor || '#1a1207';
@@ -157,7 +157,7 @@ export default function EventCard({ event, index }: EventCardProps) {
       className={`rounded-md backdrop-blur-md p-4 ${cardOpacity} ${
         isMarquee ? '' : 'border border-white/10 bg-card/70'
       } ${
-        event.isLive ? 'border ring-1 ring-red-500/40 border-red-500/30' : ''
+        event.isLive && !isMarquee ? 'border ring-1 ring-red-500/40 border-red-500/30' : ''
       } ${interactive ? 'cursor-pointer hover:border-accent/40 transition-colors' : ''}`}
     >
       {/* Top row: badges + date/time */}
@@ -171,8 +171,14 @@ export default function EventCard({ event, index }: EventCardProps) {
             />
           )}
           {event.isLive && (
-            <span className="text-[10px] font-bold text-red-500 animate-pulse flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-red-500 inline-block" />
+            <span
+              className={`text-[10px] font-bold flex items-center gap-1 ${
+                isMarquee
+                  ? 'bg-red-600 text-white px-1.5 py-0.5 rounded-sm shadow-sm'
+                  : 'text-red-500 animate-pulse'
+              }`}
+            >
+              <span className={`w-1.5 h-1.5 rounded-full inline-block ${isMarquee ? 'bg-white animate-pulse' : 'bg-red-500'}`} />
               LIVE
             </span>
           )}
