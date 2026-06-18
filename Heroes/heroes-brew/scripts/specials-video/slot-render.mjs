@@ -193,7 +193,8 @@ async function render(key) {
   const foods = {};
   for (const k of ['burger', 'taco', 'slider', 'wings', 'beer']) foods[k] = await loadImage(join(BG_DIR, 'sym', `${k}.jpg`));
   const A = { badge, foods };
-  const targets = [STRIP.indexOf('badge'), STRIP.indexOf(item.food), STRIP.indexOf('$5')];
+  const fi = STRIP.indexOf(item.food);
+  const targets = [fi, fi, fi]; // all 3 reels land on the day's food = a clear, classic win
 
   // pre-seed firework bursts (RWB)
   const fr = rng(2026);
@@ -228,7 +229,6 @@ async function render(key) {
         const spinning = sec > SPIN_START && sec < (REEL_STOP[i] + 0.5);
         const speed = spinning ? SPIN_SPEED * (sec < REEL_STOP[i] ? 1 : 0.4) : 0;
         drawReel(ctx, i, pos, A, spinning, speed);
-        if (i === 2 && sec >= REEL_STOP[2] + 0.45) { ctx.save(); ctx.translate(i * REELW + REELW / 2, CENTER); priceToken(ctx, item.price, 248); ctx.restore(); }
       }
       ctx.strokeStyle = 'rgba(255,255,255,0.28)'; ctx.lineWidth = 6;
       for (let i = 1; i < 3; i++) { ctx.beginPath(); ctx.moveTo(i * REELW, 0); ctx.lineTo(i * REELW, H); ctx.stroke(); }
@@ -248,13 +248,13 @@ async function render(key) {
       ctx.fillStyle = '#c0252f'; ctx.fillRect(0, d, W, 6); ctx.fillStyle = '#fff'; ctx.fillRect(0, d + 6, W, 4); // red/white leading edge
       const ls = 380, ly = d + H * 0.46; // logo starts centered, rides the panel down
       if (ly - ls < H) {
-        ctx.save(); ctx.fillStyle = 'rgba(255,255,255,0.55)'; ctx.beginPath(); ctx.arc(W / 2, ly, ls * 0.52, 0, 7); ctx.fill(); ctx.restore();
+        ctx.save(); ctx.fillStyle = 'rgba(255,255,255,0.8)'; ctx.beginPath(); ctx.arc(W / 2, ly, ls * 0.52, 0, 7); ctx.fill(); ctx.restore();
         ctx.drawImage(badge, W / 2 - ls / 2, ly - ls / 2, ls, ls);
         ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
         let px = 80; ctx.font = `800 ${px}px "${HEAD}"`;
         while (ctx.measureText(item.name).width > W - 140 && px > 30) { px -= 2; ctx.font = `800 ${px}px "${HEAD}"`; }
         ctx.fillStyle = '#fff'; ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 12;
-        ctx.fillText(item.name, W / 2, ly + ls * 0.62); ctx.shadowColor = 'transparent';
+        ctx.fillText(item.name, W / 2, ly + ls * 0.82); ctx.shadowColor = 'transparent'; // more space below the logo
       }
     }
 
@@ -306,7 +306,7 @@ async function render(key) {
       ctx.save(); ctx.translate(sx * 0.5, sy * 0.5); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       const gg = ctx.createLinearGradient(0, H * 0.48, 0, H); gg.addColorStop(0, 'rgba(0,0,0,0)'); gg.addColorStop(1, 'rgba(0,0,0,0.82)');
       ctx.globalAlpha = a0; ctx.fillStyle = gg; ctx.fillRect(0, H * 0.48, W, H * 0.52);
-      const bs = 220; ctx.fillStyle = 'rgba(255,255,255,0.5)'; ctx.beginPath(); ctx.arc(W / 2, 330, bs * 0.52, 0, 7); ctx.fill();
+      const bs = 220; ctx.fillStyle = 'rgba(255,255,255,0.8)'; ctx.beginPath(); ctx.arc(W / 2, 330, bs * 0.52, 0, 7); ctx.fill();
       ctx.drawImage(badge, W / 2 - bs / 2, 330 - bs / 2, bs, bs);
       ctx.globalAlpha = 1;
       popText(ctx, () => { ctx.font = `800 46px "${HEAD}"`; const cw = ctx.measureText(item.day).width + 96; ctx.fillStyle = item.accent; roundRect(ctx, W / 2 - cw / 2, 1120, cw, 84, 42); ctx.fill(); ctx.fillStyle = '#0b0b0d'; ctx.fillText(item.day, W / 2, 1163); }, W / 2, 1163, dt - 0.02);
@@ -335,7 +335,7 @@ async function render(key) {
     const fc = [
       `[1:a]volume=1.0,bass=g=9:f=95,adelay=${ms(T_BLAST)}|${ms(T_BLAST)},afade=t=out:st=${SECONDS - 0.5}:d=0.5[mus]`,
       `[2:a]volume=0.9,atrim=0:1.7,adelay=${ms(0.55)}|${ms(0.55)}[sp]`,
-      `[3:a]volume=1.2,adelay=${ms(WIN_HOLD)}|${ms(WIN_HOLD)}[cg]`,
+      `[3:a]volume=1.2,atrim=0:1.6,adelay=${ms(WIN_HOLD)}|${ms(WIN_HOLD)}[cg]`,
       `[4:a]volume=1.3,atrim=0:1.8,adelay=${ms(T_WIN)}|${ms(T_WIN)}[bm]`,
       `[5:a]volume=1.0,atrim=0:2.8,adelay=${ms(T_BLAST)}|${ms(T_BLAST)}[ch]`,
       `[6:a]volume=1.2,atrim=0:1.0,adelay=300|300[bm0]`,  // intro boom — when the logo starts moving
