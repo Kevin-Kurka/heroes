@@ -1,20 +1,30 @@
-// American Heroes & Brew — content engine v3 (bound to the "Event Posters & Posts" sheet).
-// Reads every monthly tab and publishes approved, due rows to Instagram (Feed and/or Story,
-// image or video), stamps Posted, emails Jenee a weekly approval digest, rotates a daily
-// special Story video, and exposes a small web app so a Claude Code routine can "Polish"
-// (AI-revise) rows that Jenee flags. See heroes-brew/docs/CONTENT-STRATEGY.md.
+// American Heroes & Brew — content engine v4 (bound to the "Event Posters & Posts" sheet).
+// ONE tab per month is the single source of truth. Every post — Feed posters, Story videos,
+// daily specials, multi-channel ("Feed, Story") drops — lives as a dated row in that month's
+// tab. The script reads every monthly tab and publishes approved, due rows to Instagram
+// (Feed and/or Story, image or video), stamps Posted, emails Jenee a weekly approval digest,
+// auto-seeds the recurring daily special as a Story row, and exposes a small web app so a
+// Claude Code routine can "Polish" (AI-revise) rows that Jenee flags.
+// See heroes-brew/docs/CONTENT-STRATEGY.md.
+//
+// There is NO separate "Story" tab — the old always-on rotation was folded into the monthly
+// tabs (v4). Multiple posts per day are just multiple rows with the same Post Date.
 //
 // Columns per month tab (matched by header name — order doesn't matter):
 //   Post Date | Post Time | Channel | Media | Headline | Caption | Tags | Approval | Posted | Notes
-//   - Channel: "Feed", "Story", or both ("Feed, Story") — posts to each.
-//   - Media:   <name>.jpg/.png -> /promos/ ;  <name>.mp4 -> /promos-video/  (or a full URL)
+//   - Channel:  "Feed", "Story", or both ("Feed, Story") — posts to each.
+//   - Media:    <name>.jpg/.png -> /promos/ ;  <name>.mp4 -> /promos-video/  (or a full URL)
+//   - Caption:  the "what's on your mind" line that goes out with the post (Headline + Caption
+//               + Tags are concatenated into the IG caption). Leave Headline blank for the
+//               casual daily specials so only the conversational caption + tags post.
 //   - Approval: "Approve" publishes; "Polish" sends the row to the AI routine using Notes.
 //
 // SETUP: paste into the sheet's Apps Script; Time zone = America/Los_Angeles; Script
 // Properties PUBLISH_URL, PROMOS_SECRET, SITE, DIGEST_TO, DIGEST_DOW, POLISH_SECRET; run
-// setupMonthlyTabs, then setup, then enableSpecials. To enable Polish, also Deploy > New
-// deployment > Web app (execute as me, access: anyone with the link) and give the routine
-// that /exec URL.
+// setupMonthlyTabs, then setup, then enableSpecials, then backfillSpecials (one-time, fills
+// the current + next month with the recurring daily specials). To enable Polish, also
+// Deploy > New deployment > Web app (execute as me, access: anyone with the link) and give
+// the routine that /exec URL.
 
 var PUBLISH_FN = 'publishDue';
 var DIGEST_FN = 'weeklyDigest';
@@ -26,16 +36,29 @@ var VIDEO_RE = /\.(mp4|mov|m4v)$/i;
 
 var HEADERS = ['Post Date', 'Post Time', 'Channel', 'Media', 'Headline', 'Caption', 'Tags', 'Approval', 'Posted', 'Notes'];
 
+// Recurring daily specials (Mon–Fri). Each posts to the Story with its casual
+// "what's on your mind" caption. `key` selects the video pool <key>-1.mp4 / <key>-2.mp4
+// (a different variant each week so it's never identical two weeks running).
 var SPECIALS = {
-  Mon: { name: 'Mahalo Monday', cap: 'Mahalo Monday — Kalua Pork Sliders $4 ea + select cans $3. 🌺' },
-  Tue: { name: 'Taco Tuesday', cap: 'Taco Tuesday — Tacos $4 ea + $2 off tequila. 🌮' },
-  Wed: { name: 'Wings & Wells Wednesday', cap: 'Wings & Wells Wednesday — Wings $6 off + wells $6. 🔥' },
-  Thu: { name: 'Burgers & Beer Thursday', cap: 'Burgers & Beer Thursday — Burgers $5 off + select drafts $5. 🍔' },
-  Fri: { name: 'Friday Funday', cap: 'Friday Funday 1–4pm — Drinks & appetizers $2 off. 🍻' },
-  Sat: { name: 'Game Day at Heroes', cap: 'Game day at Heroes — every screen, every game. Friar Franks $6 on Padres days. ⚾' },
-  Sun: { name: 'Game Day at Heroes', cap: 'Sunday at Heroes — catch every game on the big screens. 🏈' }
+  Mon: { key: 'mahalo',  name: 'Mahalo Monday',           time: '11:00 AM', cap: 'Sliders on my mind 🤙 Mahalo Monday at Heroes.' },
+  Tue: { key: 'taco',    name: 'Taco Tuesday',            time: '11:00 AM', cap: 'I want some tacos! 🌮 Taco Tuesday at Heroes.' },
+  Wed: { key: 'wings',   name: 'Wings & Wells Wednesday', time: '11:00 AM', cap: "Wing it — it's Humpday 🍗 Wings & Wells Wednesday at Heroes." },
+  Thu: { key: 'burgers', name: 'Burgers & Beer Thursday', time: '11:00 AM', cap: "Burger o'clock 🍔🍺 Burgers & Beer Thursday at Heroes." },
+  Fri: { key: 'funday',  name: 'Friday Funday',           time: '11:30 AM', cap: 'Cheers to Friday! 🍻 Friday Funday at Heroes.' }
 };
-var HASHTAGS = '#AmericanHeroesAndBrew #CarlsbadEats #CarlsbadVillage #SportsBar #NorthCountySD';
+var SPECIAL_DOWS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+var SPECIAL_TAGS = '#AmericanHeroesAndBrew #CarlsbadVillage #SportsBar';
+
+// Week-of-year number (used to rotate the daily-special video variant weekly).
+function weekNum_(d) {
+  var jan1 = new Date(d.getFullYear(), 0, 1);
+  return Math.floor((((d - jan1) / 86400000) + jan1.getDay() + 1) / 7);
+}
+
+// The video for a given special on a given date: <key>-1.mp4 on even weeks, <key>-2.mp4 on odd.
+function specialMedia_(key, date) {
+  return key + '-' + ((weekNum_(date) % 2) ? 2 : 1) + '.mp4';
+}
 
 function props_() { return PropertiesService.getScriptProperties(); }
 function ss_() { return SpreadsheetApp.getActiveSpreadsheet(); }
@@ -248,36 +271,68 @@ function currentMonthSheet_() {
   return ss_().getSheetByName(name) || monthSheets_()[0];
 }
 
-function seedTodaySpecial() {
+// Append a day's recurring special as a Story row. Idempotent: skips if that special
+// already exists on that date (matched by date + media key, so it never collides with a
+// pre-filled row even if the video variant differs). Returns true if it added a row.
+function seedSpecialOn_(sh, date) {
   var tz = Session.getScriptTimeZone();
-  var dow = Utilities.formatDate(new Date(), tz, 'EEE');
+  var dow = Utilities.formatDate(date, tz, 'EEE');
   var sp = SPECIALS[dow];
-  if (!sp) return;
-  var sh = currentMonthSheet_();
+  if (!sp) return false; // only Mon–Fri have a recurring special
   var values = sh.getDataRange().getDisplayValues();
   var header = values[0];
   var c = cols_(header);
-  if (c.media < 0 || c.date < 0) return;
-  var todayKey = Utilities.formatDate(new Date(), tz, 'yyyy-MM-dd');
-  var file = 'special-' + dow.toLowerCase() + '.mp4';
+  if (c.media < 0 || c.date < 0) return false;
+  var dayKey = Utilities.formatDate(date, tz, 'yyyy-MM-dd');
   for (var i = 1; i < values.length; i++) {
     var r = values[i];
-    var f = String(r[c.media]).trim();
+    var f = String(r[c.media] || '').trim().toLowerCase();
     var w = parseWhen_(c.date >= 0 ? r[c.date] : '', c.time >= 0 ? r[c.time] : '');
-    if (f === file && w && Utilities.formatDate(w, tz, 'yyyy-MM-dd') === todayKey) return;
+    if (f.indexOf(sp.key) === 0 && w && Utilities.formatDate(w, tz, 'yyyy-MM-dd') === dayKey) return false;
   }
   var rowArr = [];
   for (var j = 0; j < header.length; j++) rowArr.push('');
-  if (c.date >= 0) rowArr[c.date] = Utilities.formatDate(new Date(), tz, 'MMM d, yyyy');
-  if (c.time >= 0) rowArr[c.time] = '4:00 PM';
+  if (c.date >= 0) rowArr[c.date] = Utilities.formatDate(date, tz, 'MMM d, yyyy');
+  if (c.time >= 0) rowArr[c.time] = sp.time;
   if (c.channel >= 0) rowArr[c.channel] = 'Story';
-  if (c.media >= 0) rowArr[c.media] = file;
-  if (c.headline >= 0) rowArr[c.headline] = sp.name;
+  if (c.media >= 0) rowArr[c.media] = specialMedia_(sp.key, date);
+  if (c.headline >= 0) rowArr[c.headline] = ''; // casual special: caption-only, no headline
   if (c.cap >= 0) rowArr[c.cap] = sp.cap;
-  if (c.tags >= 0) rowArr[c.tags] = HASHTAGS;
+  if (c.tags >= 0) rowArr[c.tags] = SPECIAL_TAGS;
   if (c.appr >= 0) rowArr[c.appr] = 'Approve';
   sh.appendRow(rowArr);
+  return true;
+}
+
+// Daily 8 AM trigger: add today's recurring special to the current month tab.
+function seedTodaySpecial() {
+  if (seedSpecialOn_(currentMonthSheet_(), new Date())) scheduleNext();
+}
+
+// Month tab for a given Date (creating it with headers if missing).
+function monthSheetFor_(date) {
+  var tz = Session.getScriptTimeZone();
+  var name = MONTH_NAMES[Number(Utilities.formatDate(date, tz, 'M')) - 1] + ' ' + Utilities.formatDate(date, tz, 'yyyy');
+  var sh = ss_().getSheetByName(name);
+  if (!sh) { sh = ss_().insertSheet(name); sh.appendRow(HEADERS); sh.setFrozenRows(1); }
+  return sh;
+}
+
+// One-time consolidation: fill the current + next month tabs with the recurring Mon–Fri
+// specials, from tomorrow forward (today is handled by seedTodaySpecial). Idempotent —
+// safe to re-run; it won't duplicate any special already present on a date.
+function backfillSpecials() {
+  var tz = Session.getScriptTimeZone();
+  var now = new Date();
+  var start = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);   // tomorrow
+  var endMonth = new Date(now.getFullYear(), now.getMonth() + 2, 0);            // last day of next month
+  var added = 0;
+  for (var d = new Date(start); d <= endMonth; d.setDate(d.getDate() + 1)) {
+    if (!SPECIALS[Utilities.formatDate(d, tz, 'EEE')]) continue;
+    if (seedSpecialOn_(monthSheetFor_(new Date(d)), new Date(d))) added++;
+  }
   scheduleNext();
+  Logger.log('backfillSpecials: added ' + added + ' special rows through ' + Utilities.formatDate(endMonth, tz, 'MMM d, yyyy'));
 }
 
 function setupMonthlyTabs() {
@@ -316,182 +371,6 @@ function disableSpecials() {
   clearTriggers_(SPECIAL_FN);
 }
 
-// Always-on Story rotation (separate "Story" tab).
-// Tab columns: Active | Name | Days | Time | Media | Caption | Tags
-//   Active: checkbox (TRUE = on). Days: Mon/Tue/.., "Mon-Fri", "Daily", or "Sat, Sun".
-//   Media: comma-separated rotation pool (a different one posts each week).
-var STORY_TAB = 'Story';
-var STORY_HEADERS = ['Active', 'Name', 'Days', 'Time', 'Media', 'Caption', 'Tags'];
-var DOW_ORDER = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
-
-function storyCols_(header) {
-  var norm = header.map(function (h) { return String(h).trim().toLowerCase(); });
-  function f(name) { return norm.indexOf(name); }
-  return { active: f('active'), name: f('name'), days: f('days'), time: f('time'),
-    media: f('media'), cap: f('caption'), tags: f('tags') };
-}
-
-function dayMatches_(spec, dow) {
-  var s = String(spec || '').trim().toLowerCase();
-  if (!s) return false;
-  if (s === 'daily' || s === 'everyday' || s === 'every day') return true;
-  var today = dow.slice(0, 3).toLowerCase();
-  var rangeM = s.match(/([a-z]{3})[a-z]*\s*-\s*([a-z]{3})/);
-  if (rangeM) {
-    var a = DOW_ORDER.indexOf(rangeM[1]), b = DOW_ORDER.indexOf(rangeM[2]), t = DOW_ORDER.indexOf(today);
-    if (a >= 0 && b >= 0 && t >= 0) return a <= b ? (t >= a && t <= b) : (t >= a || t <= b);
-  }
-  return s.split(/[,\s]+/).some(function (x) { return x.slice(0, 3) === today; });
-}
-
-function weekNum_(d) {
-  var jan1 = new Date(d.getFullYear(), 0, 1);
-  return Math.floor((((d - jan1) / 86400000) + jan1.getDay() + 1) / 7);
-}
-
-function timeHour_(s) {
-  var m = String(s || '').match(/(\d{1,2}):(\d{2})\s*([AaPp][Mm])?/);
-  if (!m) return -1;
-  var h = Number(m[1]);
-  if (m[3]) { h = h % 12; if (/p/i.test(m[3])) h += 12; }
-  return h;
-}
-
-function postStoryRotation() {
-  var sh = ss_().getSheetByName(STORY_TAB);
-  if (!sh) { Logger.log('postStoryRotation: no Story tab'); return; }
-  var p = props_();
-  var url = p.getProperty('PUBLISH_URL');
-  var secret = p.getProperty('PROMOS_SECRET');
-  var site = p.getProperty('SITE') || 'https://americanheroesandbrew.com';
-  var tz = Session.getScriptTimeZone();
-  var now = new Date();
-  var dow = Utilities.formatDate(now, tz, 'EEE');
-  var curHour = Number(Utilities.formatDate(now, tz, 'H'));
-  var wk = weekNum_(now);
-  var values = sh.getDataRange().getDisplayValues();
-  if (values.length < 2) return;
-  var c = storyCols_(values[0]);
-  if (c.media < 0) return;
-  for (var i = 1; i < values.length; i++) {
-    var r = values[i];
-    var get = function (idx) { return idx >= 0 ? String(r[idx] || '').trim() : ''; };
-    if (!/^(true|yes|y|x|on)$/i.test(get(c.active))) continue;
-    if (!dayMatches_(get(c.days), dow)) continue;
-    if (timeHour_(get(c.time)) !== curHour) continue;
-    var pool = get(c.media).split(/[,\n]/).map(function (x) { return x.trim(); }).filter(Boolean);
-    if (!pool.length) continue;
-    var file = pool[wk % pool.length];
-    var tags = get(c.tags), caption = get(c.cap);
-    var payload = { caption: tags ? caption + '\n\n' + tags : caption, mediaType: 'story' };
-    if (/\.(mp4|mov|m4v)$/i.test(file)) payload.videoUrl = site + '/promos-video/' + file;
-    else payload.imageUrl = site + '/promos/' + file;
-    var res = UrlFetchApp.fetch(url, { method: 'post', contentType: 'application/json',
-      headers: { Authorization: 'Bearer ' + secret }, payload: JSON.stringify(payload), muteHttpExceptions: true });
-    Logger.log('Story ' + get(c.name) + ' -> ' + file + ': ' + res.getResponseCode());
-  }
-}
-
-function setupStoryTab() {
-  var sh = ss_().getSheetByName(STORY_TAB);
-  if (!sh) sh = ss_().insertSheet(STORY_TAB);
-  if (sh.getLastRow() > 0) return;
-  sh.appendRow(STORY_HEADERS);
-  sh.setFrozenRows(1);
-  var T = '#AmericanHeroesAndBrew #CarlsbadVillage #SportsBar';
-  var items = [
-    ['Mahalo Monday', 'Mon', '4:00 PM', 'mahalo-1.mp4, mahalo-2.mp4'],
-    ['Taco Tuesday', 'Tue', '4:00 PM', 'taco-1.mp4, taco-2.mp4'],
-    ['Wings & Wells Wednesday', 'Wed', '4:00 PM', 'wings-1.mp4, wings-2.mp4'],
-    ['Burgers & Beer Thursday', 'Thu', '4:00 PM', 'burgers-1.mp4, burgers-2.mp4'],
-    ['Friday Funday', 'Fri', '4:00 PM', 'funday-1.mp4, funday-2.mp4'],
-    ['Weekend Game Day', 'Sat, Sun', '11:00 AM', 'gameday-1.mp4, gameday-2.mp4'],
-    ['Watch Party HQ', 'Daily', '12:00 PM', 'watch-1.mp4, watch-2.mp4'],
-    ['Fantasy Football', 'Sat', '10:00 AM', 'fantasy-1.mp4, fantasy-2.mp4']
-  ];
-  var rows = items.map(function (it, i) {
-    return [i < 6, it[0], it[1], it[2], it[3], it[0] + ' at Heroes.', T];
-  });
-  sh.getRange(2, 1, rows.length, STORY_HEADERS.length).setValues(rows);
-  sh.getRange(2, 1, rows.length, 1).insertCheckboxes();
-}
-
-function enableStory() {
-  disableStory();
-  ScriptApp.newTrigger('postStoryRotation').timeBased().everyHours(1).create();
-}
-
-function disableStory() {
-  ScriptApp.getProjectTriggers().forEach(function (t) {
-    if (t.getHandlerFunction() === 'postStoryRotation') ScriptApp.deleteTrigger(t);
-  });
-}
-
-// Add Approval (Polish) dropdown + Notes column to the Story tab, and link each media
-// filename to its hosted file. Run once after setupStoryTab.
-function upgradeStoryTab() {
-  var site = props_().getProperty('SITE') || 'https://americanheroesandbrew.com';
-  var sh = ss_().getSheetByName(STORY_TAB);
-  if (!sh) { Logger.log('upgradeStoryTab: no Story tab'); return; }
-  var lc = function () { return sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0]
-    .map(function (h) { return String(h).trim().toLowerCase(); }); };
-  if (lc().indexOf('approval') < 0) sh.getRange(1, sh.getLastColumn() + 1).setValue('Approval');
-  if (lc().indexOf('notes') < 0) sh.getRange(1, sh.getLastColumn() + 1).setValue('Notes');
-  var norm = lc();
-  var apIdx = norm.indexOf('approval'), mIdx = norm.indexOf('media');
-  var lastRow = sh.getLastRow();
-  if (apIdx >= 0 && lastRow >= 2) {
-    var apRule = SpreadsheetApp.newDataValidation().requireValueInList(['Approve', 'Polish'], true).setAllowInvalid(false).build();
-    sh.getRange(2, apIdx + 1, lastRow - 1, 1).setDataValidation(apRule);
-  }
-  if (mIdx >= 0) {
-    for (var i = 2; i <= lastRow; i++) {
-      var cell = sh.getRange(i, mIdx + 1);
-      var text = String(cell.getDisplayValue());
-      if (!text.trim()) continue;
-      var b = SpreadsheetApp.newRichTextValue().setText(text);
-      var re = /[^,\s]+\.(mp4|mov|m4v|jpg|jpeg|png)/gi, m;
-      while ((m = re.exec(text)) !== null) {
-        var name = m[0], start = m.index, end = start + name.length;
-        var url = site + (/\.(mp4|mov|m4v)$/i.test(name) ? '/promos-video/' : '/promos/') + name;
-        b.setLinkUrl(start, end, url);
-      }
-      cell.setRichTextValue(b.build());
-    }
-  }
-}
-
-// Manual one-shot: post today's first active Story item now (ignores the Time gate).
-function testStoryNow() {
-  var sh = ss_().getSheetByName(STORY_TAB);
-  if (!sh) return;
-  var p = props_();
-  var url = p.getProperty('PUBLISH_URL'), secret = p.getProperty('PROMOS_SECRET');
-  var site = p.getProperty('SITE') || 'https://americanheroesandbrew.com';
-  var tz = Session.getScriptTimeZone();
-  var now = new Date();
-  var dow = Utilities.formatDate(now, tz, 'EEE'), wk = weekNum_(now);
-  var vals = sh.getDataRange().getDisplayValues();
-  var c = storyCols_(vals[0]);
-  for (var i = 1; i < vals.length; i++) {
-    var r = vals[i];
-    var g = function (idx) { return idx >= 0 ? String(r[idx] || '').trim() : ''; };
-    if (!/^(true|yes|y|x|on)$/i.test(g(c.active))) continue;
-    if (!dayMatches_(g(c.days), dow)) continue;
-    var pool = g(c.media).split(/[,\n]/).map(function (x) { return x.trim(); }).filter(Boolean);
-    if (!pool.length) continue;
-    var file = pool[wk % pool.length], tags = g(c.tags), caption = g(c.cap);
-    var payload = { caption: tags ? caption + '\n\n' + tags : caption, mediaType: 'story' };
-    if (/\.(mp4|mov|m4v)$/i.test(file)) payload.videoUrl = site + '/promos-video/' + file;
-    else payload.imageUrl = site + '/promos/' + file;
-    var res = UrlFetchApp.fetch(url, { method: 'post', contentType: 'application/json',
-      headers: { Authorization: 'Bearer ' + secret }, payload: JSON.stringify(payload), muteHttpExceptions: true });
-    Logger.log('testStoryNow ' + g(c.name) + ' -> ' + file + ': ' + res.getResponseCode() + ' ' + res.getContentText());
-    return;
-  }
-  Logger.log('testStoryNow: no active item for today');
-}
-
 // ── Polish web app (for the Claude Code revision routine) ───────────────────────────
 // GET  ?secret=...            -> JSON list of rows where Approval = "Polish".
 // POST {secret,tab,row,headline,caption,tags} -> write revision back, clear Approval.
@@ -508,21 +387,6 @@ function doGet(e) {
       return { tab: r.tab, row: r.rowNum, channel: r.channels.join(', '),
         headline: r.headline, caption: r.caption, tags: r.tags, notes: r.notes };
     });
-  // also scan the Story tab for Polish-flagged rows
-  var sh = ss_().getSheetByName(STORY_TAB);
-  if (sh) {
-    var vals = sh.getDataRange().getDisplayValues();
-    if (vals.length >= 2) {
-      var c = cols_(vals[0]);
-      for (var i = 1; i < vals.length; i++) {
-        var r2 = vals[i];
-        var g = function (idx) { return idx >= 0 ? String(r2[idx] || '').trim() : ''; };
-        if (!/polish/i.test(g(c.appr))) continue;
-        out.push({ tab: STORY_TAB, row: i + 1, channel: 'Story',
-          headline: '', caption: g(c.cap), tags: g(c.tags), notes: g(c.notes) });
-      }
-    }
-  }
   return json_({ ok: true, rows: out });
 }
 

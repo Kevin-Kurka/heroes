@@ -44,13 +44,16 @@ export async function fetchPromoRows(csvUrl: string): Promise<PromoRow[]> {
   const rows = parseCsv(await res.text());
   if (rows.length < 2) return [];
 
+  // Column names match the consolidated monthly-tab schema (Post Date | Post Time |
+  // Channel | Media | Headline | Caption | Tags | Approval | Posted | Notes). `File` and
+  // `Posted (IG)` are accepted as legacy aliases for `Media` / `Posted`.
   const header = rows[0];
-  const iFile = findIdx(header, (h) => h === 'file');
-  const iPost = findIdx(header, (h) => h === 'post');
+  const iFile = findIdx(header, (h) => h === 'media' || h === 'file');
+  const iPost = findIdx(header, (h) => h === 'headline' || h === 'post');
   const iCap = findIdx(header, (h) => h.startsWith('caption'));
   const iDate = findIdx(header, (h) => h.startsWith('post date'));
-  const iAppr = findIdx(header, (h) => h === 'approval');
-  const iPosted = findIdx(header, (h) => h.startsWith('posted (ig)'));
+  const iAppr = findIdx(header, (h) => h.startsWith('approval'));
+  const iPosted = findIdx(header, (h) => h.startsWith('posted'));
   const iChan = findIdx(header, (h) => h === 'channel');
 
   const cell = (r: string[], i: number) => (i >= 0 ? (r[i] ?? '').trim() : '');
