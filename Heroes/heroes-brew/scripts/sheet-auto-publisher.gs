@@ -223,6 +223,21 @@ function addStoryCaptionColumn() {
 // stays the bare filename (what the publisher reads); only a link is layered on top.
 // Kept first so the Apps Script editor's Run button (which defaults to the first function)
 // runs it directly. Re-runnable any time after adding/renaming media.
+// Turn a single Media cell's filename(s) into clickable link(s) to the hosted file. The cell
+// text stays the bare filename (what the publisher reads); only a link is layered on top.
+function linkifyMediaCell_(cell, site) {
+  var text = String(cell.getDisplayValue() || '').trim();
+  if (!text) return;
+  var b = SpreadsheetApp.newRichTextValue().setText(text);
+  var re = /[^,\s]+\.(mp4|mov|m4v|jpg|jpeg|png)/gi, m;
+  while ((m = re.exec(text)) !== null) {
+    var name = m[0], start = m.index, end = start + name.length;
+    var url = site + (/\.(mp4|mov|m4v)$/i.test(name) ? '/promos-video/' : '/promos/') + name;
+    b.setLinkUrl(start, end, url);
+  }
+  cell.setRichTextValue(b.build());
+}
+
 function linkifyMedia() {
   var site = props_().getProperty('SITE') || 'https://americanheroesandbrew.com';
   monthSheets_().forEach(function (sh) {
@@ -231,18 +246,26 @@ function linkifyMedia() {
     var c = cols_(values[0]);
     if (c.media < 0) return;
     for (var i = 1; i < values.length; i++) {
-      var text = String(values[i][c.media] || '').trim();
-      if (!text) continue;
-      var b = SpreadsheetApp.newRichTextValue().setText(text);
-      var re = /[^,\s]+\.(mp4|mov|m4v|jpg|jpeg|png)/gi, m;
-      while ((m = re.exec(text)) !== null) {
-        var name = m[0], start = m.index, end = start + name.length;
-        var url = site + (/\.(mp4|mov|m4v)$/i.test(name) ? '/promos-video/' : '/promos/') + name;
-        b.setLinkUrl(start, end, url);
-      }
-      sh.getRange(i + 1, c.media + 1).setRichTextValue(b.build());
+      if (String(values[i][c.media] || '').trim()) linkifyMediaCell_(sh.getRange(i + 1, c.media + 1), site);
     }
   });
+}
+
+// Fired from onEditInstallable: when an edit touches the Media column of a month tab, make the
+// edited cell(s) clickable automatically — so any row you add or paste self-links, no manual step.
+function linkifyEditedMedia_(e) {
+  if (!e || !e.range) return;
+  var sh = e.range.getSheet();
+  if (!MONTH_TAB_RE.test(sh.getName())) return;
+  var header = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0]
+    .map(function (h) { return String(h).trim().toLowerCase(); });
+  var mediaCol = header.indexOf('media') + 1; // 1-based; 0 if not found
+  if (mediaCol < 1) return;
+  if (mediaCol < e.range.getColumn() || mediaCol > e.range.getLastColumn()) return; // Media not edited
+  var site = props_().getProperty('SITE') || 'https://americanheroesandbrew.com';
+  for (var row = Math.max(2, e.range.getRow()); row <= e.range.getLastRow(); row++) {
+    linkifyMediaCell_(sh.getRange(row, mediaCol), site);
+  }
 }
 
 // Create the daily 8 AM auto-seed trigger WITHOUT seeding today (use this instead of
@@ -298,6 +321,7 @@ function publishDue() {
 }
 
 function onEditInstallable(e) {
+  try { linkifyEditedMedia_(e); } catch (err) { Logger.log('linkifyEditedMedia_: ' + err); }
   scheduleNext();
 }
 
@@ -367,6 +391,11 @@ function seedSpecialOn_(sh, date) {
   if (c.tags >= 0) rowArr[c.tags] = SPECIAL_TAGS;
   if (c.appr >= 0) rowArr[c.appr] = 'Approve';
   sh.appendRow(rowArr);
+  // Auto-seeded rows are programmatic (onEdit doesn't fire), so link the Media cell directly.
+  if (c.media >= 0) {
+    linkifyMediaCell_(sh.getRange(sh.getLastRow(), c.media + 1),
+      props_().getProperty('SITE') || 'https://americanheroesandbrew.com');
+  }
   return true;
 }
 
