@@ -92,9 +92,17 @@ weeks running. Edit the captions/times/keys in the `SPECIALS` map at the top of
 
 ### "Polish" — AI revision (Approval dropdown)
 Set **Approval = `Polish`** and write what you want changed in **Notes** (e.g. "punchier, mention
-happy hour"). A Claude Code routine picks it up, rewrites Headline/Caption/Tags using the Notes as
-guidance, writes the result back into the row, and clears Approval so Jenee re-reviews. Powered by
-the Apps Script web app (`doGet`/`doPost`, `POLISH_SECRET`) — no paid API.
+happy hour"). A Claude Code agent reads the flagged rows via the Apps Script web app
+(`doGet`/`doPost`, `POLISH_SECRET`), rewrites Headline/Caption/Tags using the Notes as guidance,
+writes the result back, and clears Approval so Jenee re-reviews — no paid API.
+
+**Run-on-demand only (not scheduled).** The polish agent is the `heroes-polish` cloud routine, and
+it is **disabled** on purpose — a cloud routine can only run on a cron or a manual trigger, it
+cannot watch the sheet for an edit, so leaving it on a schedule meant it ran every hour and pinged
+even when nothing was flagged. Do **not** re-enable the cron. When you flag rows `Polish`, run the
+review once on demand: open https://claude.ai/code/routines/trig_01EGSqfdQC4cGRP6FqH4Lr4E and click
+**Run now** (or ask Claude Code to run it). It exits immediately with "no rows to polish" if nothing
+is flagged.
 
 ## Media — where files live, how to name them, how to add new ones
 
