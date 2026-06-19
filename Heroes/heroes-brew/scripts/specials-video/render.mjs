@@ -1,9 +1,14 @@
 /**
- * Code-generated 9:16 Story videos for American Heroes & Brew — the always-on rotation.
+ * DEPRECATED — legacy generic poster renderer. Superseded by the themed renderers
+ * `scratch-render.mjs` (-> <key>-scratcher.mp4) and `slot-render.mjs` (-> <key>-slot.mp4),
+ * which produce the daily-special videos that actually ship. This file still emits the OLD
+ * `<key>-<n>.mp4` naming — do NOT run it for the daily specials or it will recreate stale,
+ * wrongly-named files. `npm run render:specials` now runs the themed renderers instead.
+ * Kept only for reference / the generic-poster animation.
  *
- * Each recurring item (Taco Tuesday, etc.) gets N distinct variants so the Story isn't
- * the same post twice in a row. Data -> branded poster (Canvas) -> 4s animated MP4 (FFmpeg).
- * Output: public/promos-video/<key>-<n>.mp4  (1080x1920, H.264/AAC).
+ * Code-generated 9:16 Story videos for American Heroes & Brew — the always-on rotation.
+ * Each recurring item (Taco Tuesday, etc.) gets N distinct variants. Data -> branded poster
+ * (Canvas) -> 4s animated MP4 (FFmpeg). Output: public/promos-video/<key>-<n>.mp4 (LEGACY).
  *
  * Run:  node scripts/specials-video/render.mjs          # all items, all variants
  *       node scripts/specials-video/render.mjs taco      # one item's variants

@@ -8,8 +8,10 @@
  *
  * No cabinet / lever / marquee — just the reels, then the reveal.
  *
- * Output: public/promos-video/<key>-slot.mp4 (preview). Promote to <key>-2.mp4 to ship.
- * Run:  node scripts/specials-video/slot-render.mjs burgers
+ * Output: public/promos-video/<key>-slot.mp4 — the themed "slot" half of the daily-special
+ * pair (the "scratcher" half comes from scratch-render.mjs). This IS the ship name.
+ * Run:  node scripts/specials-video/slot-render.mjs            # all days -> <key>-slot.mp4
+ *       node scripts/specials-video/slot-render.mjs burgers    # one day
  */
 import { createCanvas, GlobalFonts, loadImage } from '@napi-rs/canvas';
 import { execFileSync } from 'node:child_process';
@@ -356,7 +358,8 @@ async function render(key) {
   console.log('rendered', out);
 }
 
-const key = (process.argv[2] || 'burgers').toLowerCase();
+const onlyKey = process.argv[2]?.toLowerCase();
+const keys = onlyKey ? [onlyKey] : Object.keys(ITEMS);
 mkdirSync(TMP, { recursive: true });
-await render(key);
+for (const key of keys) await render(key);
 rmSync(TMP, { recursive: true, force: true });

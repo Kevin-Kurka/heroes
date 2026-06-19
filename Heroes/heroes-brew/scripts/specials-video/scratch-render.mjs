@@ -10,14 +10,15 @@
  *
  * Pipeline: @napi-rs/canvas renders every frame (incremental scratch mask for
  * speed) -> ffmpeg encodes a 1080x1920 ~6s H.264/AAC MP4 with a silent track.
- * Output: public/promos-video/<key>-<variant>.mp4  (overwrites the Story files).
+ * Output: public/promos-video/<key>-scratcher.mp4  (themed name; the "scratcher"
+ * half of the daily-special pair — the "slot" half comes from slot-render.mjs).
  *
  * Backgrounds: public/promos-video/bg/<key>.jpg per day. Falls back to FALLBACK_BG
  * (or a gradient) so a prototype can render before real photos are loaded.
  *
- * Run:  node scripts/specials-video/scratch-render.mjs            # all days, both variants
- *       node scripts/specials-video/scratch-render.mjs taco       # one day, both variants
- *       node scripts/specials-video/scratch-render.mjs burgers 1  # one day, one variant (1-based)
+ * Run:  node scripts/specials-video/scratch-render.mjs            # all days -> <key>-scratcher.mp4
+ *       node scripts/specials-video/scratch-render.mjs taco       # one day
+ *       node scripts/specials-video/scratch-render.mjs burgers 2  # one day, alternate scratch design (1-based)
  *
  * Requires: ffmpeg on PATH, devDependency @napi-rs/canvas.
  */
@@ -432,7 +433,7 @@ async function render(key, variant) {
   }
 
   mkdirSync(OUT_DIR, { recursive: true });
-  const out = join(OUT_DIR, `${key}-${variant + 1}.mp4`);
+  const out = join(OUT_DIR, `${key}-scratcher.mp4`);
   // Audio: this day's track (audio/<key>.mp3), else the generic track.mp3, else silent.
   const audioPath = [join(AUDIO_DIR, `${key}.mp3`), join(AUDIO_DIR, 'track.mp3')].find(existsSync);
   const hasAudio = !!audioPath;
@@ -464,8 +465,7 @@ const onlyKey = process.argv[2]?.toLowerCase();
 const onlyVariant = process.argv[3] ? parseInt(process.argv[3], 10) - 1 : null;
 const keys = onlyKey ? [onlyKey] : Object.keys(ITEMS);
 mkdirSync(TMP, { recursive: true });
-for (const key of keys) {
-  const variants = onlyVariant != null ? [onlyVariant] : [0, 1];
-  for (const v of variants) await render(key, v);
-}
+// One themed scratcher per key (output is <key>-scratcher.mp4). `variant` only picks the
+// scratch-path design now; pass an arg (1-based) to use the alternate design.
+for (const key of keys) await render(key, onlyVariant != null ? onlyVariant : 0);
 rmSync(TMP, { recursive: true, force: true });

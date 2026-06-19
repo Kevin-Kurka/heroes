@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "render:specials": "node scripts/specials-video/render.mjs"
+    "render:specials": "node scripts/specials-video/scratch-render.mjs && node scripts/specials-video/slot-render.mjs",
+    "render:scratcher": "node scripts/specials-video/scratch-render.mjs",
+    "render:slot": "node scripts/specials-video/slot-render.mjs"
   },
   "dependencies": {
     "@next/third-parties": "^16.2.7",

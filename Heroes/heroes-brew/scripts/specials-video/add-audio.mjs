@@ -5,7 +5,7 @@
  * Track: public/promos-video/audio/track.mp3  (Mixkit "One More Dance" — Mixkit Free
  * License, no attribution required). Drop a different track at that path to swap.
  *
- * Run:  node scripts/specials-video/add-audio.mjs taco-1.mp4 taco-2.mp4 ...
+ * Run:  node scripts/specials-video/add-audio.mjs taco-scratcher.mp4 taco-slot.mp4 ...
  */
 import { execFileSync } from 'node:child_process';
 import { renameSync, existsSync } from 'node:fs';
@@ -23,8 +23,8 @@ if (!files.length) { console.error('usage: add-audio.mjs <file.mp4>...'); proces
 for (const f of files) {
   const p = f.startsWith('/') ? f : join(OUT, f);
   if (!existsSync(p)) { console.error('skip (missing)', p); continue; }
-  // <key>-<n>.mp4 → this day's track, else the generic track.mp3
-  const key = basename(p).replace(/-\d+\.mp4$/, '');
+  // <key>-<theme>.mp4 (e.g. taco-scratcher.mp4) → this day's track, else the generic track.mp3
+  const key = basename(p).replace(/-[a-z]+\.mp4$/i, '');
   const AUDIO = [join(AUDIO_DIR, `${key}.mp3`), join(AUDIO_DIR, 'track.mp3')].find(existsSync);
   if (!AUDIO) { console.error('no track for', key); continue; }
   const tmp = p.replace(/\.mp4$/, '.aud.mp4');

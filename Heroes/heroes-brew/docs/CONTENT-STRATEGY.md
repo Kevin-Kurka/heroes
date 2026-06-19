@@ -138,18 +138,23 @@ live site**, so a `Media` link only works once the file is committed **and deplo
 
 ## Regenerating the daily-special / story videos
 
-Edit the `ITEMS` data in `scripts/specials-video/render.mjs` (each item lists `accents` — one per
-variant), then:
+The two daily-special themes are rendered by separate scripts, each emitting the themed
+`<key>-<theme>.mp4` name directly. Edit each script's `ITEMS` data, then:
 
 ```bash
 cd heroes-brew
-npm run render:specials       # all items, all variants → public/promos-video/<key>-<n>.mp4
-npm run render:specials taco  # just one item's variants
+npm run render:specials          # all 5 keys → <key>-scratcher.mp4 AND <key>-slot.mp4
+npm run render:scratcher         # just the scratch-off halves (scratch-render.mjs)
+npm run render:slot              # just the slot-machine halves (slot-render.mjs)
+node scripts/specials-video/scratch-render.mjs taco   # one key
 ```
 
-Commit the updated MP4s and deploy. Videos are 1080×1920 H.264/AAC (IG Story/Reel spec).
-(Other renderers in `scripts/specials-video/`: `scratch-render.mjs`, `slot-render.mjs`,
-`foodporn-render.mjs`, `menu-render.mjs`, with `add-audio.mjs` / `enhance-bg.mjs` helpers.)
+Commit the updated MP4s and deploy, then re-run `linkifyMedia` if you added new filenames.
+Videos are 1080×1920 H.264/AAC (IG Story/Reel spec). Backgrounds live in
+`public/promos-video/bg/`; `add-audio.mjs` / `enhance-bg.mjs` are helpers.
+(`render.mjs` is the **deprecated** legacy generic renderer — it still emits the old `<key>-<n>.mp4`
+naming, so don't run it for the specials. `foodporn-render.mjs` / `menu-render.mjs` are separate
+Feed-content renderers.)
 
 ## Automation map
 
