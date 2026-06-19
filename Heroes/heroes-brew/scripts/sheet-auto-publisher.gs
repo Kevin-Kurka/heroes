@@ -55,9 +55,11 @@ function weekNum_(d) {
   return Math.floor((((d - jan1) / 86400000) + jan1.getDay() + 1) / 7);
 }
 
-// The video for a given special on a given date: <key>-1.mp4 on even weeks, <key>-2.mp4 on odd.
+// The themed video for a given special on a given date: <key>-scratcher.mp4 (lotto scratch-off)
+// on even weeks, <key>-slot.mp4 (Heroes Jackpot slot machine) on odd weeks — so the theme
+// rotates weekly and the filename says both the special and its theme.
 function specialMedia_(key, date) {
-  return key + '-' + ((weekNum_(date) % 2) ? 2 : 1) + '.mp4';
+  return key + '-' + ((weekNum_(date) % 2) ? 'slot' : 'scratcher') + '.mp4';
 }
 
 function props_() { return PropertiesService.getScriptProperties(); }
@@ -187,10 +189,36 @@ function payloadFor_(row, channel, site) {
   return p;
 }
 
+// Make every Media cell across all month tabs a clickable link to its hosted file, so you
+// can click a filename in the sheet and confirm the asset actually loads. The cell's text
+// stays the bare filename (what the publisher reads); only a link is layered on top.
+// Kept first so the Apps Script editor's Run button (which defaults to the first function)
+// runs it directly. Re-runnable any time after adding/renaming media.
+function linkifyMedia() {
+  var site = props_().getProperty('SITE') || 'https://americanheroesandbrew.com';
+  monthSheets_().forEach(function (sh) {
+    var values = sh.getDataRange().getDisplayValues();
+    if (values.length < 2) return;
+    var c = cols_(values[0]);
+    if (c.media < 0) return;
+    for (var i = 1; i < values.length; i++) {
+      var text = String(values[i][c.media] || '').trim();
+      if (!text) continue;
+      var b = SpreadsheetApp.newRichTextValue().setText(text);
+      var re = /[^,\s]+\.(mp4|mov|m4v|jpg|jpeg|png)/gi, m;
+      while ((m = re.exec(text)) !== null) {
+        var name = m[0], start = m.index, end = start + name.length;
+        var url = site + (/\.(mp4|mov|m4v)$/i.test(name) ? '/promos-video/' : '/promos/') + name;
+        b.setLinkUrl(start, end, url);
+      }
+      sh.getRange(i + 1, c.media + 1).setRichTextValue(b.build());
+    }
+  });
+}
+
 // Create the daily 8 AM auto-seed trigger WITHOUT seeding today (use this instead of
 // enableSpecials when today's special has already posted, so you don't double-post a
-// past-time row that publishDue would immediately pick up). Kept first so the Apps Script
-// editor's Run button (which defaults to the first function) installs it directly.
+// past-time row that publishDue would immediately pick up).
 function addDailySpecialTrigger() {
   clearTriggers_(SPECIAL_FN);
   ScriptApp.newTrigger(SPECIAL_FN).timeBased().everyDays(1).atHour(8).create();

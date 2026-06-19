@@ -13,7 +13,7 @@ How we keep Instagram + Facebook active with the least manual work. Two channels
 
 | # | Category | Channel | Cadence | Source / asset | Approval |
 |---|----------|---------|---------|----------------|----------|
-| 1 | **Daily Special** | Story (video) | Mon–Fri | `public/promos-video/<key>-{1,2}.mp4`, auto-seeded into the month tab | Pre-approved (auto-seed) |
+| 1 | **Daily Special** | Story (video) | Mon–Fri | `public/promos-video/<key>-{scratcher,slot}.mp4`, auto-seeded into the month tab | Pre-approved (auto-seed) |
 | 2 | **Local Game Invite** | Story (image) | Each local-team game day | Auto matchup card (`/api/og/event?ratio=9x16`) for today's `LOCAL`-tier games | Automatic |
 | 3 | **Marquee Event** | Feed (+FB) | ~1–3 / week | Designed poster in `public/promos/`, row in the month tab | Jenee approves in sheet |
 | 4 | **Holiday / Theme** | Feed (+FB) | As they land | Designed poster, row in the month tab | Jenee approves in sheet |
@@ -79,14 +79,16 @@ run `backfillSpecials()` once — it fills the current + next month and is safe 
 
 | Day | Key / video | Caption ("what's on your mind") |
 |-----|-------------|----------------------------------|
-| Mon | `mahalo-{1,2}.mp4` | Sliders on my mind 🤙 Mahalo Monday at Heroes. |
-| Tue | `taco-{1,2}.mp4` | I want some tacos! 🌮 Taco Tuesday at Heroes. |
-| Wed | `wings-{1,2}.mp4` | Wing it — it's Humpday 🍗 Wings & Wells Wednesday at Heroes. |
-| Thu | `burgers-{1,2}.mp4` | Burger o'clock 🍔🍺 Burgers & Beer Thursday at Heroes. |
-| Fri | `funday-{1,2}.mp4` | Cheers to Friday! 🍻 Friday Funday at Heroes. |
+| Mon | `mahalo-{scratcher,slot}.mp4` | Sliders on my mind 🤙 Mahalo Monday at Heroes. |
+| Tue | `taco-{scratcher,slot}.mp4` | I want some tacos! 🌮 Taco Tuesday at Heroes. |
+| Wed | `wings-{scratcher,slot}.mp4` | Wing it — it's Humpday 🍗 Wings & Wells Wednesday at Heroes. |
+| Thu | `burgers-{scratcher,slot}.mp4` | Burger o'clock 🍔🍺 Burgers & Beer Thursday at Heroes. |
+| Fri | `funday-{scratcher,slot}.mp4` | Cheers to Friday! 🍻 Friday Funday at Heroes. |
 
-The `-1` / `-2` video variant alternates by week so it's never identical two weeks running. Edit
-the captions/times/keys in the `SPECIALS` map at the top of `scripts/sheet-auto-publisher.gs`.
+The filename names both the special and its **theme**: `-scratcher` (lotto scratch-off) or
+`-slot` (Heroes Jackpot slot machine). The theme alternates by week so it's never identical two
+weeks running. Edit the captions/times/keys in the `SPECIALS` map at the top of
+`scripts/sheet-auto-publisher.gs`.
 
 ### "Polish" — AI revision (Approval dropdown)
 Set **Approval = `Polish`** and write what you want changed in **Notes** (e.g. "punchier, mention
@@ -109,8 +111,8 @@ So a row with `Media = event-padres-dodgers.jpg` posts the file at
 live site**, so a `Media` link only works once the file is committed **and deployed**.
 
 **Naming conventions (keep links readable + collision-free):**
-- Daily specials: `<key>-<variant>.mp4` where key ∈ `mahalo|taco|wings|burgers|funday` (also
-  `gameday|watch|fantasy`), variant `1` or `2`.
+- Daily specials: `<key>-<theme>.mp4` where key ∈ `mahalo|taco|wings|burgers|funday` and theme ∈
+  `scratcher|slot` (e.g. `mahalo-scratcher.mp4`, `taco-slot.mp4`).
 - Designed event posters: `event-<slug>.jpg` (e.g. `event-padres-dodgers.jpg`, `event-flag-day.jpg`).
 - Evergreen/brand: descriptive slug (`fantasy-draft-hq.jpg`, `hero-up-watch-party.jpg`).
 - Event reels: `AHB-<theme>_<matchup>.mp4` (e.g. `AHB-watchparty_mexico-southkorea.mp4`).
