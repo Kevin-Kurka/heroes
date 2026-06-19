@@ -187,6 +187,15 @@ function payloadFor_(row, channel, site) {
   return p;
 }
 
+// Create the daily 8 AM auto-seed trigger WITHOUT seeding today (use this instead of
+// enableSpecials when today's special has already posted, so you don't double-post a
+// past-time row that publishDue would immediately pick up). Kept first so the Apps Script
+// editor's Run button (which defaults to the first function) installs it directly.
+function addDailySpecialTrigger() {
+  clearTriggers_(SPECIAL_FN);
+  ScriptApp.newTrigger(SPECIAL_FN).timeBased().everyDays(1).atHour(8).create();
+}
+
 function scheduleNext() {
   clearTriggers_(PUBLISH_FN);
   var start = startOfTodayPT_();
