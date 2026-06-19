@@ -37,23 +37,25 @@ occur + ~2–3 Feed posts/week. Jenee approves the whole week from one email.
 One **tab per month**, named like `July 2026`. Ten columns (matched by header name — order
 doesn't matter):
 
-`Post Date` · `Post Time` · `Channel` · `Media` · `Headline` · `Caption` · `Tags` · `Approval` · `Posted` · `Notes`
+`Post Date` · `Post Time` · `Channel` · `Media` · `Headline` · `Caption` · `Story Caption` · `Tags` · `Approval` · `Posted` · `Notes`
 
 | Column | What it does |
 |--------|--------------|
 | **Post Date** | The day it posts. `6/28/2026` or `Jun 28, 2026`. |
 | **Post Time** | Time of day (PT). `11:00 AM` / `4:30 PM`. The publisher re-arms at each row's time. |
-| **Channel** | `Feed`, `Story`, or both `Feed, Story`. For `Feed, Story` it posts to **each**. |
+| **Channel** | `Feed`, `Story`, or both `Feed, Story`. For `Feed, Story` it posts to **each** (the common case — most content goes to both). |
 | **Media** | One filename. `*.jpg`/`*.png` → `/promos/`; `*.mp4`/`*.mov` → `/promos-video/`. A full `https://…` URL also works. |
-| **Headline** | Optional bold opener. Goes first in the IG caption. Leave **blank** for casual posts (e.g. daily specials) so only the conversational caption shows. |
-| **Caption** | The **"what's on your mind"** line that goes out with the post — the human voice (e.g. *"Burger o'clock 🍔🍺 Burgers & Beer Thursday at Heroes."*). |
-| **Tags** | Hashtags, appended last. |
+| **Headline** | Optional bold opener for the **feed** post. Goes first in the feed caption. Leave **blank** for casual posts. |
+| **Caption** | The **feed / post** caption — what shows on the IG grid post + the Facebook cross-post (e.g. *"$4 street tacos + the World Cup on every screen…"*). |
+| **Story Caption** | The casual **"what's on your mind"** line for the **Story** (e.g. *"I want some tacos! 🌮"*). Used when the row posts to the Story; **if blank, the Story falls back to `Caption`.** So a `Feed, Story` row sends `Caption` to the feed and `Story Caption` to the story. *(IG Stories don't visibly render a caption — this is stored/sent for FB + records.)* |
+| **Tags** | Hashtags, appended last (to both the feed and story caption). |
 | **Approval** | `Approve` publishes; `Polish` sends the row to the AI revision routine (uses `Notes`). |
 | **Posted** | Stamped automatically after a successful post so the row never repeats. Leave empty. |
 | **Notes** | Free notes; also the instruction the `Polish` routine reads when revising. |
 
-**The IG/FB caption that goes out = `Headline` + `Caption` + `Tags`** (each separated by a blank
-line, blanks skipped). So the casual specials post their conversational `Caption` + `Tags` only.
+**Feed caption = `Headline` + `Caption` + `Tags`. Story caption = `Story Caption` + `Tags`** (each
+separated by a blank line, blanks skipped). A `Feed, Story` row posts each to its own channel; if
+`Story Caption` is blank the story reuses the feed caption. Story-only specials just fill `Caption`.
 
 A row publishes when **Approval = `Approve`**, **Posted** is empty, and its **Post Date/Time** is
 now-or-earlier today. Multiple rows can share a date — they all post at their own times.
@@ -64,11 +66,13 @@ now-or-earlier today. Multiple rows can share a date — they all post at their 
    `Media = <name>.jpg`, a `Headline`, a `Caption`, `Tags`.
 3. Jenee sets `Approval = Approve`. It posts at the scheduled time (IG + Facebook).
 
-### Add an Event reel to Feed **and** Story
+### Add an Event reel to Feed **and** Story (the common case)
 1. Put the 9:16 reel (1080×1920 H.264/AAC MP4) in `public/promos-video/`, commit, **deploy**, and
    confirm the file is live (see *Media* below).
-2. Add a row: `Channel = Feed, Story`, `Media = <name>.mp4`, `Caption` = your "what's on your
-   mind" line, `Tags`. (IG Reels loop by design; Stories play once.)
+2. Add a row: `Channel = Feed, Story`, `Media = <name>.mp4`, `Caption` = the full **feed** post
+   caption, `Story Caption` = the casual "what's on your mind" line for the **story**, `Tags`.
+   The feed post gets `Caption`; the story gets `Story Caption` (leave it blank to reuse `Caption`).
+   (IG Reels loop by design; Stories play once.)
 3. `Approval = Approve`. It posts a Reel to the Feed **and** the video to the Story.
 
 ### The recurring daily specials (auto)

@@ -11,12 +11,16 @@
 // tabs (v4). Multiple posts per day are just multiple rows with the same Post Date.
 //
 // Columns per month tab (matched by header name — order doesn't matter):
-//   Post Date | Post Time | Channel | Media | Headline | Caption | Tags | Approval | Posted | Notes
+//   Post Date | Post Time | Channel | Media | Headline | Caption | Story Caption | Tags | Approval | Posted | Notes
 //   - Channel:  "Feed", "Story", or both ("Feed, Story") — posts to each.
 //   - Media:    <name>.jpg/.png -> /promos/ ;  <name>.mp4 -> /promos-video/  (or a full URL)
-//   - Caption:  the "what's on your mind" line that goes out with the post (Headline + Caption
-//               + Tags are concatenated into the IG caption). Leave Headline blank for the
-//               casual daily specials so only the conversational caption + tags post.
+//   - Caption:  the FEED/post caption (Headline + Caption + Tags are concatenated). What shows
+//               on the IG grid post + the Facebook cross-post.
+//   - Story Caption: the casual "what's on your mind" line used when this row posts to the Story.
+//               Optional — if blank, the Story falls back to the post Caption. So a "Feed, Story"
+//               row sends the post Caption to the feed and the Story Caption to the story.
+//               (Note: IG Stories don't visibly render a caption; this is stored/sent for FB +
+//               record-keeping.) Leave Headline blank for casual daily specials.
 //   - Approval: "Approve" publishes; "Polish" sends the row to the AI routine using Notes.
 //
 // SETUP: paste into the sheet's Apps Script; Time zone = America/Los_Angeles; Script
@@ -34,7 +38,7 @@ var MONTH_NAMES = ['January','February','March','April','May','June','July','Aug
 var MONTH_TAB_RE = /^[A-Z][a-z]+ \d{4}$/;
 var VIDEO_RE = /\.(mp4|mov|m4v)$/i;
 
-var HEADERS = ['Post Date', 'Post Time', 'Channel', 'Media', 'Headline', 'Caption', 'Tags', 'Approval', 'Posted', 'Notes'];
+var HEADERS = ['Post Date', 'Post Time', 'Channel', 'Media', 'Headline', 'Caption', 'Story Caption', 'Tags', 'Approval', 'Posted', 'Notes'];
 
 // Recurring daily specials (Mon–Fri). Each posts to the Story with its casual
 // "what's on your mind" caption. `key` selects the video pool <key>-1.mp4 / <key>-2.mp4
@@ -81,6 +85,7 @@ function cols_(header) {
     media: find(function (h) { return h === 'media'; }),
     headline: find(function (h) { return h === 'headline'; }),
     cap: find(function (h) { return h.indexOf('caption') === 0; }),
+    storyCap: find(function (h) { return h.indexOf('story caption') === 0; }),
     tags: find(function (h) { return h.indexOf('tag') === 0; }),
     appr: find(function (h) { return h.indexOf('approval') === 0; }),
     posted: find(function (h) { return h.indexOf('posted') === 0; }),
@@ -149,10 +154,12 @@ function rows_() {
         isVideo: VIDEO_RE.test(media),
         headline: get(c.headline),
         caption: get(c.cap),
+        storyCaption: get(c.storyCap),
         tags: get(c.tags),
         notes: get(c.notes),
         approval: get(c.appr),
         posted: get(c.posted),
+        // Feed/post caption (Headline + Caption + Tags). Story uses its own caption — see payloadFor_.
         igCaption: composeCaption_(get(c.headline), get(c.cap), get(c.tags)),
         when: parseWhen_(get(c.date), get(c.time))
       });
@@ -183,10 +190,32 @@ function mediaUrl_(row, site) {
 }
 
 function payloadFor_(row, channel, site) {
-  var p = { caption: row.igCaption, mediaType: channel === 'Story' ? 'story' : 'feed' };
+  var isStory = channel === 'Story';
+  // Feed/Reel posts use the post caption (Headline + Caption + Tags). The Story uses its own
+  // `Story Caption` (the casual "what's on your mind" line) + Tags when one is set, else it
+  // falls back to the post caption — so a "Feed, Story" row can carry a different line per channel.
+  var caption = (isStory && row.storyCaption)
+    ? composeCaption_('', row.storyCaption, row.tags)
+    : row.igCaption;
+  var p = { caption: caption, mediaType: isStory ? 'story' : 'feed' };
   var url = mediaUrl_(row, site);
   if (row.isVideo) p.videoUrl = url; else p.imageUrl = url;
   return p;
+}
+
+// One-time: add a `Story Caption` column (right after `Caption`) to every month tab that
+// doesn't already have one. Idempotent. Kept first so the Apps Script editor's Run button
+// (which defaults to the first function) runs it directly.
+function addStoryCaptionColumn() {
+  monthSheets_().forEach(function (sh) {
+    var header = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0]
+      .map(function (h) { return String(h).trim().toLowerCase(); });
+    if (header.indexOf('story caption') >= 0) return; // already present
+    var capIdx = header.indexOf('caption');           // 0-based; insert right after Caption
+    var after = capIdx >= 0 ? capIdx + 1 : header.length; // 1-based column to insert after
+    sh.insertColumnAfter(after);
+    sh.getRange(1, after + 1).setValue('Story Caption');
+  });
 }
 
 // Make every Media cell across all month tabs a clickable link to its hosted file, so you
