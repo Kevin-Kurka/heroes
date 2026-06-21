@@ -185,6 +185,29 @@ Script editor (Time zone = America/Los_Angeles), set Script Properties (`PUBLISH
 Deploy → New deployment → Web app (execute as me, access: anyone with the link) and give the
 routine that `/exec` URL.
 
+## Google Business Profile posts (the `Google` channel)
+
+Add `Google` to a row's **Channel** (e.g. `Feed, Story, Google`) to also post to the business's
+Google Search/Maps listing. Posting goes through `/api/promos/publish-google` →
+`mybusiness.googleapis.com/v4/.../localPosts`. Google posts are **image or text only** (no video),
+so video rows post text-only there; image rows include the poster. Each post gets a "Learn more →
+website" button. The Google channel is **best-effort** — a Google failure is logged but never blocks
+the IG/Story `Posted` stamp — and it's **skipped entirely until configured**.
+
+**One-time activation (gated — Google must approve API access):**
+1. **GCP project + API:** in a Google Cloud project (signed in as the GBP manager,
+   `kurkafund@gmail.com`), enable the **Google Business Profile / "Google My Business" API**.
+2. **Request API access:** submit Google's Business Profile API **access request form** (the API
+   returns `403 PERMISSION_DENIED` until the project is approved — this is a review, allow days).
+3. **OAuth refresh token:** create an OAuth 2.0 client, then mint a **refresh token** for the GBP
+   account with scope `https://www.googleapis.com/auth/business.manage` (one consent screen).
+4. **IDs:** get the `accounts/{ACCOUNT_ID}` and `locations/{LOCATION_ID}` (via the Account
+   Management / Business Information APIs, or the account/location picker).
+5. **Vercel env** on project `heroes`: `GOOGLE_BUSINESS_CLIENT_ID`, `GOOGLE_BUSINESS_CLIENT_SECRET`,
+   `GOOGLE_BUSINESS_REFRESH_TOKEN`, `GOOGLE_BUSINESS_ACCOUNT_ID`, `GOOGLE_BUSINESS_LOCATION_ID`; redeploy.
+6. **Apps Script:** set Script Property `GOOGLE_PUBLISH_URL = https://americanheroesandbrew.com/api/promos/publish-google`.
+   Until this property is set, the `Google` channel is silently skipped (safe).
+
 ## Marquee vs Local
 
 - **Marquee** (designed Feed post): championships, followed-team (Padres/Chargers/Raiders) playoff

@@ -135,7 +135,14 @@ INSTAGRAM_USER_ID=<ig_user_id>            # IG account id targeted by the publis
 FB_PAGE_ID=<fb_page_id>                   # optional: Facebook Page id for the cross-post step (skipped if unset)
 FB_PAGE_ACCESS_TOKEN=<page_token>         # optional: Page token w/ pages_manage_posts (the IG token CANNOT post to a Page)
 MENU_SHEET_CSV_URL=<published_csv_url>    # optional: live menu from a Google Sheet (see MENU-SHEET-SYNC.md)
+GOOGLE_BUSINESS_CLIENT_ID=<oauth_client_id>       # optional: Google Business Profile "Google" channel
+GOOGLE_BUSINESS_CLIENT_SECRET=<oauth_client_secret>
+GOOGLE_BUSINESS_REFRESH_TOKEN=<refresh_token>     # scope https://www.googleapis.com/auth/business.manage
+GOOGLE_BUSINESS_ACCOUNT_ID=<gbp_account_id>       # accounts/{id}
+GOOGLE_BUSINESS_LOCATION_ID=<gbp_location_id>     # locations/{id}
 ```
+
+**Google Business Profile posts** (`POST /api/promos/publish-google`, guarded by `PROMOS_SECRET`): creates a GBP "local post" on the business's Search/Maps listing via `mybusiness.googleapis.com/v4/accounts/{acct}/locations/{loc}/localPosts` (refresh-token → access-token, then create). GBP posts are **image or text only** (no video). All five `GOOGLE_BUSINESS_*` vars are required or the route returns `503 not configured` and the sheet's `Google` channel is skipped (best-effort — never blocks IG/Story). The GCP project must be **approved for the Business Profile API** (gated access request) or the API 403s. The sheet publisher reaches this route via the Apps Script Script Property `GOOGLE_PUBLISH_URL`.
 
 **Instagram publishing** (`POST /api/promos/publish-instagram`): publishes posters from `public/promos/` via the Graph API content-publishing flow (`/media` → `/media_publish`). The `INSTAGRAM_ACCESS_TOKEN` must carry the **`instagram_content_publish`** permission — if the current token is a Basic-Display/Instagram-login token without that scope, publishing will 403 and the token must be reissued via a Facebook app with the IG account linked.
 

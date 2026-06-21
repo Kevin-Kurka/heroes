@@ -12,7 +12,11 @@
 //
 // Columns per month tab (matched by header name — order doesn't matter):
 //   Post Date | Post Time | Channel | Media | Headline | Caption | Story Caption | Tags | Approval | Posted | Notes
-//   - Channel:  "Feed", "Story", or both ("Feed, Story") — posts to each.
+//   - Channel:  "Feed", "Story", and/or "Google" — any combo (e.g. "Feed, Story, Google")
+//               posts to each. Google = a Google Business Profile post (best-effort: a Google
+//               failure never blocks the IG/Story Posted stamp; needs Script Prop GOOGLE_PUBLISH_URL
+//               + the GOOGLE_BUSINESS_* env on the publish app, else it's skipped). GBP posts are
+//               image-or-text only, so video rows post text-only to Google.
 //   - Media:    <name>.jpg/.png -> /promos/ ;  <name>.mp4 -> /promos-video/  (or a full URL)
 //   - Caption:  the FEED/post caption (Headline + Caption + Tags are concatenated). What shows
 //               on the IG grid post + the Facebook cross-post.
@@ -120,7 +124,7 @@ function channelsOf_(raw) {
   if (!parts.length) parts = ['Feed'];
   var out = [];
   parts.forEach(function (p) {
-    var ch = /story/i.test(p) ? 'Story' : 'Feed';
+    var ch = /google/i.test(p) ? 'Google' : (/story/i.test(p) ? 'Story' : 'Feed');
     if (out.indexOf(ch) < 0) out.push(ch);
   });
   return out;
@@ -200,6 +204,15 @@ function payloadFor_(row, channel, site) {
   var p = { caption: caption, mediaType: isStory ? 'story' : 'feed' };
   var url = mediaUrl_(row, site);
   if (row.isVideo) p.videoUrl = url; else p.imageUrl = url;
+  return p;
+}
+
+// Google Business Profile post payload (for the /api/promos/publish-google route). GBP local
+// posts are IMAGE or TEXT only — there is no video post — so a video row posts text-only.
+// A "Learn more" button links to the site.
+function googlePayloadFor_(row, site) {
+  var p = { caption: row.igCaption, ctaType: 'LEARN_MORE', ctaUrl: site };
+  if (!row.isVideo) p.imageUrl = mediaUrl_(row, site);
   return p;
 }
 
@@ -293,6 +306,7 @@ function scheduleNext() {
 function publishDue() {
   var p = props_();
   var url = p.getProperty('PUBLISH_URL');
+  var googleUrl = p.getProperty('GOOGLE_PUBLISH_URL'); // optional — Google channel is off until set
   var secret = p.getProperty('PROMOS_SECRET');
   var site = p.getProperty('SITE') || 'https://americanheroesandbrew.com';
   var now = new Date();
@@ -303,6 +317,21 @@ function publishDue() {
     .forEach(function (row) {
       var allOk = true;
       row.channels.forEach(function (ch) {
+        // Google Business Profile is a BEST-EFFORT channel: route it to its own endpoint and
+        // never let its outcome block the Posted stamp (a Google failure must not cause the
+        // IG/Story channels to re-post on the next retry). Skipped entirely until configured.
+        if (ch === 'Google') {
+          if (!googleUrl) { Logger.log('Google channel skipped (GOOGLE_PUBLISH_URL not set) [' + row.tab + ' r' + row.rowNum + ']'); return; }
+          var gres = UrlFetchApp.fetch(googleUrl, {
+            method: 'post', contentType: 'application/json',
+            headers: { Authorization: 'Bearer ' + secret },
+            payload: JSON.stringify(googlePayloadFor_(row, site)), muteHttpExceptions: true
+          });
+          if (gres.getResponseCode() !== 200) {
+            Logger.log('Google post failed (non-blocking) [' + row.tab + ' r' + row.rowNum + ']: ' + gres.getContentText());
+          }
+          return;
+        }
         var res = UrlFetchApp.fetch(url, {
           method: 'post',
           contentType: 'application/json',
