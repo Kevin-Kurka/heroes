@@ -352,7 +352,11 @@ function getVariableHolidays(year: number): HolidayDef[] {
 function holidayDefsToEvents(defs: HolidayDef[], year: number): UnifiedEvent[] {
   return defs
     .map((h) => {
-      const d = new Date(year, h.month - 1, h.day);
+      // Anchor at NOON UTC, not local midnight. A local-midnight Date serialized with
+      // toISOString() becomes T00:00:00Z on the UTC production server, which renders as the
+      // PREVIOUS day once EventCard formats it in America/Los_Angeles (UTC-7/-8) — making every
+      // holiday show one day early. Noon UTC (≈5am PT) keeps the calendar day correct in PT.
+      const d = new Date(Date.UTC(year, h.month - 1, h.day, 12, 0, 0));
       return { ...h, date: d };
     })
     .sort((a, b) => a.date.getTime() - b.date.getTime())
