@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
   if (type === 'join') {
     const name = s(body.name);
     const email = s(body.email);
-    const leagueIds = Array.isArray(body.leagueIds) ? body.leagueIds.map((x) => s(x, 20)).filter(Boolean) : [];
+    const leagueIds = Array.isArray(body.leagueIds) ? body.leagueIds.map((x) => s(x, 80)).filter(Boolean) : [];
     const draftDates = Array.isArray(body.draftDates) ? body.draftDates.map((x) => s(x, 60)) : [];
     if (!name || !email) return NextResponse.json({ ok: false, error: 'Name and email are required.' }, { status: 422 });
     if (!leagueIds.length) return NextResponse.json({ ok: false, error: 'Pick at least one draft date.' }, { status: 422 });
