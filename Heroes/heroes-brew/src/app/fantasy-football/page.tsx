@@ -6,6 +6,7 @@ import {
   getBreadcrumbJsonLd,
 } from '@/lib/structured-data';
 import { FANTASY } from '@/lib/fantasy';
+import { getLeagueAvailability } from '@/lib/fantasy-leagues';
 import FantasyPageView from '@/components/FantasyPageView';
 
 const PAGE_URL = `${SITE_URL}/fantasy-football`;
@@ -25,9 +26,11 @@ export const metadata: Metadata = {
   },
 };
 
-export const revalidate = 3600;
+// Short revalidate so league "spots left" stays fresh as leagues fill.
+export const revalidate = 120;
 
-export default function FantasyFootballPage() {
+export default async function FantasyFootballPage() {
+  const leagues = await getLeagueAvailability();
   const jsonLd = [
     getWebPageJsonLd({ url: PAGE_URL, name: TITLE, description: DESCRIPTION }),
     getGenericFaqJsonLd(FANTASY.faqs, PAGE_URL),
@@ -46,7 +49,7 @@ export default function FantasyFootballPage() {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(obj) }}
         />
       ))}
-      <FantasyPageView />
+      <FantasyPageView leagues={leagues} />
     </>
   );
 }
