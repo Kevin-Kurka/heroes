@@ -26,8 +26,10 @@ export const metadata: Metadata = {
   },
 };
 
-// Short revalidate so league "spots left" stays fresh as leagues fill.
-export const revalidate = 120;
+// Render per request so the live sheet leagues (names + spots) are always current.
+// Static/ISR caching here is unsafe: a cached *fallback* render would carry league
+// ids that don't match the sheet, breaking every join made from that page.
+export const dynamic = 'force-dynamic';
 
 export default async function FantasyFootballPage() {
   const leagues = await getLeagueAvailability();

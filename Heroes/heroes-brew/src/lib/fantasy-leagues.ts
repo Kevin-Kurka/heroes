@@ -1,4 +1,4 @@
-import { OFFICIAL_LEAGUES, LEAGUE_CAPACITY, type OfficialLeague } from './fantasy';
+import { LEAGUE_CAPACITY } from './fantasy';
 
 export interface LeagueAvailability {
   id: string;        // the League Name from the Leagues tab (key for joins/counts)
@@ -25,14 +25,20 @@ function fmtDate(s: string): string {
  * Official Heroes league availability — sourced from the Sheet's "Leagues" tab
  * via the Apps Script GET (env FANTASY_COUNTS_URL), which returns
  * [{name, dateLabel, time, capacity, count, spotsLeft, full}] (NO share links —
- * those are revealed only after a validated signup). Falls back to the bundled
- * OFFICIAL_LEAGUES (all open) if the endpoint is unset or unreachable.
+ * those are revealed only after a validated signup).
+ *
+ * On failure (env unset or endpoint unreachable) this returns [] — NOT the bundled
+ * OFFICIAL_LEAGUES. The bundled ids are date tokens ('aug28-fri') that don't match
+ * the Sheet's league names, so a join made against them is always rejected by the
+ * Apps Script. Rendering an empty list makes the Join form show its graceful
+ * "reach out to us" state instead of an unjoinable form. The page is force-dynamic,
+ * so a transient failure self-heals on the next request rather than being cached.
  */
 export async function getLeagueAvailability(): Promise<LeagueAvailability[]> {
   const url = process.env.FANTASY_COUNTS_URL;
   if (url) {
     try {
-      const res = await fetch(url, { next: { revalidate: 120 } });
+      const res = await fetch(url, { cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
         if (Array.isArray(data) && data.length) {
@@ -57,13 +63,5 @@ export async function getLeagueAvailability(): Promise<LeagueAvailability[]> {
       /* fall back */
     }
   }
-  return OFFICIAL_LEAGUES.map((l: OfficialLeague) => ({
-    id: l.id,
-    label: l.label,
-    time: l.time,
-    capacity: l.capacity,
-    count: 0,
-    spotsLeft: l.capacity,
-    full: false,
-  }));
+  return [];
 }
