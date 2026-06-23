@@ -24,6 +24,7 @@ import { execFileSync } from 'node:child_process';
 import { mkdirSync, writeFileSync, rmSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import sharp from 'sharp';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const PUBLIC = join(HERE, '..', '..', 'public');
@@ -45,7 +46,7 @@ const BLUE = '#2851a7';
 const NAVY = '#0c1f4d';   // dark outline for white fills
 const WHITE = '#ffffff';
 const FPS = 30, DUR = 9.0, FRAMES = Math.round(FPS * DUR);
-const DISS = 0.55; // cross-dissolve seconds
+const DISS = 0.4; // quick cross-dissolve between images
 
 // Lead with the cleanest center-subject action shots; keep faces framed via FOCAL.
 const ORDER = ['josh_allen', 'cmc', 'chargers_lineup', 'raiders', 'chargers_preview', 'josh_allen2'];
@@ -85,40 +86,85 @@ function stroked(ctx, text, x, y, font, fill, stroke, lineW, blur = 16) {
   ctx.fillText(text, x, y);
 }
 
+// Fireworks that burst around the $100 pill when it lands. Particles are generated
+// once with a seeded PRNG so the 9:16 and 4:5 renders match exactly.
+function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const FW_BURSTS = (() => {
+  const rnd = mulberry32(20260626);
+  const cols = ['#ffffff', RED, BLUE];
+  const defs = [
+    { t0: 1.55, fx: 0.26, fy: 0.66 },
+    { t0: 1.63, fx: 0.74, fy: 0.66 },
+    { t0: 1.58, fx: 0.50, fy: 0.585 },
+    { t0: 2.15, fx: 0.38, fy: 0.62 },
+    { t0: 2.22, fx: 0.62, fy: 0.62 },
+  ];
+  return defs.map((d) => {
+    const n = 26, parts = [];
+    for (let i = 0; i < n; i++) parts.push({ ang: (i / n) * Math.PI * 2 + rnd() * 0.18, spd: 0.55 + rnd() * 0.6, col: cols[i % 3], sz: 1 + rnd() * 1.7 });
+    return { ...d, parts, life: 0.9 };
+  });
+})();
+function drawFireworks(ctx, sec, W, H) {
+  const px = W / 1080;
+  for (const b of FW_BURSTS) {
+    const age = sec - b.t0;
+    if (age < 0 || age > b.life) continue;
+    const cx = b.fx * W, cy = b.fy * H, prog = age / b.life, reach = Math.min(W, H) * 0.17;
+    ctx.save();
+    if (age < 0.12) { const fa = 1 - age / 0.12; ctx.globalAlpha = 0.55 * fa; ctx.fillStyle = '#fff'; ctx.shadowColor = '#fff'; ctx.shadowBlur = 24 * px; ctx.beginPath(); ctx.arc(cx, cy, (reach * 0.35 * fa + 8 * px), 0, 7); ctx.fill(); }
+    for (const p of b.parts) {
+      const d = reach * p.spd * easeOut(prog);
+      const x = cx + Math.cos(p.ang) * d;
+      const y = cy + Math.sin(p.ang) * d + reach * prog * prog * 0.55;
+      ctx.globalAlpha = (1 - prog) * (1 - prog);
+      ctx.fillStyle = p.col; ctx.shadowColor = p.col; ctx.shadowBlur = 12 * px;
+      ctx.beginPath(); ctx.arc(x, y, Math.max(0.5, p.sz * (1.5 - prog) * 2.4 * px), 0, 7); ctx.fill();
+    }
+    ctx.restore();
+  }
+  shadowOff(ctx);
+}
+
 async function loadAssets() {
-  const IMG = [];
+  const IMG = [], BLUR = [];
   for (const key of ORDER) {
     const p = join(NFL, `${key}.jpg`);
     if (!existsSync(p)) throw new Error(`missing ${p}`);
     IMG.push(await loadImage(p));
+    // soft-focus variant for the "comes into focus" entrance
+    const b = await sharp(p).blur(22).jpeg({ quality: 82 }).toBuffer();
+    BLUR.push(await loadImage(b));
   }
   const badge = existsSync(join(PUBLIC, 'badge-clean.png')) ? await loadImage(join(PUBLIC, 'badge-clean.png')) : null;
-  return { IMG, badge };
+  return { IMG, BLUR, badge };
 }
 
-// Full-bleed Ken-Burns: photo fills the frame, zooms, and pans gently while the
-// focal point (face) is kept toward center. Alternates zoom/pan direction per image.
-function drawImageLayer(ctx, A, idx, localTime, alpha, W, H) {
-  if (alpha <= 0) return;
-  const img = A.IMG[idx];
-  const p = clamp01(localTime / SEG);
-  const fx = FOCAL[ORDER[idx]] ?? 0.5;
-  const dir = idx % 2 === 0 ? 1 : -1;
-  const scale = idx % 2 === 0 ? lerp(1.04, 1.16, easeInOut(p)) : lerp(1.16, 1.04, easeInOut(p));
+const FOCUS_T = 0.45; // seconds for an image to settle from soft→sharp
 
+// Full-bleed "focus pull": each photo enters slightly soft + zoomed, then settles
+// SHARP and steady on the subject (focal point kept centered). After settling it
+// holds with a very gentle single-direction zoom — no back-and-forth panning.
+function drawCoverScaled(ctx, img, W, H, scale, fx, alpha) {
   const ir = img.width / img.height, cr = W / H; let w, h;
   if (ir > cr) { h = H * scale; w = h * ir; } else { w = W * scale; h = w / ir; }
-  const overX = w - W, overY = h - H;
-  // place focal point near center, then drift horizontally a touch for motion
-  let left = W / 2 - fx * w;
-  const drift = dir * easeInOut(p) * Math.min(overX * 0.16, W * 0.045);
-  left = clamp(left + drift, W - w, 0);
-  const top = clamp((H - h) / 2 + Math.sin(p * Math.PI) * Math.min(overY * 0.10, H * 0.02), H - h, 0);
-
-  ctx.save();
-  ctx.globalAlpha = alpha;
-  ctx.drawImage(img, left, top, w, h);
-  ctx.restore();
+  const left = clamp(W / 2 - fx * w, W - w, 0);
+  const top = clamp((H - h) / 2, H - h, 0);
+  ctx.save(); ctx.globalAlpha = alpha; ctx.drawImage(img, left, top, w, h); ctx.restore();
+}
+function drawImageLayer(ctx, A, idx, localTime, alpha, W, H) {
+  if (alpha <= 0) return;
+  const fx = FOCAL[ORDER[idx]] ?? 0.5;
+  const fp = clamp01(localTime / FOCUS_T);              // 0→1 focus settle
+  const focus = easeOut(fp);
+  // scale: settle 1.10→1.0 during focus, then slow 1.0→1.035 drift inward (one way)
+  const settle = lerp(1.10, 1.0, focus);
+  const hold = lerp(1.0, 1.035, clamp01((localTime - FOCUS_T) / (SEG - FOCUS_T)));
+  const scale = localTime < FOCUS_T ? settle : hold;
+  // sharp base
+  drawCoverScaled(ctx, A.IMG[idx], W, H, scale, fx, alpha);
+  // soft overlay fading out = "comes into focus" (no blur cost during hold)
+  if (fp < 1 && A.BLUR[idx]) drawCoverScaled(ctx, A.BLUR[idx], W, H, scale, fx, alpha * (1 - focus));
 }
 
 function drawScene(ctx, sec, A, W, H) {
@@ -139,6 +185,8 @@ function drawScene(ctx, sec, A, W, H) {
   const bgg = ctx.createLinearGradient(0, H * 0.40, 0, H);
   bgg.addColorStop(0, 'rgba(0,0,0,0)'); bgg.addColorStop(0.45, 'rgba(0,0,0,0.55)'); bgg.addColorStop(1, 'rgba(0,0,0,0.93)');
   ctx.fillStyle = bgg; ctx.fillRect(0, H * 0.40, W, H * 0.60);
+  // fireworks burst around the $100 pill (drawn behind the text layer)
+  drawFireworks(ctx, sec, W, H);
 }
 
 function popText(ctx, fn, cx, cy, td) {
