@@ -34,11 +34,11 @@ export const MAX_LEAGUES_PER_USER = 3;
  *  break the per-league counts/caps keyed on this id. */
 export const OFFICIAL_LEAGUES: OfficialLeague[] = [
   { id: 'aug28-fri', label: 'Fri, Aug 28', time: '4:00 PM', capacity: 10 },
-  { id: 'aug29-sat', label: 'Sat, Aug 29', capacity: 10 },
-  { id: 'aug30-sun', label: 'Sun, Aug 30', capacity: 10 },
+  { id: 'aug29-sat', label: 'Sat, Aug 29', time: '4:00 PM', capacity: 10 },
+  { id: 'aug30-sun', label: 'Sun, Aug 30', time: '3:00 PM', capacity: 10 },
   { id: 'sep04-fri', label: 'Fri, Sep 4', time: '4:00 PM', capacity: 10 },
-  { id: 'sep05-sat', label: 'Sat, Sep 5', capacity: 10 },
-  { id: 'sep06-sun', label: 'Sun, Sep 6 (Labor Day wknd)', capacity: 10 },
+  { id: 'sep05-sat', label: 'Sat, Sep 5', time: '4:00 PM', capacity: 10 },
+  { id: 'sep06-sun', label: 'Sun, Sep 6 (Labor Day wknd)', time: '3:00 PM', capacity: 10 },
 ];
 
 export function leagueDateText(l: OfficialLeague): string {
@@ -93,7 +93,7 @@ export const FANTASY = {
     {
       question: 'When are the official Heroes league drafts?',
       answer:
-        'Official Heroes leagues draft the two weekends before the NFL season — Fridays at 4pm plus Saturdays and Sundays — wrapping up on Labor Day weekend. Each league is capped at 10 players, so spots fill up. You pick your draft date when you sign up.',
+        'Official Heroes leagues draft the two weekends before the NFL season — Fridays and Saturdays at 4pm, Sundays at 3pm — wrapping up on Labor Day weekend. Each league is capped at 10 players, so spots fill up. You pick your draft date when you sign up.',
     },
     {
       question: 'What does the winner get?',
