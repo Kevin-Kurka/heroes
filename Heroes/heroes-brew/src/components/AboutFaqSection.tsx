@@ -41,7 +41,8 @@ export default function AboutFaqSection() {
             <Link href="/watch" className="text-accent hover:underline">Where to watch the game in Carlsbad</Link>{' · '}
             <Link href="/near-legoland" className="text-accent hover:underline">Family dining near LEGOLAND</Link>{' · '}
             <Link href="/breakfast" className="text-accent hover:underline">Weekend breakfast</Link>{' · '}
-            <Link href="/happy-hour" className="text-accent hover:underline">Happy hour &amp; daily specials</Link>
+            <Link href="/happy-hour" className="text-accent hover:underline">Happy hour &amp; daily specials</Link>{' · '}
+            <Link href="/heroes" className="text-accent hover:underline">Hero of the Month</Link>
           </p>
         </div>
       </section>
