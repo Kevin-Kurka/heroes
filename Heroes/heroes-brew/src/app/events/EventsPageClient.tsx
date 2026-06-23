@@ -2,6 +2,8 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
+import { Trophy } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { UnifiedEvent } from '@/types';
 import EventCard from '@/components/EventCard';
@@ -90,6 +92,24 @@ export default function EventsPageClient({ events, allHolidays }: Props) {
             All the games and celebrations coming up this week.
           </p>
         </div>
+
+        {/* Heroes Fantasy Football League promo → /fantasy-football */}
+        <Link
+          href="/fantasy-football"
+          className="group mb-6 flex items-center gap-4 rounded-lg border border-accent/40 bg-card/80 backdrop-blur-md p-4 transition-colors hover:border-accent"
+        >
+          <div className="shrink-0 rounded-lg bg-accent/10 p-2.5">
+            <Trophy size={22} className="text-accent" />
+          </div>
+          <div className="min-w-0">
+            <h2 className="font-bold text-foreground group-hover:text-accent transition-colors">
+              🏈 Heroes Fantasy Football League
+            </h2>
+            <p className="text-sm text-muted">
+              Free to join · $100 to the winner · draft at the bar with free munchies on the big screen →
+            </p>
+          </div>
+        </Link>
 
         {/* Sentinel to detect sticky state */}
         <div ref={sentinelRef} className="h-0" />

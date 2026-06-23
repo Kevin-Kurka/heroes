@@ -75,6 +75,7 @@ ${faq}
 - Weekend breakfast in Carlsbad Village: ${SITE_URL}/breakfast
 - Happy hour & daily specials: ${SITE_URL}/happy-hour
 - Hero of the Month (community spotlight): ${SITE_URL}/heroes
+- Fantasy Football League (join, draft at the bar, $100 prize): ${SITE_URL}/fantasy-football
 - Scoreboard (live games & events): ${SITE_URL}/events
 - Location & hours: ${SITE_URL}/location
 - Social: ${SITE_URL}/social
