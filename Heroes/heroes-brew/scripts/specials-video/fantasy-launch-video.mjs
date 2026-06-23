@@ -39,7 +39,11 @@ const HEAD = GlobalFonts.families.some((f) => /Avenir Next Condensed/.test(f.fam
   ? 'Avenir Next Condensed'
   : (GlobalFonts.families.some((f) => /Avenir Next/.test(f.family)) ? 'Avenir Next' : 'sans-serif');
 
-const AMBER = '#f59e0b';
+// American Heroes & Brew badge palette — red / white / blue only (no amber).
+const RED = '#e2273a';
+const BLUE = '#2851a7';
+const NAVY = '#0c1f4d';   // dark outline for white fills
+const WHITE = '#ffffff';
 const FPS = 30, DUR = 9.0, FRAMES = Math.round(FPS * DUR);
 const DISS = 0.55; // cross-dissolve seconds
 
@@ -68,8 +72,18 @@ function fitFont(ctx, text, weight, px, maxW) {
   for (;;) { ctx.font = `${weight} ${s}px "${HEAD}"`; if (ctx.measureText(text).width <= maxW || s <= 12) break; s -= 2; }
   return s;
 }
-const shadowOn = (ctx, blur = 10, a = 0.7) => { ctx.shadowColor = `rgba(0,0,0,${a})`; ctx.shadowBlur = blur; ctx.shadowOffsetY = blur * 0.25; };
 const shadowOff = (ctx) => { ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0; };
+// Crisp outlined text: contrast stroke + drop shadow, then a clean fill on top.
+function stroked(ctx, text, x, y, font, fill, stroke, lineW, blur = 16) {
+  ctx.font = font;
+  ctx.lineJoin = 'round'; ctx.miterLimit = 2;
+  ctx.lineWidth = lineW; ctx.strokeStyle = stroke;
+  ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowBlur = blur; ctx.shadowOffsetY = blur * 0.32;
+  ctx.strokeText(text, x, y);
+  shadowOff(ctx);
+  ctx.fillStyle = fill;
+  ctx.fillText(text, x, y);
+}
 
 async function loadAssets() {
   const IMG = [];
@@ -129,8 +143,11 @@ function drawScene(ctx, sec, A, W, H) {
 
 function popText(ctx, fn, cx, cy, td) {
   if (td < 0) return;
-  const e = backOut(clamp01(td / 0.42)), a = clamp01(td / 0.18);
-  ctx.save(); ctx.globalAlpha = a; ctx.translate(cx, cy); ctx.scale(e, e); ctx.translate(-cx, -cy); fn(); ctx.restore();
+  // snappy: quick overshoot scale + fast fade + a short slide-up
+  const e = backOut(clamp01(td / 0.26)), a = clamp01(td / 0.09);
+  const slide = (1 - easeOut(clamp01(td / 0.26))) * 22;
+  ctx.save(); ctx.globalAlpha = a; ctx.translate(0, slide);
+  ctx.translate(cx, cy); ctx.scale(e, e); ctx.translate(-cx, -cy); fn(); ctx.restore();
 }
 function fadeWindow(sec, start, end) {
   if (sec < start || sec > end) return 0;
@@ -146,101 +163,88 @@ function drawText(ctx, sec, A, W, H) {
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
 
-  // badge + kicker
-  const introT = sec - 0.25;
+  // badge + kicker (white text, navy outline)
+  const introT = sec - 0.15;
   if (A.badge) {
     popText(ctx, () => {
       const r = H * 0.05;
-      ctx.fillStyle = 'rgba(255,255,255,0.9)';
+      ctx.fillStyle = 'rgba(255,255,255,0.92)';
       ctx.beginPath(); ctx.arc(cx, H * 0.082, r, 0, 7); ctx.fill();
       ctx.drawImage(A.badge, cx - r, H * 0.082 - r, r * 2, r * 2);
     }, cx, H * 0.082, introT);
   }
   if (introT >= -0.05) {
-    ctx.globalAlpha = clamp01(introT / 0.4);
-    ctx.fillStyle = AMBER;
-    fitFont(ctx, 'AMERICAN HEROES & BREW · CARLSBAD VILLAGE', 700, W * 0.03, W * 0.86);
-    shadowOn(ctx, 8, 0.7);
-    ctx.fillText('AMERICAN HEROES & BREW · CARLSBAD VILLAGE', cx, H * 0.15);
-    shadowOff(ctx);
+    ctx.globalAlpha = clamp01(introT / 0.25);
+    const s = fitFont(ctx, 'AMERICAN HEROES & BREW · CARLSBAD VILLAGE', 700, W * 0.03, W * 0.86);
+    stroked(ctx, 'AMERICAN HEROES & BREW · CARLSBAD VILLAGE', cx, H * 0.15, `700 ${s}px "${HEAD}"`, WHITE, NAVY, Math.max(3, s * 0.06), 8);
     ctx.globalAlpha = 1;
   }
 
-  // headline slam
+  // headline slam — FANTASY FOOTBALL (white / navy outline), LEAGUE (red / white outline)
   const hl = H * 0.58, hl2 = H * 0.635;
   popText(ctx, () => {
-    const s = fitFont(ctx, 'FANTASY FOOTBALL', 800, W * 0.094, W * 0.92);
-    ctx.font = `800 ${s}px "${HEAD}"`;
-    ctx.fillStyle = '#fff'; shadowOn(ctx, 26, 0.62);
-    ctx.fillText('FANTASY FOOTBALL', cx, hl); shadowOff(ctx);
-  }, cx, hl, sec - 0.5);
+    const s = fitFont(ctx, 'FANTASY FOOTBALL', 800, W * 0.096, W * 0.93);
+    stroked(ctx, 'FANTASY FOOTBALL', cx, hl, `800 ${s}px "${HEAD}"`, WHITE, NAVY, Math.max(7, s * 0.11), 26);
+  }, cx, hl, sec - 0.28);
   popText(ctx, () => {
-    const s = fitFont(ctx, 'LEAGUE', 800, W * 0.094, W * 0.92);
-    ctx.font = `800 ${s}px "${HEAD}"`;
-    ctx.fillStyle = AMBER; shadowOn(ctx, 26, 0.62);
-    ctx.fillText('LEAGUE', cx, hl2); shadowOff(ctx);
-  }, cx, hl2, sec - 0.68);
+    const s = fitFont(ctx, 'LEAGUE', 800, W * 0.096, W * 0.93);
+    stroked(ctx, 'LEAGUE', cx, hl2, `800 ${s}px "${HEAD}"`, RED, WHITE, Math.max(7, s * 0.11), 26);
+  }, cx, hl2, sec - 0.4);
 
-  // $100 pill + shine
-  const pillY = H * 0.715, pillT = sec - 2.4;
+  // $100 pill — blue fill, white border + white text, drop shadow + shine
+  const pillY = H * 0.715, pillT = sec - 1.55;
   popText(ctx, () => {
     const fs = W * 0.05;
     ctx.font = `800 ${fs}px "${HEAD}"`;
     const txt = '$100 TO THE CHAMP';
-    const padX = fs * 0.55, ph = fs * 1.55, pw = ctx.measureText(txt).width + padX * 2;
-    shadowOn(ctx, 18, 0.45);
-    ctx.fillStyle = AMBER; roundRect(ctx, cx - pw / 2, pillY - ph / 2, pw, ph, ph / 2); ctx.fill();
+    const padX = fs * 0.62, ph = fs * 1.6, pw = ctx.measureText(txt).width + padX * 2;
+    ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 20; ctx.shadowOffsetY = 7;
+    ctx.fillStyle = BLUE; roundRect(ctx, cx - pw / 2, pillY - ph / 2, pw, ph, ph / 2); ctx.fill();
     shadowOff(ctx);
-    ctx.fillStyle = '#19120a'; ctx.fillText(txt, cx, pillY + fs * 0.03);
+    ctx.lineWidth = Math.max(3, fs * 0.09); ctx.strokeStyle = WHITE;
+    roundRect(ctx, cx - pw / 2, pillY - ph / 2, pw, ph, ph / 2); ctx.stroke();
+    ctx.fillStyle = WHITE; ctx.fillText(txt, cx, pillY + fs * 0.03);
   }, cx, pillY, pillT);
-  const shineT = sec - 2.95;
-  if (shineT >= 0 && shineT <= 0.45) {
-    const sx = lerp(-W * 0.2, W * 1.2, easeOut(shineT / 0.45));
+  const shineT = sec - 1.95;
+  if (shineT >= 0 && shineT <= 0.4) {
+    const sx = lerp(-W * 0.2, W * 1.2, easeOut(shineT / 0.4));
     ctx.save();
-    ctx.globalAlpha = 0.5 * (1 - shineT / 0.45);
+    ctx.globalAlpha = 0.55 * (1 - shineT / 0.4);
     const sg = ctx.createLinearGradient(sx - W * 0.08, 0, sx + W * 0.08, 0);
-    sg.addColorStop(0, 'rgba(255,255,255,0)'); sg.addColorStop(0.5, 'rgba(255,255,255,0.85)'); sg.addColorStop(1, 'rgba(255,255,255,0)');
+    sg.addColorStop(0, 'rgba(255,255,255,0)'); sg.addColorStop(0.5, 'rgba(255,255,255,0.9)'); sg.addColorStop(1, 'rgba(255,255,255,0)');
     ctx.fillStyle = sg; ctx.fillRect(sx - W * 0.08, pillY - H * 0.035, W * 0.16, H * 0.07);
     ctx.restore();
   }
 
-  // rotating sub-lines
+  // rotating sub-lines (white / navy outline) — faster cadence
   const subY = H * 0.795;
   const lines = [
-    ['Draft at the bar  ·  Every game on 16 TVs', 1.3, 4.3],
-    ['Free to join  ·  9 open spots per league', 4.3, 6.5],
-    ['Bring your crew — or we’ll match you up', 6.5, DUR + 0.2],
+    ['Draft at the bar  ·  Every game on 16 TVs', 1.0, 3.6],
+    ['Free to join  ·  9 open spots per league', 3.6, 6.0],
+    ['Bring your crew — or we’ll match you up', 6.0, DUR + 0.2],
   ];
   for (const [txt, s0, s1] of lines) {
     const a = fadeWindow(sec, s0, s1);
     if (a <= 0) continue;
     ctx.globalAlpha = a;
-    ctx.fillStyle = '#eef0f3';
-    fitFont(ctx, txt, 600, W * 0.038, W * 0.88);
-    shadowOn(ctx, 8, 0.7);
-    ctx.fillText(txt, cx, subY);
-    shadowOff(ctx);
+    const s = fitFont(ctx, txt, 600, W * 0.039, W * 0.88);
+    stroked(ctx, txt, cx, subY, `600 ${s}px "${HEAD}"`, WHITE, NAVY, Math.max(3, s * 0.07), 9);
     ctx.globalAlpha = 1;
   }
 
-  // SIGN UP NOW flourish + persistent URL
-  const ctaT = sec - 7.0;
+  // SIGN UP NOW flourish (white / red outline) + persistent URL (white / navy outline)
+  const ctaT = sec - 6.6;
   if (ctaT >= 0) {
     popText(ctx, () => {
-      const s = fitFont(ctx, 'SIGN UP NOW', 800, W * 0.062, W * 0.9);
-      ctx.font = `800 ${s}px "${HEAD}"`;
-      ctx.fillStyle = '#fff'; shadowOn(ctx, 18, 0.5);
-      ctx.fillText('SIGN UP NOW', cx, H * 0.85); shadowOff(ctx);
+      const s = fitFont(ctx, 'SIGN UP NOW', 800, W * 0.064, W * 0.9);
+      stroked(ctx, 'SIGN UP NOW', cx, H * 0.85, `800 ${s}px "${HEAD}"`, WHITE, RED, Math.max(6, s * 0.1), 18);
     }, cx, H * 0.85, ctaT);
   }
-  const urlA = clamp01((sec - 1.3) / 0.5);
+  const urlA = clamp01((sec - 1.0) / 0.4);
   if (urlA > 0) {
     ctx.globalAlpha = urlA;
-    ctx.fillStyle = AMBER;
-    fitFont(ctx, 'americanheroesandbrew.com/fantasy-football', 700, W * 0.036, W * 0.92);
-    shadowOn(ctx, 8, 0.7);
-    ctx.fillText('americanheroesandbrew.com/fantasy-football', cx, H * 0.915);
-    shadowOff(ctx);
+    const s = fitFont(ctx, 'americanheroesandbrew.com/fantasy-football', 700, W * 0.036, W * 0.92);
+    stroked(ctx, 'americanheroesandbrew.com/fantasy-football', cx, H * 0.915, `700 ${s}px "${HEAD}"`, WHITE, NAVY, Math.max(3, s * 0.06), 9);
     ctx.globalAlpha = 1;
   }
   ctx.restore();
@@ -258,9 +262,9 @@ function muxAudio(framesGlob, out) {
   if (existsSync(music) && existsSync(cheer) && existsSync(boom)) {
     const fc =
       `[1:a]volume=1.0,atrim=0:${DUR}[m];` +
-      `[2:a]volume=0.5,afade=t=in:st=0:d=0.3,afade=t=out:st=3.2:d=1.0,adelay=0|0[ch];` +
-      `[3:a]volume=0.8,adelay=500|500[b1];` +
-      `[4:a]volume=0.9,adelay=2400|2400[b2];` +
+      `[2:a]volume=0.5,afade=t=in:st=0:d=0.25,afade=t=out:st=2.6:d=1.0,adelay=0|0[ch];` +
+      `[3:a]volume=0.85,adelay=280|280[b1];` +
+      `[4:a]volume=0.95,adelay=1550|1550[b2];` +
       `[m][ch][b1][b2]amix=inputs=4:duration=first:normalize=0[s];` +
       `[s]loudnorm=I=-14:TP=-1.5:LRA=11,afade=t=out:st=${DUR - 0.6}:d=0.6,aresample=44100[a]`;
     execFileSync('ffmpeg', ['-y', '-framerate', String(FPS), '-i', framesGlob,
