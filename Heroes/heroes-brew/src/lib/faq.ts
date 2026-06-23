@@ -52,4 +52,19 @@ export const FAQ: FaqEntry[] = [
     answer:
       'We offer both indoor and outdoor dining. No reservations needed — walk-ins are always welcome.',
   },
+  {
+    question: 'What makes American Heroes & Brew a great sports bar in Carlsbad?',
+    answer:
+      'American Heroes & Brew is a family-friendly sports bar in Carlsbad Village with 16 TVs showing every game (NFL, NBA, college football, and UFC PPV), the only authentic Philly cheesesteak in town on Amoroso rolls flown in from Philadelphia, weekend breakfast that no other Carlsbad sports bar serves, and daily food and drink specials — all walkable in the Village and minutes from the beach and LEGOLAND.',
+  },
+  {
+    question: 'Where can I get a Philly cheesesteak in Carlsbad?',
+    answer:
+      'American Heroes & Brew serves an authentic Philly cheesesteak in Carlsbad Village, made on Amoroso rolls flown in from Philadelphia — it’s the only true Philly cheesesteak in Carlsbad. Find us at 300 Carlsbad Village Drive.',
+  },
+  {
+    question: 'Is American Heroes & Brew near LEGOLAND California?',
+    answer:
+      'Yes — American Heroes & Brew is about a 6–8 minute drive from LEGOLAND California, in Carlsbad Village. It’s a family-friendly spot with a kids’ menu, weekend breakfast, and the game on, making it a convenient stop for families visiting the park.',
+  },
 ];
