@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { MessageCircleQuestion, Info } from 'lucide-react';
 import { FAQ } from '@/lib/faq';
 
@@ -27,10 +28,19 @@ export default function AboutFaqSection() {
           </p>
           <p>
             We serve an all-American menu — juicy burgers, signature wings, loaded fries,
-            cheesesteaks and sandwiches, nachos, salads, and weekend breakfast — alongside a full
-            bar and craft beer on tap. With <strong className="text-foreground">16 TVs</strong>{' '}
-            showing every game from the NFL and NBA to college football and pay-per-view UFC,
-            it&apos;s the go-to spot in Carlsbad to catch the game, grab lunch, or bring the family.
+            cheesesteaks and sandwiches, nachos, salads, and{' '}
+            <Link href="/breakfast" className="text-accent hover:underline">weekend breakfast</Link>{' '}
+            — alongside a full bar and craft beer on tap. With{' '}
+            <strong className="text-foreground">16 TVs</strong> showing every game from the NFL and
+            NBA to college football and pay-per-view UFC, it&apos;s the go-to spot in Carlsbad to{' '}
+            <Link href="/watch" className="text-accent hover:underline">watch the game</Link>, grab
+            lunch, or bring the family.
+          </p>
+          <p className="text-foreground/70 text-sm">
+            Popular: <Link href="/watch" className="text-accent hover:underline">Where to watch the game in Carlsbad</Link>{' · '}
+            <Link href="/near-legoland" className="text-accent hover:underline">Family dining near LEGOLAND</Link>{' · '}
+            <Link href="/breakfast" className="text-accent hover:underline">Weekend breakfast</Link>{' · '}
+            <Link href="/happy-hour" className="text-accent hover:underline">Happy hour &amp; daily specials</Link>
           </p>
         </div>
       </section>
