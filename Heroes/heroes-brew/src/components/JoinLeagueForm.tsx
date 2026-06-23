@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Loader2, CheckCircle2, Instagram, Phone } from 'lucide-react';
+import { Loader2, CheckCircle2, Instagram, Phone, ExternalLink } from 'lucide-react';
 import { trackEvent } from '@/lib/analytics';
 import { leagueDateText, MAX_LEAGUES_PER_USER } from '@/lib/fantasy';
 import type { LeagueAvailability } from '@/lib/fantasy-leagues';
@@ -14,6 +14,7 @@ const inputCls =
 export default function JoinLeagueForm({ leagues }: { leagues: LeagueAvailability[] }) {
   const [status, setStatus] = useState<Status>('idle');
   const [picked, setPicked] = useState<string[]>([]);
+  const [joined, setJoined] = useState<Array<{ name: string; dateLabel?: string; time?: string; link?: string }>>([]);
   const open = leagues.filter((l) => !l.full);
   const atMax = picked.length >= MAX_LEAGUES_PER_USER;
 
@@ -35,8 +36,10 @@ export default function JoinLeagueForm({ leagues }: { leagues: LeagueAvailabilit
         body: JSON.stringify({ type: 'join', name: fd.get('name'), email: fd.get('email'), leagueIds: picked, draftDates }),
       });
       const data = await res.json();
-      if (data.ok) setStatus('success');
-      else if (data.configured === false) setStatus('fallback');
+      if (data.ok) {
+        setJoined(Array.isArray(data.joined) ? data.joined : []);
+        setStatus('success');
+      } else if (data.configured === false) setStatus('fallback');
       else setStatus('error');
     } catch {
       setStatus('error');
@@ -45,10 +48,36 @@ export default function JoinLeagueForm({ leagues }: { leagues: LeagueAvailabilit
 
   if (status === 'success')
     return (
-      <div className="rounded-lg border border-accent/40 bg-card p-5 text-center">
-        <CheckCircle2 className="mx-auto mb-2 text-accent" size={36} />
-        <h3 className="text-lg font-bold text-foreground">You’re in!</h3>
-        <p className="mt-1 text-sm text-foreground/80">We’ll confirm your league{picked.length > 1 ? 's' : ''} and draft details by email. See you at the bar. 🏈</p>
+      <div className="rounded-lg border border-accent/40 bg-card p-5">
+        <div className="text-center">
+          <CheckCircle2 className="mx-auto mb-2 text-accent" size={36} />
+          <h3 className="text-lg font-bold text-foreground">You’re in! 🏈</h3>
+          <p className="mt-1 text-sm text-foreground/80">
+            {joined.length > 1 ? 'Tap each link to join your leagues on Yahoo' : 'Tap below to join your league on Yahoo'} — we’ve emailed {joined.length > 1 ? 'them' : 'it'} to you too.
+          </p>
+        </div>
+        <div className="mt-4 space-y-2">
+          {joined.map((j) => (
+            <a
+              key={j.name}
+              href={j.link || '#'}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-between gap-3 rounded-md border border-accent/40 bg-accent/10 px-4 py-3 hover:border-accent transition-colors"
+            >
+              <span className="min-w-0">
+                <span className="block font-semibold text-foreground">{j.name}</span>
+                {(j.dateLabel || j.time) && (
+                  <span className="block text-xs text-muted">Draft {j.dateLabel}{j.time ? ` · ${j.time}` : ''}</span>
+                )}
+              </span>
+              <span className="inline-flex shrink-0 items-center gap-1 text-sm font-semibold text-accent">
+                Join on Yahoo <ExternalLink size={14} />
+              </span>
+            </a>
+          ))}
+        </div>
+        <p className="mt-3 text-xs text-muted">Drafts are at American Heroes &amp; Brew in Carlsbad Village. The $100 winner gift card is claimed in person on championship day.</p>
       </div>
     );
 
