@@ -80,26 +80,26 @@ export default function FantasyPageView({ leagues }: { leagues: LeagueAvailabili
                 Already a commissioner? Register your league for the $100 prize and book your draft at the bar (free munchies + big-screen draft).
               </p>
               <RegisterLeagueForm />
+
+              {/* Getting set up on Yahoo — for commissioners registering a league */}
+              <div className="mt-5 border-t border-border/50 pt-4">
+                <h4 className="font-semibold text-foreground">New to Yahoo? Set up your league first</h4>
+                <p className="mt-1 text-sm text-foreground/80">{FANTASY.yahoo.intro}</p>
+                <ol className="mt-3 space-y-2">
+                  {FANTASY.yahoo.steps.map((s, i) => (
+                    <li key={i} className="flex items-start gap-2.5 text-sm text-foreground/85">
+                      <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-accent/15 text-xs font-bold text-accent">{i + 1}</span>
+                      <span>{s}</span>
+                    </li>
+                  ))}
+                </ol>
+                <a href={YAHOO_FANTASY_URL} target="_blank" rel="noopener noreferrer"
+                  className="mt-3 inline-flex items-center gap-1.5 text-sm text-accent hover:underline">
+                  Open Yahoo Fantasy Football <ExternalLink size={14} />
+                </a>
+              </div>
             </div>
           </div>
-        </section>
-
-        {/* Yahoo how-to */}
-        <section className="mb-10 rounded-lg border border-border bg-card p-6">
-          <h2 className="mb-2 text-xl font-bold text-foreground">Getting set up on Yahoo</h2>
-          <p className="mb-4 text-foreground/85">{FANTASY.yahoo.intro}</p>
-          <ol className="space-y-2">
-            {FANTASY.yahoo.steps.map((s, i) => (
-              <li key={i} className="flex items-start gap-3 text-foreground/85">
-                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent/15 text-sm font-bold text-accent">{i + 1}</span>
-                <span>{s}</span>
-              </li>
-            ))}
-          </ol>
-          <a href={YAHOO_FANTASY_URL} target="_blank" rel="noopener noreferrer"
-            className="mt-4 inline-flex items-center gap-1.5 text-accent hover:underline">
-            Open Yahoo Fantasy Football <ExternalLink size={14} />
-          </a>
         </section>
 
         {/* FAQ */}
