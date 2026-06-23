@@ -1,0 +1,6 @@
+Track: "Energetic Action Sport" (top "popular" result in Pixabay Music > Sport)
+Source: https://pixabay.com/music/search/sport/?order=popular
+Direct CDN: https://cdn.pixabay.com/audio/2026/03/12/audio_bea8e8877a.mp3
+License: Pixabay Content License — royalty-free, commercial use OK, no attribution required.
+Downloaded 2026-06-23 for American Heroes & Brew Fantasy League launch reel.
+Best energy window: 9s from offset ~32s.
