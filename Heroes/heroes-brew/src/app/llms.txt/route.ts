@@ -69,6 +69,7 @@ ${faq}
 ## Pages
 - Home: ${SITE_URL}/
 - Menu: ${SITE_URL}/menu
+- Where to watch the World Cup in Carlsbad: ${SITE_URL}/world-cup
 - Where to watch the game in Carlsbad: ${SITE_URL}/watch
 - Family dining near LEGOLAND: ${SITE_URL}/near-legoland
 - Weekend breakfast in Carlsbad Village: ${SITE_URL}/breakfast

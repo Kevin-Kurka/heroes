@@ -45,6 +45,68 @@ export interface LandingPageContent {
 const ADDRESS = '300 Carlsbad Village Drive, Suite 120, Carlsbad, CA 92008';
 
 export const LANDING_PAGES: Record<string, LandingPageContent> = {
+  'world-cup': {
+    slug: 'world-cup',
+    metaTitle: 'Where to Watch the World Cup in Carlsbad — 16 TVs, Every Match',
+    metaDescription:
+      'Watch the 2026 FIFA World Cup in Carlsbad at American Heroes & Brew — every match live on 16 TVs in Carlsbad Village. Family-friendly, full bar, food all day, and watch-party energy for every game. Walk-ins welcome.',
+    h1: 'Where to Watch the World Cup in Carlsbad',
+    tagline: 'Every match live on 16 TVs — Carlsbad Village’s World Cup HQ.',
+    intro: [
+      'Looking for where to watch the World Cup in Carlsbad? American Heroes & Brew shows every match of the 2026 FIFA World Cup live on 16 TVs in the heart of Carlsbad Village. Group-stage drama, the knockout rounds, and the final — we’ve got the game on, the sound up for the big ones, a full bar, and the kitchen open all day. Family-friendly, walk-ins welcome, no cover.',
+      'With the 2026 tournament hosted across the USA, Canada, and Mexico, every kickoff is a reason to gather. We’re at ' +
+        ADDRESS +
+        ' — walkable in the Village, steps from Carlsbad State Beach and minutes from LEGOLAND, so it’s an easy spot for locals and visitors to catch a match.',
+    ],
+    sections: [
+      {
+        heading: 'Why watch the World Cup here',
+        bullets: [
+          '16 TVs — every match, plus the marquee games with sound',
+          'Full bar, craft beer, and daily drink specials',
+          'All-American food all day — burgers, wings, loaded fries, the Philly cheesesteak',
+          'Family-friendly with a kids’ menu — bring everyone',
+          'Walkable Carlsbad Village location, minutes from the beach and LEGOLAND',
+        ],
+      },
+      {
+        heading: 'Watch-party energy for the big matches',
+        body: [
+          'USA matches, rivalry games, and the knockout rounds bring the crowd and the noise. Get there early for the marquee kickoffs to grab a good seat — we’ll have the match on the big screens. Want to organize a group watch? Call us at (760) 994-0187.',
+        ],
+      },
+      {
+        heading: 'More than the match',
+        body: [
+          'Catch a match over weekend breakfast (served Fri–Sun) with bottomless mimosas, or make a day of it with lunch and the game. Beyond the World Cup, we show every game year-round — NFL, NBA, college football, and pay-per-view UFC.',
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'Where can I watch the World Cup in Carlsbad?',
+        answer:
+          'American Heroes & Brew in Carlsbad Village shows every 2026 FIFA World Cup match live on 16 TVs. It’s a family-friendly sports bar with a full bar and full menu at 300 Carlsbad Village Drive — walk-ins welcome, no cover.',
+      },
+      {
+        question: 'Does American Heroes & Brew show every World Cup game?',
+        answer:
+          'Yes — we show every World Cup match across our 16 TVs, with sound on the marquee games. Group stage through the final.',
+      },
+      {
+        question: 'Is it family-friendly for World Cup watch parties?',
+        answer:
+          'Absolutely. American Heroes & Brew is a family-friendly sports bar with a kids’ menu, so the whole family can watch the World Cup together in Carlsbad Village.',
+      },
+      {
+        question: 'Should I arrive early for big World Cup matches?',
+        answer:
+          'For USA matches, rivalry games, and the knockout rounds, arriving early is smart to grab a good seat. Walk-ins are welcome; call (760) 994-0187 to plan a group.',
+      },
+    ],
+    breadcrumbLabel: 'World Cup',
+  },
+
   watch: {
     slug: 'watch',
     metaTitle: 'Where to Watch the Game in Carlsbad — Every Game on 16 TVs',
