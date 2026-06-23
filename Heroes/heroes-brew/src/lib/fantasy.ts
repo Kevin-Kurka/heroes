@@ -38,7 +38,7 @@ export const OFFICIAL_LEAGUES: OfficialLeague[] = [
   { id: 'aug30-sun', label: 'Sun, Aug 30', time: '3:00 PM', capacity: 10 },
   { id: 'sep04-fri', label: 'Fri, Sep 4', time: '4:00 PM', capacity: 10 },
   { id: 'sep05-sat', label: 'Sat, Sep 5', time: '4:00 PM', capacity: 10 },
-  { id: 'sep06-sun', label: 'Sun, Sep 6 (Labor Day wknd)', time: '3:00 PM', capacity: 10 },
+  { id: 'sep06-sun', label: 'Sun, Sep 6', time: '3:00 PM', capacity: 10 },
 ];
 
 export function leagueDateText(l: OfficialLeague): string {
