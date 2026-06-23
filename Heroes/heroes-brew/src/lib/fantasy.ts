@@ -24,7 +24,7 @@ export interface OfficialLeague {
   capacity: number;  // 10
 }
 
-export const LEAGUE_CAPACITY = 10;
+export const LEAGUE_CAPACITY = 9; // 9 open spots per league — the commissioner takes the 10th
 /** A player can be in at most this many official Heroes leagues. */
 export const MAX_LEAGUES_PER_USER = 3;
 
@@ -93,7 +93,7 @@ export const FANTASY = {
     {
       question: 'When are the official Heroes league drafts?',
       answer:
-        'Official Heroes leagues draft the two weekends before the NFL season — Fridays and Saturdays at 4pm, Sundays at 3pm — wrapping up on Labor Day weekend. Each league is capped at 10 players, so spots fill up. You pick your draft date when you sign up.',
+        'Official Heroes leagues draft the two weekends before the NFL season — Fridays and Saturdays at 4pm, Sundays at 3pm — wrapping up on Labor Day weekend. Each league has 9 open spots (the commissioner takes the 10th), so they fill up fast. You pick your draft date when you sign up.',
     },
     {
       question: 'What does the winner get?',

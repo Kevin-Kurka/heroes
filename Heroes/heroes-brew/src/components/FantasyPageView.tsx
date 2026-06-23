@@ -63,7 +63,7 @@ export default function FantasyPageView({ leagues }: { leagues: LeagueAvailabili
                 <h3 className="text-lg font-bold text-foreground">Join a Heroes League</h3>
               </div>
               <p className="mb-1 text-sm text-foreground/80">
-                No league? Hop into one of our official Heroes leagues. Each holds {LEAGUE_CAPACITY} players — join up to {MAX_LEAGUES_PER_USER}.
+                No league? Hop into one of our official Heroes leagues — {LEAGUE_CAPACITY} open spots each (the commissioner takes the 10th). Join up to {MAX_LEAGUES_PER_USER}.
                 {spotsOpen > 0 ? ` ${spotsOpen} spots open right now.` : ''}
               </p>
               <p className="mb-4 text-xs text-muted">Free to join · $100 to the champ · drafts the two weekends before kickoff.</p>
