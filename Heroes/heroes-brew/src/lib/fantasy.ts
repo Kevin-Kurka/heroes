@@ -28,14 +28,17 @@ export const LEAGUE_CAPACITY = 10;
 /** A player can be in at most this many official Heroes leagues. */
 export const MAX_LEAGUES_PER_USER = 3;
 
-/** 6 leagues over the two weekends before kickoff, ending Labor Day weekend 2026. */
+/** 6 leagues over the two weekends before kickoff, ending Labor Day weekend 2026.
+ *  `id` is intentionally a non-date token (e.g. 'aug28-fri') so Google Sheets
+ *  stores it as plain text and doesn't auto-convert it to a Date — which would
+ *  break the per-league counts/caps keyed on this id. */
 export const OFFICIAL_LEAGUES: OfficialLeague[] = [
-  { id: '2026-08-28', label: 'Fri, Aug 28', time: '4:00 PM', capacity: 10 },
-  { id: '2026-08-29', label: 'Sat, Aug 29', capacity: 10 },
-  { id: '2026-08-30', label: 'Sun, Aug 30', capacity: 10 },
-  { id: '2026-09-04', label: 'Fri, Sep 4', time: '4:00 PM', capacity: 10 },
-  { id: '2026-09-05', label: 'Sat, Sep 5', capacity: 10 },
-  { id: '2026-09-06', label: 'Sun, Sep 6 (Labor Day wknd)', capacity: 10 },
+  { id: 'aug28-fri', label: 'Fri, Aug 28', time: '4:00 PM', capacity: 10 },
+  { id: 'aug29-sat', label: 'Sat, Aug 29', capacity: 10 },
+  { id: 'aug30-sun', label: 'Sun, Aug 30', capacity: 10 },
+  { id: 'sep04-fri', label: 'Fri, Sep 4', time: '4:00 PM', capacity: 10 },
+  { id: 'sep05-sat', label: 'Sat, Sep 5', capacity: 10 },
+  { id: 'sep06-sun', label: 'Sun, Sep 6 (Labor Day wknd)', capacity: 10 },
 ];
 
 export function leagueDateText(l: OfficialLeague): string {
