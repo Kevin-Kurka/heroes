@@ -18,6 +18,7 @@ import { execFileSync } from 'node:child_process';
 import { mkdirSync, writeFileSync, rmSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { embedMetadata } from '../lib/asset-metadata.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const PUBLIC = join(HERE, '..', '..', 'public');
@@ -355,6 +356,9 @@ async function render(key) {
       '-map', '0:v', '-map', '1:a', ...codec], { stdio: ['ignore', 'ignore', 'inherit'] });
   }
   rmSync(dir, { recursive: true, force: true });
+  // Embed AI/SEO metadata (title, description, keywords, geo, attribution). Never
+  // let a missing exiftool fail a render.
+  try { embedMetadata(out); } catch (e) { console.warn('  metadata skipped:', e.message.split('\n')[0]); }
   console.log('rendered', out);
 }
 
