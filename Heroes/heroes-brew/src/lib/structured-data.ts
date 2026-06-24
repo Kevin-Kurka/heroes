@@ -1,6 +1,7 @@
 import { getRestaurantInfo } from './menu';
 import { FAQ } from './faq';
 import type { Menu, MenuGroup } from '@/types';
+import type { WatchParty } from './watch-parties';
 
 export const SITE_URL = 'https://americanheroesandbrew.com';
 const INSTAGRAM_URL = 'https://www.instagram.com/americanheroesandbrew/';
@@ -253,5 +254,83 @@ export function getBreadcrumbJsonLd(trail: Array<{ name: string; path: string }>
       name: crumb.name,
       item: `${SITE_URL}${crumb.path}`,
     })),
+  };
+}
+
+/**
+ * VideoObject JSON-LD for a promo reel (the watch-party videos). This is what
+ * lets answer engines and Google Video surface the clip with its name,
+ * description, thumbnail, upload date, and — crucially — the date/time of the
+ * event it promotes, so "where to watch <matchup>" resolves to this video and
+ * this venue. `uploadDate` defaults to the event's start date.
+ */
+export function getVideoObjectJsonLd(party: WatchParty) {
+  const pageUrl = `${SITE_URL}/watch-party/${party.slug}`;
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'VideoObject',
+    '@id': `${pageUrl}#video`,
+    name: `${party.matchup} Watch Party at American Heroes & Brew — Carlsbad`,
+    description:
+      `Watch ${party.matchup} (${party.league}) live on 16 TVs at American Heroes & Brew, ` +
+      `the family-friendly sports bar in Carlsbad Village, North County San Diego. ` +
+      `Full bar, food all day, walk-ins welcome.`,
+    thumbnailUrl: [`${SITE_URL}/promos-video/thumbs/${party.thumbFile}`],
+    uploadDate: party.startDate,
+    contentUrl: `${SITE_URL}/promos-video/${party.videoFile}`,
+    embedUrl: pageUrl,
+    regionsAllowed: 'US',
+    publisher: { '@id': `${SITE_URL}/#restaurant` },
+    about: { '@id': `${SITE_URL}/#restaurant` },
+    keywords: party.keywords.join(', '),
+  };
+}
+
+/**
+ * Single watch-party Event JSON-LD for a /watch-party/<slug> page. Models the
+ * game as a public watch party HOSTED AT American Heroes & Brew with the exact
+ * start/end date-time, so event + AI surfaces can answer "what time / where to
+ * watch <matchup> in Carlsbad". `offers` is a free, no-cover admission.
+ */
+export function getWatchPartyEventJsonLd(party: WatchParty) {
+  const r = getRestaurantInfo();
+  const pageUrl = `${SITE_URL}/watch-party/${party.slug}`;
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Event',
+    '@id': `${pageUrl}#event`,
+    name: `Watch ${party.matchup} at American Heroes & Brew`,
+    description:
+      `${party.matchup} (${party.league}) live on 16 TVs at American Heroes & Brew in Carlsbad Village. ` +
+      `Family-friendly sports bar, full bar, food all day. Walk-ins welcome, no cover.`,
+    startDate: party.startDate,
+    endDate: party.endDate,
+    eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+    eventStatus: 'https://schema.org/EventScheduled',
+    sport: party.sport,
+    image: [`${SITE_URL}/promos-video/thumbs/${party.thumbFile}`],
+    location: {
+      '@type': 'Restaurant',
+      '@id': `${SITE_URL}/#restaurant`,
+      name: r.name,
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: [r.address1, r.address2].filter(Boolean).join(', '),
+        addressLocality: r.city,
+        addressRegion: r.stateCode,
+        postalCode: r.zipCode,
+        addressCountry: 'US',
+      },
+    },
+    organizer: { '@id': `${SITE_URL}/#restaurant` },
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'USD',
+      availability: 'https://schema.org/InStock',
+      url: pageUrl,
+    },
+    url: pageUrl,
+    subjectOf: { '@id': `${pageUrl}#video` },
   };
 }
