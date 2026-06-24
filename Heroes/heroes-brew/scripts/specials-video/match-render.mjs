@@ -31,11 +31,20 @@ const HEAD = GlobalFonts.families.some((f) => /Avenir Next Condensed/.test(f.fam
 
 const W = 1080, H = 1920, FPS = 30, SECONDS = 6;
 const FRAMES = Math.round(FPS * SECONDS);
-const ACCENT = '#f59e0b';
+
+// Flag palette — Mexico (green/white/red, left) + Czechia (blue/white/red, right),
+// mirroring the poster's left→right split.
+const MX_GREEN = '#1f9e4b';
+const MX_RED = '#e11d2a';
+const CZ_BLUE = '#1f5fd6';
+const WHITE = '#ffffff';
+// left→right flag gradient stops used across the big text + accent rule
+const FLAG_STOPS = [[0, MX_GREEN], [0.34, WHITE], [0.62, MX_RED], [1, CZ_BLUE]];
 
 // Animation config
 const CFG = {
   poster: join(HERE, '_match', 'poster.png'),
+  bg: join(HERE, '_match', 'bg-blur.jpg'),
   key: 'AHB-watchparty_mexico-czechia',
   kicker: 'WATCH IT LIVE',
   bigTop: 'TODAY',
@@ -78,11 +87,29 @@ function shake(t) {
   return { dx: x * amp, dy: y * amp, rot: (rot * amp) / 900 };
 }
 
+// horizontal flag gradient sized to the text width, centered at x
+function flagGradient(ctx, x, font, text) {
+  ctx.font = font;
+  const w = ctx.measureText(text).width;
+  const grad = ctx.createLinearGradient(x - w / 2, 0, x + w / 2, 0);
+  for (const [stop, col] of FLAG_STOPS) grad.addColorStop(stop, col);
+  return grad;
+}
+
+// draw an image to fully cover (w,h) preserving aspect, anchored at top
+function drawCoverTop(ctx, img, x, y, w, h, scale = 1) {
+  const ar = img.width / img.height;
+  let dw = w * scale, dh = dw / ar;
+  if (dh < h * scale) { dh = h * scale; dw = dh * ar; }
+  ctx.drawImage(img, x + (w - dw) / 2, y, dw, dh);
+}
+
 function drawText(ctx, text, x, y, font, fill, { stroke, strokeW, align = 'center', shadow } = {}) {
   ctx.font = font; ctx.textAlign = align; ctx.textBaseline = 'middle';
   if (shadow) { ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowBlur = shadow; ctx.shadowOffsetY = 6; }
   if (stroke) { ctx.lineWidth = strokeW; ctx.strokeStyle = stroke; ctx.lineJoin = 'round'; ctx.strokeText(text, x, y); }
-  ctx.fillStyle = fill; ctx.fillText(text, x, y);
+  ctx.fillStyle = (fill === 'FLAG') ? flagGradient(ctx, x, font, text) : fill;
+  ctx.fillText(text, x, y);
   ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
 }
 
@@ -90,95 +117,111 @@ async function main() {
   mkdirSync(TMP, { recursive: true });
   mkdirSync(OUT_DIR, { recursive: true });
   const poster = await loadImage(CFG.poster);
-  // poster is 1080 wide; place at top, scaled to width, with slight overscan zoom punch
+  const bg = await loadImage(CFG.bg);
+  // poster is 1080 wide; place at top, scaled to width
   const pAspect = poster.height / poster.width; // ~0.787
   const posterDrawH = W * pAspect; // ~850
+
+  // Pre-feather the sharp poster: draw it, then erase the bottom strip with a
+  // vertical alpha gradient so it melts into the blurred bg — one continuous image.
+  const FEATHER = 220;
+  const pf = createCanvas(W, Math.ceil(posterDrawH));
+  const pfx = pf.getContext('2d');
+  pfx.drawImage(poster, 0, 0, W, posterDrawH);
+  pfx.globalCompositeOperation = 'destination-out';
+  const fade = pfx.createLinearGradient(0, posterDrawH - FEATHER, 0, posterDrawH);
+  fade.addColorStop(0, 'rgba(0,0,0,0)'); fade.addColorStop(1, 'rgba(0,0,0,1)');
+  pfx.fillStyle = fade; pfx.fillRect(0, posterDrawH - FEATHER, W, FEATHER);
+  pfx.globalCompositeOperation = 'source-over';
 
   for (let f = 0; f < FRAMES; f++) {
     const t = f / FPS;
     const c = createCanvas(W, H);
     const ctx = c.getContext('2d');
 
-    // base dark fill
-    const g = ctx.createLinearGradient(0, 0, 0, H);
-    g.addColorStop(0, '#0b0b0d'); g.addColorStop(1, '#141418');
-    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
-
     const sh = shake(t);
     ctx.save();
     // overscan + shake so the frame edges never show
     ctx.translate(W / 2 + sh.dx, H / 2 + sh.dy);
     ctx.rotate(sh.rot);
-    const over = 1.05;
+    const over = 1.06;
     ctx.scale(over, over);
     ctx.translate(-W / 2, -H / 2);
 
-    // --- poster art at top (slow ken-burns zoom-in) ---
-    const kb = 1.0 + easeOut(t / SECONDS) * 0.06;
+    // shared slow zoom keeps bg + poster moving together (continuous)
+    const kb = 1.0 + easeOut(t / SECONDS) * 0.05;
+
+    // --- blurred full-frame background (continuation of the poster) ---
+    drawCoverTop(ctx, bg, 0, 0, W, H, kb);
+
+    // legibility: darken the lower half where the text sits
+    const dark = ctx.createLinearGradient(0, H * 0.42, 0, H);
+    dark.addColorStop(0, 'rgba(8,10,14,0)');
+    dark.addColorStop(0.55, 'rgba(8,10,14,0.45)');
+    dark.addColorStop(1, 'rgba(8,10,14,0.72)');
+    ctx.fillStyle = dark; ctx.fillRect(0, H * 0.42, W, H * 0.58);
+
+    // --- sharp poster on top, feathered into the bg ---
     const drawW = W * kb, drawH = posterDrawH * kb;
-    ctx.save();
-    ctx.beginPath(); ctx.rect(-40, -40, W + 80, posterDrawH + 6); ctx.clip();
-    ctx.drawImage(poster, (W - drawW) / 2, (posterDrawH * kb - posterDrawH) / -2, drawW, drawH);
-    ctx.restore();
+    ctx.drawImage(pf, (W - drawW) / 2, 0, drawW, drawH);
 
-    // blend the hard crop edge into the dark lower panel
-    const blend = ctx.createLinearGradient(0, posterDrawH - 160, 0, posterDrawH + 40);
-    blend.addColorStop(0, 'rgba(11,11,13,0)');
-    blend.addColorStop(1, '#0b0b0d');
-    ctx.fillStyle = blend; ctx.fillRect(0, posterDrawH - 160, W, 220);
+    // flag-gradient accent rule under the poster art
+    const ruleY = posterDrawH + 26;
+    const rw = 240;
+    const rg = ctx.createLinearGradient((W - rw) / 2, 0, (W + rw) / 2, 0);
+    for (const [s, col] of FLAG_STOPS) rg.addColorStop(s, col);
+    ctx.fillStyle = rg; ctx.fillRect((W - rw) / 2, ruleY, rw, 9);
 
-    // accent rule under the poster
-    const ruleY = posterDrawH + 30;
-    ctx.fillStyle = ACCENT; ctx.fillRect((W - 160) / 2, ruleY, 160, 8);
-
-    // --- lower details panel ---
+    // --- lower details ---
     const baseY = posterDrawH + 130;
 
-    // kicker chip
+    // kicker chip (Mexico green, white text)
     const eK = explode(t, 0.25, 0.4);
     if (eK.alpha > 0) {
       ctx.save();
       ctx.globalAlpha = eK.alpha;
       const chipW = 420, chipH = 84, chipX = W / 2, chipY = baseY;
       ctx.translate(chipX, chipY); ctx.scale(eK.scale, eK.scale);
+      ctx.shadowColor = 'rgba(0,0,0,0.45)'; ctx.shadowBlur = 18; ctx.shadowOffsetY = 6;
       roundRect(ctx, -chipW / 2, -chipH / 2, chipW, chipH, chipH / 2);
-      ctx.fillStyle = ACCENT; ctx.fill();
-      drawText(ctx, CFG.kicker, 0, 2, `800 48px "${HEAD}"`, '#0b0b0d');
+      ctx.fillStyle = MX_GREEN; ctx.fill();
+      ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+      drawText(ctx, CFG.kicker, 0, 2, `800 48px "${HEAD}"`, WHITE);
       ctx.restore();
     }
 
-    // big headline: TODAY
+    // big headline: TODAY (white, red stroke)
     const eT = explode(t, 0.55, 0.45);
     if (eT.alpha > 0) {
       ctx.save(); ctx.globalAlpha = eT.alpha;
       ctx.translate(W / 2, baseY + 175); ctx.scale(eT.scale, eT.scale);
-      drawText(ctx, CFG.bigTop, 0, 0, `800 170px "${HEAD}"`, '#ffffff', { stroke: '#0b0b0d', strokeW: 10, shadow: 24 });
+      drawText(ctx, CFG.bigTop, 0, 0, `800 170px "${HEAD}"`, WHITE, { stroke: MX_RED, strokeW: 10, shadow: 26 });
       ctx.restore();
     }
 
-    // big time: 6:00 PM (accent)
+    // big time: 6:00 PM (flag gradient: green→white→red→blue)
     const eTime = explode(t, 0.78, 0.45);
     if (eTime.alpha > 0) {
       ctx.save(); ctx.globalAlpha = eTime.alpha;
       ctx.translate(W / 2, baseY + 360); ctx.scale(eTime.scale, eTime.scale);
-      drawText(ctx, CFG.bigTime, 0, 0, `800 200px "${HEAD}"`, ACCENT, { stroke: '#0b0b0d', strokeW: 12, shadow: 28 });
+      drawText(ctx, CFG.bigTime, 0, 0, `800 200px "${HEAD}"`, 'FLAG', { stroke: '#0b0b0d', strokeW: 13, shadow: 30 });
       ctx.restore();
     }
 
-    // venue line
+    // venue line (white, dark stroke)
     const eV = explode(t, 1.05, 0.45);
     if (eV.alpha > 0) {
       ctx.save(); ctx.globalAlpha = eV.alpha;
       ctx.translate(W / 2, baseY + 510); ctx.scale(eV.scale, eV.scale);
-      drawText(ctx, CFG.venue, 0, 0, `800 64px "${HEAD}"`, '#ffffff', { stroke: '#0b0b0d', strokeW: 6, shadow: 16 });
+      drawText(ctx, CFG.venue, 0, 0, `800 64px "${HEAD}"`, WHITE, { stroke: '#0b0b0d', strokeW: 7, shadow: 18 });
       ctx.restore();
     }
 
-    // footer
+    // footer (flag gradient)
     const eF = explode(t, 1.45, 0.4);
     if (eF.alpha > 0) {
       ctx.save(); ctx.globalAlpha = eF.alpha;
-      drawText(ctx, CFG.footer, W / 2, baseY + 600, `600 40px "${HEAD}"`, ACCENT);
+      drawText(ctx, CFG.footer, W / 2, baseY + 600, `600 40px "${HEAD}"`, 'FLAG', { shadow: 10 });
       ctx.restore();
     }
 
