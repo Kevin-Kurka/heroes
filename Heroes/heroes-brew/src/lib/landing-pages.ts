@@ -345,6 +345,167 @@ export const LANDING_PAGES: Record<string, LandingPageContent> = {
     ],
     breadcrumbLabel: 'Happy Hour & Specials',
   },
+
+  restaurant: {
+    slug: 'restaurant',
+    metaTitle: 'Restaurant in Carlsbad Village — Lunch, Dinner & Weekend Breakfast',
+    metaDescription:
+      'Looking for a restaurant in Carlsbad Village? American Heroes & Brew serves burgers, wings, the only authentic Philly cheesesteak in Carlsbad, and weekend breakfast — a family-friendly American restaurant with a full bar, indoor & outdoor seating, and every game on 16 TVs. Walk-ins welcome.',
+    h1: 'A Restaurant in the Heart of Carlsbad Village',
+    tagline: 'Burgers, cheesesteaks, wings & weekend breakfast — Carlsbad Village dining for everyone.',
+    intro: [
+      'Looking for a great restaurant in Carlsbad Village? American Heroes & Brew is a family-friendly American restaurant at ' +
+        ADDRESS +
+        ' — serving lunch, dinner, and weekend breakfast with a full bar and craft beer. Expect fresh, never-frozen burgers cooked to order, signature wings, loaded fries, sandwiches, and the only authentic Philly cheesesteak in Carlsbad, in a welcoming room with the game on 16 TVs.',
+      'Walkable in the Village, steps from Carlsbad State Beach and minutes from LEGOLAND, we’re an easy pick for locals and visitors alike. Walk-ins always welcome, kids’ menu available, and both indoor and outdoor seating.',
+    ],
+    sections: [
+      {
+        heading: 'Where to eat in Carlsbad Village',
+        bullets: [
+          'Fresh, never-frozen burgers cooked to order',
+          'The only authentic Philly cheesesteak in Carlsbad — Amoroso rolls from Philadelphia',
+          'Signature wings, loaded fries, sandwiches & salads',
+          'Weekend breakfast (Fri–Sun), including the 2-for-$22 deal',
+          'Full bar, craft beer, and daily food & drink specials',
+          'Family-friendly with a kids’ menu — bring everyone',
+        ],
+      },
+      {
+        heading: 'Good for lunch, dinner, and weekend breakfast',
+        body: [
+          'Come for a quick lunch, settle in for dinner, or make a morning of weekend breakfast with bottomless mimosas. We run daily specials Monday–Friday and serve food all day, so there’s always a reason to stop in. Planning a group? Call us at (760) 994-0187.',
+        ],
+      },
+      {
+        heading: 'A neighborhood restaurant with the game on',
+        body: [
+          'We’re a restaurant first and a sports bar too — 16 TVs mean you can catch the game while you eat, but you don’t have to be here for sports to enjoy a great meal. Family-friendly, walkable in the Village, and minutes from the beach and LEGOLAND.',
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'What kind of restaurant is American Heroes & Brew?',
+        answer:
+          'American Heroes & Brew is a family-friendly American restaurant and sports bar in Carlsbad Village. We serve burgers, wings, loaded fries, sandwiches, the only authentic Philly cheesesteak in Carlsbad, and weekend breakfast, with a full bar and craft beer. Find us at 300 Carlsbad Village Drive, Carlsbad.',
+      },
+      {
+        question: 'Where can I get lunch or dinner in Carlsbad Village?',
+        answer:
+          'American Heroes & Brew serves lunch and dinner daily in Carlsbad Village at 300 Carlsbad Village Drive — burgers, cheesesteaks, wings, sandwiches, and more, with a full bar. Walk-ins are welcome and there’s indoor and outdoor seating.',
+      },
+      {
+        question: 'Is American Heroes & Brew a good restaurant for families in Carlsbad?',
+        answer:
+          'Yes — it’s a family-friendly restaurant with a kids’ menu, weekend breakfast, and a relaxed Carlsbad Village setting. It’s about a 6–8 minute drive from LEGOLAND California, making it a convenient stop for families.',
+      },
+      {
+        question: 'Does the restaurant take reservations?',
+        answer:
+          'No reservations needed — walk-ins are always welcome at American Heroes & Brew. There’s indoor and outdoor seating at 300 Carlsbad Village Drive, Carlsbad. For large groups, call ahead at (760) 994-0187.',
+      },
+    ],
+    breadcrumbLabel: 'Restaurant',
+  },
+
+  burgers: {
+    slug: 'burgers',
+    metaTitle: 'Best Burgers in Carlsbad — Fresh, Never-Frozen, Cooked to Order',
+    metaDescription:
+      'American Heroes & Brew serves some of the best burgers in Carlsbad — fresh, never-frozen patties cooked to order, loaded options, and $5-off burgers every Thirsty Thursday. Carlsbad Village, full bar, family-friendly, every game on 16 TVs.',
+    h1: 'The Best Burgers in Carlsbad Village',
+    tagline: 'Fresh, never-frozen patties cooked to order — stacked, loaded, and worth the trip.',
+    intro: [
+      'On the hunt for the best burgers in Carlsbad? American Heroes & Brew grills fresh, never-frozen patties cooked to order and stacks them high — from a classic cheeseburger to the loaded Minneapolis Burger. Pair one with loaded fries, a craft beer, and the game on 16 TVs at ' +
+        ADDRESS +
+        '.',
+      'Every Thursday is Thirsty Thursday — all burgers $5 off with $5 house drafts. Family-friendly, walk-ins welcome, indoor and outdoor seating in the heart of Carlsbad Village.',
+    ],
+    sections: [
+      {
+        heading: 'Why our burgers stand out',
+        bullets: [
+          'Fresh, never-frozen beef cooked to order',
+          'Stacked, loaded options like the Minneapolis Burger',
+          'Toasted buns, real toppings, side of loaded fries',
+          'Thirsty Thursday — burgers $5 off, house drafts $5',
+          'Full bar and craft beer to go with it',
+          'Family-friendly with a kids’ menu',
+        ],
+      },
+      {
+        heading: 'Burgers + the game in Carlsbad Village',
+        body: [
+          'Grab a burger and catch the game on 16 TVs, or take it easy on the patio. We’re walkable in Carlsbad Village, steps from the beach and minutes from LEGOLAND. Walk-ins welcome — no reservation needed.',
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'Where can I find the best burgers in Carlsbad?',
+        answer:
+          'American Heroes & Brew is known for some of the best burgers in Carlsbad — fresh, never-frozen patties cooked to order, including the loaded Minneapolis Burger, at 300 Carlsbad Village Drive. Every Thursday is Thirsty Thursday with burgers $5 off.',
+      },
+      {
+        question: 'Are the burgers fresh or frozen?',
+        answer:
+          'Our burgers are made with fresh, never-frozen beef and cooked to order at American Heroes & Brew in Carlsbad Village.',
+      },
+      {
+        question: 'Is there a burger deal at American Heroes & Brew?',
+        answer:
+          'Yes — every Thursday is Thirsty Thursday: all burgers $5 off and $5 house drafts, all day, at 300 Carlsbad Village Drive, Carlsbad.',
+      },
+    ],
+    breadcrumbLabel: 'Burgers',
+  },
+
+  cheesesteak: {
+    slug: 'cheesesteak',
+    metaTitle: 'Authentic Philly Cheesesteak in Carlsbad — Amoroso Rolls from Philly',
+    metaDescription:
+      'American Heroes & Brew serves the only authentic Philly cheesesteak in Carlsbad — made on Amoroso rolls flown in from Philadelphia. Carlsbad Village, full bar, family-friendly, every game on 16 TVs. 300 Carlsbad Village Drive.',
+    h1: 'Authentic Philly Cheesesteak in Carlsbad',
+    tagline: 'On Amoroso rolls flown in from Philadelphia — the only true Philly cheesesteak in town.',
+    intro: [
+      'Craving a real Philly cheesesteak in Carlsbad? American Heroes & Brew serves the only authentic Philly cheesesteak in town — made on Amoroso rolls flown in from Philadelphia, the way it’s done back east. Find it at ' +
+        ADDRESS +
+        ', with a full bar, craft beer, and the game on 16 TVs.',
+      'Family-friendly and walkable in Carlsbad Village, steps from Carlsbad State Beach and minutes from LEGOLAND. Walk-ins welcome, indoor and outdoor seating.',
+    ],
+    sections: [
+      {
+        heading: 'What makes it authentic',
+        bullets: [
+          'Amoroso rolls flown in from Philadelphia',
+          'The only true Philly cheesesteak in Carlsbad',
+          'Made the East-Coast way — done right',
+          'Pairs with loaded fries, a craft beer, and the game',
+          'Family-friendly, full bar, walk-ins welcome',
+        ],
+      },
+      {
+        heading: 'A taste of Philly in Carlsbad Village',
+        body: [
+          'Whether you grew up on cheesesteaks or you’re trying one for the first time, ours brings the real thing to North County. Stop in for lunch or dinner, catch the game on 16 TVs, and see why it’s a Carlsbad Village favorite.',
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'Where can I get an authentic Philly cheesesteak in Carlsbad?',
+        answer:
+          'American Heroes & Brew serves the only authentic Philly cheesesteak in Carlsbad, made on Amoroso rolls flown in from Philadelphia. Find it at 300 Carlsbad Village Drive, Carlsbad — a family-friendly restaurant and sports bar with a full bar.',
+      },
+      {
+        question: 'What makes the cheesesteak authentic?',
+        answer:
+          'It’s made on Amoroso rolls flown in from Philadelphia — the same rolls used by classic Philly cheesesteak shops — prepared the East-Coast way. It’s the only true Philly cheesesteak in Carlsbad.',
+      },
+    ],
+    breadcrumbLabel: 'Philly Cheesesteak',
+  },
 };
 
 export const LANDING_SLUGS = Object.keys(LANDING_PAGES);
