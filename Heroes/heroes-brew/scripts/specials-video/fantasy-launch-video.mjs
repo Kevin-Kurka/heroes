@@ -45,8 +45,9 @@ const RED = '#e2273a';
 const BLUE = '#2851a7';
 const NAVY = '#0c1f4d';   // dark outline for white fills
 const WHITE = '#ffffff';
+const ELEC = '#5bd3ff';   // electric/lightning glow
 const FPS = 30, DUR = 9.0, FRAMES = Math.round(FPS * DUR);
-const DISS = 0.4; // quick cross-dissolve between images
+const DISS = 0.22; // fast bg crossfade (the flash hides the cut)
 
 // Lead with the cleanest center-subject action shots; keep faces framed via FOCAL.
 const ORDER = ['josh_allen', 'cmc', 'chargers_lineup', 'raiders', 'chargers_preview', 'josh_allen2'];
@@ -141,20 +142,20 @@ function drawFireworks(ctx, sec, W, H) {
 }
 
 async function loadAssets() {
-  const IMG = [], BLUR = [];
+  const BG = [], CUT = [];
   for (const key of ORDER) {
     const p = join(NFL, `${key}.jpg`);
     if (!existsSync(p)) throw new Error(`missing ${p}`);
-    IMG.push(await loadImage(p));
-    // soft-focus variant for the "comes into focus" entrance
-    const b = await sharp(p).blur(22).jpeg({ quality: 82 }).toBuffer();
-    BLUR.push(await loadImage(b));
+    // heavy dark blur background so the sharp cut-out player pops
+    const b = await sharp(p).blur(34).modulate({ brightness: 0.5, saturation: 0.82 }).jpeg({ quality: 80 }).toBuffer();
+    BG.push(await loadImage(b));
+    // Vision subject cut-out (transparent PNG) made by cutout.swift
+    const cp = join(HERE, '_cut', `${key}.png`);
+    CUT.push(existsSync(cp) ? await loadImage(cp) : null);
   }
   const badge = existsSync(join(PUBLIC, 'badge-clean.png')) ? await loadImage(join(PUBLIC, 'badge-clean.png')) : null;
-  return { IMG, BLUR, badge };
+  return { BG, CUT, badge };
 }
-
-const FOCUS_T = 0.45; // seconds for an image to settle from soft→sharp
 
 // Full-bleed "focus pull": each photo enters slightly soft + zoomed, then settles
 // SHARP and steady on the subject (focal point kept centered). After settling it
@@ -168,40 +169,87 @@ function drawCoverFocal(ctx, img, W, H, scale, fx, fy, alpha) {
   const top = clamp(H * TARGET_Y - fy * h, H - h, 0);
   ctx.save(); ctx.globalAlpha = alpha; ctx.drawImage(img, left, top, w, h); ctx.restore();
 }
-function drawImageLayer(ctx, A, idx, localTime, alpha, W, H) {
-  if (alpha <= 0) return;
-  const f = FOCAL[ORDER[idx]] ?? { fx: 0.5, fy: 0.32 };
-  const Z = focalZoom(f.fy);
-  const fp = clamp01(localTime / FOCUS_T);              // 0→1 focus settle
-  const focus = easeOut(fp);
-  // settle 1.07→1.0 during focus, then a gentle 1.0→1.03 push-in; keeps the face anchored
-  const settle = lerp(1.07, 1.0, focus);
-  const hold = lerp(1.0, 1.03, clamp01((localTime - FOCUS_T) / (SEG - FOCUS_T)));
-  const scale = Z * (localTime < FOCUS_T ? settle : hold);
-  drawCoverFocal(ctx, A.IMG[idx], W, H, scale, f.fx, f.fy, alpha);
-  if (fp < 1 && A.BLUR[idx]) drawCoverFocal(ctx, A.BLUR[idx], W, H, scale, f.fx, f.fy, alpha * (1 - focus));
-}
-
-function drawScene(ctx, sec, A, W, H) {
+// --- Background: heavy dark blur, gentle zoom; quick crossfade between shots ---
+function drawSceneBg(ctx, sec, A, W, H) {
   const i = Math.min(ORDER.length - 1, Math.floor(sec / SEG));
   const local = sec - i * SEG;
-  drawImageLayer(ctx, A, i, local, 1, W, H);
+  const bgScale = (idx, lt) => focalZoom(FOCAL[ORDER[idx]].fy) * lerp(1.06, 1.16, clamp01(lt / SEG));
+  const f0 = FOCAL[ORDER[i]];
+  drawCoverFocal(ctx, A.BG[i], W, H, bgScale(i, local), f0.fx, f0.fy, 1);
   const into = SEG - local;
   if (i < ORDER.length - 1 && into < DISS) {
-    drawImageLayer(ctx, A, i + 1, sec - (i + 1) * SEG, smooth(1 - into / DISS), W, H);
+    const f1 = FOCAL[ORDER[i + 1]];
+    drawCoverFocal(ctx, A.BG[i + 1], W, H, bgScale(i + 1, sec - (i + 1) * SEG), f1.fx, f1.fy, smooth(1 - into / DISS));
   }
-  // subtle overall darken so type pops anywhere
-  ctx.fillStyle = 'rgba(0,0,0,0.14)'; ctx.fillRect(0, 0, W, H);
-  // top scrim (badge/kicker)
+  // push the background down + scrims for type
+  ctx.fillStyle = 'rgba(5,9,22,0.40)'; ctx.fillRect(0, 0, W, H);
   const tg = ctx.createLinearGradient(0, 0, 0, H * 0.30);
-  tg.addColorStop(0, 'rgba(0,0,0,0.62)'); tg.addColorStop(1, 'rgba(0,0,0,0)');
+  tg.addColorStop(0, 'rgba(0,0,0,0.6)'); tg.addColorStop(1, 'rgba(0,0,0,0)');
   ctx.fillStyle = tg; ctx.fillRect(0, 0, W, H * 0.30);
-  // strong bottom scrim (headline / pill / sub / url)
-  const bgg = ctx.createLinearGradient(0, H * 0.40, 0, H);
-  bgg.addColorStop(0, 'rgba(0,0,0,0)'); bgg.addColorStop(0.45, 'rgba(0,0,0,0.55)'); bgg.addColorStop(1, 'rgba(0,0,0,0.93)');
-  ctx.fillStyle = bgg; ctx.fillRect(0, H * 0.40, W, H * 0.60);
-  // fireworks burst around the $100 pill (drawn behind the text layer)
-  drawFireworks(ctx, sec, W, H);
+  const bgg = ctx.createLinearGradient(0, H * 0.42, 0, H);
+  bgg.addColorStop(0, 'rgba(0,0,0,0)'); bgg.addColorStop(0.45, 'rgba(0,0,0,0.58)'); bgg.addColorStop(1, 'rgba(0,0,0,0.94)');
+  ctx.fillStyle = bgg; ctx.fillRect(0, H * 0.42, W, H * 0.58);
+}
+
+// --- Foreground: sharp cut-out player with an electric lightning glow + pop-in ---
+function drawOnePlayer(ctx, A, idx, localTime, alpha, W, H) {
+  if (alpha <= 0 || !A.CUT[idx]) return;
+  const f = FOCAL[ORDER[idx]], Z = focalZoom(f.fy), px = W / 1080;
+  const pop = localTime < 0.4 ? lerp(1.14, 1.0, easeOut(clamp01(localTime / 0.4)))
+    : lerp(1.0, 1.04, clamp01((localTime - 0.4) / (SEG - 0.4)));
+  const scale = Z * pop;
+  const flick = 0.7 + 0.3 * (0.5 + 0.5 * Math.sin(localTime * 33)) * (0.5 + 0.5 * Math.sin(localTime * 12.7));
+  const boost = localTime < 0.4 ? 1 + (1 - localTime / 0.4) * 0.9 : 1; // flare on entrance
+  ctx.save();
+  // wide electric glow
+  ctx.shadowColor = `rgba(91,211,255,${Math.min(1, 0.8 * flick * boost)})`; ctx.shadowBlur = 44 * px;
+  drawCoverFocal(ctx, A.CUT[idx], W, H, scale, f.fx, f.fy, alpha);
+  // tight bright rim
+  ctx.shadowColor = `rgba(200,240,255,${Math.min(1, 0.95 * flick)})`; ctx.shadowBlur = 13 * px;
+  drawCoverFocal(ctx, A.CUT[idx], W, H, scale, f.fx, f.fy, alpha);
+  ctx.restore();
+  // crisp player on top
+  drawCoverFocal(ctx, A.CUT[idx], W, H, scale, f.fx, f.fy, alpha);
+  // crackling bolts on entrance
+  if (localTime < 0.5) drawBolts(ctx, idx, localTime, W, H, alpha * (1 - localTime / 0.5));
+}
+function drawPlayers(ctx, sec, A, W, H) {
+  const i = Math.min(ORDER.length - 1, Math.floor(sec / SEG));
+  const local = sec - i * SEG;
+  drawOnePlayer(ctx, A, i, local, 1, W, H);
+  const into = SEG - local;
+  if (i < ORDER.length - 1 && into < DISS) drawOnePlayer(ctx, A, i + 1, sec - (i + 1) * SEG, smooth(1 - into / DISS), W, H);
+}
+
+// jagged lightning bolts that crackle beside the player on entrance
+function drawBolts(ctx, idx, lt, W, H, a) {
+  if (a <= 0) return;
+  const px = W / 1080, rnd = mulberry32(idx * 131 + Math.floor(lt * 42));
+  ctx.save();
+  ctx.globalAlpha = a * (0.45 + 0.55 * rnd());
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  ctx.strokeStyle = 'rgba(200,240,255,0.95)'; ctx.lineWidth = 3 * px;
+  ctx.shadowColor = ELEC; ctx.shadowBlur = 18 * px;
+  for (let b = 0; b < 2; b++) {
+    let x = W * ((b ? 0.72 : 0.28) + (rnd() - 0.5) * 0.05), y = H * 0.16;
+    const endY = H * (0.40 + rnd() * 0.12), seg = 6;
+    ctx.beginPath(); ctx.moveTo(x, y);
+    for (let s = 1; s <= seg; s++) { x += (rnd() - 0.5) * W * 0.06; y += (endY - H * 0.16) / seg; ctx.lineTo(x, y); }
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+// white/cyan flash punch at each cut
+function drawFlash(ctx, sec, W, H) {
+  const i = Math.floor(sec / SEG), local = sec - i * SEG;
+  if (i > 0 && local < 0.14) {
+    ctx.save();
+    ctx.globalAlpha = 0.62 * (1 - local / 0.14);
+    ctx.fillStyle = '#e8f7ff';
+    ctx.fillRect(0, 0, W, H);
+    ctx.restore();
+  }
 }
 
 function popText(ctx, fn, cx, cy, td) {
@@ -354,8 +402,11 @@ async function renderDim(A, W, H, outName) {
   for (let f = 0; f < FRAMES; f++) {
     const sec = f / FPS;
     ctx.clearRect(0, 0, W, H);
-    drawScene(ctx, sec, A, W, H);
-    drawText(ctx, sec, A, W, H);
+    drawSceneBg(ctx, sec, A, W, H);   // blurred dark background
+    drawPlayers(ctx, sec, A, W, H);   // sharp cut-out player + lightning glow
+    drawFlash(ctx, sec, W, H);        // flash-cut punch
+    drawFireworks(ctx, sec, W, H);    // $100 burst
+    drawText(ctx, sec, A, W, H);      // overlaid type
     writeFileSync(join(dir, `f-${String(f + 1).padStart(4, '0')}.png`), canvas.toBuffer('image/png'));
   }
   muxAudio(join(dir, 'f-%04d.png'), join(OUT_DIR, outName));
