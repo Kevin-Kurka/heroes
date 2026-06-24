@@ -4,11 +4,13 @@ import { useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
-import { UtensilsCrossed, CalendarDays, MapPin, ChevronRight, Trophy, Flame, Egg } from 'lucide-react';
+import { UtensilsCrossed, CalendarDays, MapPin, ChevronRight, Trophy, Flame, Egg, Heart } from 'lucide-react';
 import { UnifiedEvent } from '@/types';
 import Ticker from '@/components/Ticker';
 import EventCard from '@/components/EventCard';
 import ReviewCTA from '@/components/ReviewCTA';
+import InstagramEmbed from '@/components/InstagramEmbed';
+import { getCurrentHero } from '@/lib/heroes';
 import DoorDashIcon from '@/components/DoorDashIcon';
 import { trackEvent } from '@/lib/analytics';
 import { DOORDASH_URL } from '@/lib/doordash';
@@ -68,6 +70,8 @@ interface Props {
 export default function HomePageClient({ events, todayIndex }: Props) {
   const heroRef = useRef<HTMLElement>(null);
   const doordashAvailable = useDoorDashAvailable();
+  // Hero of the Month — only rendered when one has been chosen (lib/heroes.ts).
+  const currentHero = getCurrentHero();
   const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ['start start', 'end start'],
@@ -319,6 +323,45 @@ export default function HomePageClient({ events, todayIndex }: Props) {
           </>
         )}
       </section>
+
+      {/* Hero of the Month — only when one has been chosen; shows the IG post
+          that nominated them. Sits with the weekly lineup as fresh content. */}
+      {currentHero && (
+        <section className="max-w-4xl mx-auto px-4 py-12">
+          <div className="flex items-center gap-2 mb-6">
+            <Heart size={20} className="text-accent fill-accent" />
+            <h2 className="text-2xl font-bold text-foreground">Hero of the Month</h2>
+          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, ease: [0, 0, 0.2, 1] }}
+            className="relative overflow-hidden bg-card border border-accent/30 rounded-lg p-6"
+          >
+            <div className="absolute top-0 left-0 w-1 h-full bg-accent" />
+            <span className="text-[10px] font-bold uppercase tracking-widest text-accent">
+              {currentHero.month} · Community Hero
+            </span>
+            <h3 className="text-xl font-bold text-foreground leading-tight mt-1">{currentHero.name}</h3>
+            {currentHero.title && <p className="text-sm text-muted">{currentHero.title}</p>}
+            <p className="mt-3 text-foreground/85 leading-relaxed">{currentHero.blurb}</p>
+            {currentHero.igPostUrl && (
+              <div className="mt-5">
+                <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-muted">
+                  Nominated by the community
+                </p>
+                <InstagramEmbed url={currentHero.igPostUrl} />
+              </div>
+            )}
+            <Link
+              href="/heroes"
+              className="mt-4 inline-flex items-center gap-1 text-accent font-semibold text-sm hover:underline"
+            >
+              About Hero of the Month <ChevronRight size={16} />
+            </Link>
+          </motion.div>
+        </section>
+      )}
 
       {/* 2 for 22 Breakfast */}
       <section className="max-w-4xl mx-auto px-4 py-12">

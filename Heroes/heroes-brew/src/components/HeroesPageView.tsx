@@ -1,13 +1,12 @@
-import Link from 'next/link';
 import Image from 'next/image';
-import { Award, Heart, Users, MessageCircleQuestion, Instagram, MapPin } from 'lucide-react';
+import { Award, Heart, MessageCircleQuestion, Instagram, MapPin } from 'lucide-react';
 import { HEROES, HEROES_PROGRAM, HERO_FAQS, type Hero } from '@/lib/heroes';
 import ReviewCTA from '@/components/ReviewCTA';
+import InstagramEmbed from '@/components/InstagramEmbed';
 
 const NOMINATE_URL = process.env.HEROES_NOMINATION_URL || HEROES_PROGRAM.nominate.instagram;
 
 function HeroCard({ hero, featured }: { hero: Hero; featured?: boolean }) {
-  const Icon = hero.type === 'vocation' ? Users : Award;
   return (
     <article
       className={`relative overflow-hidden rounded-lg border ${
@@ -28,12 +27,12 @@ function HeroCard({ hero, featured }: { hero: Hero; featured?: boolean }) {
       )}
       <div className="flex items-center gap-2">
         <span className="text-[10px] font-bold uppercase tracking-widest text-accent">
-          {featured ? 'Hero of the Month' : hero.month} · {hero.type === 'vocation' ? 'Vocation' : 'Community Hero'}
+          {featured ? 'Hero of the Month' : hero.month} · Community Hero
         </span>
       </div>
       <div className="mt-1 flex items-start gap-3">
         <div className="mt-0.5 shrink-0 rounded-lg bg-accent/10 p-2">
-          <Icon size={20} className="text-accent" />
+          <Award size={20} className="text-accent" />
         </div>
         <div>
           <h3 className={`font-bold text-foreground ${featured ? 'text-2xl' : 'text-lg'}`}>{hero.name}</h3>
@@ -41,6 +40,14 @@ function HeroCard({ hero, featured }: { hero: Hero; featured?: boolean }) {
         </div>
       </div>
       <p className="mt-3 leading-relaxed text-foreground/85">{hero.blurb}</p>
+      {hero.igPostUrl && (
+        <div className="mt-5">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-muted">
+            Nominated by the community
+          </p>
+          <InstagramEmbed url={hero.igPostUrl} />
+        </div>
+      )}
     </article>
   );
 }
@@ -99,8 +106,8 @@ export default function HeroesPageView() {
         <section className="mb-10 rounded-lg border border-accent/30 bg-card p-6">
           <h2 className="mb-2 text-xl font-bold text-foreground">Nominate a hero</h2>
           <p className="mb-4 text-foreground/85">
-            Know someone in Carlsbad or North County who deserves a little recognition? Nominate them — an
-            individual or a whole profession.
+            Watch for our monthly “Tag Your Hero” post on Instagram and tag the local person who deserves it —
+            then like the nominees you support. The most-tagged, most-loved hero wins the month.
           </p>
           <div className="flex flex-col gap-3 sm:flex-row">
             <a
@@ -109,7 +116,7 @@ export default function HeroesPageView() {
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-2 rounded-sm bg-accent px-6 py-3 font-semibold text-white transition-colors hover:bg-accent-dim"
             >
-              <Instagram size={18} /> Nominate on Instagram
+              <Instagram size={18} /> Tag your hero on Instagram
             </a>
             <span className="inline-flex items-center gap-2 rounded-sm border border-border px-6 py-3 text-foreground/80">
               <MapPin size={18} className="text-accent" /> Or ask us in the Village
