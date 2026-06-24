@@ -146,12 +146,18 @@ async function loadAssets() {
   for (const key of ORDER) {
     const p = join(NFL, `${key}.jpg`);
     if (!existsSync(p)) throw new Error(`missing ${p}`);
-    // heavy dark blur background so the sharp cut-out player pops
-    const b = await sharp(p).blur(34).modulate({ brightness: 0.5, saturation: 0.82 }).jpeg({ quality: 80 }).toBuffer();
+    // clean (not muddy) blurred background; the sharp player sits on top of it
+    const b = await sharp(p).blur(18).modulate({ brightness: 0.64, saturation: 1.0 }).jpeg({ quality: 84 }).toBuffer();
     BG.push(await loadImage(b));
-    // Vision subject cut-out (transparent PNG) made by cutout.swift
+    // Vision subject cut-out, trimmed to the player + lightly sharpened, kept at
+    // native resolution so the player stays crisp (NOT upscaled to full-bleed).
     const cp = join(HERE, '_cut', `${key}.png`);
-    CUT.push(existsSync(cp) ? await loadImage(cp) : null);
+    if (existsSync(cp)) {
+      let buf;
+      try { buf = await sharp(cp).trim().sharpen({ sigma: 1 }).png().toBuffer(); }
+      catch { buf = await sharp(cp).sharpen({ sigma: 1 }).png().toBuffer(); }
+      CUT.push(await loadImage(buf));
+    } else CUT.push(null);
   }
   const badge = existsSync(join(PUBLIC, 'badge-clean.png')) ? await loadImage(join(PUBLIC, 'badge-clean.png')) : null;
   return { BG, CUT, badge };
@@ -191,25 +197,33 @@ function drawSceneBg(ctx, sec, A, W, H) {
   ctx.fillStyle = bgg; ctx.fillRect(0, H * 0.42, W, H * 0.58);
 }
 
-// --- Foreground: sharp cut-out player with an electric lightning glow + pop-in ---
+// --- Foreground: sharp cut-out player (native res, never upscaled to full-bleed)
+// centered on a blurred bg, with an electric lightning glow + pop-in ---
+function playerRect(img, W, H, popMul) {
+  const cw = img.width, ch = img.height;
+  // size to ~64% frame height, but never blow it up past 1.8x native → stays crisp
+  const scale = Math.min(H * 0.64 / ch, W * 0.92 / cw, 1.8) * popMul;
+  const w = cw * scale, h = ch * scale;
+  return { x: (W - w) / 2, y: H * 0.45 - h / 2, w, h };
+}
 function drawOnePlayer(ctx, A, idx, localTime, alpha, W, H) {
-  if (alpha <= 0 || !A.CUT[idx]) return;
-  const f = FOCAL[ORDER[idx]], Z = focalZoom(f.fy), px = W / 1080;
-  const pop = localTime < 0.4 ? lerp(1.14, 1.0, easeOut(clamp01(localTime / 0.4)))
-    : lerp(1.0, 1.04, clamp01((localTime - 0.4) / (SEG - 0.4)));
-  const scale = Z * pop;
+  const img = A.CUT[idx]; if (!img || alpha <= 0) return;
+  const px = W / 1080;
+  const popMul = localTime < 0.4 ? lerp(1.08, 1.0, easeOut(clamp01(localTime / 0.4))) : 1.0;
+  const { x, y, w, h } = playerRect(img, W, H, popMul);
   const flick = 0.7 + 0.3 * (0.5 + 0.5 * Math.sin(localTime * 33)) * (0.5 + 0.5 * Math.sin(localTime * 12.7));
   const boost = localTime < 0.4 ? 1 + (1 - localTime / 0.4) * 0.9 : 1; // flare on entrance
   ctx.save();
+  ctx.globalAlpha = alpha;
   // wide electric glow
-  ctx.shadowColor = `rgba(91,211,255,${Math.min(1, 0.8 * flick * boost)})`; ctx.shadowBlur = 44 * px;
-  drawCoverFocal(ctx, A.CUT[idx], W, H, scale, f.fx, f.fy, alpha);
+  ctx.shadowColor = `rgba(91,211,255,${Math.min(1, 0.85 * flick * boost)})`; ctx.shadowBlur = 46 * px;
+  ctx.drawImage(img, x, y, w, h);
   // tight bright rim
-  ctx.shadowColor = `rgba(200,240,255,${Math.min(1, 0.95 * flick)})`; ctx.shadowBlur = 13 * px;
-  drawCoverFocal(ctx, A.CUT[idx], W, H, scale, f.fx, f.fy, alpha);
+  ctx.shadowColor = `rgba(200,240,255,${Math.min(1, 0.95 * flick)})`; ctx.shadowBlur = 14 * px;
+  ctx.drawImage(img, x, y, w, h);
   ctx.restore();
-  // crisp player on top
-  drawCoverFocal(ctx, A.CUT[idx], W, H, scale, f.fx, f.fy, alpha);
+  // crisp player on top (no shadow) — untouched, high quality
+  ctx.save(); ctx.globalAlpha = alpha; ctx.drawImage(img, x, y, w, h); ctx.restore();
   // crackling bolts on entrance
   if (localTime < 0.5) drawBolts(ctx, idx, localTime, W, H, alpha * (1 - localTime / 0.5));
 }
