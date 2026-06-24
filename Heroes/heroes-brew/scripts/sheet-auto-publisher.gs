@@ -304,6 +304,15 @@ function scheduleNext() {
 }
 
 function publishDue() {
+  // Concurrency guard: multiple triggers can call publishDue (onEdit-scheduled
+  // at() trigger, dailyCatchup, occasional double-fires). Without a lock two runs
+  // can both see Posted='' and publish the SAME row twice (the 2026-06-24 Mexico
+  // vs Czechia duplicate). tryLock(0) → if another run holds it, skip; the holder
+  // will post the row. Combined with flush() after stamping, a serialized second
+  // run re-reads rows_() and sees Posted set, so it skips the row.
+  var lock = LockService.getScriptLock();
+  if (!lock.tryLock(0)) { Logger.log('publishDue: another run holds the lock — skipping'); return; }
+  try {
   var p = props_();
   var url = p.getProperty('PUBLISH_URL');
   var googleUrl = p.getProperty('GOOGLE_PUBLISH_URL'); // optional — Google channel is off until set
@@ -344,9 +353,14 @@ function publishDue() {
           Logger.log('Publish failed [' + row.tab + ' r' + row.rowNum + ' ' + ch + ']: ' + res.getContentText());
         }
       });
-      if (allOk) row.sh.getRange(row.rowNum, row.c.posted + 1).setValue(new Date());
+      // Stamp Posted and FLUSH immediately so any serialized follow-up run sees it
+      // and won't re-post this row.
+      if (allOk) { row.sh.getRange(row.rowNum, row.c.posted + 1).setValue(new Date()); SpreadsheetApp.flush(); }
     });
   scheduleNext();
+  } finally {
+    lock.releaseLock();
+  }
 }
 
 function onEditInstallable(e) {

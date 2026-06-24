@@ -118,6 +118,46 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // ── Idempotency guard: don't double-post the same feed/reel ──────────────
+  // The sheet-bound Apps Script publisher can double-fire (concurrent onEdit /
+  // at() / dailyCatchup triggers with no lock), which has produced duplicate
+  // Instagram posts. Before publishing a feed/reel, check the account's most
+  // recent media; if the identical caption was already posted within
+  // DEDUP_WINDOW_MS, skip instead of posting a duplicate. Stories aren't
+  // returned by the /media edge, so this guards feed/reels — exactly where the
+  // duplicate is visible. Best-effort: any failure here falls through to publish.
+  const DEDUP_WINDOW_MS = 30 * 60 * 1000;
+  if (!isStory && captionStr) {
+    try {
+      const recentRes = await fetch(
+        `${GRAPH_URL}/${userId}/media?fields=caption,timestamp&limit=5&access_token=${encodeURIComponent(accessToken)}`
+      );
+      const recent = (await recentRes.json().catch(() => ({}))) as {
+        data?: Array<{ caption?: string; timestamp?: string }>;
+      };
+      const norm = (s: string) => s.replace(/\s+/g, ' ').trim();
+      const target = norm(captionStr);
+      const now = Date.now();
+      const dup = (recent.data ?? []).find(
+        (m) =>
+          !!m.caption &&
+          norm(m.caption) === target &&
+          !!m.timestamp &&
+          now - Date.parse(m.timestamp) < DEDUP_WINDOW_MS
+      );
+      if (dup) {
+        console.warn('Instagram publish skipped — duplicate caption within dedup window');
+        return NextResponse.json({
+          ok: true,
+          skipped: 'duplicate',
+          reason: 'An identical caption was posted within the last 30 minutes.',
+        });
+      }
+    } catch (err) {
+      console.warn('Instagram dedup check failed (continuing to publish):', err);
+    }
+  }
+
   // ── Step 1: create a media container ─────────────────────────────────────
   // Shape varies by target: feed image (no media_type), Story image/video
   // (media_type=STORIES), or feed video / Reel (media_type=REELS).

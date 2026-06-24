@@ -64,13 +64,15 @@ function roundRect(ctx, x, y, w, h, r) {
   ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
 }
 
-// explode-in: returns {alpha, scale} for an element triggered at `start` (seconds)
-function explode(t, start, dur = 0.45) {
-  if (t < start) return { alpha: 0, scale: 2.0 };
+// bounce: the element is FULLY VISIBLE from the first frame (alpha 1, scale 1) so
+// the very first frame is the complete poster — no blank/blurred intro that reads
+// as unfinished on Instagram. At `start` it does a quick pop-and-settle bounce for
+// emphasis (timed to the camera shake + audio hits).
+function bounce(t, start, dur = 0.42) {
+  if (t < start) return { alpha: 1, scale: 1 };
   const p = clamp01((t - start) / dur);
-  const alpha = easeOut(p / 0.5);
-  const scale = lerp(2.0, 1, backOut(p));
-  return { alpha: clamp01(alpha), scale };
+  const pulse = Math.sin(p * Math.PI) * (1 - p) * 0.22; // peak ~+16%, settles to 1
+  return { alpha: 1, scale: 1 + pulse };
 }
 
 // camera shake — strong impulse at each slam, decaying, plus subtle idle wobble
@@ -176,7 +178,7 @@ async function main() {
     const baseY = posterDrawH + 130;
 
     // kicker chip (Mexico green, white text)
-    const eK = explode(t, 0.25, 0.4);
+    const eK = bounce(t, 0.25, 0.4);
     if (eK.alpha > 0) {
       ctx.save();
       ctx.globalAlpha = eK.alpha;
@@ -191,7 +193,7 @@ async function main() {
     }
 
     // big headline: TODAY (white, red stroke)
-    const eT = explode(t, 0.55, 0.45);
+    const eT = bounce(t, 0.55, 0.45);
     if (eT.alpha > 0) {
       ctx.save(); ctx.globalAlpha = eT.alpha;
       ctx.translate(W / 2, baseY + 175); ctx.scale(eT.scale, eT.scale);
@@ -200,7 +202,7 @@ async function main() {
     }
 
     // big time: 6:00 PM (flag gradient: green→white→red→blue)
-    const eTime = explode(t, 0.78, 0.45);
+    const eTime = bounce(t, 0.78, 0.45);
     if (eTime.alpha > 0) {
       ctx.save(); ctx.globalAlpha = eTime.alpha;
       ctx.translate(W / 2, baseY + 360); ctx.scale(eTime.scale, eTime.scale);
@@ -209,7 +211,7 @@ async function main() {
     }
 
     // venue line (white, dark stroke)
-    const eV = explode(t, 1.05, 0.45);
+    const eV = bounce(t, 1.05, 0.45);
     if (eV.alpha > 0) {
       ctx.save(); ctx.globalAlpha = eV.alpha;
       ctx.translate(W / 2, baseY + 510); ctx.scale(eV.scale, eV.scale);
@@ -218,7 +220,7 @@ async function main() {
     }
 
     // footer (flag gradient)
-    const eF = explode(t, 1.45, 0.4);
+    const eF = bounce(t, 1.45, 0.4);
     if (eF.alpha > 0) {
       ctx.save(); ctx.globalAlpha = eF.alpha;
       drawText(ctx, CFG.footer, W / 2, baseY + 600, `600 40px "${HEAD}"`, 'FLAG', { shadow: 10 });
