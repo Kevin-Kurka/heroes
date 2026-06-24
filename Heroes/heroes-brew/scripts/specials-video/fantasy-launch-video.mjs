@@ -65,9 +65,9 @@ function stroked(ctx, text, x, y, font, fill, stroke, lineW, blur = 20) {
 // Start quick with IT'S FANTASY SEASON; end on the Heroes logo. `t` is the SLAM
 // moment (text flies out ~0.3s before, then bounces back hard on `t`).
 const EVENTS = [
-  { t: 0.8, kind: 'text', shake: 24, bx: 0.5, by: 0.46, seed: 22, line: 'IT’S FANTASY SEASON', size: 0.092, fill: WHITE, stroke: NAVY_OUT },
-  { t: 2.5, kind: 'text', shake: 28, bx: 0.5, by: 0.61, seed: 33, line: 'JOIN A HEROES LEAGUE NOW', size: 0.055, fill: GREEN, stroke: WHITE },
-  { t: 4.2, kind: 'text', shake: 32, bx: 0.5, by: 0.76, seed: 44, line: 'WIN $100', size: 0.13, fill: WHITE, stroke: GREEN },
+  { t: 0.8, kind: 'text', shake: 24, bx: 0.5, by: 0.60, seed: 22, line: 'IT’S FANTASY SEASON', size: 0.090, fill: WHITE, stroke: NAVY_OUT },
+  { t: 2.5, kind: 'text', shake: 28, bx: 0.5, by: 0.71, seed: 33, line: 'JOIN A HEROES LEAGUE NOW', size: 0.055, fill: GREEN, stroke: WHITE },
+  { t: 4.2, kind: 'text', shake: 32, bx: 0.5, by: 0.835, seed: 44, line: 'WIN $100', size: 0.125, fill: WHITE, stroke: GREEN },
   { t: 6.0, kind: 'logo', shake: 42, bx: 0.5, by: 0.155, seed: 11 },
 ];
 const BOOMS = EVENTS.map((e) => e.t);
@@ -81,11 +81,14 @@ async function loadAssets() {
 
 // escalating camera shake + a sharp spike right after each reveal
 function shakeAt(sec) {
-  let amp = lerp(2.5, 13, clamp01(sec / DUR));
-  for (const e of EVENTS) { const a = sec - e.t; if (a >= 0 && a < 0.28) amp = Math.max(amp, lerp(e.shake, amp, a / 0.28)); }
-  const x = Math.sin(sec * 38.1) * amp + Math.sin(sec * 24.7) * amp * 0.5;
-  const y = Math.cos(sec * 33.3) * amp + Math.sin(sec * 19.9) * amp * 0.5;
-  const rot = Math.sin(sec * 28.5) * amp * 0.0011;
+  let amp = lerp(2.0, 11, clamp01(sec / DUR));
+  for (const e of EVENTS) { const a = sec - e.t; if (a >= 0 && a < 0.3) amp = Math.max(amp, lerp(e.shake, amp, a / 0.3)); }
+  // per-frame random (deterministic by frame) → handheld jitter, not a periodic wobble
+  const fr = Math.round(sec * FPS) >>> 0;
+  const r = mulberry32((fr * 2654435761) >>> 0);
+  const x = (r() - 0.5) * 2 * amp + Math.sin(sec * 41) * amp * 0.25;
+  const y = (r() - 0.5) * 2 * amp + Math.cos(sec * 37) * amp * 0.25;
+  const rot = (r() - 0.5) * 2 * amp * 0.0008;
   return { x, y, rot };
 }
 
@@ -110,20 +113,22 @@ function drawBg(ctx, sec, A, W, H) {
 }
 
 // parallax ambient confetti (3 depth layers) — density grows through the reel
-const AMBIENT = (() => { const r = mulberry32(7), a = []; for (let i = 0; i < 300; i++) a.push({ x: r(), y: r() * 1.4 - 0.4, layer: Math.floor(r() * 3), col: CONF[Math.floor(r() * CONF.length)], rot: r() * 7, rotSpd: (r() - 0.5) * 6, sway: r() * 6.28, on: i / 300 }); return a; })();
-function confettiRect(ctx, x, y, size, ang, col, alpha) {
-  ctx.save(); ctx.globalAlpha = alpha; ctx.translate(x, y); ctx.rotate(ang);
-  ctx.fillStyle = col; ctx.fillRect(-size / 2, -size / 4, size, size * 0.5); ctx.restore();
+const AMBIENT = (() => { const r = mulberry32(7), a = []; for (let i = 0; i < 300; i++) a.push({ x: r(), y: r() * 1.4 - 0.4, layer: Math.floor(r() * 3), col: CONF[Math.floor(r() * CONF.length)], rot: r() * 7, rotSpd: (r() - 0.5) * 5, sway: r() * 6.28, ar: 0.22 + r() * 0.55, fsp: 4 + r() * 7, fph: r() * 6.28, on: i / 300, szr: 0.8 + r() * 0.5 }); return a; })();
+// a fluttering paper strip: turns edge-on via the flutter scaleX → looks like real confetti, not flat blocks
+function confettiRect(ctx, x, y, w, h, ang, flut, col, alpha) {
+  ctx.save(); ctx.globalAlpha = alpha; ctx.translate(x, y); ctx.rotate(ang); ctx.scale(flut, 1);
+  ctx.fillStyle = col; ctx.fillRect(-w / 2, -h / 2, w, h); ctx.restore();
 }
 function drawAmbient(ctx, sec, W, H) {
   const px = W / 1080, prog = sec / DUR;
-  const SP = [0.055, 0.09, 0.14], SZ = [10, 15, 21], AL = [0.55, 0.8, 0.97];
+  const SP = [0.055, 0.09, 0.14], SZ = [11, 16, 23], AL = [0.5, 0.75, 0.95];
   for (const p of AMBIENT) {
     if (prog < p.on * 0.45) continue; // confetti ramps up fast and keeps building
     const yy = ((p.y + sec * SP[p.layer]) % 1.4) - 0.2;
     const xx = p.x + Math.sin(sec * 1.2 + p.sway) * [0.012, 0.022, 0.038][p.layer];
     const x = xx * W, y = yy * H; if (y < -25 || y > H + 25) continue;
-    confettiRect(ctx, x, y, SZ[p.layer] * px, p.rot + sec * p.rotSpd, p.col, AL[p.layer]);
+    const w = SZ[p.layer] * p.szr * px, flut = Math.cos(sec * p.fsp + p.fph);
+    confettiRect(ctx, x, y, w, w * p.ar, p.rot + sec * p.rotSpd, flut, p.col, AL[p.layer]);
   }
 }
 function drawBursts(ctx, sec, W, H) {
@@ -135,7 +140,8 @@ function drawBursts(ctx, sec, W, H) {
       const ang = r() * 6.2832, dist = (0.3 + r() * 1.0) * Math.min(W, H) * 0.72 * easeOut(Math.min(1, age / 0.9));
       const x = cx + Math.cos(ang) * dist, y = cy + Math.sin(ang) * dist + age * age * H * 0.14;
       const a = clamp01(1 - age / 1.8); if (a <= 0) continue;
-      confettiRect(ctx, x, y, (9 + r() * 15) * px, r() * 7 + age * 6, CONF[Math.floor(r() * CONF.length)], a * 0.97);
+      const w = (9 + r() * 15) * px, ar = 0.22 + r() * 0.55, flut = Math.cos(age * (6 + r() * 6) + i);
+      confettiRect(ctx, x, y, w, w * ar, r() * 7 + age * 6, flut, CONF[Math.floor(r() * CONF.length)], a * 0.96);
     }
   }
 }
@@ -177,12 +183,11 @@ function drawFrame(ctx, sec, A, W, H) {
   drawLogo(ctx, sec, A, W, H);
   for (const ev of EVENTS) if (ev.kind === 'text') drawHypeText(ctx, ev, sec, W, H);
   // URL at the end
-  const ua = clamp01((sec - 8.0) / 0.4);
+  const ua = clamp01((sec - 7.6) / 0.4);
   if (ua > 0) {
-    const px = W / 1080;
     ctx.save(); ctx.globalAlpha = ua; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    const s = fitFont(ctx, 'americanheroesandbrew.com/fantasy-football', 700, W * 0.034, W * 0.92);
-    stroked(ctx, 'americanheroesandbrew.com/fantasy-football', W / 2, H * 0.92, `700 ${s}px "${HEAD}"`, WHITE, NAVY_OUT, Math.max(3, s * 0.06) * px / px, 9);
+    const s = fitFont(ctx, 'americanheroesandbrew.com/fantasy-football', 700, W * 0.033, W * 0.92);
+    stroked(ctx, 'americanheroesandbrew.com/fantasy-football', W / 2, H * 0.945, `700 ${s}px "${HEAD}"`, WHITE, NAVY_OUT, Math.max(3, s * 0.06), 9);
     ctx.restore();
   }
 }
