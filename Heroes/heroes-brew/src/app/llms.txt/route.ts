@@ -97,6 +97,9 @@ ${faq}
 ## Pages
 - Home: ${SITE_URL}/
 - Menu: ${SITE_URL}/menu
+- Restaurant in Carlsbad Village (lunch, dinner, weekend breakfast): ${SITE_URL}/restaurant
+- Best burgers in Carlsbad: ${SITE_URL}/burgers
+- Authentic Philly cheesesteak in Carlsbad: ${SITE_URL}/cheesesteak
 - Where to watch the World Cup in Carlsbad: ${SITE_URL}/world-cup
 - Where to watch the game in Carlsbad: ${SITE_URL}/watch
 - Family dining near LEGOLAND: ${SITE_URL}/near-legoland
