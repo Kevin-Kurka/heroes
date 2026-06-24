@@ -36,7 +36,7 @@ const HEAD = GlobalFonts.families.some((f) => /Avenir Next Condensed/.test(f.fam
 // Seahawks palette
 const NAVY = '#0b294f', NAVY_OUT = '#001129', GREEN = '#69be28', GREY = '#a5acaf', WHITE = '#ffffff';
 const CONF = ['#002244', '#69be28', '#a5acaf', '#ffffff', '#3f7fc0'];
-const FPS = 30, DUR = 10.0, FRAMES = Math.round(FPS * DUR);
+const FPS = 30, DUR = 9.0, FRAMES = Math.round(FPS * DUR);
 const SLANT = -0.16; // Seahawks forward lean
 
 const clamp = (v, lo, hi) => (v < lo ? lo : v > hi ? hi : v);
@@ -45,6 +45,12 @@ const lerp = (a, b, t) => a + (b - a) * t;
 const easeOut = (t) => 1 - Math.pow(1 - clamp01(t), 3);
 const smooth = (x) => { x = clamp01(x); return x * x * (3 - 2 * x); };
 const backOut = (t) => { t = clamp01(t); const c1 = 1.9, c3 = c1 + 1, u = t - 1; return 1 + c3 * u * u * u + c1 * u * u; };
+// fly OUT big, then slam/bounce back hard to 1.0 (lt = seconds since entrance start)
+function flyBounce(lt) {
+  if (lt < 0.3) return lerp(0.45, 1.5, easeOut(lt / 0.3));
+  const u = lt - 0.3;
+  return 1.0 + 0.5 * Math.exp(-u * 8) * Math.cos(u * 20);
+}
 function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 function fitFont(ctx, text, weight, px, maxW) { let s = px; for (;;) { ctx.font = `${weight} ${s}px "${HEAD}"`; if (ctx.measureText(text).width <= maxW || s <= 12) break; s -= 2; } return s; }
 const shadowOff = (ctx) => { ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0; };
@@ -56,11 +62,13 @@ function stroked(ctx, text, x, y, font, fill, stroke, lineW, blur = 20) {
 
 // Sequenced reveals: badge, then the three lines. Each fires a confetti burst, an
 // explosion boom (in audio), and a jump in shake.
+// Start quick with IT'S FANTASY SEASON; end on the Heroes logo. `t` is the SLAM
+// moment (text flies out ~0.3s before, then bounces back hard on `t`).
 const EVENTS = [
-  { t: 1.0, kind: 'logo', shake: 20, bx: 0.5, by: 0.17, seed: 11 },
-  { t: 2.7, kind: 'text', shake: 18, bx: 0.5, by: 0.50, seed: 22, line: 'IT’S FANTASY SEASON', size: 0.086, fill: WHITE, stroke: NAVY_OUT },
-  { t: 4.7, kind: 'text', shake: 24, bx: 0.5, by: 0.64, seed: 33, line: 'JOIN A HEROES LEAGUE NOW', size: 0.052, fill: GREEN, stroke: WHITE },
-  { t: 6.7, kind: 'text', shake: 30, bx: 0.5, by: 0.785, seed: 44, line: 'WIN $100', size: 0.125, fill: WHITE, stroke: GREEN },
+  { t: 0.8, kind: 'text', shake: 24, bx: 0.5, by: 0.46, seed: 22, line: 'IT’S FANTASY SEASON', size: 0.092, fill: WHITE, stroke: NAVY_OUT },
+  { t: 2.5, kind: 'text', shake: 28, bx: 0.5, by: 0.61, seed: 33, line: 'JOIN A HEROES LEAGUE NOW', size: 0.055, fill: GREEN, stroke: WHITE },
+  { t: 4.2, kind: 'text', shake: 32, bx: 0.5, by: 0.76, seed: 44, line: 'WIN $100', size: 0.13, fill: WHITE, stroke: GREEN },
+  { t: 6.0, kind: 'logo', shake: 42, bx: 0.5, by: 0.155, seed: 11 },
 ];
 const BOOMS = EVENTS.map((e) => e.t);
 
@@ -102,16 +110,16 @@ function drawBg(ctx, sec, A, W, H) {
 }
 
 // parallax ambient confetti (3 depth layers) — density grows through the reel
-const AMBIENT = (() => { const r = mulberry32(7), a = []; for (let i = 0; i < 170; i++) a.push({ x: r(), y: r() * 1.4 - 0.4, layer: Math.floor(r() * 3), col: CONF[Math.floor(r() * CONF.length)], rot: r() * 7, rotSpd: (r() - 0.5) * 6, sway: r() * 6.28, on: i / 170 }); return a; })();
+const AMBIENT = (() => { const r = mulberry32(7), a = []; for (let i = 0; i < 300; i++) a.push({ x: r(), y: r() * 1.4 - 0.4, layer: Math.floor(r() * 3), col: CONF[Math.floor(r() * CONF.length)], rot: r() * 7, rotSpd: (r() - 0.5) * 6, sway: r() * 6.28, on: i / 300 }); return a; })();
 function confettiRect(ctx, x, y, size, ang, col, alpha) {
   ctx.save(); ctx.globalAlpha = alpha; ctx.translate(x, y); ctx.rotate(ang);
   ctx.fillStyle = col; ctx.fillRect(-size / 2, -size / 4, size, size * 0.5); ctx.restore();
 }
 function drawAmbient(ctx, sec, W, H) {
   const px = W / 1080, prog = sec / DUR;
-  const SP = [0.05, 0.085, 0.13], SZ = [8, 12, 17], AL = [0.5, 0.75, 0.95];
+  const SP = [0.055, 0.09, 0.14], SZ = [10, 15, 21], AL = [0.55, 0.8, 0.97];
   for (const p of AMBIENT) {
-    if (prog < p.on * 0.6) continue; // more confetti activates over time
+    if (prog < p.on * 0.45) continue; // confetti ramps up fast and keeps building
     const yy = ((p.y + sec * SP[p.layer]) % 1.4) - 0.2;
     const xx = p.x + Math.sin(sec * 1.2 + p.sway) * [0.012, 0.022, 0.038][p.layer];
     const x = xx * W, y = yy * H; if (y < -25 || y > H + 25) continue;
@@ -122,40 +130,43 @@ function drawBursts(ctx, sec, W, H) {
   const px = W / 1080;
   for (const ev of EVENTS) { const age = sec - ev.t; if (age < 0 || age > 1.8) continue;
     const r = mulberry32(ev.seed), cx = ev.bx * W, cy = ev.by * H;
-    for (let i = 0; i < 50; i++) {
-      const ang = r() * 6.2832, dist = (0.3 + r() * 0.95) * Math.min(W, H) * 0.55 * easeOut(Math.min(1, age / 0.9));
-      const x = cx + Math.cos(ang) * dist, y = cy + Math.sin(ang) * dist + age * age * H * 0.13;
+    const n = ev.kind === 'logo' ? 140 : 90; // biggest explosion on the logo finale
+    for (let i = 0; i < n; i++) {
+      const ang = r() * 6.2832, dist = (0.3 + r() * 1.0) * Math.min(W, H) * 0.72 * easeOut(Math.min(1, age / 0.9));
+      const x = cx + Math.cos(ang) * dist, y = cy + Math.sin(ang) * dist + age * age * H * 0.14;
       const a = clamp01(1 - age / 1.8); if (a <= 0) continue;
-      confettiRect(ctx, x, y, (7 + r() * 11) * px, r() * 7 + age * 6, CONF[Math.floor(r() * CONF.length)], a * 0.95);
+      confettiRect(ctx, x, y, (9 + r() * 15) * px, r() * 7 + age * 6, CONF[Math.floor(r() * CONF.length)], a * 0.97);
     }
   }
 }
 
 function drawLogo(ctx, sec, A, W, H) {
-  const ev = EVENTS[0], td = sec - ev.t; if (td < 0 || !A.badge) return;
-  const pop = backOut(clamp01(td / 0.42)), a = clamp01(td / 0.14), px = W / 1080;
-  const r = W * 0.115 * pop, cx = W * 0.5, cy = H * 0.155 + Math.sin(sec * 1.6) * 6 * px;
+  const ev = EVENTS.find((e) => e.kind === 'logo'); if (!ev || !A.badge) return;
+  const lt = sec - (ev.t - 0.3); if (lt < 0) return;
+  const sc = flyBounce(lt), a = clamp01(lt / 0.1), px = W / 1080;
+  const r = W * 0.135 * sc, cx = W * 0.5, cy = H * ev.by + (lt > 0.6 ? Math.sin((lt - 0.6) * 1.6) * 6 * px : 0);
   ctx.save(); ctx.globalAlpha = a;
-  ctx.shadowColor = 'rgba(0,0,0,0.55)'; ctx.shadowBlur = 26 * px;
-  ctx.fillStyle = 'rgba(255,255,255,0.96)'; ctx.beginPath(); ctx.arc(cx, cy, r, 0, 7); ctx.fill();
+  ctx.shadowColor = 'rgba(0,0,0,0.55)'; ctx.shadowBlur = 30 * px;
+  ctx.fillStyle = 'rgba(255,255,255,0.97)'; ctx.beginPath(); ctx.arc(cx, cy, r, 0, 7); ctx.fill();
   shadowOff(ctx);
   ctx.drawImage(A.badge, cx - r, cy - r, r * 2, r * 2);
   ctx.restore();
 }
 
-// big/bold/slanted Seahawks-style text that pops in and floats
+// big/bold/slanted Seahawks-style text that flies out, then bounces back hard (the
+// slam shakes the photo). Floats gently once settled.
 function drawHypeText(ctx, ev, sec, W, H) {
-  const td = sec - ev.t; if (td < 0) return;
-  const pop = backOut(clamp01(td / 0.4)), a = clamp01(td / 0.13), px = W / 1080;
-  const bob = Math.sin((sec - ev.t) * 2.0) * 8 * px;
+  const lt = sec - (ev.t - 0.3); if (lt < 0) return;
+  const sc = flyBounce(lt), a = clamp01(lt / 0.1), px = W / 1080;
+  const bob = lt > 0.6 ? Math.sin((lt - 0.6) * 2.0) * 7 * px : 0;
   ctx.save();
   ctx.globalAlpha = a;
   ctx.translate(ev.bx * W, ev.by * H + bob);
   ctx.transform(1, 0, SLANT, 1, 0, 0);
-  ctx.scale(pop, pop);
+  ctx.scale(sc, sc);
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   const s = fitFont(ctx, ev.line, 800, W * ev.size, W * 0.9);
-  stroked(ctx, ev.line, 0, 0, `800 ${s}px "${HEAD}"`, ev.fill, ev.stroke, Math.max(7, s * 0.1), 22);
+  stroked(ctx, ev.line, 0, 0, `800 ${s}px "${HEAD}"`, ev.fill, ev.stroke, Math.max(7, s * 0.1), 26);
   ctx.restore();
 }
 
@@ -182,13 +193,13 @@ function muxAudio(framesGlob, out) {
     '-colorspace', 'bt709', '-color_primaries', 'bt709', '-color_trc', 'bt709', '-color_range', 'tv',
     '-c:a', 'aac', '-b:a', '192k', '-t', String(DUR), '-movflags', '+faststart', out];
   if (existsSync(cheer) && existsSync(boom)) {
-    const splits = BOOMS.map((t, i) => `[x${i}]atrim=0:0.9,asetpts=PTS-STARTPTS,adelay=${Math.round(t * 1000)}|${Math.round(t * 1000)},volume=${i === 3 ? 1.2 : 1.0}[b${i}]`).join(';');
+    const splits = BOOMS.map((t, i) => `[x${i}]atrim=0:1.2,asetpts=PTS-STARTPTS,adelay=${Math.round(t * 1000)}|${Math.round(t * 1000)},volume=${i === BOOMS.length - 1 ? 2.0 : 1.5}[b${i}]`).join(';');
     const fc =
       `[2:a]asplit=${BOOMS.length}${BOOMS.map((_, i) => `[x${i}]`).join('')};` +
       splits + ';' +
-      `[1:a]volume=1.3,aloop=loop=-1:size=2e9,atrim=0:${DUR}[ch];` +
+      `[1:a]volume=1.35,aloop=loop=-1:size=2e9,atrim=0:${DUR}[ch];` +
       `[ch]${BOOMS.map((_, i) => `[b${i}]`).join('')}amix=inputs=${BOOMS.length + 1}:duration=first:normalize=0[s];` +
-      `[s]loudnorm=I=-13:TP=-1.5,afade=t=out:st=${DUR - 0.7}:d=0.7,aresample=44100[a]`;
+      `[s]loudnorm=I=-12:TP=-1.0,afade=t=out:st=${DUR - 0.7}:d=0.7,aresample=44100[a]`;
     execFileSync('ffmpeg', ['-y', '-framerate', String(FPS), '-i', framesGlob, '-i', cheer, '-i', boom,
       '-filter_complex', fc, '-map', '0:v', '-map', '[a]', ...codec], { stdio: ['ignore', 'ignore', 'inherit'] });
   } else {
