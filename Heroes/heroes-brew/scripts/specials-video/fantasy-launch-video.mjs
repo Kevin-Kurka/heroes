@@ -47,7 +47,7 @@ const NAVY = '#0c1f4d';   // dark outline for white fills
 const WHITE = '#ffffff';
 const ELEC = '#5bd3ff';   // electric/lightning glow
 const FPS = 30, DUR = 9.0, FRAMES = Math.round(FPS * DUR);
-const DISS = 0.22; // fast bg crossfade (the flash hides the cut)
+const DISS = 0.55; // smooth crossfade between photos
 
 // Lead with the cleanest center-subject action shots; keep faces framed via FOCAL.
 const ORDER = ['josh_allen', 'cmc', 'chargers_lineup', 'raiders', 'chargers_preview', 'josh_allen2'];
@@ -142,25 +142,16 @@ function drawFireworks(ctx, sec, W, H) {
 }
 
 async function loadAssets() {
-  const BG = [], CUT = [];
+  const IMG = [];
   for (const key of ORDER) {
     const p = join(NFL, `${key}.jpg`);
     if (!existsSync(p)) throw new Error(`missing ${p}`);
-    // clean (not muddy) blurred background; the sharp player sits on top of it
-    const b = await sharp(p).blur(18).modulate({ brightness: 0.64, saturation: 1.0 }).jpeg({ quality: 84 }).toBuffer();
-    BG.push(await loadImage(b));
-    // cleaned + trimmed + sharpened single-subject cut-out from clean-cutouts.mjs,
-    // kept at native resolution so the player stays crisp (NOT upscaled to full-bleed).
-    const clean = join(HERE, '_cut_clean', `${key}.png`);
-    const raw = join(HERE, '_cut', `${key}.png`);
-    if (existsSync(clean)) CUT.push(await loadImage(clean));
-    else if (existsSync(raw)) {
-      let b; try { b = await sharp(raw).trim().sharpen({ sigma: 1 }).png().toBuffer(); } catch { b = await sharp(raw).png().toBuffer(); }
-      CUT.push(await loadImage(b));
-    } else CUT.push(null);
+    // full photo, lightly sharpened — no effects, just a clean source for pan/zoom
+    const b = await sharp(p).sharpen({ sigma: 0.8 }).jpeg({ quality: 92 }).toBuffer();
+    IMG.push(await loadImage(b));
   }
   const badge = existsSync(join(PUBLIC, 'badge-clean.png')) ? await loadImage(join(PUBLIC, 'badge-clean.png')) : null;
-  return { BG, CUT, badge };
+  return { IMG, badge };
 }
 
 // Full-bleed "focus pull": each photo enters slightly soft + zoomed, then settles
@@ -175,109 +166,30 @@ function drawCoverFocal(ctx, img, W, H, scale, fx, fy, alpha) {
   const top = clamp(H * TARGET_Y - fy * h, H - h, 0);
   ctx.save(); ctx.globalAlpha = alpha; ctx.drawImage(img, left, top, w, h); ctx.restore();
 }
-// --- Background: heavy dark blur, gentle zoom; quick crossfade between shots ---
-function drawSceneBg(ctx, sec, A, W, H) {
+// --- Clean Ken-Burns: full photo, slow steady push-in on the subject (no effects),
+// smooth crossfade between shots. Faces stay framed via the focal point. ---
+function drawKB(ctx, A, idx, localTime, alpha, W, H) {
+  if (alpha <= 0) return;
+  const f = FOCAL[ORDER[idx]], Z = focalZoom(f.fy);
+  const scale = Z * lerp(1.0, 1.07, easeOut(clamp01(localTime / SEG))); // gentle one-way push-in
+  drawCoverFocal(ctx, A.IMG[idx], W, H, scale, f.fx, f.fy, alpha);
+}
+function drawScene(ctx, sec, A, W, H) {
   const i = Math.min(ORDER.length - 1, Math.floor(sec / SEG));
   const local = sec - i * SEG;
-  const bgScale = (idx, lt) => focalZoom(FOCAL[ORDER[idx]].fy) * lerp(1.06, 1.16, clamp01(lt / SEG));
-  const f0 = FOCAL[ORDER[i]];
-  drawCoverFocal(ctx, A.BG[i], W, H, bgScale(i, local), f0.fx, f0.fy, 1);
+  drawKB(ctx, A, i, local, 1, W, H);
   const into = SEG - local;
-  if (i < ORDER.length - 1 && into < DISS) {
-    const f1 = FOCAL[ORDER[i + 1]];
-    drawCoverFocal(ctx, A.BG[i + 1], W, H, bgScale(i + 1, sec - (i + 1) * SEG), f1.fx, f1.fy, smooth(1 - into / DISS));
-  }
-  // push the background down + scrims for type
-  ctx.fillStyle = 'rgba(5,9,22,0.40)'; ctx.fillRect(0, 0, W, H);
+  if (i < ORDER.length - 1 && into < DISS) drawKB(ctx, A, i + 1, sec - (i + 1) * SEG, smooth(1 - into / DISS), W, H);
+  // mild darken + scrims so the overlaid type stays legible
+  ctx.fillStyle = 'rgba(0,0,0,0.12)'; ctx.fillRect(0, 0, W, H);
   const tg = ctx.createLinearGradient(0, 0, 0, H * 0.30);
   tg.addColorStop(0, 'rgba(0,0,0,0.6)'); tg.addColorStop(1, 'rgba(0,0,0,0)');
   ctx.fillStyle = tg; ctx.fillRect(0, 0, W, H * 0.30);
   const bgg = ctx.createLinearGradient(0, H * 0.42, 0, H);
-  bgg.addColorStop(0, 'rgba(0,0,0,0)'); bgg.addColorStop(0.45, 'rgba(0,0,0,0.58)'); bgg.addColorStop(1, 'rgba(0,0,0,0.94)');
+  bgg.addColorStop(0, 'rgba(0,0,0,0)'); bgg.addColorStop(0.45, 'rgba(0,0,0,0.55)'); bgg.addColorStop(1, 'rgba(0,0,0,0.93)');
   ctx.fillStyle = bgg; ctx.fillRect(0, H * 0.42, W, H * 0.58);
-}
-
-// --- Foreground: sharp cut-out player (native res, never upscaled to full-bleed)
-// centered on a blurred bg, with an electric lightning glow + pop-in ---
-function playerRect(img, W, H, popMul) {
-  const cw = img.width, ch = img.height;
-  // size to ~64% frame height, but never blow it up past 1.8x native → stays crisp
-  const scale = Math.min(H * 0.64 / ch, W * 0.92 / cw, 1.8) * popMul;
-  const w = cw * scale, h = ch * scale;
-  return { x: (W - w) / 2, y: H * 0.45 - h / 2, w, h };
-}
-function drawOnePlayer(ctx, A, idx, localTime, alpha, W, H) {
-  const img = A.CUT[idx]; if (!img || alpha <= 0) return;
-  const px = W / 1080;
-  const popMul = localTime < 0.45 ? lerp(1.13, 1.0, easeOut(clamp01(localTime / 0.45))) : 1.0;
-  const { x, y, w, h } = playerRect(img, W, H, popMul);
-  const flick = 0.7 + 0.3 * (0.5 + 0.5 * Math.sin(localTime * 30)) * (0.5 + 0.5 * Math.sin(localTime * 13));
-  const entry = clamp01(1 - localTime / 0.6);          // 1→0 over first 0.6s = rip intensity
-  const boost = 1 + entry * 1.2;
-  // lightning cracks tearing into the background (behind the player)
-  drawRipCracks(ctx, idx, localTime, x + w / 2, y + h * 0.42, w, h, W, H, alpha, entry, flick);
-  // drop shadow → the player lifts off the background
-  ctx.save();
-  ctx.globalAlpha = alpha; ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 26 * px;
-  ctx.shadowOffsetX = 9 * px; ctx.shadowOffsetY = 16 * px;
-  ctx.drawImage(img, x, y, w, h);
-  ctx.restore();
-  // electric torn rim glow (follows the true player edge)
-  ctx.save();
-  ctx.globalAlpha = alpha;
-  ctx.shadowColor = `rgba(91,211,255,${Math.min(1, 0.9 * flick * boost)})`; ctx.shadowBlur = (38 + entry * 46) * px;
-  ctx.drawImage(img, x, y, w, h);
-  ctx.shadowColor = `rgba(210,242,255,${Math.min(1, 0.95 * flick)})`; ctx.shadowBlur = 13 * px;
-  ctx.drawImage(img, x, y, w, h);
-  ctx.restore();
-  // crisp player on top — untouched, high quality
-  ctx.save(); ctx.globalAlpha = alpha; ctx.drawImage(img, x, y, w, h); ctx.restore();
-}
-function drawPlayers(ctx, sec, A, W, H) {
-  const i = Math.min(ORDER.length - 1, Math.floor(sec / SEG));
-  const local = sec - i * SEG;
-  drawOnePlayer(ctx, A, i, local, 1, W, H);
-  const into = SEG - local;
-  if (i < ORDER.length - 1 && into < DISS) drawOnePlayer(ctx, A, i + 1, sec - (i + 1) * SEG, smooth(1 - into / DISS), W, H);
-}
-
-// jagged lightning cracks radiating from the player's edge into the background —
-// the "ripped out of the background" energy. Strong on entrance, faint flicker on hold.
-function drawRipCracks(ctx, idx, lt, cx, cy, pw, ph, W, H, alpha, entry, flick) {
-  const px = W / 1080;
-  const n = entry > 0.05 ? 9 : 4;
-  const rnd = mulberry32(idx * 257 + Math.floor(lt * 28)); // re-roll ~every 2 frames → crackle
-  const len = (0.09 + entry * 0.17) * Math.min(W, H);
-  ctx.save();
-  ctx.globalAlpha = alpha * (entry > 0.05 ? (0.55 + 0.45 * rnd()) : 0.22 * flick);
-  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-  ctx.strokeStyle = 'rgba(210,244,255,0.96)'; ctx.shadowColor = ELEC;
-  for (let i = 0; i < n; i++) {
-    const ang = (i / n) * Math.PI * 2 + (rnd() - 0.5) * 0.5;
-    const sx = cx + Math.cos(ang) * pw * 0.42, sy = cy + Math.sin(ang) * ph * 0.46;
-    const ex = sx + Math.cos(ang) * len, ey = sy + Math.sin(ang) * len;
-    const seg = 5;
-    ctx.lineWidth = (2.2 + entry * 2.2) * px; ctx.shadowBlur = (10 + entry * 14) * px;
-    ctx.beginPath(); ctx.moveTo(sx, sy);
-    for (let s = 1; s <= seg; s++) {
-      const t = s / seg, jx = (rnd() - 0.5) * len * 0.3, jy = (rnd() - 0.5) * len * 0.3;
-      ctx.lineTo(lerp(sx, ex, t) + jx, lerp(sy, ey, t) + jy);
-    }
-    ctx.stroke();
-  }
-  ctx.restore();
-}
-
-// white/cyan flash punch at each cut
-function drawFlash(ctx, sec, W, H) {
-  const i = Math.floor(sec / SEG), local = sec - i * SEG;
-  if (i > 0 && local < 0.14) {
-    ctx.save();
-    ctx.globalAlpha = 0.62 * (1 - local / 0.14);
-    ctx.fillStyle = '#e8f7ff';
-    ctx.fillRect(0, 0, W, H);
-    ctx.restore();
-  }
+  // fireworks burst around the $100 pill (kept per request)
+  drawFireworks(ctx, sec, W, H);
 }
 
 function popText(ctx, fn, cx, cy, td) {
@@ -430,10 +342,7 @@ async function renderDim(A, W, H, outName) {
   for (let f = 0; f < FRAMES; f++) {
     const sec = f / FPS;
     ctx.clearRect(0, 0, W, H);
-    drawSceneBg(ctx, sec, A, W, H);   // blurred dark background
-    drawPlayers(ctx, sec, A, W, H);   // sharp cut-out player + lightning glow
-    drawFlash(ctx, sec, W, H);        // flash-cut punch
-    drawFireworks(ctx, sec, W, H);    // $100 burst
+    drawScene(ctx, sec, A, W, H);     // clean pan/zoom photo + crossfade + fireworks
     drawText(ctx, sec, A, W, H);      // overlaid type
     writeFileSync(join(dir, `f-${String(f + 1).padStart(4, '0')}.png`), canvas.toBuffer('image/png'));
   }
