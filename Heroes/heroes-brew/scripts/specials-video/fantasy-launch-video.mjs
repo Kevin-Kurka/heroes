@@ -182,12 +182,31 @@ function drawFrame(ctx, sec, A, W, H) {
   drawBursts(ctx, sec, W, H);
   drawLogo(ctx, sec, A, W, H);
   for (const ev of EVENTS) if (ev.kind === 'text') drawHypeText(ctx, ev, sec, W, H);
+  // "FREE TO PLAY" tag — appears just above WIN $100, with it
+  const winEv = EVENTS.find((e) => e.line === 'WIN $100');
+  const flt = sec - (winEv.t - 0.2);
+  if (flt > 0) {
+    const a = clamp01(flt / 0.2);
+    ctx.save(); ctx.globalAlpha = a; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.translate(W * 0.5, H * 0.775); ctx.transform(1, 0, SLANT, 1, 0, 0);
+    const s = fitFont(ctx, 'FREE TO PLAY', 800, W * 0.04, W * 0.8);
+    stroked(ctx, 'FREE TO PLAY', 0, 0, `800 ${s}px "${HEAD}"`, GREEN, WHITE, Math.max(3, s * 0.08), 12);
+    ctx.restore();
+  }
   // URL at the end
   const ua = clamp01((sec - 7.6) / 0.4);
   if (ua > 0) {
     ctx.save(); ctx.globalAlpha = ua; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     const s = fitFont(ctx, 'americanheroesandbrew.com/fantasy-football', 700, W * 0.033, W * 0.92);
-    stroked(ctx, 'americanheroesandbrew.com/fantasy-football', W / 2, H * 0.945, `700 ${s}px "${HEAD}"`, WHITE, NAVY_OUT, Math.max(3, s * 0.06), 9);
+    stroked(ctx, 'americanheroesandbrew.com/fantasy-football', W / 2, H * 0.94, `700 ${s}px "${HEAD}"`, WHITE, NAVY_OUT, Math.max(3, s * 0.06), 9);
+    ctx.restore();
+    // fine-print disclaimer under the URL
+    const dt = 'Must be present at championship game to collect $100 gift card';
+    ctx.save(); ctx.globalAlpha = ua * 0.9; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    const ds = fitFont(ctx, dt, 600, W * 0.023, W * 0.94);
+    ctx.font = `600 ${ds}px "${HEAD}"`; ctx.fillStyle = '#e2e6ec';
+    ctx.shadowColor = 'rgba(0,0,0,0.75)'; ctx.shadowBlur = 6; ctx.shadowOffsetY = 1;
+    ctx.fillText(dt, W / 2, H * 0.975);
     ctx.restore();
   }
 }
