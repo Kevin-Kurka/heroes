@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import { MapPin, Phone, UtensilsCrossed } from 'lucide-react';
+import InviteActions from '@/components/InviteActions';
 import { getRestaurantInfo } from '@/lib/menu';
 import { FAQ } from '@/lib/faq';
 import {
@@ -77,6 +79,10 @@ export default async function WatchPartyPage({ params }: Params) {
   const r = getRestaurantInfo();
   const url = `${SITE_URL}/watch-party/${party.slug}`;
   const allFaqs = [...party.faqs, ...FAQ];
+  const tel = r.phone.replace(/\D/g, '');
+  const directionsUrl =
+    'https://www.google.com/maps/dir//American+Heroes+%26+Brew,+300+Carlsbad+Village+Dr+STE+120,+Carlsbad,+CA+92008';
+  const shareText = `${party.matchup} on 16 TVs at American Heroes & Brew — ${formatWhen(party.startDate)}. Let's go! 🍻`;
 
   const jsonLd = [
     getWebPageJsonLd({
@@ -125,6 +131,46 @@ export default async function WatchPartyPage({ params }: Params) {
             🗓️ {formatWhen(party.startDate)}
           </p>
         </header>
+
+        {/* Primary calls to action — get them in the door, then invite the crew. */}
+        <section className="mb-8 rounded-xl border border-accent/30 bg-accent/5 p-5">
+          <p className="text-lg font-bold text-foreground mb-4">
+            Round up your crew and get down here. 🍻
+          </p>
+          <div className="flex flex-col sm:flex-row flex-wrap gap-3 mb-3">
+            <a
+              href={directionsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 bg-accent text-white font-bold px-6 py-3 rounded-sm hover:bg-accent-dim transition-colors text-lg"
+            >
+              <MapPin size={20} /> Let&apos;s Go — Get Directions
+            </a>
+            <a
+              href={`tel:${tel}`}
+              className="inline-flex items-center justify-center gap-2 bg-card border border-border text-foreground font-semibold px-6 py-3 rounded-sm hover:border-accent/40 transition-colors"
+            >
+              <Phone size={18} /> Call {r.phone}
+            </a>
+            <Link
+              href="/menu"
+              className="inline-flex items-center justify-center gap-2 bg-card border border-border text-foreground font-semibold px-6 py-3 rounded-sm hover:border-accent/40 transition-colors"
+            >
+              <UtensilsCrossed size={18} /> See the Menu
+            </Link>
+          </div>
+          <InviteActions
+            shareTitle={`Watch ${party.matchup} at American Heroes & Brew`}
+            shareText={shareText}
+            shareUrl={url}
+            calendar={{
+              title: `Watch ${party.matchup} at American Heroes & Brew`,
+              startISO: party.startDate,
+              endISO: party.endDate,
+              details: `${party.matchup} (${party.league}) live on 16 TVs at American Heroes & Brew, Carlsbad Village. Walk-ins welcome, no cover. ${url}`,
+            }}
+          />
+        </section>
 
         <div className="rounded-xl overflow-hidden bg-card mb-8 shadow-lg">
           <video

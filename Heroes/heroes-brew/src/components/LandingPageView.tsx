@@ -2,7 +2,9 @@ import Link from 'next/link';
 import { UtensilsCrossed, MapPin, Phone, ChevronRight, Check, MessageCircleQuestion } from 'lucide-react';
 import type { Restaurant } from '@/types';
 import { LANDING_PAGES, type LandingPageContent } from '@/lib/landing-pages';
+import { SITE_URL } from '@/lib/structured-data';
 import ReviewCTA from '@/components/ReviewCTA';
+import InviteActions from '@/components/InviteActions';
 
 const DIRECTIONS_URL =
   'https://www.google.com/maps/dir//American+Heroes+%26+Brew,+300+Carlsbad+Village+Dr+STE+120,+Carlsbad,+CA+92008';
@@ -61,6 +63,15 @@ export default function LandingPageView({ page, restaurant }: Props) {
             >
               <Phone size={18} /> {restaurant.phone}
             </a>
+          </div>
+
+          {/* Engagement: invite the crew + follow — turn the visit into a group. */}
+          <div className="mt-3">
+            <InviteActions
+              shareTitle={`${page.h1} — American Heroes & Brew`}
+              shareText={`${page.tagline} American Heroes & Brew, Carlsbad Village. Let's go! 🍻`}
+              shareUrl={`${SITE_URL}/${page.slug}`}
+            />
           </div>
         </header>
 
