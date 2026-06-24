@@ -51,9 +51,23 @@ const DISS = 0.4; // quick cross-dissolve between images
 // Lead with the cleanest center-subject action shots; keep faces framed via FOCAL.
 const ORDER = ['josh_allen', 'cmc', 'chargers_lineup', 'raiders', 'chargers_preview', 'josh_allen2'];
 const SEG = DUR / ORDER.length;
-// normalized horizontal focal point (where the face/subject sits) per image — the
-// full-bleed crop biases here so the subject stays centered through the pan.
-const FOCAL = { josh_allen: 0.36, cmc: 0.5, chargers_lineup: 0.5, raiders: 0.5, chargers_preview: 0.56, josh_allen2: 0.5 };
+// Normalized (x,y) focal point = where the subject's face sits in each source photo.
+// The frame is sized + positioned so this point lands at the on-screen safe spot
+// (TARGET_X, TARGET_Y) — below the badge, above the headline — never obscured.
+const FOCAL = {
+  josh_allen:       { fx: 0.42, fy: 0.15 },
+  cmc:              { fx: 0.42, fy: 0.20 },
+  chargers_lineup:  { fx: 0.50, fy: 0.40 },
+  raiders:          { fx: 0.45, fy: 0.25 },
+  chargers_preview: { fx: 0.62, fy: 0.30 },
+  josh_allen2:      { fx: 0.50, fy: 0.30 },
+};
+const TARGET_X = 0.5, TARGET_Y = 0.36; // on-screen home for the face (center band)
+const ZMIN = 1.06, ZMAX = 1.30;
+// zoom needed to bring this focal point to (TARGET_X, TARGET_Y) without revealing edges
+function focalZoom(fy) {
+  return clamp(Math.max(TARGET_Y / fy, (1 - TARGET_Y) / (1 - fy)), ZMIN, ZMAX);
+}
 
 const clamp = (v, lo, hi) => (v < lo ? lo : v > hi ? hi : v);
 const clamp01 = (x) => (x < 0 ? 0 : x > 1 ? 1 : x);
@@ -145,26 +159,27 @@ const FOCUS_T = 0.45; // seconds for an image to settle from soft→sharp
 // Full-bleed "focus pull": each photo enters slightly soft + zoomed, then settles
 // SHARP and steady on the subject (focal point kept centered). After settling it
 // holds with a very gentle single-direction zoom — no back-and-forth panning.
-function drawCoverScaled(ctx, img, W, H, scale, fx, alpha) {
+// Position the photo so its focal point (fx,fy) lands at (TARGET_X,TARGET_Y) on
+// screen, clamped so no frame edge is ever revealed.
+function drawCoverFocal(ctx, img, W, H, scale, fx, fy, alpha) {
   const ir = img.width / img.height, cr = W / H; let w, h;
   if (ir > cr) { h = H * scale; w = h * ir; } else { w = W * scale; h = w / ir; }
-  const left = clamp(W / 2 - fx * w, W - w, 0);
-  const top = clamp((H - h) / 2, H - h, 0);
+  const left = clamp(W * TARGET_X - fx * w, W - w, 0);
+  const top = clamp(H * TARGET_Y - fy * h, H - h, 0);
   ctx.save(); ctx.globalAlpha = alpha; ctx.drawImage(img, left, top, w, h); ctx.restore();
 }
 function drawImageLayer(ctx, A, idx, localTime, alpha, W, H) {
   if (alpha <= 0) return;
-  const fx = FOCAL[ORDER[idx]] ?? 0.5;
+  const f = FOCAL[ORDER[idx]] ?? { fx: 0.5, fy: 0.32 };
+  const Z = focalZoom(f.fy);
   const fp = clamp01(localTime / FOCUS_T);              // 0→1 focus settle
   const focus = easeOut(fp);
-  // scale: settle 1.10→1.0 during focus, then slow 1.0→1.035 drift inward (one way)
-  const settle = lerp(1.10, 1.0, focus);
-  const hold = lerp(1.0, 1.035, clamp01((localTime - FOCUS_T) / (SEG - FOCUS_T)));
-  const scale = localTime < FOCUS_T ? settle : hold;
-  // sharp base
-  drawCoverScaled(ctx, A.IMG[idx], W, H, scale, fx, alpha);
-  // soft overlay fading out = "comes into focus" (no blur cost during hold)
-  if (fp < 1 && A.BLUR[idx]) drawCoverScaled(ctx, A.BLUR[idx], W, H, scale, fx, alpha * (1 - focus));
+  // settle 1.07→1.0 during focus, then a gentle 1.0→1.03 push-in; keeps the face anchored
+  const settle = lerp(1.07, 1.0, focus);
+  const hold = lerp(1.0, 1.03, clamp01((localTime - FOCUS_T) / (SEG - FOCUS_T)));
+  const scale = Z * (localTime < FOCUS_T ? settle : hold);
+  drawCoverFocal(ctx, A.IMG[idx], W, H, scale, f.fx, f.fy, alpha);
+  if (fp < 1 && A.BLUR[idx]) drawCoverFocal(ctx, A.BLUR[idx], W, H, scale, f.fx, f.fy, alpha * (1 - focus));
 }
 
 function drawScene(ctx, sec, A, W, H) {
@@ -211,21 +226,27 @@ function drawText(ctx, sec, A, W, H) {
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
 
-  // badge + kicker (white text, navy outline)
-  const introT = sec - 0.15;
-  if (A.badge) {
-    popText(ctx, () => {
-      const r = H * 0.05;
-      ctx.fillStyle = 'rgba(255,255,255,0.92)';
-      ctx.beginPath(); ctx.arc(cx, H * 0.082, r, 0, 7); ctx.fill();
-      ctx.drawImage(A.badge, cx - r, H * 0.082 - r, r * 2, r * 2);
-    }, cx, H * 0.082, introT);
-  }
+  // top-LEFT logo lockup (badge + wordmark) — keeps the whole center clear for the
+  // player so faces never sit behind a centered logo.
+  const introT = sec - 0.12;
   if (introT >= -0.05) {
-    ctx.globalAlpha = clamp01(introT / 0.25);
-    const s = fitFont(ctx, 'AMERICAN HEROES & BREW · CARLSBAD VILLAGE', 700, W * 0.03, W * 0.86);
-    stroked(ctx, 'AMERICAN HEROES & BREW · CARLSBAD VILLAGE', cx, H * 0.15, `700 ${s}px "${HEAD}"`, WHITE, NAVY, Math.max(3, s * 0.06), 8);
-    ctx.globalAlpha = 1;
+    const la = clamp01(introT / 0.3);
+    ctx.save();
+    ctx.globalAlpha = la;
+    const r = H * 0.044, bx = W * 0.088, by = H * 0.072;
+    if (A.badge) {
+      ctx.fillStyle = 'rgba(255,255,255,0.94)';
+      ctx.beginPath(); ctx.arc(bx, by, r, 0, 7); ctx.fill();
+      ctx.drawImage(A.badge, bx - r, by - r, r * 2, r * 2);
+    }
+    ctx.textAlign = 'left';
+    const wx = bx + r + W * 0.022;
+    const s1 = fitFont(ctx, 'AMERICAN HEROES & BREW', 800, W * 0.032, W * 0.6);
+    stroked(ctx, 'AMERICAN HEROES & BREW', wx, by - H * 0.013, `800 ${s1}px "${HEAD}"`, WHITE, NAVY, Math.max(3, s1 * 0.06), 7);
+    const s2 = fitFont(ctx, 'CARLSBAD VILLAGE', 700, W * 0.027, W * 0.6);
+    stroked(ctx, 'CARLSBAD VILLAGE', wx, by + H * 0.02, `700 ${s2}px "${HEAD}"`, RED, WHITE, Math.max(2, s2 * 0.06), 6);
+    ctx.restore();
+    ctx.textAlign = 'center';
   }
 
   // headline slam — FANTASY FOOTBALL (white / navy outline), LEAGUE (red / white outline)
