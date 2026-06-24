@@ -368,10 +368,10 @@ function drawText(ctx, sec, A, W, H) {
 }
 
 function muxAudio(framesGlob, out) {
-  const music = join(AUDIO, 'epic-sport-fanfare.mp3');
+  const music = join(AUDIO, 'sports-fanfare.mp3');
   const cheer = join(AUDIO, 'sfx', 'cheer.mp3');
   const boom = join(AUDIO, 'sfx', 'boom.mp3');
-  const MUS_SS = 32; // full-energy (brass build) window of the track
+  const MUS_SS = 24; // full-energy window of the brass fanfare
   const codec = ['-c:v', 'libx264', '-profile:v', 'high', '-pix_fmt', 'yuv420p', '-r', String(FPS),
     '-colorspace', 'bt709', '-color_primaries', 'bt709', '-color_trc', 'bt709', '-color_range', 'tv',
     '-c:a', 'aac', '-b:a', '192k', '-t', String(DUR), '-movflags', '+faststart', out];
