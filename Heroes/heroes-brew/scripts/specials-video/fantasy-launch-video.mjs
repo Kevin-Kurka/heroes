@@ -149,14 +149,14 @@ async function loadAssets() {
     // clean (not muddy) blurred background; the sharp player sits on top of it
     const b = await sharp(p).blur(18).modulate({ brightness: 0.64, saturation: 1.0 }).jpeg({ quality: 84 }).toBuffer();
     BG.push(await loadImage(b));
-    // Vision subject cut-out, trimmed to the player + lightly sharpened, kept at
-    // native resolution so the player stays crisp (NOT upscaled to full-bleed).
-    const cp = join(HERE, '_cut', `${key}.png`);
-    if (existsSync(cp)) {
-      let buf;
-      try { buf = await sharp(cp).trim().sharpen({ sigma: 1 }).png().toBuffer(); }
-      catch { buf = await sharp(cp).sharpen({ sigma: 1 }).png().toBuffer(); }
-      CUT.push(await loadImage(buf));
+    // cleaned + trimmed + sharpened single-subject cut-out from clean-cutouts.mjs,
+    // kept at native resolution so the player stays crisp (NOT upscaled to full-bleed).
+    const clean = join(HERE, '_cut_clean', `${key}.png`);
+    const raw = join(HERE, '_cut', `${key}.png`);
+    if (existsSync(clean)) CUT.push(await loadImage(clean));
+    else if (existsSync(raw)) {
+      let b; try { b = await sharp(raw).trim().sharpen({ sigma: 1 }).png().toBuffer(); } catch { b = await sharp(raw).png().toBuffer(); }
+      CUT.push(await loadImage(b));
     } else CUT.push(null);
   }
   const badge = existsSync(join(PUBLIC, 'badge-clean.png')) ? await loadImage(join(PUBLIC, 'badge-clean.png')) : null;
@@ -209,23 +209,29 @@ function playerRect(img, W, H, popMul) {
 function drawOnePlayer(ctx, A, idx, localTime, alpha, W, H) {
   const img = A.CUT[idx]; if (!img || alpha <= 0) return;
   const px = W / 1080;
-  const popMul = localTime < 0.4 ? lerp(1.08, 1.0, easeOut(clamp01(localTime / 0.4))) : 1.0;
+  const popMul = localTime < 0.45 ? lerp(1.13, 1.0, easeOut(clamp01(localTime / 0.45))) : 1.0;
   const { x, y, w, h } = playerRect(img, W, H, popMul);
-  const flick = 0.7 + 0.3 * (0.5 + 0.5 * Math.sin(localTime * 33)) * (0.5 + 0.5 * Math.sin(localTime * 12.7));
-  const boost = localTime < 0.4 ? 1 + (1 - localTime / 0.4) * 0.9 : 1; // flare on entrance
+  const flick = 0.7 + 0.3 * (0.5 + 0.5 * Math.sin(localTime * 30)) * (0.5 + 0.5 * Math.sin(localTime * 13));
+  const entry = clamp01(1 - localTime / 0.6);          // 1→0 over first 0.6s = rip intensity
+  const boost = 1 + entry * 1.2;
+  // lightning cracks tearing into the background (behind the player)
+  drawRipCracks(ctx, idx, localTime, x + w / 2, y + h * 0.42, w, h, W, H, alpha, entry, flick);
+  // drop shadow → the player lifts off the background
   ctx.save();
-  ctx.globalAlpha = alpha;
-  // wide electric glow
-  ctx.shadowColor = `rgba(91,211,255,${Math.min(1, 0.85 * flick * boost)})`; ctx.shadowBlur = 46 * px;
-  ctx.drawImage(img, x, y, w, h);
-  // tight bright rim
-  ctx.shadowColor = `rgba(200,240,255,${Math.min(1, 0.95 * flick)})`; ctx.shadowBlur = 14 * px;
+  ctx.globalAlpha = alpha; ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 26 * px;
+  ctx.shadowOffsetX = 9 * px; ctx.shadowOffsetY = 16 * px;
   ctx.drawImage(img, x, y, w, h);
   ctx.restore();
-  // crisp player on top (no shadow) — untouched, high quality
+  // electric torn rim glow (follows the true player edge)
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.shadowColor = `rgba(91,211,255,${Math.min(1, 0.9 * flick * boost)})`; ctx.shadowBlur = (38 + entry * 46) * px;
+  ctx.drawImage(img, x, y, w, h);
+  ctx.shadowColor = `rgba(210,242,255,${Math.min(1, 0.95 * flick)})`; ctx.shadowBlur = 13 * px;
+  ctx.drawImage(img, x, y, w, h);
+  ctx.restore();
+  // crisp player on top — untouched, high quality
   ctx.save(); ctx.globalAlpha = alpha; ctx.drawImage(img, x, y, w, h); ctx.restore();
-  // crackling bolts on entrance
-  if (localTime < 0.5) drawBolts(ctx, idx, localTime, W, H, alpha * (1 - localTime / 0.5));
 }
 function drawPlayers(ctx, sec, A, W, H) {
   const i = Math.min(ORDER.length - 1, Math.floor(sec / SEG));
@@ -235,20 +241,28 @@ function drawPlayers(ctx, sec, A, W, H) {
   if (i < ORDER.length - 1 && into < DISS) drawOnePlayer(ctx, A, i + 1, sec - (i + 1) * SEG, smooth(1 - into / DISS), W, H);
 }
 
-// jagged lightning bolts that crackle beside the player on entrance
-function drawBolts(ctx, idx, lt, W, H, a) {
-  if (a <= 0) return;
-  const px = W / 1080, rnd = mulberry32(idx * 131 + Math.floor(lt * 42));
+// jagged lightning cracks radiating from the player's edge into the background —
+// the "ripped out of the background" energy. Strong on entrance, faint flicker on hold.
+function drawRipCracks(ctx, idx, lt, cx, cy, pw, ph, W, H, alpha, entry, flick) {
+  const px = W / 1080;
+  const n = entry > 0.05 ? 9 : 4;
+  const rnd = mulberry32(idx * 257 + Math.floor(lt * 28)); // re-roll ~every 2 frames → crackle
+  const len = (0.09 + entry * 0.17) * Math.min(W, H);
   ctx.save();
-  ctx.globalAlpha = a * (0.45 + 0.55 * rnd());
+  ctx.globalAlpha = alpha * (entry > 0.05 ? (0.55 + 0.45 * rnd()) : 0.22 * flick);
   ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-  ctx.strokeStyle = 'rgba(200,240,255,0.95)'; ctx.lineWidth = 3 * px;
-  ctx.shadowColor = ELEC; ctx.shadowBlur = 18 * px;
-  for (let b = 0; b < 2; b++) {
-    let x = W * ((b ? 0.72 : 0.28) + (rnd() - 0.5) * 0.05), y = H * 0.16;
-    const endY = H * (0.40 + rnd() * 0.12), seg = 6;
-    ctx.beginPath(); ctx.moveTo(x, y);
-    for (let s = 1; s <= seg; s++) { x += (rnd() - 0.5) * W * 0.06; y += (endY - H * 0.16) / seg; ctx.lineTo(x, y); }
+  ctx.strokeStyle = 'rgba(210,244,255,0.96)'; ctx.shadowColor = ELEC;
+  for (let i = 0; i < n; i++) {
+    const ang = (i / n) * Math.PI * 2 + (rnd() - 0.5) * 0.5;
+    const sx = cx + Math.cos(ang) * pw * 0.42, sy = cy + Math.sin(ang) * ph * 0.46;
+    const ex = sx + Math.cos(ang) * len, ey = sy + Math.sin(ang) * len;
+    const seg = 5;
+    ctx.lineWidth = (2.2 + entry * 2.2) * px; ctx.shadowBlur = (10 + entry * 14) * px;
+    ctx.beginPath(); ctx.moveTo(sx, sy);
+    for (let s = 1; s <= seg; s++) {
+      const t = s / seg, jx = (rnd() - 0.5) * len * 0.3, jy = (rnd() - 0.5) * len * 0.3;
+      ctx.lineTo(lerp(sx, ex, t) + jx, lerp(sy, ey, t) + jy);
+    }
     ctx.stroke();
   }
   ctx.restore();
