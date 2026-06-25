@@ -22,7 +22,7 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const PUBLIC = join(HERE, '..', '..', 'public');
 const OUT_DIR = join(PUBLIC, 'promos-video');
 const SFX = join(OUT_DIR, 'audio', 'sfx');
-const SRC = join(OUT_DIR, '_source', 'new', 'Team-USA.webp');
+const SRC = join(OUT_DIR, '_source', 'new', 'usa-turkey-hero.webp');
 const ASSET = join(HERE, '_usa');
 const TMP = join(HERE, '.tmp-usa');
 
@@ -197,11 +197,14 @@ function prepAssets() {
   mkdirSync(ASSET, { recursive: true });
   const poster = join(ASSET, 'poster.png');
   const bg = join(ASSET, 'bg-blur.jpg');
-  // poster: source at full width
-  execFileSync('ffmpeg', ['-y', '-i', SRC, '-vf', 'scale=1080:-2', poster], { stdio: ['ignore', 'ignore', 'inherit'] });
-  // blurred full-frame bg (cover 1080x1920), darkened for legibility
+  // poster (the sharp hero): clip the SIDES of the 1920x1080 source to the tightest box
+  // that still holds all three players, so it runs as large as possible full-bleed across
+  // the top. crop=W:H:x:y — keep x 90..1830 (the player span), full height.
+  execFileSync('ffmpeg', ['-y', '-i', SRC, '-vf', 'crop=1740:1080:90:0,scale=1080:-2', poster], { stdio: ['ignore', 'ignore', 'inherit'] });
+  // blurred full-frame bg from the UNCROPPED shot (carries the flag/skyline colour down the
+  // whole frame so it reads full-screen), darkened for legibility.
   execFileSync('ffmpeg', ['-y', '-i', SRC, '-vf',
-    'scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,boxblur=42:2,eq=brightness=-0.05:saturation=1.05',
+    'scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,boxblur=42:2,eq=brightness=-0.06:saturation=1.05',
     bg], { stdio: ['ignore', 'ignore', 'inherit'] });
   return { poster, bg };
 }
@@ -228,7 +231,8 @@ async function main() {
   pfx.fillStyle = fade; pfx.fillRect(0, posterDrawH - FEATHER, W, FEATHER);
   pfx.globalCompositeOperation = 'source-over';
 
-  const baseY = posterDrawH + 110;
+  // centre the condensed copy block in the band below the full-bleed hero
+  const baseY = posterDrawH + Math.max(150, (H - posterDrawH - 690) / 2);
 
   for (let f = 0; f < FRAMES; f++) {
     const t = f / FPS;
@@ -287,8 +291,8 @@ async function main() {
     const eM = bounce(t, 0.5, 0.45);
     {
       ctx.save(); ctx.globalAlpha = eM.alpha;
-      ctx.translate(W / 2, baseY + 140); ctx.scale(eM.scale, eM.scale);
-      drawText(ctx, CFG.matchup, 0, 0, `800 92px "${HEAD}"`, 'FLAG', { stroke: '#0b0b0d', strokeW: 9, shadow: 22 });
+      ctx.translate(W / 2, baseY + 120); ctx.scale(eM.scale, eM.scale);
+      drawText(ctx, CFG.matchup, 0, 0, `800 80px "${HEAD}"`, 'FLAG', { stroke: '#0b0b0d', strokeW: 8, shadow: 20 });
       ctx.restore();
     }
 
@@ -296,8 +300,8 @@ async function main() {
     const eT = bounce(t, 0.8, 0.45);
     {
       ctx.save(); ctx.globalAlpha = eT.alpha;
-      ctx.translate(W / 2, baseY + 300); ctx.scale(eT.scale, eT.scale);
-      drawText(ctx, CFG.bigTop, 0, 0, `800 158px "${HEAD}"`, WHITE, { stroke: TR_RED, strokeW: 10, shadow: 26 });
+      ctx.translate(W / 2, baseY + 268); ctx.scale(eT.scale, eT.scale);
+      drawText(ctx, CFG.bigTop, 0, 0, `800 138px "${HEAD}"`, WHITE, { stroke: TR_RED, strokeW: 9, shadow: 24 });
       ctx.restore();
     }
 
@@ -305,8 +309,8 @@ async function main() {
     const eTime = bounce(t, 1.1, 0.45);
     {
       ctx.save(); ctx.globalAlpha = eTime.alpha;
-      ctx.translate(W / 2, baseY + 500); ctx.scale(eTime.scale, eTime.scale);
-      drawText(ctx, CFG.bigTime, 0, 0, `800 196px "${HEAD}"`, 'FLAG', { stroke: '#0b0b0d', strokeW: 13, shadow: 30 });
+      ctx.translate(W / 2, baseY + 448); ctx.scale(eTime.scale, eTime.scale);
+      drawText(ctx, CFG.bigTime, 0, 0, `800 180px "${HEAD}"`, 'FLAG', { stroke: '#0b0b0d', strokeW: 12, shadow: 28 });
       ctx.restore();
     }
 
@@ -314,8 +318,8 @@ async function main() {
     const eV = bounce(t, 1.4, 0.45);
     {
       ctx.save(); ctx.globalAlpha = eV.alpha;
-      ctx.translate(W / 2, baseY + 660); ctx.scale(eV.scale, eV.scale);
-      drawText(ctx, CFG.venue, 0, 0, `800 62px "${HEAD}"`, WHITE, { stroke: '#0b0b0d', strokeW: 7, shadow: 18 });
+      ctx.translate(W / 2, baseY + 590); ctx.scale(eV.scale, eV.scale);
+      drawText(ctx, CFG.venue, 0, 0, `800 56px "${HEAD}"`, WHITE, { stroke: '#0b0b0d', strokeW: 7, shadow: 16 });
       ctx.restore();
     }
 
@@ -323,7 +327,7 @@ async function main() {
     const eF = bounce(t, 1.7, 0.4);
     {
       ctx.save(); ctx.globalAlpha = eF.alpha;
-      drawText(ctx, CFG.footer, W / 2, baseY + 750, `600 40px "${HEAD}"`, 'FLAG', { shadow: 10 });
+      drawText(ctx, CFG.footer, W / 2, baseY + 668, `600 38px "${HEAD}"`, 'FLAG', { shadow: 10 });
       ctx.restore();
     }
 
