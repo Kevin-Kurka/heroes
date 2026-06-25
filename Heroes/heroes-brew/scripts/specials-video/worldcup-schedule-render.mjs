@@ -328,19 +328,32 @@ async function main() {
     const file = `wc-schedule-${d.dayKey}.jpg`;
     writeFileSync(join(OUT_DIR, file), buf);
 
-    // caption pieces for the sheet
-    const lines = d.games.map((m) => {
-      const tag = m.round ? `[${m.round}] ` : '';
-      return `• ${tag}${m.home.name} vs ${m.away.name} · ${m.time} PT`;
-    });
+    // caption pieces for the sheet (single-line — feeds the Google Business post; the Story
+    // ignores caption text). Name the known team(s); collapse undecided sides to the round.
     const wd = fmtWeekday.format(d.when), md = fmtMonthDay.format(d.when);
+    const isFinal = d.games.length === 1 && d.games[0].round === 'Final';
+    const isKO = d.games.some((g) => g.round);
+    const line = (m) => {
+      const t = `${m.time} PT`;
+      if (!m.home.tbd && !m.away.tbd) return `${m.home.name} vs ${m.away.name} (${t})`;
+      if (!m.home.tbd) return `${m.home.name} (${t})`;
+      if (!m.away.tbd) return `${m.away.name} (${t})`;
+      return `${m.round || 'Knockout'} (${t})`;
+    };
+    let caption;
+    if (isFinal) {
+      caption = `🏆 The World Cup FINAL is here — watch it at American Heroes & Brew. Kickoff ${d.games[0].time} PT on every screen. Cold beer, full menu, best seats in Carlsbad Village. ⚽`;
+    } else {
+      const lead = isKO ? 'World Cup knockouts at Heroes' : 'Today’s World Cup at Heroes';
+      caption = `${lead}: ${d.games.map(line).join(' · ')}. Every match on the big screens — cold beer, full menu, best seats in Carlsbad Village. ⚽🍺`;
+    }
     manifest.push({
       dayKey: d.dayKey,
       file,
       games: d.games.length,
-      headline: `⚽ World Cup Today — ${wd}, ${md}`,
-      caption: `${lines.join('\n')}\n\nEvery match on the big screens at American Heroes & Brew. Cold beer, full menu, best seats in Carlsbad Village. ⚽🍺`,
-      storyCaption: `World Cup all day at Heroes ⚽ Who you got?`,
+      headline: isFinal ? '🏆 World Cup FINAL — Today at Heroes' : `⚽ World Cup Today — ${wd}, ${md}`,
+      caption,
+      storyCaption: isFinal ? 'The FINAL. On every screen at Heroes 🏆⚽' : 'World Cup all day at Heroes ⚽ Who you got?',
       tags: '#WorldCup2026 #FIFAWorldCup #CarlsbadVillage #AmericanHeroesAndBrew #SportsBar #WatchParty #SoccerBar',
     });
     console.log(`  ${file}  (${d.games.length} games)`);
