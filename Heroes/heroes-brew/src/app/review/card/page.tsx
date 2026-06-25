@@ -29,14 +29,14 @@ export default function ReviewCardPage() {
         Press ⌘P / Ctrl+P to print, then cut out and place on tables or with the check.
       </p>
 
-      <article className="w-full max-w-md rounded-3xl border-[6px] border-amber-500 px-8 py-10 text-center shadow-sm">
-        <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-amber-600">
+      <article className="w-full max-w-md rounded-3xl border-[6px] border-[#bf0a30] px-8 py-10 text-center shadow-sm">
+        <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-[#0a3161]">
           American Heroes &amp; Brew
         </p>
         <h1 className="mt-2 text-3xl font-extrabold leading-tight text-black">
           Loved it? Leave us a review! 🍻
         </h1>
-        <div className="my-3 text-3xl tracking-widest text-amber-500">★★★★★</div>
+        <div className="my-3 text-3xl tracking-widest text-[#bf0a30]">★★★★★</div>
 
         {/* QR → americanheroesandbrew.com/review → Google review composer */}
         <img
@@ -47,7 +47,7 @@ export default function ReviewCardPage() {
 
         <p className="text-xl font-bold text-black">Scan to leave a 5★ Google review</p>
         <p className="mt-1 text-gray-600">Takes 10 seconds — it helps more fans find us.</p>
-        <p className="mt-5 text-lg font-semibold text-amber-600">
+        <p className="mt-5 text-lg font-semibold text-[#0a3161]">
           americanheroesandbrew.com/review
         </p>
       </article>
