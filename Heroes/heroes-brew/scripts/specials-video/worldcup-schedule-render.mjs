@@ -38,7 +38,10 @@ const HEAD = GlobalFonts.families.some((f) => /Avenir Next Condensed/.test(f.fam
   : (GlobalFonts.families.some((f) => /Avenir Next/.test(f.family)) ? 'Avenir Next' : 'sans-serif');
 
 const W = 1080, H = 1920;
-const AMBER = '#f59e0b';
+// American-flag palette (brand default — red/white/blue, not amber).
+const RED = '#bf0a30';
+const NAVY = '#0a3161';
+const BLUE = '#3a6fe0'; // brighter blue for accents on the dark stadium bg
 const WHITE = '#ffffff';
 const INK = '#0b0d12';
 
@@ -218,22 +221,25 @@ async function renderDay(day, bg) {
   ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
 
   // ── header ──
-  // amber kicker chip
+  // red kicker chip, white text
   const kick = 'FIFA WORLD CUP 2026';
   ctx.font = `800 38px "${HEAD}"`;
   const kw = ctx.measureText(kick).width + 64;
-  roundRect(ctx, W / 2 - kw / 2, 96, kw, 70, 35); ctx.fillStyle = AMBER; ctx.fill();
-  text(ctx, kick, W / 2, 132, `800 38px "${HEAD}"`, INK, { });
+  roundRect(ctx, W / 2 - kw / 2, 96, kw, 70, 35); ctx.fillStyle = RED; ctx.fill();
+  text(ctx, kick, W / 2, 132, `800 38px "${HEAD}"`, WHITE, { });
 
-  text(ctx, 'TODAY’S SCHEDULE', W / 2, 232, `800 104px "${HEAD}"`, WHITE, { stroke: INK, strokeW: 8, shadow: 22 });
+  text(ctx, 'TODAY’S SCHEDULE', W / 2, 232, `800 104px "${HEAD}"`, WHITE, { stroke: NAVY, strokeW: 9, shadow: 22 });
 
-  // date line
+  // date line (white)
   const weekday = fmtWeekday.format(day.when).toUpperCase();
   const monthday = fmtMonthDay.format(day.when).toUpperCase();
-  text(ctx, `${weekday} · ${monthday}`, W / 2, 320, `700 50px "${HEAD}"`, AMBER, { shadow: 12 });
+  text(ctx, `${weekday} · ${monthday}`, W / 2, 320, `700 50px "${HEAD}"`, WHITE, { stroke: NAVY, strokeW: 4, shadow: 12 });
 
-  // accent rule
-  ctx.fillStyle = AMBER; ctx.fillRect(W / 2 - 120, 360, 240, 7);
+  // flag accent rule (blue · white · red)
+  const seg = 80, rx = W / 2 - (seg * 3) / 2;
+  ctx.fillStyle = NAVY; ctx.fillRect(rx, 360, seg, 8);
+  ctx.fillStyle = WHITE; ctx.fillRect(rx + seg, 360, seg, 8);
+  ctx.fillStyle = RED; ctx.fillRect(rx + seg * 2, 360, seg, 8);
 
   // ── match cards ──
   const TOP = 410, BOT = 1715;
@@ -254,23 +260,23 @@ async function renderDay(day, bg) {
     ctx.save();
     ctx.shadowColor = 'rgba(0,0,0,0.45)'; ctx.shadowBlur = 18; ctx.shadowOffsetY = 8;
     roundRect(ctx, x0, y, cardW, cardH, 26);
-    ctx.fillStyle = knockout ? 'rgba(18,22,31,0.78)' : 'rgba(15,19,28,0.82)';
+    ctx.fillStyle = knockout ? 'rgba(10,20,45,0.82)' : 'rgba(11,18,38,0.82)';
     ctx.fill();
     ctx.restore();
     roundRect(ctx, x0, y, cardW, cardH, 26);
-    ctx.lineWidth = 2; ctx.strokeStyle = knockout ? 'rgba(245,158,11,0.40)' : 'rgba(255,255,255,0.12)'; ctx.stroke();
+    ctx.lineWidth = 2.5; ctx.strokeStyle = knockout ? 'rgba(191,10,48,0.65)' : 'rgba(255,255,255,0.16)'; ctx.stroke();
 
     // left time block (with optional round tag above the time)
     const timeBoxW = 210;
-    ctx.fillStyle = AMBER; ctx.fillRect(x0, y + 18, 7, cardH - 36);
+    ctx.fillStyle = RED; ctx.fillRect(x0, y + 18, 7, cardH - 36);
     const cy = y + cardH / 2;
     if (knockout) {
       const rl = m.round.toUpperCase();
-      text(ctx, rl, x0 + 30, cy - cardH * 0.24, `800 ${fitFont(ctx, rl, 800, 34, timeBoxW - 18)}px "${HEAD}"`, AMBER, { align: 'left' });
+      text(ctx, rl, x0 + 30, cy - cardH * 0.24, `800 ${fitFont(ctx, rl, 800, 34, timeBoxW - 18)}px "${HEAD}"`, RED, { align: 'left' });
     }
     const tFs = fitFont(ctx, m.time, 800, 56, timeBoxW - 26);
     text(ctx, m.time, x0 + 30, knockout ? cy + 6 : cy - 16, `800 ${tFs}px "${HEAD}"`, WHITE, { align: 'left' });
-    text(ctx, 'PT', x0 + 30, knockout ? cy + cardH * 0.26 : cy + 26, `700 30px "${HEAD}"`, AMBER, { align: 'left' });
+    text(ctx, 'PT', x0 + 30, knockout ? cy + cardH * 0.26 : cy + 26, `700 30px "${HEAD}"`, BLUE, { align: 'left' });
 
     // right matchup zone — each side renders independently (real team or "?" placeholder)
     const zoneX = x0 + timeBoxW + 6;
@@ -288,7 +294,7 @@ async function renderDay(day, bg) {
     flagBadge(ctx, m.away.tbd ? null : m.away.img, zoneX + zoneW - bw / 2 - 4, my, bw, bh);
     text(ctx, m.away.name, zoneX + zoneW - bw - 24, my, `800 ${fitFont(ctx, m.away.name, 800, 44, nameMaxW)}px "${HEAD}"`,
       m.away.tbd ? '#aab4c4' : WHITE, { align: 'right', shadow: 10 });
-    text(ctx, 'VS', zoneCx, my, `800 38px "${HEAD}"`, AMBER, { shadow: 8 });
+    text(ctx, 'VS', zoneCx, my, `800 38px "${HEAD}"`, RED, { shadow: 8 });
 
     if (anyTbd) {
       text(ctx, 'Matchup set by the bracket — follow for the reveal', zoneCx, cy + cardH * 0.30,
@@ -298,13 +304,14 @@ async function renderDay(day, bg) {
     y += cardH + gap;
   }
 
-  // ── footer banner ──
+  // ── footer banner (flag: navy → red, white text, white keyline) ──
   const fbY = 1740;
-  g = ctx.createLinearGradient(0, fbY, W, fbY);
-  g.addColorStop(0, '#b45309'); g.addColorStop(0.5, AMBER); g.addColorStop(1, '#b45309');
+  g = ctx.createLinearGradient(40, 0, W - 40, 0);
+  g.addColorStop(0, NAVY); g.addColorStop(0.5, '#7a143a'); g.addColorStop(1, RED);
   roundRect(ctx, 40, fbY, W - 80, 96, 22); ctx.fillStyle = g; ctx.fill();
-  text(ctx, 'WATCH EVERY MATCH AT AMERICAN HEROES & BREW', W / 2, fbY + 40, `800 ${fitFont(ctx, 'WATCH EVERY MATCH AT AMERICAN HEROES & BREW', 800, 40, W - 140)}px "${HEAD}"`, INK, {});
-  text(ctx, 'Carlsbad Village  ·  @americanheroesandbrew', W / 2, fbY + 74, `600 30px "${HEAD}"`, '#1c1206', {});
+  roundRect(ctx, 40, fbY, W - 80, 96, 22); ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(255,255,255,0.85)'; ctx.stroke();
+  text(ctx, 'WATCH EVERY MATCH AT AMERICAN HEROES & BREW', W / 2, fbY + 40, `800 ${fitFont(ctx, 'WATCH EVERY MATCH AT AMERICAN HEROES & BREW', 800, 40, W - 150)}px "${HEAD}"`, WHITE, { shadow: 6 });
+  text(ctx, 'Carlsbad Village  ·  @americanheroesandbrew', W / 2, fbY + 74, `600 30px "${HEAD}"`, 'rgba(255,255,255,0.92)', {});
 
   return c.toBuffer('image/jpeg', { quality: 0.92 });
 }
