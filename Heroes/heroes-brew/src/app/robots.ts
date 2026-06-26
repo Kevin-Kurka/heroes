@@ -38,6 +38,7 @@ export default function robots(): MetadataRoute.Robots {
       ...AI_CRAWLERS.map((userAgent) => ({ userAgent, allow: '/', disallow })),
     ],
     sitemap: `${SITE_URL}/sitemap.xml`,
-    host: SITE_URL,
+    // No `host` directive — it's a Yandex-only field that Googlebot flags as an
+    // ignored rule. Canonical host is enforced via redirects + canonical tags.
   };
 }
