@@ -134,6 +134,53 @@ export function getWebPageJsonLd(opts: {
 }
 
 /**
+ * Build schema.org `performer` entries for a sports event. Google's Event rich
+ * result wants a performer; for a watch party the performers are the competing
+ * teams. Returns two SportsTeam performers when both sides are known, otherwise
+ * a single PerformingGroup derived from the matchup/title so the field is never
+ * missing. Splits "Away vs Home" / "Away @ Home" titles as a fallback.
+ */
+function buildPerformers(opts: {
+  homeTeam?: string;
+  awayTeam?: string;
+  title?: string;
+}): Array<Record<string, string>> {
+  const { homeTeam, awayTeam, title } = opts;
+  if (awayTeam && homeTeam) {
+    return [
+      { '@type': 'SportsTeam', name: awayTeam },
+      { '@type': 'SportsTeam', name: homeTeam },
+    ];
+  }
+  const parts = title
+    ?.split(/\s+(?:vs\.?|@|at)\s+/i)
+    .map((p) => p.trim())
+    .filter(Boolean);
+  if (parts && parts.length === 2) {
+    return parts.map((name) => ({ '@type': 'SportsTeam', name }));
+  }
+  return [{ '@type': 'PerformingGroup', name: title || 'Live Sports' }];
+}
+
+/** Add `hours` to an ISO date-time string, returning a new ISO string (or null). */
+function addHoursIso(start: string, hours: number): string | null {
+  const t = Date.parse(start);
+  if (!Number.isFinite(t)) return null;
+  return new Date(t + hours * 3_600_000).toISOString();
+}
+
+/** Free, no-cover admission Offer for a watch party at the venue. */
+function freeWatchPartyOffer(url: string): Record<string, string> {
+  return {
+    '@type': 'Offer',
+    price: '0',
+    priceCurrency: 'USD',
+    availability: 'https://schema.org/InStock',
+    url,
+  };
+}
+
+/**
  * Watch-party Event JSON-LD for the live games on /events. Each upcoming sports
  * game is modeled as an Event *hosted at* American Heroes & Brew — i.e. a public
  * watch party — so Google/AI event surfaces can answer "where to watch [game] in
@@ -181,6 +228,9 @@ export function getWatchPartyEventsJsonLd(events: ReadonlyArray<{
     itemListElement: upcoming.map((e, i) => {
       const matchup =
         e.awayTeam && e.homeTeam ? `${e.awayTeam} vs ${e.homeTeam}` : e.eventTitle;
+      // Sports broadcasts have no clean end; ~3h covers a full game + overtime.
+      const endDate = addHoursIso(e.eventTimestamp, 3);
+      const eventUrl = `${SITE_URL}/events`;
       return {
         '@type': 'ListItem',
         position: i + 1,
@@ -189,12 +239,19 @@ export function getWatchPartyEventsJsonLd(events: ReadonlyArray<{
           name: `Watch ${matchup} at American Heroes & Brew`,
           description: `Catch ${matchup} on 16 TVs at American Heroes & Brew, the family-friendly sports bar in Carlsbad Village. Every game, every day.`,
           startDate: e.eventTimestamp,
+          ...(endDate ? { endDate } : {}),
           eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
           eventStatus: 'https://schema.org/EventScheduled',
           location,
+          performer: buildPerformers({
+            homeTeam: e.homeTeam,
+            awayTeam: e.awayTeam,
+            title: e.eventTitle,
+          }),
           organizer: { '@id': `${SITE_URL}/#restaurant` },
+          offers: freeWatchPartyOffer(eventUrl),
           image: `${SITE_URL}/logo-hires.png`,
-          url: `${SITE_URL}/events`,
+          url: eventUrl,
         },
       };
     }),
@@ -308,6 +365,7 @@ export function getWatchPartyEventJsonLd(party: WatchParty) {
     eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
     eventStatus: 'https://schema.org/EventScheduled',
     sport: party.sport,
+    performer: buildPerformers({ title: party.matchup }),
     image: [`${SITE_URL}/promos-video/thumbs/${party.thumbFile}`],
     location: {
       '@type': 'Restaurant',
