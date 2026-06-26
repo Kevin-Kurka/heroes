@@ -36,6 +36,10 @@ export async function generateMetadata({
       title: 'Game Day at American Heroes & Brew',
       description: 'Carlsbad & North County\'s go-to sports bar. Every game on the big screens.',
       alternates: { canonical: '/events' },
+      // Personalized share links: unbounded per-event id space. Keep them out of
+      // the index (canonical already points to /events) but let crawlers follow
+      // the in-page links to /events and /menu.
+      robots: { index: false, follow: true },
     };
   }
 
@@ -47,6 +51,8 @@ export async function generateMetadata({
     title: headline,
     description,
     alternates: { canonical: '/events' },
+    // See note above: noindex the unbounded share-link space, still follow links.
+    robots: { index: false, follow: true },
     openGraph: {
       title: headline,
       description,
