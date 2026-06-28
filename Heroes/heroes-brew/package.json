@@ -7,6 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "render:specials": "node scripts/specials-video/scratch-render.mjs && node scripts/specials-video/slot-render.mjs && npm run stamp:content",
     "render:scratcher": "node scripts/specials-video/scratch-render.mjs && npm run stamp:content",
     "render:slot": "node scripts/specials-video/slot-render.mjs && npm run stamp:content",
@@ -32,6 +34,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.9"
   }
 }

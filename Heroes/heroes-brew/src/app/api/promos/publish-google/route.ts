@@ -43,9 +43,32 @@ interface PublishBody {
   imageUrl?: unknown; // optional poster image; omitted → text-only post
   ctaType?: unknown; // optional CALL/LEARN_MORE/... ; default LEARN_MORE when ctaUrl present
   ctaUrl?: unknown; // optional button URL
+  eventTitle?: unknown; // present → an EVENT post
+  eventStart?: unknown; // ISO; required when eventTitle present
+  eventEnd?: unknown;   // ISO; required when eventTitle present
 }
 
 const isAllowedUrl = (url: string, prefixes: string[]) => prefixes.some((p) => url.startsWith(p));
+
+/**
+ * Split an ISO timestamp into the GBP `event.schedule` date + time objects, using
+ * the business's local timezone (America/Los_Angeles) wall-clock. Exported for unit tests.
+ */
+export function gbpDateTime(iso: string): {
+  date: { year: number; month: number; day: number };
+  time: { hours: number; minutes: number; seconds: number };
+} {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/Los_Angeles',
+    year: 'numeric', month: 'numeric', day: 'numeric',
+    hour: 'numeric', minute: 'numeric', hour12: false,
+  }).formatToParts(new Date(iso));
+  const g = (t: string) => Number(parts.find((p) => p.type === t)?.value);
+  return {
+    date: { year: g('year'), month: g('month'), day: g('day') },
+    time: { hours: g('hour') % 24, minutes: g('minute'), seconds: 0 },
+  };
+}
 
 export async function POST(req: NextRequest) {
   // ── Auth: Bearer PROMOS_SECRET ────────────────────────────────────────────
@@ -90,6 +113,20 @@ export async function POST(req: NextRequest) {
     : 'LEARN_MORE';
   const hasCta = typeof ctaUrl === 'string' && ctaUrl.length > 0;
 
+  // ── Optional EVENT fields (all-or-nothing) ─────────────────────────────────
+  const { eventTitle, eventStart, eventEnd } = body;
+  const anyEvent = eventTitle != null || eventStart != null || eventEnd != null;
+  const isEvent =
+    typeof eventTitle === 'string' && eventTitle.trim().length > 0 &&
+    typeof eventStart === 'string' && !Number.isNaN(Date.parse(eventStart)) &&
+    typeof eventEnd === 'string' && !Number.isNaN(Date.parse(eventEnd));
+  if (anyEvent && !isEvent) {
+    return NextResponse.json(
+      { error: 'EVENT posts require eventTitle, eventStart (ISO), and eventEnd (ISO)' },
+      { status: 400 }
+    );
+  }
+
   // ── 1) Refresh token → access token ────────────────────────────────────────
   let accessToken: string;
   try {
@@ -118,8 +155,19 @@ export async function POST(req: NextRequest) {
   const post: Record<string, unknown> = {
     languageCode: 'en-US',
     summary: caption,
-    topicType: 'STANDARD',
+    topicType: isEvent ? 'EVENT' : 'STANDARD',
   };
+  if (isEvent) {
+    post.event = {
+      title: (eventTitle as string).trim(),
+      schedule: {
+        startDate: gbpDateTime(eventStart as string).date,
+        startTime: gbpDateTime(eventStart as string).time,
+        endDate: gbpDateTime(eventEnd as string).date,
+        endTime: gbpDateTime(eventEnd as string).time,
+      },
+    };
+  }
   if (hasImage) post.media = [{ mediaFormat: 'PHOTO', sourceUrl: imageUrl }];
   if (hasCta) post.callToAction = { actionType: ctaType, url: ctaUrl };
 

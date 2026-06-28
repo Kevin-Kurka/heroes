@@ -73,7 +73,7 @@ function isFollowedTeam(name?: string): boolean {
 }
 
 /** True when the event kicks off on a Monday evening (PT) — i.e. Monday Night Football. */
-function isMondayNight(e: UnifiedEvent): boolean {
+export function isMondayNight(e: UnifiedEvent): boolean {
   if (e.league !== 'NFL') return false;
   const parts = new Intl.DateTimeFormat('en-US', {
     timeZone: 'America/Los_Angeles',
