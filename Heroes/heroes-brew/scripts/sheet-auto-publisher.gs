@@ -195,6 +195,9 @@ function clearTriggers_(fn) {
 
 function mediaUrl_(row, site) {
   if (/^https?:\/\//i.test(row.media)) return row.media;
+  // Site-relative path (e.g. the dynamic /api/og/... matchup + schedule posters used by
+  // auto-curated rows) — serve straight off the origin, no /promos/ prefix.
+  if (row.media.charAt(0) === '/') return site + row.media;
   return site + (row.isVideo ? '/promos-video/' : '/promos/') + row.media;
 }
 
