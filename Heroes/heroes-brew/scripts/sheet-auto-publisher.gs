@@ -602,6 +602,12 @@ function seedCuratedRows() {
   });
 }
 
+// Install a once-daily trigger (≈ 6 AM PT) that seeds the next 7 days of curated rows.
+function installCurateTrigger() {
+  clearTriggers_(CURATE_FN);
+  ScriptApp.newTrigger(CURATE_FN).timeBased().atHour(6).everyDays(1).inTimezone('America/Los_Angeles').create();
+}
+
 // ── Polish web app (for the Claude Code revision routine) ───────────────────────────
 // GET  ?secret=...            -> JSON list of rows where Approval = "Polish".
 // POST {secret,tab,row,headline,caption,tags} -> write revision back, clear Approval.

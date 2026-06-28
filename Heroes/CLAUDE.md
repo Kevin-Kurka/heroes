@@ -148,6 +148,8 @@ GOOGLE_BUSINESS_LOCATION_ID=<gbp_location_id>     # locations/{id}
 
 **Facebook Page cross-post**: after a successful IG publish, the same route posts the image + caption to the Facebook Page via `POST graph.facebook.com/v23.0/{FB_PAGE_ID}/photos`. Requires `FB_PAGE_ID` + `FB_PAGE_ACCESS_TOKEN` (a Page access token with `pages_manage_posts` + `pages_read_engagement` from a Facebook app linked to the Page — the Instagram-login token cannot post to a Page). If unset, the FB step is skipped and reported as `facebook.skipped` in the response; an FB failure never fails the request once IG has published (reported in `facebook.error`).
 
+**Auto-curated Events:** `GET /api/promos/curate` (guarded by `PROMOS_SECRET`) returns the rolling 7-day curated promo rows — WC USA/Mexico, Padres, Chargers, and Monday-Night games as Google **Events**, plus WC-day and NFL-Sunday schedule **Stories** (poster from `/api/og/schedule`). The Apps Script `seedCuratedRows()` daily trigger upserts these into the month tab (deduped by key in Notes); Google Event rows seed unapproved (manual Approve), Stories auto-approve. `publish-google` emits `topicType:EVENT` when a row carries Event Start/End. Spec: `docs/superpowers/specs/2026-06-28-google-event-curation-design.md`.
+
 No Toast credentials are used. The menu is static by default but can be driven live by a Google Sheet via `MENU_SHEET_CSV_URL` (see `MENU-SHEET-SYNC.md`). `NEXT_PUBLIC_ELFSIGHT_APP_ID` may appear in `.env.local` but is unused.
 
 ## Key Patterns
