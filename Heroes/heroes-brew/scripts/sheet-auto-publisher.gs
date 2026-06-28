@@ -93,7 +93,9 @@ function cols_(header) {
     tags: find(function (h) { return h.indexOf('tag') === 0; }),
     appr: find(function (h) { return h.indexOf('approval') === 0; }),
     posted: find(function (h) { return h.indexOf('posted') === 0; }),
-    notes: find(function (h) { return h.indexOf('note') === 0; })
+    notes: find(function (h) { return h.indexOf('note') === 0; }),
+    eventStart: find(function (h) { return h.indexOf('event start') === 0; }),
+    eventEnd: find(function (h) { return h.indexOf('event end') === 0; })
   };
 }
 
@@ -161,6 +163,9 @@ function rows_() {
         storyCaption: get(c.storyCap),
         tags: get(c.tags),
         notes: get(c.notes),
+        eventStart: c.eventStart >= 0 ? String(r[c.eventStart] || '').trim() : '',
+        eventEnd: c.eventEnd >= 0 ? String(r[c.eventEnd] || '').trim() : '',
+        noteKey: c.notes >= 0 ? String(r[c.notes] || '').trim() : '',
         approval: get(c.appr),
         posted: get(c.posted),
         // Feed/post caption (Headline + Caption + Tags). Story uses its own caption — see payloadFor_.
@@ -213,6 +218,11 @@ function payloadFor_(row, channel, site) {
 function googlePayloadFor_(row, site) {
   var p = { caption: row.igCaption, ctaType: 'LEARN_MORE', ctaUrl: site };
   if (!row.isVideo) p.imageUrl = mediaUrl_(row, site);
+  if (row.eventStart && row.eventEnd) {
+    p.eventTitle = row.headline || 'Game Day at American Heroes & Brew';
+    p.eventStart = row.eventStart;
+    p.eventEnd = row.eventEnd;
+  }
   return p;
 }
 
@@ -228,6 +238,22 @@ function addStoryCaptionColumn() {
     var after = capIdx >= 0 ? capIdx + 1 : header.length; // 1-based column to insert after
     sh.insertColumnAfter(after);
     sh.getRange(1, after + 1).setValue('Story Caption');
+  });
+}
+
+// One-time/idempotent: add `Event Start` and `Event End` columns (after Notes) to every
+// month tab that lacks them. Used by Google EVENT posts.
+function addEventColumns() {
+  monthSheets_().forEach(function (sh) {
+    var header = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0]
+      .map(function (h) { return String(h).trim().toLowerCase(); });
+    ['Event Start', 'Event End'].forEach(function (name) {
+      if (header.indexOf(name.toLowerCase()) >= 0) return;
+      var after = sh.getLastColumn();
+      sh.insertColumnAfter(after);
+      sh.getRange(1, after + 1).setValue(name);
+      header.push(name.toLowerCase());
+    });
   });
 }
 
@@ -507,6 +533,73 @@ function enableSpecials() {
 
 function disableSpecials() {
   clearTriggers_(SPECIAL_FN);
+}
+
+var CURATE_FN = 'seedCuratedRows';
+
+// True if a row already covers this curated item: same key in Notes, OR (for schedule
+// stories) an existing row on the same date whose media looks like a schedule poster
+// (covers the pre-existing manually-seeded WC story rows).
+function curatedExists_(values, c, item, tz) {
+  var itemDate = item.date; // already "MMM d, yyyy"
+  for (var i = 1; i < values.length; i++) {
+    var note = c.notes >= 0 ? String(values[i][c.notes] || '').trim() : '';
+    if (note === item.key) return true;
+    if (item.postType === 'schedule-story') {
+      var media = c.media >= 0 ? String(values[i][c.media] || '').trim().toLowerCase() : '';
+      var w = parseWhen_(c.date >= 0 ? values[i][c.date] : '', c.time >= 0 ? values[i][c.time] : '');
+      var sameDay = w && Utilities.formatDate(w, tz, 'MMM d, yyyy') === itemDate;
+      if (sameDay && (media.indexOf('schedule') >= 0)) return true;
+    }
+  }
+  return false;
+}
+
+function seedCuratedRows() {
+  var props = props_();
+  var site = props.getProperty('SITE') || 'https://americanheroesandbrew.com';
+  var secret = props.getProperty('PROMOS_SECRET');
+  if (!secret) return;
+  var res = UrlFetchApp.fetch(site + '/api/promos/curate', {
+    method: 'get',
+    headers: { Authorization: 'Bearer ' + secret },
+    muteHttpExceptions: true,
+  });
+  if (res.getResponseCode() !== 200) return;
+  var data = JSON.parse(res.getContentText() || '{}');
+  var rows = (data && data.rows) || [];
+  if (!rows.length) return;
+
+  var sh = currentMonthSheet_();
+  var tz = Session.getScriptTimeZone();
+  var header = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];
+  var c = cols_(header);
+  if (c.media < 0 || c.date < 0) return;
+  var values = sh.getDataRange().getDisplayValues();
+
+  rows.forEach(function (item) {
+    if (curatedExists_(values, c, item, tz)) return;
+    var rowArr = [];
+    for (var j = 0; j < header.length; j++) rowArr.push('');
+    if (c.date >= 0) rowArr[c.date] = item.date;
+    if (c.time >= 0) rowArr[c.time] = item.time;
+    if (c.channel >= 0) rowArr[c.channel] = item.channel;
+    if (c.media >= 0) rowArr[c.media] = item.media;
+    if (c.headline >= 0) rowArr[c.headline] = item.headline || '';
+    if (c.cap >= 0) rowArr[c.cap] = item.caption || '';
+    if (c.storyCap >= 0) rowArr[c.storyCap] = item.storyCaption || '';
+    if (c.tags >= 0) rowArr[c.tags] = item.tags || '';
+    // Google Events need manual approval; schedule Stories auto-approve (like daily specials).
+    if (c.appr >= 0) rowArr[c.appr] = (item.postType === 'schedule-story') ? 'Approve' : '';
+    if (c.notes >= 0) rowArr[c.notes] = item.key;
+    if (c.eventStart >= 0 && item.eventStart) rowArr[c.eventStart] = item.eventStart;
+    if (c.eventEnd >= 0 && item.eventEnd) rowArr[c.eventEnd] = item.eventEnd;
+    sh.appendRow(rowArr);
+    if (c.media >= 0) linkifyMediaCell_(sh.getRange(sh.getLastRow(), c.media + 1), site);
+    // Keep our in-memory snapshot current so repeated items in one run dedup correctly.
+    var appended = []; for (var k = 0; k < header.length; k++) appended.push(rowArr[k]);
+    values.push(appended);
+  });
 }
 
 // ── Polish web app (for the Claude Code revision routine) ───────────────────────────
