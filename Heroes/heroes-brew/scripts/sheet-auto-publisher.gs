@@ -267,6 +267,47 @@ function addEventColumns() {
   monthSheets_().forEach(ensureEventColumns_);
 }
 
+// One-time cleanup: move any row that sits in the wrong month tab (e.g. early-July curated
+// rows seeded into June before the per-date routing fix) into the tab matching its Post Date.
+// Header-aligned (column order may differ between tabs), re-linkifies the Media cell, and
+// deletes bottom-up so row indices stay valid. Idempotent — re-running moves nothing once
+// every row is in its correct tab. Run once after deploying the routing fix.
+function migrateMisplacedRows() {
+  var tz = Session.getScriptTimeZone();
+  var site = props_().getProperty('SITE') || 'https://americanheroesandbrew.com';
+  var moved = 0;
+  monthSheets_().forEach(function (sh) {
+    var tabName = sh.getName();
+    var values = sh.getDataRange().getValues();        // real values (preserve types)
+    var disp = sh.getDataRange().getDisplayValues();
+    if (values.length < 2) return;
+    var c = cols_(disp[0]);
+    if (c.date < 0) return;
+    var srcHeader = disp[0].map(function (h) { return String(h).trim().toLowerCase(); });
+    for (var i = values.length - 1; i >= 1; i--) {     // bottom-up so deletes don't shift rows
+      var w = parseWhen_(disp[i][c.date], c.time >= 0 ? disp[i][c.time] : '');
+      if (!w) continue;
+      var targetName = MONTH_NAMES[w.getMonth()] + ' ' + w.getFullYear();
+      if (targetName === tabName) continue;            // already in the right tab
+      var dst = monthSheetFor_(w);
+      ensureEventColumns_(dst);
+      var dstHeader = dst.getRange(1, 1, 1, dst.getLastColumn()).getValues()[0]
+        .map(function (h) { return String(h).trim().toLowerCase(); });
+      var out = [];
+      for (var k = 0; k < dstHeader.length; k++) {
+        var si = srcHeader.indexOf(dstHeader[k]);
+        out.push(si >= 0 ? values[i][si] : '');
+      }
+      dst.appendRow(out);
+      var dc = cols_(dst.getRange(1, 1, 1, dst.getLastColumn()).getValues()[0]);
+      if (dc.media >= 0) linkifyMediaCell_(dst.getRange(dst.getLastRow(), dc.media + 1), site);
+      sh.deleteRow(i + 1);
+      moved++;
+    }
+  });
+  Logger.log('migrateMisplacedRows: moved ' + moved + ' row(s) to their correct month tab');
+}
+
 // Make every Media cell across all month tabs a clickable link to its hosted file, so you
 // can click a filename in the sheet and confirm the asset actually loads. The cell's text
 // stays the bare filename (what the publisher reads); only a link is layered on top.
@@ -369,12 +410,17 @@ function publishDue() {
     .filter(function (r) { return r.when >= start && r.when <= now; })
     .forEach(function (row) {
       var allOk = true;
+      var postedAny = false; // did at least one channel actually attempt a post?
       row.channels.forEach(function (ch) {
         // Google Business Profile is a BEST-EFFORT channel: route it to its own endpoint and
         // never let its outcome block the Posted stamp (a Google failure must not cause the
-        // IG/Story channels to re-post on the next retry). Skipped entirely until configured.
+        // IG/Story channels to re-post on the next retry). Skipped entirely until configured —
+        // and when it's the ONLY channel and is skipped, the row is left unstamped (postedAny
+        // stays false) so it posts for real once GOOGLE_PUBLISH_URL is set, instead of being
+        // silently consumed as "Posted" while the API was still dormant.
         if (ch === 'Google') {
           if (!googleUrl) { Logger.log('Google channel skipped (GOOGLE_PUBLISH_URL not set) [' + row.tab + ' r' + row.rowNum + ']'); return; }
+          postedAny = true;
           var gres = UrlFetchApp.fetch(googleUrl, {
             method: 'post', contentType: 'application/json',
             headers: { Authorization: 'Bearer ' + secret },
@@ -385,6 +431,7 @@ function publishDue() {
           }
           return;
         }
+        postedAny = true;
         var res = UrlFetchApp.fetch(url, {
           method: 'post',
           contentType: 'application/json',
@@ -398,8 +445,9 @@ function publishDue() {
         }
       });
       // Stamp Posted and FLUSH immediately so any serialized follow-up run sees it
-      // and won't re-post this row.
-      if (allOk) { row.sh.getRange(row.rowNum, row.c.posted + 1).setValue(new Date()); SpreadsheetApp.flush(); }
+      // and won't re-post this row. Only stamp when something actually posted — a row whose
+      // sole channel is a skipped (unconfigured) Google waits instead of being consumed.
+      if (allOk && postedAny) { row.sh.getRange(row.rowNum, row.c.posted + 1).setValue(new Date()); SpreadsheetApp.flush(); }
     });
   scheduleNext();
   } finally {
