@@ -1,7 +1,7 @@
 import type { UnifiedEvent } from '@/types';
 import { getAllEvents, isMondayNight } from './events';
 
-export type PromoPostType = 'google-event' | 'schedule-story';
+export type PromoPostType = 'google-event' | 'schedule-story' | 'feed-post';
 
 export interface CuratedPromo {
   /** Post classification. */
@@ -12,7 +12,7 @@ export interface CuratedPromo {
   date: string;
   /** Sheet "Post Time" (e.g. "10:00 AM"). */
   time: string;
-  channel: 'Google' | 'Story';
+  channel: 'Google' | 'Story' | 'Feed';
   /** Poster URL path (relative to the site origin). */
   media: string;
   headline: string;
@@ -30,10 +30,14 @@ export interface CuratedPromo {
 const TAGS = '#AmericanHeroesAndBrew #CarlsbadVillage #SportsBar';
 const EVENT_POST_TIME = '10:00 AM';
 const STORY_POST_TIME = '9:00 AM';
+const FEED_POST_TIME = '11:00 AM';
 const EVENT_DURATION_MS = 2.5 * 60 * 60 * 1000;
 
 /** Teams whose every game becomes a Google Event (league-scoped below). */
 const GOOGLE_EVENT_TEAMS = new Set(['San Diego Padres', 'Los Angeles Chargers']);
+
+/** Teams whose HOME games are "biggest" and also earn an IG feed post. */
+const FEED_HOME_TEAMS = new Set(['San Diego Padres', 'Los Angeles Chargers']);
 
 function isUsaOrMexicoWC(e: UnifiedEvent): boolean {
   if (e.league !== 'WORLDCUP') return false;
@@ -48,6 +52,15 @@ function isGoogleEventTeamGame(e: UnifiedEvent): boolean {
 
 function isGoogleEvent(e: UnifiedEvent): boolean {
   return isUsaOrMexicoWC(e) || isGoogleEventTeamGame(e) || isMondayNight(e);
+}
+
+/**
+ * "Biggest" games that also earn an Instagram FEED post (matchup poster to the grid):
+ * USA/Mexico World Cup games and Padres/Chargers HOME games. Narrower than isGoogleEvent
+ * — Monday-Night and away games stay Event+Story only, to keep the feed from flooding.
+ */
+function isBiggestGame(e: UnifiedEvent): boolean {
+  return isUsaOrMexicoWC(e) || (!!e.homeTeam && FEED_HOME_TEAMS.has(e.homeTeam));
 }
 
 /** PT calendar parts of an ISO timestamp. */
@@ -71,7 +84,7 @@ function matchup(e: UnifiedEvent): string {
   return e.awayTeam && e.homeTeam ? `${e.awayTeam} vs ${e.homeTeam}` : e.eventTitle;
 }
 
-function eventPoster(e: UnifiedEvent, when: string): string {
+function eventPoster(e: UnifiedEvent, when: string, ratio: '9x16' | '4x5' = '9x16'): string {
   const q = new URLSearchParams();
   if (e.awayTeam) q.set('away', e.awayTeam);
   if (e.homeTeam) q.set('home', e.homeTeam);
@@ -80,7 +93,7 @@ function eventPoster(e: UnifiedEvent, when: string): string {
   if (e.league) q.set('league', e.league);
   q.set('title', matchup(e));
   q.set('when', when);
-  q.set('ratio', '9x16');
+  q.set('ratio', ratio);
   q.set('social', '1');
   return `/api/og/event?${q.toString()}`;
 }
@@ -104,6 +117,24 @@ function googleEventPromo(e: UnifiedEvent): CuratedPromo {
     tags: TAGS,
     eventStart: e.eventTimestamp,
     eventEnd: end,
+    league: e.league ?? '',
+  };
+}
+
+function feedPostPromo(e: UnifiedEvent): CuratedPromo {
+  const start = ptParts(e.eventTimestamp);
+  const m = matchup(e);
+  return {
+    postType: 'feed-post',
+    key: `feed-${e.id}`,
+    date: start.dateLabel,
+    time: FEED_POST_TIME,
+    channel: 'Feed',
+    media: eventPoster(e, `${start.weekday} ${start.timeLabel}`, '4x5'),
+    headline: `${m} — Game Day at Heroes`,
+    caption: `Big one today: ${m}. Catch every minute at American Heroes & Brew — 16 TVs, full bar, ice-cold beer, Carlsbad Village. First pitch/kickoff ${start.timeLabel}. 🇺🇸🍻`,
+    storyCaption: '',
+    tags: TAGS,
     league: e.league ?? '',
   };
 }
@@ -137,6 +168,11 @@ export function curatePromos(events: UnifiedEvent[]): CuratedPromo[] {
   // Google Events: one per qualifying game.
   for (const e of events) {
     if (e.eventType === 'SPORTS' && isGoogleEvent(e)) out.push(googleEventPromo(e));
+  }
+
+  // IG Feed posts: only the biggest games (USA/Mexico WC, Padres/Chargers home).
+  for (const e of events) {
+    if (e.eventType === 'SPORTS' && isBiggestGame(e)) out.push(feedPostPromo(e));
   }
 
   // Schedule Stories: one per WC game-day, one per Sunday with NFL games.

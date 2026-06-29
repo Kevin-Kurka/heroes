@@ -27,9 +27,12 @@ export function GET(req: Request) {
   // `social=1` bakes the promo footer (handle, link, hashtags) into the image so
   // Instagram/TikTok posts carry context even when the caption isn't pre-filled.
   const social = searchParams.get('social') === '1';
-  // `ratio=9x16` renders a 1080×1920 Story frame (the flex layout adapts); default
-  // is the 1200×630 share/OG card.
-  const size = searchParams.get('ratio') === '9x16' ? { width: 1080, height: 1920 } : SIZE;
+  // `ratio=9x16` renders a 1080×1920 Story frame; `ratio=4x5` a 1080×1350 IG-feed
+  // frame (the flex layout adapts); default is the 1200×630 share/OG card.
+  const ratio = searchParams.get('ratio');
+  const size = ratio === '9x16' ? { width: 1080, height: 1920 }
+    : ratio === '4x5' ? { width: 1080, height: 1350 }
+    : SIZE;
   const badge = `${origin}/badge-clean.png`;
   const isMatchup = Boolean(away && home);
   const footer = when ? `${when}  ·  ${ADDRESS}` : ADDRESS;

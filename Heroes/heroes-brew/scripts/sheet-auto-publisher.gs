@@ -3,8 +3,9 @@
 // daily specials, multi-channel ("Feed, Story") drops — lives as a dated row in that month's
 // tab. The script reads every monthly tab and publishes approved, due rows to Instagram
 // (Feed and/or Story, image or video), stamps Posted, emails Jenee a weekly approval digest,
-// auto-seeds the recurring daily special as a Story row, and exposes a small web app so a
-// Claude Code routine can "Polish" (AI-revise) rows that Jenee flags.
+// auto-seeds each recurring daily special as both an IG Story (video) row and a Google weekly
+// Event row, and exposes a small web app so a Claude Code routine can "Polish" (AI-revise)
+// rows that Jenee flags.
 // See heroes-brew/docs/CONTENT-STRATEGY.md.
 //
 // There is NO separate "Story" tab — the old always-on rotation was folded into the monthly
@@ -42,17 +43,19 @@ var MONTH_NAMES = ['January','February','March','April','May','June','July','Aug
 var MONTH_TAB_RE = /^[A-Z][a-z]+ \d{4}$/;
 var VIDEO_RE = /\.(mp4|mov|m4v)$/i;
 
-var HEADERS = ['Post Date', 'Post Time', 'Channel', 'Media', 'Headline', 'Caption', 'Story Caption', 'Tags', 'Approval', 'Posted', 'Notes'];
+var HEADERS = ['Post Date', 'Post Time', 'Channel', 'Media', 'Headline', 'Caption', 'Story Caption', 'Tags', 'Approval', 'Posted', 'Notes', 'Event Start', 'Event End'];
 
-// Recurring daily specials (Mon–Fri). Each posts to the Story with its casual
-// "what's on your mind" caption. `key` selects the video pool <key>-1.mp4 / <key>-2.mp4
-// (a different variant each week so it's never identical two weeks running).
+// Recurring daily specials (Mon–Fri). Each posts to the IG Story (scratch-off/slot video)
+// with its casual "what's on your mind" caption, AND to Google as a recurring weekly Event
+// (a branded /api/og/special poster + an Event time window). `key` selects the video pool;
+// `deal`/`day`/`hours` drive the Google poster + caption; `startH`/`endH` are the PT Event
+// window (24h). The Google Event re-seeds every week, so it's recurring in effect.
 var SPECIALS = {
-  Mon: { key: 'mahalo',  name: 'Mahalo Monday',           time: '11:00 AM', cap: 'Sliders on my mind 🤙 Mahalo Monday at Heroes.' },
-  Tue: { key: 'taco',    name: 'Taco Tuesday',            time: '11:00 AM', cap: 'I want some tacos! 🌮 Taco Tuesday at Heroes.' },
-  Wed: { key: 'wings',   name: 'Wings & Wells Wednesday', time: '11:00 AM', cap: "Wing it — it's Humpday 🍗 Wings & Wells Wednesday at Heroes." },
-  Thu: { key: 'burgers', name: 'Burgers & Beer Thursday', time: '11:00 AM', cap: "Burger o'clock 🍔🍺 Burgers & Beer Thursday at Heroes." },
-  Fri: { key: 'funday',  name: 'Friday Funday',           time: '11:30 AM', cap: 'Cheers to Friday! 🍻 Friday Funday at Heroes.' }
+  Mon: { key: 'mahalo',  name: 'Mahalo Monday',           day: 'Monday',    time: '11:00 AM', deal: '$4 Kalua Pork Sliders', hours: '10a–10p', startH: 10, endH: 22, cap: 'Sliders on my mind 🤙 Mahalo Monday at Heroes.' },
+  Tue: { key: 'taco',    name: 'Taco Tuesday',            day: 'Tuesday',   time: '11:00 AM', deal: '$4 Tacos + Tequila',     hours: '10a–10p', startH: 10, endH: 22, cap: 'I want some tacos! 🌮 Taco Tuesday at Heroes.' },
+  Wed: { key: 'wings',   name: 'Wings & Wells Wednesday', day: 'Wednesday', time: '11:00 AM', deal: '$6 Off Wings',          hours: '10a–10p', startH: 10, endH: 22, cap: "Wing it — it's Humpday 🍗 Wings & Wells Wednesday at Heroes." },
+  Thu: { key: 'burgers', name: 'Burgers & Beer Thursday', day: 'Thursday',  time: '11:00 AM', deal: '$5 Off Burgers',        hours: '10a–10p', startH: 10, endH: 22, cap: "Burger o'clock 🍔🍺 Burgers & Beer Thursday at Heroes." },
+  Fri: { key: 'funday',  name: 'Friday Funday',           day: 'Friday',    time: '11:30 AM', deal: 'Happy Hour 1–4p · $2 Off', hours: '1–4p', startH: 13, endH: 16, cap: 'Cheers to Friday! 🍻 Friday Funday at Heroes.' }
 };
 var SPECIAL_DOWS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 var SPECIAL_TAGS = '#AmericanHeroesAndBrew #CarlsbadVillage #SportsBar';
@@ -244,20 +247,24 @@ function addStoryCaptionColumn() {
   });
 }
 
-// One-time/idempotent: add `Event Start` and `Event End` columns (after Notes) to every
-// month tab that lacks them. Used by Google EVENT posts.
-function addEventColumns() {
-  monthSheets_().forEach(function (sh) {
-    var header = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0]
-      .map(function (h) { return String(h).trim().toLowerCase(); });
-    ['Event Start', 'Event End'].forEach(function (name) {
-      if (header.indexOf(name.toLowerCase()) >= 0) return;
-      var after = sh.getLastColumn();
-      sh.insertColumnAfter(after);
-      sh.getRange(1, after + 1).setValue(name);
-      header.push(name.toLowerCase());
-    });
+// Ensure a single sheet has the `Event Start`/`Event End` columns Google EVENT posts need
+// (idempotent — appended after the last column if missing).
+function ensureEventColumns_(sh) {
+  var header = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0]
+    .map(function (h) { return String(h).trim().toLowerCase(); });
+  ['Event Start', 'Event End'].forEach(function (name) {
+    if (header.indexOf(name.toLowerCase()) >= 0) return;
+    var after = sh.getLastColumn();
+    sh.insertColumnAfter(after);
+    sh.getRange(1, after + 1).setValue(name);
+    header.push(name.toLowerCase());
   });
+}
+
+// One-time/idempotent: add `Event Start` and `Event End` columns to every month tab that
+// lacks them. Used by Google EVENT posts.
+function addEventColumns() {
+  monthSheets_().forEach(ensureEventColumns_);
 }
 
 // Make every Media cell across all month tabs a clickable link to its hosted file, so you
@@ -271,6 +278,14 @@ function linkifyMediaCell_(cell, site) {
   var text = String(cell.getDisplayValue() || '').trim();
   if (!text) return;
   var b = SpreadsheetApp.newRichTextValue().setText(text);
+  // A whole-cell absolute URL or site-relative path (e.g. the dynamic /api/og/... matchup,
+  // schedule, and special posters used by curated/Google-event rows) has no /promos filename
+  // to match below — link the entire cell straight to its resolved URL, matching mediaUrl_.
+  if (/^https?:\/\//i.test(text) || text.charAt(0) === '/') {
+    b.setLinkUrl(0, text.length, /^https?:\/\//i.test(text) ? text : site + text);
+    cell.setRichTextValue(b.build());
+    return;
+  }
   var re = /[^,\s]+\.(mp4|mov|m4v|jpg|jpeg|png)/gi, m;
   while ((m = re.exec(text)) !== null) {
     var name = m[0], start = m.index, end = start + name.length;
@@ -433,42 +448,88 @@ function currentMonthSheet_() {
   return ss_().getSheetByName(name) || monthSheets_()[0];
 }
 
-// Append a day's recurring special as a Story row. Idempotent: skips if that special
-// already exists on that date (matched by date + media key, so it never collides with a
-// pre-filled row even if the video variant differs). Returns true if it added a row.
+// Branded /api/og/special poster URL for a special's Google Event (query-driven so the
+// copy lives only here). Site-relative — mediaUrl_/linkifyMediaCell_ resolve it.
+function specialPoster_(sp) {
+  return '/api/og/special?title=' + encodeURIComponent(sp.name)
+    + '&deal=' + encodeURIComponent(sp.deal)
+    + '&day=' + encodeURIComponent(sp.day)
+    + '&hours=' + encodeURIComponent(sp.hours);
+}
+
+// ISO timestamp (PT offset) for a special's Event window edge — e.g. "2026-06-29T10:00:00-0700".
+// The script TZ is America/Los_Angeles, so the wall-clock hour is already PT.
+function specialEventIso_(date, hour) {
+  var d = new Date(date.getFullYear(), date.getMonth(), date.getDate(), hour, 0, 0);
+  return Utilities.formatDate(d, 'America/Los_Angeles', "yyyy-MM-dd'T'HH:mm:ssZ");
+}
+
+// Seed a day's recurring special: an IG Story (scratch-off/slot video) AND a Google weekly
+// Event (branded poster + Event window). Idempotent and independent per channel — the Story
+// is matched by media-key + date, the Google Event by its Notes key — so a re-run, or a day
+// that only has one of the two, fills in just what's missing. Returns true if it added a row.
 function seedSpecialOn_(sh, date) {
   var tz = Session.getScriptTimeZone();
   var dow = Utilities.formatDate(date, tz, 'EEE');
   var sp = SPECIALS[dow];
   if (!sp) return false; // only Mon–Fri have a recurring special
+  ensureEventColumns_(sh); // Google Event rows need Event Start/End
+  var site = props_().getProperty('SITE') || 'https://americanheroesandbrew.com';
   var values = sh.getDataRange().getDisplayValues();
   var header = values[0];
   var c = cols_(header);
   if (c.media < 0 || c.date < 0) return false;
   var dayKey = Utilities.formatDate(date, tz, 'yyyy-MM-dd');
+  var dateLabel = Utilities.formatDate(date, tz, 'MMM d, yyyy');
+  var googleKey = 'gspecial-' + sp.key + '-' + dayKey;
+
+  var hasStory = false, hasGoogle = false;
   for (var i = 1; i < values.length; i++) {
     var r = values[i];
     var f = String(r[c.media] || '').trim().toLowerCase();
     var w = parseWhen_(c.date >= 0 ? r[c.date] : '', c.time >= 0 ? r[c.time] : '');
-    if (f.indexOf(sp.key) === 0 && w && Utilities.formatDate(w, tz, 'yyyy-MM-dd') === dayKey) return false;
+    var sameDay = w && Utilities.formatDate(w, tz, 'yyyy-MM-dd') === dayKey;
+    if (f.indexOf(sp.key) === 0 && sameDay) hasStory = true;
+    if (c.notes >= 0 && String(r[c.notes] || '').trim() === googleKey) hasGoogle = true;
   }
-  var rowArr = [];
-  for (var j = 0; j < header.length; j++) rowArr.push('');
-  if (c.date >= 0) rowArr[c.date] = Utilities.formatDate(date, tz, 'MMM d, yyyy');
-  if (c.time >= 0) rowArr[c.time] = sp.time;
-  if (c.channel >= 0) rowArr[c.channel] = 'Story';
-  if (c.media >= 0) rowArr[c.media] = specialMedia_(sp.key, date);
-  if (c.headline >= 0) rowArr[c.headline] = ''; // casual special: caption-only, no headline
-  if (c.cap >= 0) rowArr[c.cap] = sp.cap;
-  if (c.tags >= 0) rowArr[c.tags] = SPECIAL_TAGS;
-  if (c.appr >= 0) rowArr[c.appr] = 'Approve';
-  sh.appendRow(rowArr);
-  // Auto-seeded rows are programmatic (onEdit doesn't fire), so link the Media cell directly.
-  if (c.media >= 0) {
-    linkifyMediaCell_(sh.getRange(sh.getLastRow(), c.media + 1),
-      props_().getProperty('SITE') || 'https://americanheroesandbrew.com');
+
+  var added = false;
+  function appendSpecialRow_(fill) {
+    var rowArr = [];
+    for (var j = 0; j < header.length; j++) rowArr.push('');
+    fill(rowArr);
+    sh.appendRow(rowArr);
+    // Auto-seeded rows are programmatic (onEdit doesn't fire), so link the Media cell directly.
+    if (c.media >= 0) linkifyMediaCell_(sh.getRange(sh.getLastRow(), c.media + 1), site);
+    added = true;
   }
-  return true;
+
+  if (!hasStory) appendSpecialRow_(function (a) {
+    if (c.date >= 0) a[c.date] = dateLabel;
+    if (c.time >= 0) a[c.time] = sp.time;
+    if (c.channel >= 0) a[c.channel] = 'Story';
+    if (c.media >= 0) a[c.media] = specialMedia_(sp.key, date);
+    if (c.headline >= 0) a[c.headline] = ''; // casual special: caption-only, no headline
+    if (c.cap >= 0) a[c.cap] = sp.cap;
+    if (c.tags >= 0) a[c.tags] = SPECIAL_TAGS;
+    if (c.appr >= 0) a[c.appr] = 'Approve';
+  });
+
+  if (!hasGoogle) appendSpecialRow_(function (a) {
+    if (c.date >= 0) a[c.date] = dateLabel;
+    if (c.time >= 0) a[c.time] = sp.time;
+    if (c.channel >= 0) a[c.channel] = 'Google';
+    if (c.media >= 0) a[c.media] = specialPoster_(sp);
+    if (c.headline >= 0) a[c.headline] = sp.name;
+    if (c.cap >= 0) a[c.cap] = sp.deal + ' — every ' + sp.day + ' at American Heroes & Brew, Carlsbad Village.';
+    if (c.tags >= 0) a[c.tags] = SPECIAL_TAGS;
+    if (c.appr >= 0) a[c.appr] = 'Approve';
+    if (c.notes >= 0) a[c.notes] = googleKey;
+    if (c.eventStart >= 0) a[c.eventStart] = specialEventIso_(date, sp.startH);
+    if (c.eventEnd >= 0) a[c.eventEnd] = specialEventIso_(date, sp.endH);
+  });
+
+  return added;
 }
 
 // Daily 8 AM trigger: add today's recurring special to the current month tab.
@@ -573,14 +634,27 @@ function seedCuratedRows() {
   var rows = (data && data.rows) || [];
   if (!rows.length) return;
 
-  var sh = currentMonthSheet_();
   var tz = Session.getScriptTimeZone();
-  var header = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];
-  var c = cols_(header);
-  if (c.media < 0 || c.date < 0) return;
-  var values = sh.getDataRange().getDisplayValues();
+  // Each curated row lands in the month tab matching its OWN Post Date — the rolling 7-day
+  // window crosses month boundaries, so a late-June run still seeds early-July rows into the
+  // July tab (not June). Snapshots are cached per tab so dedup stays correct within a run.
+  var ctxByTab = {};
+  function ctxFor_(item) {
+    var when = parseWhen_(item.date, '12:00 PM');
+    var sh = monthSheetFor_(when || new Date());
+    var name = sh.getName();
+    if (!ctxByTab[name]) {
+      ensureEventColumns_(sh);
+      var header = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];
+      ctxByTab[name] = { sh: sh, header: header, c: cols_(header), values: sh.getDataRange().getDisplayValues() };
+    }
+    return ctxByTab[name];
+  }
 
   rows.forEach(function (item) {
+    var ctx = ctxFor_(item);
+    var sh = ctx.sh, header = ctx.header, c = ctx.c, values = ctx.values;
+    if (c.media < 0 || c.date < 0) return;
     if (curatedExists_(values, c, item, tz)) return;
     var rowArr = [];
     for (var j = 0; j < header.length; j++) rowArr.push('');

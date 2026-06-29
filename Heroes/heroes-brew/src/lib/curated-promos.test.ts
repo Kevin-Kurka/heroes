@@ -55,6 +55,41 @@ describe('curatePromos — Google Events', () => {
   });
 });
 
+describe('curatePromos — IG Feed posts (biggest games only)', () => {
+  it('emits a feed-post for a USA World Cup game', () => {
+    const out = curatePromos([ev({ id: 'wc-usa', league: 'WORLDCUP', homeTeam: 'United States', awayTeam: 'Wales' })]);
+    const feed = out.find((p) => p.key === 'feed-wc-usa');
+    expect(feed?.postType).toBe('feed-post');
+    expect(feed?.channel).toBe('Feed');
+    expect(feed?.media).toContain('/api/og/event');
+    expect(feed?.media).toContain('ratio=4x5');
+  });
+
+  it('emits a feed-post for a Padres HOME game but not a Padres AWAY game', () => {
+    const home = curatePromos([ev({ id: 'mlb-home', league: 'MLB', homeTeam: 'San Diego Padres', awayTeam: 'Los Angeles Dodgers' })]);
+    expect(home.find((p) => p.key === 'feed-mlb-home')?.postType).toBe('feed-post');
+    const away = curatePromos([ev({ id: 'mlb-away', league: 'MLB', homeTeam: 'Los Angeles Dodgers', awayTeam: 'San Diego Padres' })]);
+    expect(away.find((p) => p.postType === 'feed-post')).toBeUndefined();
+  });
+
+  it('emits a feed-post for a Chargers HOME game', () => {
+    const out = curatePromos([ev({ id: 'nfl-home', league: 'NFL', homeTeam: 'Los Angeles Chargers', awayTeam: 'Denver Broncos' })]);
+    expect(out.find((p) => p.key === 'feed-nfl-home')?.postType).toBe('feed-post');
+  });
+
+  it('does NOT emit a feed-post for a Monday-Night game without a followed team', () => {
+    const out = curatePromos([ev({ id: 'nfl-mnf', league: 'NFL', homeTeam: 'Buffalo Bills', awayTeam: 'New York Jets', eventTimestamp: '2026-06-29T19:00:00-07:00' })]);
+    expect(out.find((p) => p.postType === 'feed-post')).toBeUndefined();
+    // ...but it is still a Google Event.
+    expect(out.find((p) => p.postType === 'google-event')).toBeTruthy();
+  });
+
+  it('does NOT emit a feed-post for a non-USA/Mexico World Cup game', () => {
+    const out = curatePromos([ev({ id: 'wc-br', league: 'WORLDCUP', homeTeam: 'Brazil', awayTeam: 'Serbia' })]);
+    expect(out.find((p) => p.postType === 'feed-post')).toBeUndefined();
+  });
+});
+
 describe('curatePromos — Schedule Stories', () => {
   it('emits one WC schedule story per game-day', () => {
     const out = curatePromos([
