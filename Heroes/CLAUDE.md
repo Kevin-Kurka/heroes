@@ -241,8 +241,8 @@ PROMOS_SHEET_CSV_URL=<published_csv_url>  # "Event Posters & Posts" sheet; rows 
 GOOGLE_BUSINESS_CLIENT_ID=<oauth_client_id>
 GOOGLE_BUSINESS_CLIENT_SECRET=<oauth_client_secret>
 GOOGLE_BUSINESS_REFRESH_TOKEN=<refresh_token>     # scope https://www.googleapis.com/auth/business.manage
-GOOGLE_BUSINESS_ACCOUNT_ID=<gbp_account_id>       # accounts/{id}
-GOOGLE_BUSINESS_LOCATION_ID=<gbp_location_id>     # locations/{id}
+GOOGLE_BUSINESS_ACCOUNT_ID=<gbp_account_id>       # accounts/{id} or bare {id} — route strips the prefix
+GOOGLE_BUSINESS_LOCATION_ID=<gbp_location_id>     # locations/{id} or bare {id} — route strips the prefix
 
 # Google Apps Script web apps (lead/signup capture — graceful fallback if unset)
 FANTASY_SIGNUP_URL=<apps_script_url>      # /api/fantasy/signup target

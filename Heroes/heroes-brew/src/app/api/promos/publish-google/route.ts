@@ -70,6 +70,19 @@ export function gbpDateTime(iso: string): {
   };
 }
 
+/**
+ * Build the v4 `localPosts` collection URL, tolerating account/location env values given
+ * with OR without their `accounts/` / `locations/` resource prefix. The GBP APIs (and our
+ * own docs) return/expect the prefixed form (`accounts/123`), but the URL template below
+ * already hardcodes the `accounts/`/`locations/` literals — so a prefixed env value would
+ * otherwise double them (`/accounts/accounts/123/…` → 404). Exported for unit tests.
+ */
+export function gbpLocalPostsUrl(accountId: string, locationId: string): string {
+  const acct = accountId.trim().replace(/^accounts\//, '');
+  const loc = locationId.trim().replace(/^locations\//, '');
+  return `${GBP_API}/accounts/${acct}/locations/${loc}/localPosts`;
+}
+
 export async function POST(req: NextRequest) {
   // ── Auth: Bearer PROMOS_SECRET ────────────────────────────────────────────
   const secret = process.env.PROMOS_SECRET;
@@ -172,7 +185,7 @@ export async function POST(req: NextRequest) {
   if (hasCta) post.callToAction = { actionType: ctaType, url: ctaUrl };
 
   try {
-    const url = `${GBP_API}/accounts/${accountId}/locations/${locationId}/localPosts`;
+    const url = gbpLocalPostsUrl(accountId, locationId);
     const res = await fetch(url, {
       method: 'POST',
       headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
