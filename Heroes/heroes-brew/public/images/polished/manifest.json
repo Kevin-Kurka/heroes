@@ -1,0 +1,218 @@
+[
+  {
+    "slug": "beer",
+    "file": "images/polished/beer.jpg",
+    "category": "Drinks",
+    "display": "Beer",
+    "source": "Beer-Lineup.jpg",
+    "quality": 4,
+    "note": "Beer lineup on bar"
+  },
+  {
+    "slug": "buffalo-wings",
+    "file": "images/polished/buffalo-wings.jpg",
+    "category": "Wings, Tenders",
+    "display": "Buffalo Wings",
+    "source": "Wings-3.webp",
+    "quality": 5,
+    "note": "Plain wings, golden and crispy"
+  },
+  {
+    "slug": "carlsbad-sandwich",
+    "file": "images/polished/carlsbad-sandwich.jpg",
+    "category": "Hero Sandwiches",
+    "display": "Carlsbad (BLT+)",
+    "source": "IMG_2698.jpeg",
+    "quality": 4,
+    "note": "BLT-style with avocado"
+  },
+  {
+    "slug": "chicken-nachos",
+    "file": "images/polished/chicken-nachos.jpg",
+    "category": "Nachos",
+    "display": "Nachos - Chicken",
+    "source": "Nachos.jpg",
+    "quality": 5,
+    "note": "Beautiful nachos, excellent appetizer"
+  },
+  {
+    "slug": "cobb-salad",
+    "file": "images/polished/cobb-salad.jpg",
+    "category": "Salads",
+    "display": "Cobb Salad",
+    "source": "IMG_2697.jpeg",
+    "quality": 4,
+    "note": "Salad with prosciutto and pears"
+  },
+  {
+    "slug": "cocktails",
+    "file": "images/polished/cocktails.jpg",
+    "category": "Drinks",
+    "display": "Cocktails",
+    "source": "IMG_2007.jpeg",
+    "quality": 4,
+    "note": "Craft cocktail with orange garnish"
+  },
+  {
+    "slug": "corn-dogs",
+    "file": "images/polished/corn-dogs.jpg",
+    "category": "Munchies",
+    "display": "Corn Dogs",
+    "source": "IMG_2699.jpeg",
+    "quality": 3,
+    "note": "Plated appetizer"
+  },
+  {
+    "slug": "event-promo",
+    "file": "images/polished/event-promo.jpg",
+    "category": "Non-Food",
+    "display": "Event/Promo",
+    "source": "USA-worldcup-2.png",
+    "quality": 4,
+    "note": "World Cup promo"
+  },
+  {
+    "slug": "fried-pickles",
+    "file": "images/polished/fried-pickles.jpg",
+    "category": "Munchies",
+    "display": "Fried Pickles",
+    "source": "48EA01E5-058B-4BCA-B087-E44DBE193222.jpg",
+    "quality": 4,
+    "note": "Plated appetizer selection"
+  },
+  {
+    "slug": "hero-burger-unspecified",
+    "file": "images/polished/hero-burger-unspecified.jpg",
+    "category": "Hero Burgers",
+    "display": "Hero Burger - Unspecified",
+    "source": "IMG_3038.jpeg",
+    "quality": 5,
+    "note": "Triple-layer burger, excellent composition"
+  },
+  {
+    "slug": "hero-sandwich-unspecified",
+    "file": "images/polished/hero-sandwich-unspecified.jpg",
+    "category": "Hero Sandwiches",
+    "display": "Hero Sandwich - Unspecified",
+    "source": "23AE6F5D-807E-467F-94A8-11B3F09314CA.jpg",
+    "quality": 4,
+    "note": "Stacked sandwich"
+  },
+  {
+    "slug": "house-salad",
+    "file": "images/polished/house-salad.jpg",
+    "category": "Salads",
+    "display": "House Salad",
+    "source": "IMG_2700.jpeg",
+    "quality": 4,
+    "note": "Fresh salad with quality plating"
+  },
+  {
+    "slug": "hummus-plate",
+    "file": "images/polished/hummus-plate.jpg",
+    "category": "Munchies",
+    "display": "Hummus Plate",
+    "source": "IMG_5147.jpeg",
+    "quality": 3,
+    "note": "Plated appetizer"
+  },
+  {
+    "slug": "jalapeno-poppers",
+    "file": "images/polished/jalapeno-poppers.jpg",
+    "category": "Munchies",
+    "display": "Jalapeno Poppers",
+    "source": "DF4143FF-C46C-4524-8681-656857806266.jpg",
+    "quality": 3,
+    "note": "Appetizer presentation"
+  },
+  {
+    "slug": "kalua-pork-sliders",
+    "file": "images/polished/kalua-pork-sliders.jpg",
+    "category": "Sliders",
+    "display": "Kalua Pork Sliders",
+    "source": "kalua-pork-3.jpg",
+    "quality": 5,
+    "note": "Three pork sliders on brioche buns"
+  },
+  {
+    "slug": "loaded-waffle-fries",
+    "file": "images/polished/loaded-waffle-fries.jpg",
+    "category": "Loaded Fries",
+    "display": "Loaded Waffle Fries",
+    "source": "IMG_2645.jpeg",
+    "quality": 5,
+    "note": "Loaded waffle fries with cheese and bacon"
+  },
+  {
+    "slug": "manhattan-sandwich",
+    "file": "images/polished/manhattan-sandwich.jpg",
+    "category": "Hero Sandwiches",
+    "display": "Manhattan (Reuben)",
+    "source": "IMG_1875.jpeg",
+    "quality": 4,
+    "note": "Roast beef sandwich on toasted bread"
+  },
+  {
+    "slug": "minneapolis-juicy-lucy",
+    "file": "images/polished/minneapolis-juicy-lucy.jpg",
+    "category": "Hero Burgers",
+    "display": "Minneapolis (Juicy Lucy)",
+    "source": "Minnealopous-Burger.jpg",
+    "quality": 5,
+    "note": "Cheese-stuffed burger, perfect lighting"
+  },
+  {
+    "slug": "mozzarella-sticks",
+    "file": "images/polished/mozzarella-sticks.jpg",
+    "category": "Munchies",
+    "display": "Mozzarella Sticks",
+    "source": "5F24600D-85B3-4D4C-A12E-21F4AAAE10F0.jpg",
+    "quality": 3,
+    "note": "Appetizer plating"
+  },
+  {
+    "slug": "philly-billy-sandwich",
+    "file": "images/polished/philly-billy-sandwich.jpg",
+    "category": "Hero Sandwiches",
+    "display": "Philly Billy (Cheesesteak)",
+    "source": "IMG_1850.jpeg",
+    "quality": 5,
+    "note": "Classic Philly cheesesteak, excellent quality"
+  },
+  {
+    "slug": "pretzel-bites",
+    "file": "images/polished/pretzel-bites.jpg",
+    "category": "Munchies",
+    "display": "Pretzel Bites",
+    "source": "IMG_3677.jpeg",
+    "quality": 3,
+    "note": "Plated appetizer"
+  },
+  {
+    "slug": "san-diego-sandwich",
+    "file": "images/polished/san-diego-sandwich.jpg",
+    "category": "Hero Sandwiches",
+    "display": "San Diego (California Burrito)",
+    "source": "IMG_2843.jpeg",
+    "quality": 4,
+    "note": "Burritos with quality filling"
+  },
+  {
+    "slug": "venue",
+    "file": "images/polished/venue.jpg",
+    "category": "Non-Food",
+    "display": "Venue",
+    "source": "Bar.jpg",
+    "quality": 4,
+    "note": "Bar interior"
+  },
+  {
+    "slug": "village-tacos",
+    "file": "images/polished/village-tacos.jpg",
+    "category": "Tacos",
+    "display": "Village Tacos",
+    "source": "Tacos-3.jpg",
+    "quality": 5,
+    "note": "Beautifully plated street tacos with lime"
+  }
+]
