@@ -1,0 +1,1533 @@
+{
+  "classified": [
+    {
+      "filename": "Bar.jpg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/Bar.jpg",
+      "slug": "venue",
+      "quality": 4,
+      "note": "Bar interior",
+      "itemInfo": {
+        "category": "Non-Food",
+        "display": "Venue"
+      }
+    },
+    {
+      "filename": "Beer-Lineup.jpg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/Beer-Lineup.jpg",
+      "slug": "beer",
+      "quality": 4,
+      "note": "Beer lineup on bar",
+      "itemInfo": {
+        "category": "Drinks",
+        "display": "Beer"
+      }
+    },
+    {
+      "filename": "Minnealopous-Burger.jpg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/Minnealopous-Burger.jpg",
+      "slug": "minneapolis-juicy-lucy",
+      "quality": 5,
+      "note": "Cheese-stuffed burger, perfect lighting",
+      "itemInfo": {
+        "category": "Hero Burgers",
+        "display": "Minneapolis (Juicy Lucy)"
+      }
+    },
+    {
+      "filename": "Tacos-3.jpg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/Tacos-3.jpg",
+      "slug": "village-tacos",
+      "quality": 5,
+      "note": "Beautifully plated street tacos with lime",
+      "itemInfo": {
+        "category": "Tacos",
+        "display": "Village Tacos"
+      }
+    },
+    {
+      "filename": "Wings-3.webp",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/Wings-3.webp",
+      "slug": "buffalo-wings",
+      "quality": 5,
+      "note": "Plain wings, golden and crispy",
+      "itemInfo": {
+        "category": "Wings, Tenders",
+        "display": "Buffalo Wings"
+      }
+    },
+    {
+      "filename": "beer-clink.jpg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/beer-clink.jpg",
+      "slug": "beer",
+      "quality": 4,
+      "note": "Beer toast/cheers",
+      "itemInfo": {
+        "category": "Drinks",
+        "display": "Beer"
+      }
+    },
+    {
+      "filename": "kalua-pork-3.jpg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/kalua-pork-3.jpg",
+      "slug": "kalua-pork-sliders",
+      "quality": 5,
+      "note": "Three pork sliders on brioche buns",
+      "itemInfo": {
+        "category": "Sliders",
+        "display": "Kalua Pork Sliders"
+      }
+    },
+    {
+      "filename": "003DEEC7-CA95-49AD-BC01-150D1291A6B2.jpg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/003DEEC7-CA95-49AD-BC01-150D1291A6B2.jpg",
+      "slug": "venue",
+      "quality": 4,
+      "note": "Branded glass, venue background",
+      "itemInfo": {
+        "category": "Non-Food",
+        "display": "Venue"
+      }
+    },
+    {
+      "filename": "0CB178B6-B6C8-430B-BEA9-7F39EAABE33D.jpg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/0CB178B6-B6C8-430B-BEA9-7F39EAABE33D.jpg",
+      "slug": "hero-burger-unspecified",
+      "quality": 4,
+      "note": "Loaded sandwich with appetizer combo",
+      "itemInfo": {
+        "category": "Hero Burgers",
+        "display": "Hero Burger - Unspecified"
+      }
+    },
+    {
+      "filename": "1A2C6966-ECB2-4A24-BDD7-AD8CFD14451B.jpg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/1A2C6966-ECB2-4A24-BDD7-AD8CFD14451B.jpg",
+      "slug": "philly-billy-sandwich",
+      "quality": 4,
+      "note": "Philly-style sandwich with excellent lighting",
+      "itemInfo": {
+        "category": "Hero Sandwiches",
+        "display": "Philly Billy (Cheesesteak)"
+      }
+    },
+    {
+      "filename": "23AE6F5D-807E-467F-94A8-11B3F09314CA.jpg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/23AE6F5D-807E-467F-94A8-11B3F09314CA.jpg",
+      "slug": "hero-sandwich-unspecified",
+      "quality": 4,
+      "note": "Stacked sandwich",
+      "itemInfo": {
+        "category": "Hero Sandwiches",
+        "display": "Hero Sandwich - Unspecified"
+      }
+    },
+    {
+      "filename": "3A301822-3FDD-4CC2-BCE4-2C213ADC38AA.jpg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/3A301822-3FDD-4CC2-BCE4-2C213ADC38AA.jpg",
+      "slug": "hero-sandwich-unspecified",
+      "quality": 3,
+      "note": "Sandwich with fresh toppings",
+      "itemInfo": {
+        "category": "Hero Sandwiches",
+        "display": "Hero Sandwich - Unspecified"
+      }
+    },
+    {
+      "filename": "3BE2E95A-4B22-406B-B1AA-8343E4844AA9.jpg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/3BE2E95A-4B22-406B-B1AA-8343E4844AA9.jpg",
+      "slug": "hero-sandwich-unspecified",
+      "quality": 3,
+      "note": "Close-up sandwich detail",
+      "itemInfo": {
+        "category": "Hero Sandwiches",
+        "display": "Hero Sandwich - Unspecified"
+      }
+    },
+    {
+      "filename": "48EA01E5-058B-4BCA-B087-E44DBE193222.jpg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/48EA01E5-058B-4BCA-B087-E44DBE193222.jpg",
+      "slug": "fried-pickles",
+      "quality": 4,
+      "note": "Plated appetizer selection",
+      "itemInfo": {
+        "category": "Munchies",
+        "display": "Fried Pickles"
+      }
+    },
+    {
+      "filename": "53BE0FA4-C94B-4285-9C0A-35EE46BCAAE0.jpg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/53BE0FA4-C94B-4285-9C0A-35EE46BCAAE0.jpg",
+      "slug": "fried-pickles",
+      "quality": 3,
+      "note": "Plated appetizer",
+      "itemInfo": {
+        "category": "Munchies",
+        "display": "Fried Pickles"
+      }
+    },
+    {
+      "filename": "5F24600D-85B3-4D4C-A12E-21F4AAAE10F0.jpg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/5F24600D-85B3-4D4C-A12E-21F4AAAE10F0.jpg",
+      "slug": "mozzarella-sticks",
+      "quality": 3,
+      "note": "Appetizer plating",
+      "itemInfo": {
+        "category": "Munchies",
+        "display": "Mozzarella Sticks"
+      }
+    },
+    {
+      "filename": "67928024916-E5731043-6184-4ED1-914D-2C8D85721F4B.fullsizerender.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/67928024916-E5731043-6184-4ED1-914D-2C8D85721F4B.fullsizerender.jpeg",
+      "slug": "venue",
+      "quality": 2,
+      "note": "Blurry venue interior",
+      "itemInfo": {
+        "category": "Non-Food",
+        "display": "Venue"
+      }
+    },
+    {
+      "filename": "67928024916-E5731043.fullsizerender.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/67928024916-E5731043.fullsizerender.jpeg",
+      "slug": "venue",
+      "quality": 2,
+      "note": "Duplicate venue interior",
+      "itemInfo": {
+        "category": "Non-Food",
+        "display": "Venue"
+      }
+    },
+    {
+      "filename": "695C6B88-9ADD-4E89-8F38-00FD61A28EC8.jpg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/695C6B88-9ADD-4E89-8F38-00FD61A28EC8.jpg",
+      "slug": "fried-pickles",
+      "quality": 3,
+      "note": "Plated appetizer",
+      "itemInfo": {
+        "category": "Munchies",
+        "display": "Fried Pickles"
+      }
+    },
+    {
+      "filename": "712446788-18027897137645998-99287032449686831-n.webp",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/712446788-18027897137645998-99287032449686831-n.webp",
+      "slug": "event-promo",
+      "quality": 3,
+      "note": "Promo graphic",
+      "itemInfo": {
+        "category": "Non-Food",
+        "display": "Event/Promo"
+      }
+    },
+    {
+      "filename": "712446788-18027897137645998-n.webp",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/712446788-18027897137645998-n.webp",
+      "slug": "event-promo",
+      "quality": 3,
+      "note": "Promo graphic",
+      "itemInfo": {
+        "category": "Non-Food",
+        "display": "Event/Promo"
+      }
+    },
+    {
+      "filename": "A74E67A2-A177-46E6-B537-CA5C6B6BE14F.jpg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/A74E67A2-A177-46E6-B537-CA5C6B6BE14F.jpg",
+      "slug": "mozzarella-sticks",
+      "quality": 3,
+      "note": "Appetizer selection",
+      "itemInfo": {
+        "category": "Munchies",
+        "display": "Mozzarella Sticks"
+      }
+    },
+    {
+      "filename": "Attachment.jpg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/Attachment.jpg",
+      "slug": "fried-pickles",
+      "quality": 3,
+      "note": "Plated appetizer",
+      "itemInfo": {
+        "category": "Munchies",
+        "display": "Fried Pickles"
+      }
+    },
+    {
+      "filename": "B42A5A3C-2B9C-4568-86EA-6346A87CD0EA.jpg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/B42A5A3C-2B9C-4568-86EA-6346A87CD0EA.jpg",
+      "slug": "mozzarella-sticks",
+      "quality": 3,
+      "note": "Appetizer platter",
+      "itemInfo": {
+        "category": "Munchies",
+        "display": "Mozzarella Sticks"
+      }
+    },
+    {
+      "filename": "BB56AAAC-9F7B-4ED8-ABD3-551BB85769BA.jpg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/BB56AAAC-9F7B-4ED8-ABD3-551BB85769BA.jpg",
+      "slug": "fried-pickles",
+      "quality": 3,
+      "note": "Plated appetizer",
+      "itemInfo": {
+        "category": "Munchies",
+        "display": "Fried Pickles"
+      }
+    },
+    {
+      "filename": "DF4143FF-C46C-4524-8681-656857806266.jpg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/DF4143FF-C46C-4524-8681-656857806266.jpg",
+      "slug": "jalapeno-poppers",
+      "quality": 3,
+      "note": "Appetizer presentation",
+      "itemInfo": {
+        "category": "Munchies",
+        "display": "Jalapeno Poppers"
+      }
+    },
+    {
+      "filename": "ED1A6892-BB0C-4FA1-890D-5B03B8A4249D.jpg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/ED1A6892-BB0C-4FA1-890D-5B03B8A4249D.jpg",
+      "slug": "hero-sandwich-unspecified",
+      "quality": 4,
+      "note": "Nicely plated sandwich",
+      "itemInfo": {
+        "category": "Hero Sandwiches",
+        "display": "Hero Sandwich - Unspecified"
+      }
+    },
+    {
+      "filename": "IMG_1847.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/IMG_1847.jpeg",
+      "slug": "philly-billy-sandwich",
+      "quality": 4,
+      "note": "Philly-style with lettuce and toppings",
+      "itemInfo": {
+        "category": "Hero Sandwiches",
+        "display": "Philly Billy (Cheesesteak)"
+      }
+    },
+    {
+      "filename": "IMG_1848.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/IMG_1848.jpeg",
+      "slug": "philly-billy-sandwich",
+      "quality": 4,
+      "note": "Sandwich variant",
+      "itemInfo": {
+        "category": "Hero Sandwiches",
+        "display": "Philly Billy (Cheesesteak)"
+      }
+    },
+    {
+      "filename": "IMG_1849.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/IMG_1849.jpeg",
+      "slug": "philly-billy-sandwich",
+      "quality": 4,
+      "note": "Sandwich close-up",
+      "itemInfo": {
+        "category": "Hero Sandwiches",
+        "display": "Philly Billy (Cheesesteak)"
+      }
+    },
+    {
+      "filename": "IMG_1850.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/IMG_1850.jpeg",
+      "slug": "philly-billy-sandwich",
+      "quality": 5,
+      "note": "Classic Philly cheesesteak, excellent quality",
+      "itemInfo": {
+        "category": "Hero Sandwiches",
+        "display": "Philly Billy (Cheesesteak)"
+      }
+    },
+    {
+      "filename": "IMG_1851.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/IMG_1851.jpeg",
+      "slug": "philly-billy-sandwich",
+      "quality": 4,
+      "note": "Sandwich with quality presentation",
+      "itemInfo": {
+        "category": "Hero Sandwiches",
+        "display": "Philly Billy (Cheesesteak)"
+      }
+    },
+    {
+      "filename": "IMG_1852.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/IMG_1852.jpeg",
+      "slug": "philly-billy-sandwich",
+      "quality": 4,
+      "note": "Sandwich plating",
+      "itemInfo": {
+        "category": "Hero Sandwiches",
+        "display": "Philly Billy (Cheesesteak)"
+      }
+    },
+    {
+      "filename": "IMG_1853.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/IMG_1853.jpeg",
+      "slug": "philly-billy-sandwich",
+      "quality": 4,
+      "note": "Sandwich detail",
+      "itemInfo": {
+        "category": "Hero Sandwiches",
+        "display": "Philly Billy (Cheesesteak)"
+      }
+    },
+    {
+      "filename": "IMG_1854.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/IMG_1854.jpeg",
+      "slug": "hero-sandwich-unspecified",
+      "quality": 4,
+      "note": "Sandwich shot",
+      "itemInfo": {
+        "category": "Hero Sandwiches",
+        "display": "Hero Sandwich - Unspecified"
+      }
+    },
+    {
+      "filename": "IMG_1855.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/IMG_1855.jpeg",
+      "slug": "hero-sandwich-unspecified",
+      "quality": 4,
+      "note": "Sandwich presentation",
+      "itemInfo": {
+        "category": "Hero Sandwiches",
+        "display": "Hero Sandwich - Unspecified"
+      }
+    },
+    {
+      "filename": "IMG_1875.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/IMG_1875.jpeg",
+      "slug": "manhattan-sandwich",
+      "quality": 4,
+      "note": "Roast beef sandwich on toasted bread",
+      "itemInfo": {
+        "category": "Hero Sandwiches",
+        "display": "Manhattan (Reuben)"
+      }
+    },
+    {
+      "filename": "IMG_1876.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/IMG_1876.jpeg",
+      "slug": "hero-sandwich-unspecified",
+      "quality": 4,
+      "note": "Deli-style sandwich",
+      "itemInfo": {
+        "category": "Hero Sandwiches",
+        "display": "Hero Sandwich - Unspecified"
+      }
+    },
+    {
+      "filename": "IMG_1882.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/IMG_1882.jpeg",
+      "slug": "manhattan-sandwich",
+      "quality": 4,
+      "note": "Reuben/corned beef sandwich",
+      "itemInfo": {
+        "category": "Hero Sandwiches",
+        "display": "Manhattan (Reuben)"
+      }
+    },
+    {
+      "filename": "IMG_1883.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/IMG_1883.jpeg",
+      "slug": "hero-sandwich-unspecified",
+      "quality": 4,
+      "note": "Deli meat sandwiches with neon",
+      "itemInfo": {
+        "category": "Hero Sandwiches",
+        "display": "Hero Sandwich - Unspecified"
+      }
+    },
+    {
+      "filename": "IMG_1952.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/IMG_1952.jpeg",
+      "slug": "beer",
+      "quality": 4,
+      "note": "Beer in Heroes & Brew glass",
+      "itemInfo": {
+        "category": "Drinks",
+        "display": "Beer"
+      }
+    },
+    {
+      "filename": "IMG_2007.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/IMG_2007.jpeg",
+      "slug": "cocktails",
+      "quality": 4,
+      "note": "Craft cocktail with orange garnish",
+      "itemInfo": {
+        "category": "Drinks",
+        "display": "Cocktails"
+      }
+    },
+    {
+      "filename": "IMG_2298.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/IMG_2298.jpeg",
+      "slug": "fried-pickles",
+      "quality": 3,
+      "note": "Plated appetizer",
+      "itemInfo": {
+        "category": "Munchies",
+        "display": "Fried Pickles"
+      }
+    },
+    {
+      "filename": "IMG_2593.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/IMG_2593.jpeg",
+      "slug": "hero-burger-unspecified",
+      "quality": 4,
+      "note": "Tall burger with layered toppings",
+      "itemInfo": {
+        "category": "Hero Burgers",
+        "display": "Hero Burger - Unspecified"
+      }
+    },
+    {
+      "filename": "IMG_2594.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/IMG_2594.jpeg",
+      "slug": "hero-burger-unspecified",
+      "quality": 4,
+      "note": "Burger with layered toppings",
+      "itemInfo": {
+        "category": "Hero Burgers",
+        "display": "Hero Burger - Unspecified"
+      }
+    },
+    {
+      "filename": "IMG_2601.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/IMG_2601.jpeg",
+      "slug": "venue",
+      "quality": 3,
+      "note": "Crowded venue interior",
+      "itemInfo": {
+        "category": "Non-Food",
+        "display": "Venue"
+      }
+    },
+    {
+      "filename": "IMG_2602.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/IMG_2602.jpeg",
+      "slug": "mozzarella-sticks",
+      "quality": 3,
+      "note": "Appetizer plating",
+      "itemInfo": {
+        "category": "Munchies",
+        "display": "Mozzarella Sticks"
+      }
+    },
+    {
+      "filename": "IMG_2645.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/IMG_2645.jpeg",
+      "slug": "loaded-waffle-fries",
+      "quality": 5,
+      "note": "Loaded waffle fries with cheese and bacon",
+      "itemInfo": {
+        "category": "Loaded Fries",
+        "display": "Loaded Waffle Fries"
+      }
+    },
+    {
+      "filename": "IMG_2677.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/IMG_2677.jpeg",
+      "slug": "buffalo-wings",
+      "quality": 5,
+      "note": "Buffalo wings on bread with toppings",
+      "itemInfo": {
+        "category": "Wings, Tenders",
+        "display": "Buffalo Wings"
+      }
+    },
+    {
+      "filename": "IMG_2681.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/IMG_2681.jpeg",
+      "slug": "buffalo-wings",
+      "quality": 5,
+      "note": "Wings on roll with crispy toppings",
+      "itemInfo": {
+        "category": "Wings, Tenders",
+        "display": "Buffalo Wings"
+      }
+    },
+    {
+      "filename": "IMG_2696.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/IMG_2696.jpeg",
+      "slug": "hero-burger-unspecified",
+      "quality": 4,
+      "note": "Single burger with melted cheese",
+      "itemInfo": {
+        "category": "Hero Burgers",
+        "display": "Hero Burger - Unspecified"
+      }
+    },
+    {
+      "filename": "IMG_2697.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/IMG_2697.jpeg",
+      "slug": "cobb-salad",
+      "quality": 4,
+      "note": "Salad with prosciutto and pears",
+      "itemInfo": {
+        "category": "Salads",
+        "display": "Cobb Salad"
+      }
+    },
+    {
+      "filename": "IMG_2698.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/IMG_2698.jpeg",
+      "slug": "carlsbad-sandwich",
+      "quality": 4,
+      "note": "BLT-style with avocado",
+      "itemInfo": {
+        "category": "Hero Sandwiches",
+        "display": "Carlsbad (BLT+)"
+      }
+    },
+    {
+      "filename": "IMG_2699.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/IMG_2699.jpeg",
+      "slug": "corn-dogs",
+      "quality": 3,
+      "note": "Plated appetizer",
+      "itemInfo": {
+        "category": "Munchies",
+        "display": "Corn Dogs"
+      }
+    },
+    {
+      "filename": "IMG_2700.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/IMG_2700.jpeg",
+      "slug": "house-salad",
+      "quality": 4,
+      "note": "Fresh salad with quality plating",
+      "itemInfo": {
+        "category": "Salads",
+        "display": "House Salad"
+      }
+    },
+    {
+      "filename": "IMG_2701.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/IMG_2701.jpeg",
+      "slug": "fried-pickles",
+      "quality": 3,
+      "note": "Appetizer presentation",
+      "itemInfo": {
+        "category": "Munchies",
+        "display": "Fried Pickles"
+      }
+    },
+    {
+      "filename": "IMG_2702.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/IMG_2702.jpeg",
+      "slug": "jalapeno-poppers",
+      "quality": 3,
+      "note": "Plated appetizer",
+      "itemInfo": {
+        "category": "Munchies",
+        "display": "Jalapeno Poppers"
+      }
+    },
+    {
+      "filename": "IMG_2705.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/IMG_2705.jpeg",
+      "slug": "mozzarella-sticks",
+      "quality": 3,
+      "note": "Appetizer plating",
+      "itemInfo": {
+        "category": "Munchies",
+        "display": "Mozzarella Sticks"
+      }
+    },
+    {
+      "filename": "IMG_2706.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/IMG_2706.jpeg",
+      "slug": "fried-pickles",
+      "quality": 3,
+      "note": "Appetizer",
+      "itemInfo": {
+        "category": "Munchies",
+        "display": "Fried Pickles"
+      }
+    },
+    {
+      "filename": "IMG_2707.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/IMG_2707.jpeg",
+      "slug": "corn-dogs",
+      "quality": 3,
+      "note": "Plated appetizer",
+      "itemInfo": {
+        "category": "Munchies",
+        "display": "Corn Dogs"
+      }
+    },
+    {
+      "filename": "IMG_2763.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/IMG_2763.jpeg",
+      "slug": "hero-burger-unspecified",
+      "quality": 4,
+      "note": "Breakfast plate - skipping",
+      "itemInfo": {
+        "category": "Hero Burgers",
+        "display": "Hero Burger - Unspecified"
+      }
+    },
+    {
+      "filename": "IMG_2843.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/IMG_2843.jpeg",
+      "slug": "san-diego-sandwich",
+      "quality": 4,
+      "note": "Burritos with quality filling",
+      "itemInfo": {
+        "category": "Hero Sandwiches",
+        "display": "San Diego (California Burrito)"
+      }
+    },
+    {
+      "filename": "IMG_2878.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/IMG_2878.jpeg",
+      "slug": "hero-burger-unspecified",
+      "quality": 3,
+      "note": "Breakfast plate - skipping",
+      "itemInfo": {
+        "category": "Hero Burgers",
+        "display": "Hero Burger - Unspecified"
+      }
+    },
+    {
+      "filename": "IMG_2879.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/IMG_2879.jpeg",
+      "slug": "hero-burger-unspecified",
+      "quality": 3,
+      "note": "Toast and eggs - skipping",
+      "itemInfo": {
+        "category": "Hero Burgers",
+        "display": "Hero Burger - Unspecified"
+      }
+    },
+    {
+      "filename": "IMG_3038.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/IMG_3038.jpeg",
+      "slug": "hero-burger-unspecified",
+      "quality": 5,
+      "note": "Triple-layer burger, excellent composition",
+      "itemInfo": {
+        "category": "Hero Burgers",
+        "display": "Hero Burger - Unspecified"
+      }
+    },
+    {
+      "filename": "IMG_3212.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/IMG_3212.jpeg",
+      "slug": "beer",
+      "quality": 4,
+      "note": "Beer in branded Heroes & Brew glass",
+      "itemInfo": {
+        "category": "Drinks",
+        "display": "Beer"
+      }
+    },
+    {
+      "filename": "IMG_3677.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/IMG_3677.jpeg",
+      "slug": "pretzel-bites",
+      "quality": 3,
+      "note": "Plated appetizer",
+      "itemInfo": {
+        "category": "Munchies",
+        "display": "Pretzel Bites"
+      }
+    },
+    {
+      "filename": "IMG_3678.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/IMG_3678.jpeg",
+      "slug": "fried-pickles",
+      "quality": 3,
+      "note": "Appetizer presentation",
+      "itemInfo": {
+        "category": "Munchies",
+        "display": "Fried Pickles"
+      }
+    },
+    {
+      "filename": "IMG_5147.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/IMG_5147.jpeg",
+      "slug": "hummus-plate",
+      "quality": 3,
+      "note": "Plated appetizer",
+      "itemInfo": {
+        "category": "Munchies",
+        "display": "Hummus Plate"
+      }
+    },
+    {
+      "filename": "Nachos.jpg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/Nachos.jpg",
+      "slug": "chicken-nachos",
+      "quality": 5,
+      "note": "Beautiful nachos, excellent appetizer",
+      "itemInfo": {
+        "category": "Nachos",
+        "display": "Nachos - Chicken"
+      }
+    },
+    {
+      "filename": "Team-USA.webp",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/Team-USA.webp",
+      "slug": "event-promo",
+      "quality": 3,
+      "note": "World Cup graphic",
+      "itemInfo": {
+        "category": "Non-Food",
+        "display": "Event/Promo"
+      }
+    },
+    {
+      "filename": "USA-worldcup-2.png",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/USA-worldcup-2.png",
+      "slug": "event-promo",
+      "quality": 4,
+      "note": "World Cup promo",
+      "itemInfo": {
+        "category": "Non-Food",
+        "display": "Event/Promo"
+      }
+    },
+    {
+      "filename": "brazil-v-moracco.png",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/brazil-v-moracco.png",
+      "slug": "event-promo",
+      "quality": 3,
+      "note": "Soccer promo",
+      "itemInfo": {
+        "category": "Non-Food",
+        "display": "Event/Promo"
+      }
+    },
+    {
+      "filename": "stanley-cup-promo.jpg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/stanley-cup-promo.jpg",
+      "slug": "event-promo",
+      "quality": 4,
+      "note": "Stanley Cup promo",
+      "itemInfo": {
+        "category": "Non-Food",
+        "display": "Event/Promo"
+      }
+    },
+    {
+      "filename": "folderA_Pasadena.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/menu2/folderA_Pasadena.jpeg",
+      "slug": "pasadena-burger",
+      "quality": 5,
+      "note": "Double cheeseburger with excellent lighting and presentation",
+      "itemInfo": {
+        "category": "Hero Burgers",
+        "display": "Pasadena (OG Cheeseburger)"
+      }
+    },
+    {
+      "filename": "folderA_Pasadena-2.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/menu2/folderA_Pasadena-2.jpeg",
+      "slug": "pasadena-burger",
+      "quality": 4,
+      "note": "Pasadena burger variant with melted cheese",
+      "itemInfo": {
+        "category": "Hero Burgers",
+        "display": "Pasadena (OG Cheeseburger)"
+      }
+    },
+    {
+      "filename": "folderA_Pasadena-3.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/menu2/folderA_Pasadena-3.jpeg",
+      "slug": "pasadena-burger",
+      "quality": 4,
+      "note": "Burger with pickled garnish and sauce",
+      "itemInfo": {
+        "category": "Hero Burgers",
+        "display": "Pasadena (OG Cheeseburger)"
+      }
+    },
+    {
+      "filename": "folderA_tombstone.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/menu2/folderA_tombstone.jpeg",
+      "slug": "tombstone-burger",
+      "quality": 5,
+      "note": "Cowboy burger with chicken patty, beef, bacon and onions",
+      "itemInfo": {
+        "category": "Hero Burgers",
+        "display": "Tombstone (Cowboy)"
+      }
+    },
+    {
+      "filename": "folderA_Antipasta-salad.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/menu2/folderA_Antipasta-salad.jpeg",
+      "slug": "antipasto-salad",
+      "quality": 5,
+      "note": "Beautiful antipasto with cured meats, cheese, olives and greens",
+      "itemInfo": {
+        "category": "Salads",
+        "display": "Antipasto Salad"
+      }
+    },
+    {
+      "filename": "folderA_Key-lime-Pie.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/menu2/folderA_Key-lime-Pie.jpeg",
+      "slug": "key-lime-pie",
+      "quality": 5,
+      "note": "Gorgeous key lime pie with graham cracker crust and lime garnish",
+      "itemInfo": {
+        "category": "Sweets",
+        "display": "Key Lime Pie"
+      }
+    },
+    {
+      "filename": "folderA_Mac-n-Cheese.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/menu2/folderA_Mac-n-Cheese.jpeg",
+      "slug": "mac-and-cheese",
+      "quality": 5,
+      "note": "Creamy mac and cheese with bacon and Heroes & Brew branding",
+      "itemInfo": {
+        "category": "Sides",
+        "display": "Mac & Cheese"
+      }
+    },
+    {
+      "filename": "folderB_Friar-Frank.jpg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/menu2/folderB_Friar-Frank.jpg",
+      "slug": "friar-frank",
+      "quality": 4,
+      "note": "Hot dog with mustard and onions on checked serving tray",
+      "itemInfo": {
+        "category": "Hot Dogs",
+        "display": "Friar Frank"
+      }
+    },
+    {
+      "filename": "folderB_Hoboken.jpg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/menu2/folderB_Hoboken.jpg",
+      "slug": "hoboken-sandwich",
+      "quality": 5,
+      "note": "Italian hoagie with deli meats, tomato, onion and fresh greens",
+      "itemInfo": {
+        "category": "Hero Sandwiches",
+        "display": "Hoboken (Italian)"
+      }
+    },
+    {
+      "filename": "folderB_Hoboken-2.jpg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/menu2/folderB_Hoboken-2.jpg",
+      "slug": "hoboken-sandwich",
+      "quality": 4,
+      "note": "Italian sandwich with quality ingredients and presentation",
+      "itemInfo": {
+        "category": "Hero Sandwiches",
+        "display": "Hoboken (Italian)"
+      }
+    },
+    {
+      "filename": "folderB_Pastrami-Fries.jpg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/menu2/folderB_Pastrami-Fries.jpg",
+      "slug": "cheesesteak-fries",
+      "quality": 5,
+      "note": "Loaded fries with sliced pastrami and cheese with mustard sauce",
+      "itemInfo": {
+        "category": "Loaded Fries",
+        "display": "Loaded Fries - Cheesesteak"
+      }
+    },
+    {
+      "filename": "folderA_Sangria.jpeg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/menu2/folderA_Sangria.jpeg",
+      "slug": "margaritas",
+      "quality": 4,
+      "note": "Beautiful red sangria cocktail with orange slice garnish",
+      "itemInfo": {
+        "category": "Drinks",
+        "display": "Margaritas"
+      }
+    },
+    {
+      "filename": "folderB_Miami.jpg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/menu2/folderB_Miami.jpg",
+      "slug": "los-angeles-sandwich",
+      "quality": 5,
+      "note": "French Dip style sandwich with roast beef and au jus",
+      "itemInfo": {
+        "category": "Hero Sandwiches",
+        "display": "Los Angeles (French Dip)"
+      }
+    },
+    {
+      "filename": "927DD24E-52AC-44B1-8CCC-B808C02804F7.jpg",
+      "path": "/Users/kmk/Heroes/heroes-brew/public/promos-video/_source/new/927DD24E-52AC-44B1-8CCC-B808C02804F7.jpg",
+      "slug": "sliders",
+      "quality": 4,
+      "note": "Chicken sandwich with bacon, lettuce and quality presentation",
+      "itemInfo": {
+        "category": "Sliders",
+        "display": "Sliders"
+      }
+    }
+  ],
+  "summary": {
+    "venue": {
+      "count": 5,
+      "quality": [
+        4,
+        4,
+        2,
+        2,
+        3
+      ],
+      "filenames": [
+        "Bar.jpg",
+        "003DEEC7-CA95-49AD-BC01-150D1291A6B2.jpg",
+        "67928024916-E5731043-6184-4ED1-914D-2C8D85721F4B.fullsizerender.jpeg",
+        "67928024916-E5731043.fullsizerender.jpeg",
+        "IMG_2601.jpeg"
+      ]
+    },
+    "beer": {
+      "count": 4,
+      "quality": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "filenames": [
+        "Beer-Lineup.jpg",
+        "beer-clink.jpg",
+        "IMG_1952.jpeg",
+        "IMG_3212.jpeg"
+      ]
+    },
+    "minneapolis-juicy-lucy": {
+      "count": 1,
+      "quality": [
+        5
+      ],
+      "filenames": [
+        "Minnealopous-Burger.jpg"
+      ]
+    },
+    "village-tacos": {
+      "count": 1,
+      "quality": [
+        5
+      ],
+      "filenames": [
+        "Tacos-3.jpg"
+      ]
+    },
+    "buffalo-wings": {
+      "count": 3,
+      "quality": [
+        5,
+        5,
+        5
+      ],
+      "filenames": [
+        "Wings-3.webp",
+        "IMG_2677.jpeg",
+        "IMG_2681.jpeg"
+      ]
+    },
+    "kalua-pork-sliders": {
+      "count": 1,
+      "quality": [
+        5
+      ],
+      "filenames": [
+        "kalua-pork-3.jpg"
+      ]
+    },
+    "hero-burger-unspecified": {
+      "count": 8,
+      "quality": [
+        4,
+        4,
+        4,
+        4,
+        4,
+        3,
+        3,
+        5
+      ],
+      "filenames": [
+        "0CB178B6-B6C8-430B-BEA9-7F39EAABE33D.jpg",
+        "IMG_2593.jpeg",
+        "IMG_2594.jpeg",
+        "IMG_2696.jpeg",
+        "IMG_2763.jpeg",
+        "IMG_2878.jpeg",
+        "IMG_2879.jpeg",
+        "IMG_3038.jpeg"
+      ]
+    },
+    "philly-billy-sandwich": {
+      "count": 8,
+      "quality": [
+        4,
+        4,
+        4,
+        4,
+        5,
+        4,
+        4,
+        4
+      ],
+      "filenames": [
+        "1A2C6966-ECB2-4A24-BDD7-AD8CFD14451B.jpg",
+        "IMG_1847.jpeg",
+        "IMG_1848.jpeg",
+        "IMG_1849.jpeg",
+        "IMG_1850.jpeg",
+        "IMG_1851.jpeg",
+        "IMG_1852.jpeg",
+        "IMG_1853.jpeg"
+      ]
+    },
+    "hero-sandwich-unspecified": {
+      "count": 8,
+      "quality": [
+        4,
+        3,
+        3,
+        4,
+        4,
+        4,
+        4,
+        4
+      ],
+      "filenames": [
+        "23AE6F5D-807E-467F-94A8-11B3F09314CA.jpg",
+        "3A301822-3FDD-4CC2-BCE4-2C213ADC38AA.jpg",
+        "3BE2E95A-4B22-406B-B1AA-8343E4844AA9.jpg",
+        "ED1A6892-BB0C-4FA1-890D-5B03B8A4249D.jpg",
+        "IMG_1854.jpeg",
+        "IMG_1855.jpeg",
+        "IMG_1876.jpeg",
+        "IMG_1883.jpeg"
+      ]
+    },
+    "fried-pickles": {
+      "count": 9,
+      "quality": [
+        4,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "filenames": [
+        "48EA01E5-058B-4BCA-B087-E44DBE193222.jpg",
+        "53BE0FA4-C94B-4285-9C0A-35EE46BCAAE0.jpg",
+        "695C6B88-9ADD-4E89-8F38-00FD61A28EC8.jpg",
+        "Attachment.jpg",
+        "BB56AAAC-9F7B-4ED8-ABD3-551BB85769BA.jpg",
+        "IMG_2298.jpeg",
+        "IMG_2701.jpeg",
+        "IMG_2706.jpeg",
+        "IMG_3678.jpeg"
+      ]
+    },
+    "mozzarella-sticks": {
+      "count": 5,
+      "quality": [
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "filenames": [
+        "5F24600D-85B3-4D4C-A12E-21F4AAAE10F0.jpg",
+        "A74E67A2-A177-46E6-B537-CA5C6B6BE14F.jpg",
+        "B42A5A3C-2B9C-4568-86EA-6346A87CD0EA.jpg",
+        "IMG_2602.jpeg",
+        "IMG_2705.jpeg"
+      ]
+    },
+    "event-promo": {
+      "count": 6,
+      "quality": [
+        3,
+        3,
+        3,
+        4,
+        3,
+        4
+      ],
+      "filenames": [
+        "712446788-18027897137645998-99287032449686831-n.webp",
+        "712446788-18027897137645998-n.webp",
+        "Team-USA.webp",
+        "USA-worldcup-2.png",
+        "brazil-v-moracco.png",
+        "stanley-cup-promo.jpg"
+      ]
+    },
+    "jalapeno-poppers": {
+      "count": 2,
+      "quality": [
+        3,
+        3
+      ],
+      "filenames": [
+        "DF4143FF-C46C-4524-8681-656857806266.jpg",
+        "IMG_2702.jpeg"
+      ]
+    },
+    "manhattan-sandwich": {
+      "count": 2,
+      "quality": [
+        4,
+        4
+      ],
+      "filenames": [
+        "IMG_1875.jpeg",
+        "IMG_1882.jpeg"
+      ]
+    },
+    "cocktails": {
+      "count": 1,
+      "quality": [
+        4
+      ],
+      "filenames": [
+        "IMG_2007.jpeg"
+      ]
+    },
+    "loaded-waffle-fries": {
+      "count": 1,
+      "quality": [
+        5
+      ],
+      "filenames": [
+        "IMG_2645.jpeg"
+      ]
+    },
+    "cobb-salad": {
+      "count": 1,
+      "quality": [
+        4
+      ],
+      "filenames": [
+        "IMG_2697.jpeg"
+      ]
+    },
+    "carlsbad-sandwich": {
+      "count": 1,
+      "quality": [
+        4
+      ],
+      "filenames": [
+        "IMG_2698.jpeg"
+      ]
+    },
+    "corn-dogs": {
+      "count": 2,
+      "quality": [
+        3,
+        3
+      ],
+      "filenames": [
+        "IMG_2699.jpeg",
+        "IMG_2707.jpeg"
+      ]
+    },
+    "house-salad": {
+      "count": 1,
+      "quality": [
+        4
+      ],
+      "filenames": [
+        "IMG_2700.jpeg"
+      ]
+    },
+    "san-diego-sandwich": {
+      "count": 1,
+      "quality": [
+        4
+      ],
+      "filenames": [
+        "IMG_2843.jpeg"
+      ]
+    },
+    "pretzel-bites": {
+      "count": 1,
+      "quality": [
+        3
+      ],
+      "filenames": [
+        "IMG_3677.jpeg"
+      ]
+    },
+    "hummus-plate": {
+      "count": 1,
+      "quality": [
+        3
+      ],
+      "filenames": [
+        "IMG_5147.jpeg"
+      ]
+    },
+    "chicken-nachos": {
+      "count": 1,
+      "quality": [
+        5
+      ],
+      "filenames": [
+        "Nachos.jpg"
+      ]
+    }
+  },
+  "newClassifiedCount": 12,
+  "menuItems": {
+    "hummus-plate": {
+      "category": "Munchies",
+      "display": "Hummus Plate"
+    },
+    "fried-pickles": {
+      "category": "Munchies",
+      "display": "Fried Pickles"
+    },
+    "corn-dogs": {
+      "category": "Munchies",
+      "display": "Corn Dogs"
+    },
+    "pretzel-bites": {
+      "category": "Munchies",
+      "display": "Pretzel Bites"
+    },
+    "mozzarella-sticks": {
+      "category": "Munchies",
+      "display": "Mozzarella Sticks"
+    },
+    "jalapeno-poppers": {
+      "category": "Munchies",
+      "display": "Jalapeno Poppers"
+    },
+    "carnitas-nachos": {
+      "category": "Nachos",
+      "display": "Nachos - Carnitas"
+    },
+    "carne-asada-nachos": {
+      "category": "Nachos",
+      "display": "Nachos - Carne Asada"
+    },
+    "chicken-nachos": {
+      "category": "Nachos",
+      "display": "Nachos - Chicken"
+    },
+    "garlic-parm-fries": {
+      "category": "Loaded Fries",
+      "display": "Loaded Fries - Garlic Parm"
+    },
+    "cheese-fries": {
+      "category": "Loaded Fries",
+      "display": "Loaded Fries - Cheese"
+    },
+    "chili-cheese-fries": {
+      "category": "Loaded Fries",
+      "display": "Loaded Fries - Chili Cheese"
+    },
+    "buffalo-chicken-fries": {
+      "category": "Loaded Fries",
+      "display": "Loaded Fries - Buffalo Chicken"
+    },
+    "carne-asada-fries": {
+      "category": "Loaded Fries",
+      "display": "Loaded Fries - Carne Asada"
+    },
+    "cheesesteak-fries": {
+      "category": "Loaded Fries",
+      "display": "Loaded Fries - Cheesesteak"
+    },
+    "loaded-waffle-fries": {
+      "category": "Loaded Fries",
+      "display": "Loaded Waffle Fries"
+    },
+    "loaded-tots": {
+      "category": "Loaded Fries",
+      "display": "Loaded Tots"
+    },
+    "buffalo-wings": {
+      "category": "Wings, Tenders",
+      "display": "Buffalo Wings"
+    },
+    "wings": {
+      "category": "Wings, Tenders",
+      "display": "Wings"
+    },
+    "chicken-tenders": {
+      "category": "Wings, Tenders",
+      "display": "Chicken Tenders"
+    },
+    "kalua-pork-sliders": {
+      "category": "Sliders",
+      "display": "Kalua Pork Sliders"
+    },
+    "sliders": {
+      "category": "Sliders",
+      "display": "Sliders"
+    },
+    "san-diego-sandwich": {
+      "category": "Hero Sandwiches",
+      "display": "San Diego (California Burrito)"
+    },
+    "carlsbad-sandwich": {
+      "category": "Hero Sandwiches",
+      "display": "Carlsbad (BLT+)"
+    },
+    "los-angeles-sandwich": {
+      "category": "Hero Sandwiches",
+      "display": "Los Angeles (French Dip)"
+    },
+    "maui-sandwich": {
+      "category": "Hero Sandwiches",
+      "display": "Maui (Kalua Pork)"
+    },
+    "hoboken-sandwich": {
+      "category": "Hero Sandwiches",
+      "display": "Hoboken (Italian)"
+    },
+    "manhattan-sandwich": {
+      "category": "Hero Sandwiches",
+      "display": "Manhattan (Reuben)"
+    },
+    "philly-billy-sandwich": {
+      "category": "Hero Sandwiches",
+      "display": "Philly Billy (Cheesesteak)"
+    },
+    "hero-sandwich-unspecified": {
+      "category": "Hero Sandwiches",
+      "display": "Hero Sandwich - Unspecified"
+    },
+    "pasadena-burger": {
+      "category": "Hero Burgers",
+      "display": "Pasadena (OG Cheeseburger)"
+    },
+    "tombstone-burger": {
+      "category": "Hero Burgers",
+      "display": "Tombstone (Cowboy)"
+    },
+    "minneapolis-juicy-lucy": {
+      "category": "Hero Burgers",
+      "display": "Minneapolis (Juicy Lucy)"
+    },
+    "austin-burger": {
+      "category": "Hero Burgers",
+      "display": "Austin (Jalapeno)"
+    },
+    "irwindale-burger": {
+      "category": "Hero Burgers",
+      "display": "Irwindale (Sriracha Honey)"
+    },
+    "leucadia-burger": {
+      "category": "Hero Burgers",
+      "display": "Leucadia (Smash)"
+    },
+    "bama-slamma-jamma": {
+      "category": "Hero Burgers",
+      "display": "Bama Slamma Jamma (PB&J)"
+    },
+    "hero-burger-unspecified": {
+      "category": "Hero Burgers",
+      "display": "Hero Burger - Unspecified"
+    },
+    "village-tacos": {
+      "category": "Tacos",
+      "display": "Village Tacos"
+    },
+    "friar-frank": {
+      "category": "Hot Dogs",
+      "display": "Friar Frank"
+    },
+    "fries": {
+      "category": "Sides",
+      "display": "Fries"
+    },
+    "onion-rings": {
+      "category": "Sides",
+      "display": "Onion Rings"
+    },
+    "frings": {
+      "category": "Sides",
+      "display": "Frings"
+    },
+    "potato-salad": {
+      "category": "Sides",
+      "display": "Potato Salad"
+    },
+    "mac-and-cheese": {
+      "category": "Sides",
+      "display": "Mac & Cheese"
+    },
+    "chips-salsa": {
+      "category": "Sides",
+      "display": "Chips & Salsa"
+    },
+    "macaroni-salad": {
+      "category": "Sides",
+      "display": "Macaroni Salad"
+    },
+    "healthy-hero-salad": {
+      "category": "Salads",
+      "display": "Healthy Hero Salad"
+    },
+    "cobb-salad": {
+      "category": "Salads",
+      "display": "Cobb Salad"
+    },
+    "antipasto-salad": {
+      "category": "Salads",
+      "display": "Antipasto Salad"
+    },
+    "caesar-salad": {
+      "category": "Salads",
+      "display": "Caesar Salad"
+    },
+    "house-salad": {
+      "category": "Salads",
+      "display": "House Salad"
+    },
+    "key-lime-pie": {
+      "category": "Sweets",
+      "display": "Key Lime Pie"
+    },
+    "cocktails": {
+      "category": "Drinks",
+      "display": "Cocktails"
+    },
+    "beer": {
+      "category": "Drinks",
+      "display": "Beer"
+    },
+    "margaritas": {
+      "category": "Drinks",
+      "display": "Margaritas"
+    },
+    "drinks": {
+      "category": "Drinks",
+      "display": "Drinks"
+    },
+    "venue": {
+      "category": "Non-Food",
+      "display": "Venue"
+    },
+    "event-promo": {
+      "category": "Non-Food",
+      "display": "Event/Promo"
+    },
+    "beach": {
+      "category": "Non-Food",
+      "display": "Beach"
+    }
+  }
+}

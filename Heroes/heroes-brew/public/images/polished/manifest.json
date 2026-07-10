@@ -1,5 +1,14 @@
 [
   {
+    "slug": "antipasto-salad",
+    "file": "images/polished/antipasto-salad.jpg",
+    "category": "Salads",
+    "display": "Antipasto Salad",
+    "source": "folderA_Antipasta-salad.jpeg",
+    "quality": 5,
+    "note": "Beautiful antipasto with cured meats, cheese, olives and greens"
+  },
+  {
     "slug": "beer",
     "file": "images/polished/beer.jpg",
     "category": "Drinks",
@@ -25,6 +34,15 @@
     "source": "IMG_2698.jpeg",
     "quality": 4,
     "note": "BLT-style with avocado"
+  },
+  {
+    "slug": "cheesesteak-fries",
+    "file": "images/polished/cheesesteak-fries.jpg",
+    "category": "Loaded Fries",
+    "display": "Loaded Fries - Cheesesteak",
+    "source": "folderB_Pastrami-Fries.jpg",
+    "quality": 5,
+    "note": "Loaded fries with sliced pastrami and cheese with mustard sauce"
   },
   {
     "slug": "chicken-nachos",
@@ -72,6 +90,15 @@
     "note": "World Cup promo"
   },
   {
+    "slug": "friar-frank",
+    "file": "images/polished/friar-frank.jpg",
+    "category": "Hot Dogs",
+    "display": "Friar Frank",
+    "source": "folderB_Friar-Frank.jpg",
+    "quality": 4,
+    "note": "Hot dog with mustard and onions on checked serving tray"
+  },
+  {
     "slug": "fried-pickles",
     "file": "images/polished/fried-pickles.jpg",
     "category": "Munchies",
@@ -97,6 +124,15 @@
     "source": "23AE6F5D-807E-467F-94A8-11B3F09314CA.jpg",
     "quality": 4,
     "note": "Stacked sandwich"
+  },
+  {
+    "slug": "hoboken-sandwich",
+    "file": "images/polished/hoboken-sandwich.jpg",
+    "category": "Hero Sandwiches",
+    "display": "Hoboken (Italian)",
+    "source": "folderB_Hoboken.jpg",
+    "quality": 5,
+    "note": "Italian hoagie with deli meats, tomato, onion and fresh greens"
   },
   {
     "slug": "house-salad",
@@ -135,6 +171,15 @@
     "note": "Three pork sliders on brioche buns"
   },
   {
+    "slug": "key-lime-pie",
+    "file": "images/polished/key-lime-pie.jpg",
+    "category": "Sweets",
+    "display": "Key Lime Pie",
+    "source": "folderA_Key-lime-Pie.jpeg",
+    "quality": 5,
+    "note": "Gorgeous key lime pie with graham cracker crust and lime garnish"
+  },
+  {
     "slug": "loaded-waffle-fries",
     "file": "images/polished/loaded-waffle-fries.jpg",
     "category": "Loaded Fries",
@@ -144,6 +189,24 @@
     "note": "Loaded waffle fries with cheese and bacon"
   },
   {
+    "slug": "los-angeles-sandwich",
+    "file": "images/polished/los-angeles-sandwich.jpg",
+    "category": "Hero Sandwiches",
+    "display": "Los Angeles (French Dip)",
+    "source": "folderB_Miami.jpg",
+    "quality": 5,
+    "note": "French Dip style sandwich with roast beef and au jus"
+  },
+  {
+    "slug": "mac-and-cheese",
+    "file": "images/polished/mac-and-cheese.jpg",
+    "category": "Sides",
+    "display": "Mac & Cheese",
+    "source": "folderA_Mac-n-Cheese.jpeg",
+    "quality": 5,
+    "note": "Creamy mac and cheese with bacon and Heroes & Brew branding"
+  },
+  {
     "slug": "manhattan-sandwich",
     "file": "images/polished/manhattan-sandwich.jpg",
     "category": "Hero Sandwiches",
@@ -151,6 +214,15 @@
     "source": "IMG_1875.jpeg",
     "quality": 4,
     "note": "Roast beef sandwich on toasted bread"
+  },
+  {
+    "slug": "margaritas",
+    "file": "images/polished/margaritas.jpg",
+    "category": "Drinks",
+    "display": "Margaritas",
+    "source": "folderA_Sangria.jpeg",
+    "quality": 4,
+    "note": "Beautiful red sangria cocktail with orange slice garnish"
   },
   {
     "slug": "minneapolis-juicy-lucy",
@@ -169,6 +241,15 @@
     "source": "5F24600D-85B3-4D4C-A12E-21F4AAAE10F0.jpg",
     "quality": 3,
     "note": "Appetizer plating"
+  },
+  {
+    "slug": "pasadena-burger",
+    "file": "images/polished/pasadena-burger.jpg",
+    "category": "Hero Burgers",
+    "display": "Pasadena (OG Cheeseburger)",
+    "source": "folderA_Pasadena.jpeg",
+    "quality": 5,
+    "note": "Double cheeseburger with excellent lighting and presentation"
   },
   {
     "slug": "philly-billy-sandwich",
@@ -196,6 +277,24 @@
     "source": "IMG_2843.jpeg",
     "quality": 4,
     "note": "Burritos with quality filling"
+  },
+  {
+    "slug": "sliders",
+    "file": "images/polished/sliders.jpg",
+    "category": "Sliders",
+    "display": "Sliders",
+    "source": "927DD24E-52AC-44B1-8CCC-B808C02804F7.jpg",
+    "quality": 4,
+    "note": "Chicken sandwich with bacon, lettuce and quality presentation"
+  },
+  {
+    "slug": "tombstone-burger",
+    "file": "images/polished/tombstone-burger.jpg",
+    "category": "Hero Burgers",
+    "display": "Tombstone (Cowboy)",
+    "source": "folderA_tombstone.jpeg",
+    "quality": 5,
+    "note": "Cowboy burger with chicken patty, beef, bacon and onions"
   },
   {
     "slug": "venue",
