@@ -25,6 +25,12 @@ export interface CuratedPromo {
   eventEnd?: string;
   /** SportLeague string of the source event(s). */
   league: string;
+  /**
+   * Whether the seeder should stamp Approval="Approve" so the row auto-posts.
+   * True for daily lineups and local-team (Padres/Chargers) Events + feed posts;
+   * false for other Events (e.g. Monday-Night, WC) which keep the manual gate.
+   */
+  autoApprove: boolean;
 }
 
 const TAGS = '#AmericanHeroesAndBrew #CarlsbadVillage #SportsBar';
@@ -126,6 +132,8 @@ function googleEventPromo(e: UnifiedEvent): CuratedPromo {
     eventStart: e.eventTimestamp,
     eventEnd: end,
     league: e.league ?? '',
+    // Local-team (Padres/Chargers) Events auto-post; Monday-Night/other Events keep the manual gate.
+    autoApprove: isGoogleEventTeamGame(e),
   };
 }
 
@@ -144,6 +152,8 @@ function feedPostPromo(e: UnifiedEvent): CuratedPromo {
     storyCaption: '',
     tags: TAGS,
     league: e.league ?? '',
+    // Padres/Chargers home matchups auto-post to the grid; other biggest games (WC) stay manual.
+    autoApprove: isGoogleEventTeamGame(e),
   };
 }
 
@@ -167,6 +177,7 @@ function dailyLineupPromo(ymd: string, dateLabel: string, hasPadres: boolean): C
     storyCaption: `Today's lineup on every screen 🍻 Carlsbad Village.${franksStory}`,
     tags: TAGS,
     league: 'ALL',
+    autoApprove: true,
   };
 }
 

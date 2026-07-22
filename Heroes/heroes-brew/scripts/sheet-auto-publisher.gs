@@ -714,8 +714,9 @@ function seedCuratedRows() {
     if (c.cap >= 0) rowArr[c.cap] = item.caption || '';
     if (c.storyCap >= 0) rowArr[c.storyCap] = item.storyCaption || '';
     if (c.tags >= 0) rowArr[c.tags] = item.tags || '';
-    // Google Events need manual approval; schedule Stories auto-approve (like daily specials).
-    if (c.appr >= 0) rowArr[c.appr] = (item.postType === 'schedule-story') ? 'Approve' : '';
+    // The curator decides what auto-posts: daily lineups + local-team (Padres/Chargers)
+    // Events & feed posts carry autoApprove; Monday-Night/other Events stay manual (blank).
+    if (c.appr >= 0) rowArr[c.appr] = item.autoApprove ? 'Approve' : '';
     if (c.notes >= 0) rowArr[c.notes] = item.key;
     if (c.eventStart >= 0 && item.eventStart) rowArr[c.eventStart] = item.eventStart;
     if (c.eventEnd >= 0 && item.eventEnd) rowArr[c.eventEnd] = item.eventEnd;

@@ -131,6 +131,19 @@ describe('curatePromos — Daily lineup (Story + Google)', () => {
   });
 });
 
+describe('curatePromos — auto-approval', () => {
+  it('auto-approves Padres/Chargers Events and daily lineups, but NOT Monday-Night events', () => {
+    const out = curatePromos([
+      ev({ id: 'p', league: 'MLB', homeTeam: 'San Diego Padres', awayTeam: 'Chicago Cubs', eventTimestamp: '2026-06-30T18:00:00-07:00' }),
+      ev({ id: 'mnf', league: 'NFL', homeTeam: 'Buffalo Bills', awayTeam: 'New York Jets', eventTimestamp: '2026-06-29T19:00:00-07:00' }),
+    ]);
+    expect(out.find((p) => p.key === 'gevt-p')?.autoApprove).toBe(true);
+    expect(out.find((p) => p.key === 'feed-p')?.autoApprove).toBe(true);
+    expect(out.find((p) => p.key === 'gevt-mnf')?.autoApprove).toBe(false);
+    expect(out.filter((p) => p.postType === 'schedule-story').every((p) => p.autoApprove)).toBe(true);
+  });
+});
+
 describe('curatePromos — Friar Frank push on Padres games', () => {
   it('adds the Friar Frank push to a Padres Google Event and feed post', () => {
     const out = curatePromos([ev({ id: 'mlb-p', league: 'MLB', homeTeam: 'San Diego Padres', awayTeam: 'Los Angeles Dodgers' })]);
