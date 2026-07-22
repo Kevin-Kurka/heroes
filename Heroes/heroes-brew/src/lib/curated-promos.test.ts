@@ -90,35 +90,56 @@ describe('curatePromos — IG Feed posts (biggest games only)', () => {
   });
 });
 
-describe('curatePromos — Schedule Stories', () => {
-  it('emits one WC schedule story per game-day', () => {
+describe('curatePromos — Daily lineup (Story + Google)', () => {
+  it('emits one daily lineup per game-day, to both Story and Google', () => {
     const out = curatePromos([
-      ev({ id: 'wc-a', league: 'WORLDCUP', homeTeam: 'Brazil', awayTeam: 'Serbia', eventTimestamp: '2026-06-29T11:00:00-07:00' }),
-      ev({ id: 'wc-b', league: 'WORLDCUP', homeTeam: 'France', awayTeam: 'Denmark', eventTimestamp: '2026-06-29T14:00:00-07:00' }),
+      ev({ id: 'a', league: 'MLB', homeTeam: 'New York Yankees', awayTeam: 'Boston Red Sox', eventTimestamp: '2026-06-29T11:00:00-07:00' }),
+      ev({ id: 'b', league: 'MLB', homeTeam: 'Chicago Cubs', awayTeam: 'St. Louis Cardinals', eventTimestamp: '2026-06-29T14:00:00-07:00' }),
     ]);
-    const stories = out.filter((p) => p.postType === 'schedule-story' && p.league === 'WORLDCUP');
-    expect(stories).toHaveLength(1);
-    expect(stories[0].media).toContain('/api/og/schedule');
-    expect(stories[0].media).toContain('league=WC');
-    expect(stories[0].media).toContain('date=2026-06-29');
-    expect(stories[0].channel).toBe('Story');
+    const lineups = out.filter((p) => p.postType === 'schedule-story');
+    expect(lineups).toHaveLength(1);
+    expect(lineups[0].channel).toBe('Story, Google');
+    expect(lineups[0].media).toContain('/api/og/schedule');
+    expect(lineups[0].media).toContain('league=ALL');
+    expect(lineups[0].media).toContain('date=2026-06-29');
+    expect(lineups[0].key).toBe('sched-ALL-2026-06-29');
   });
 
-  it('emits an NFL schedule story only on a Sunday with NFL games', () => {
-    // 2026-06-28 is a Sunday.
+  it('emits a separate daily lineup for each game-day', () => {
     const out = curatePromos([
-      ev({ id: 'nfl-s', league: 'NFL', homeTeam: 'Dallas Cowboys', awayTeam: 'Green Bay Packers', eventTimestamp: '2026-06-28T13:00:00-07:00' }),
+      ev({ id: 'a', league: 'MLB', homeTeam: 'New York Yankees', awayTeam: 'Boston Red Sox', eventTimestamp: '2026-06-29T11:00:00-07:00' }),
+      ev({ id: 'b', league: 'MLB', homeTeam: 'Chicago Cubs', awayTeam: 'St. Louis Cardinals', eventTimestamp: '2026-06-30T14:00:00-07:00' }),
     ]);
-    const stories = out.filter((p) => p.postType === 'schedule-story' && p.league === 'NFL');
-    expect(stories).toHaveLength(1);
-    expect(stories[0].media).toContain('league=NFL');
+    expect(out.filter((p) => p.postType === 'schedule-story')).toHaveLength(2);
   });
 
-  it('does NOT emit an NFL schedule story for a non-Sunday NFL game', () => {
-    // 2026-06-29 is a Monday.
-    const out = curatePromos([
-      ev({ id: 'nfl-m', league: 'NFL', homeTeam: 'Dallas Cowboys', awayTeam: 'Green Bay Packers', eventTimestamp: '2026-06-29T19:00:00-07:00' }),
-    ]);
-    expect(out.filter((p) => p.postType === 'schedule-story' && p.league === 'NFL')).toHaveLength(0);
+  it('does NOT emit a daily lineup on a day with no sports (holiday only)', () => {
+    const out = curatePromos([ev({ id: 'h', eventType: 'HOLIDAY', eventTitle: 'Flag Day' })]);
+    expect(out.filter((p) => p.postType === 'schedule-story')).toHaveLength(0);
+  });
+
+  it('pushes Friar Frank in the lineup on a Padres game-day, not otherwise', () => {
+    const padres = curatePromos([ev({ id: 'p', league: 'MLB', homeTeam: 'San Diego Padres', awayTeam: 'Chicago Cubs', eventTimestamp: '2026-06-29T18:00:00-07:00' })]);
+    const pl = padres.find((p) => p.postType === 'schedule-story')!;
+    expect(pl.headline).toContain('Padres');
+    expect(pl.caption).toContain('Friar Franks $6');
+    expect(pl.storyCaption).toContain('Friar Franks $6');
+
+    const noPadres = curatePromos([ev({ id: 'n', league: 'MLB', homeTeam: 'New York Yankees', awayTeam: 'Boston Red Sox', eventTimestamp: '2026-06-29T18:00:00-07:00' })]);
+    const nl = noPadres.find((p) => p.postType === 'schedule-story')!;
+    expect(nl.caption).not.toContain('Friar Frank');
+  });
+});
+
+describe('curatePromos — Friar Frank push on Padres games', () => {
+  it('adds the Friar Frank push to a Padres Google Event and feed post', () => {
+    const out = curatePromos([ev({ id: 'mlb-p', league: 'MLB', homeTeam: 'San Diego Padres', awayTeam: 'Los Angeles Dodgers' })]);
+    expect(out.find((p) => p.key === 'gevt-mlb-p')?.caption).toContain('Friar Franks $6');
+    expect(out.find((p) => p.key === 'feed-mlb-p')?.caption).toContain('Friar Franks $6');
+  });
+
+  it('does NOT add the Friar Frank push to a Chargers Google Event', () => {
+    const out = curatePromos([ev({ id: 'nfl-c', league: 'NFL', homeTeam: 'Los Angeles Chargers', awayTeam: 'Denver Broncos' })]);
+    expect(out.find((p) => p.key === 'gevt-nfl-c')?.caption).not.toContain('Friar Frank');
   });
 });

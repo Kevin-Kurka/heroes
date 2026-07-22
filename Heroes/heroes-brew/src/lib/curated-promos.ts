@@ -12,7 +12,7 @@ export interface CuratedPromo {
   date: string;
   /** Sheet "Post Time" (e.g. "10:00 AM"). */
   time: string;
-  channel: 'Google' | 'Story' | 'Feed';
+  channel: 'Google' | 'Story' | 'Feed' | 'Story, Google';
   /** Poster URL path (relative to the site origin). */
   media: string;
   headline: string;
@@ -32,6 +32,13 @@ const EVENT_POST_TIME = '10:00 AM';
 const STORY_POST_TIME = '9:00 AM';
 const FEED_POST_TIME = '11:00 AM';
 const EVENT_DURATION_MS = 2.5 * 60 * 60 * 1000;
+
+/** The Padres game-day special, pushed on every Padres post. */
+const FRIAR_FRANK_PUSH = 'Friar Franks $6 + $2 off Heroes drafts all game. 🌭🍺';
+
+function isPadres(e: UnifiedEvent): boolean {
+  return e.homeTeam === 'San Diego Padres' || e.awayTeam === 'San Diego Padres';
+}
 
 /** Teams whose every game becomes a Google Event (league-scoped below). */
 const GOOGLE_EVENT_TEAMS = new Set(['San Diego Padres', 'Los Angeles Chargers']);
@@ -103,7 +110,8 @@ function googleEventPromo(e: UnifiedEvent): CuratedPromo {
   const end = new Date(new Date(e.eventTimestamp).getTime() + EVENT_DURATION_MS).toISOString();
   const m = matchup(e);
   const headline = `${m} — Watch at Heroes`;
-  const caption = `Catch ${m} at American Heroes & Brew — 16 TVs, full bar, Carlsbad Village. Kickoff ${start.timeLabel}.`;
+  const franks = isPadres(e) ? ` ${FRIAR_FRANK_PUSH}` : '';
+  const caption = `Catch ${m} at American Heroes & Brew — 16 TVs, full bar, Carlsbad Village. Kickoff ${start.timeLabel}.${franks}`;
   return {
     postType: 'google-event',
     key: `gevt-${e.id}`,
@@ -132,28 +140,33 @@ function feedPostPromo(e: UnifiedEvent): CuratedPromo {
     channel: 'Feed',
     media: eventPoster(e, `${start.weekday} ${start.timeLabel}`, '4x5'),
     headline: `${m} — Game Day at Heroes`,
-    caption: `Big one today: ${m}. Catch every minute at American Heroes & Brew — 16 TVs, full bar, ice-cold beer, Carlsbad Village. First pitch/kickoff ${start.timeLabel}. 🇺🇸🍻`,
+    caption: `Big one today: ${m}. Catch every minute at American Heroes & Brew — 16 TVs, full bar, ice-cold beer, Carlsbad Village. First pitch/kickoff ${start.timeLabel}.${isPadres(e) ? ` ${FRIAR_FRANK_PUSH}` : ''} 🇺🇸🍻`,
     storyCaption: '',
     tags: TAGS,
     league: e.league ?? '',
   };
 }
 
-function scheduleStoryPromo(league: 'WORLDCUP' | 'NFL', ymd: string, dateLabel: string): CuratedPromo {
-  const code = league === 'WORLDCUP' ? 'WC' : 'NFL';
-  const label = league === 'WORLDCUP' ? "Today's World Cup slate" : "Today's NFL slate";
+/**
+ * The daily "Today at Heroes" lineup — one poster per game-day listing every game
+ * on the TVs, posted to BOTH the IG Story and Google. Auto-approves (schedule-story).
+ * On Padres days it carries the Friar Frank push and leads with the Padres game.
+ */
+function dailyLineupPromo(ymd: string, dateLabel: string, hasPadres: boolean): CuratedPromo {
+  const franksCap = hasPadres ? ` Padres today — ${FRIAR_FRANK_PUSH}` : '';
+  const franksStory = hasPadres ? ' Padres today — Friar Franks $6! 🌭' : '';
   return {
     postType: 'schedule-story',
-    key: `sched-${code}-${ymd}`,
+    key: `sched-ALL-${ymd}`,
     date: dateLabel,
     time: STORY_POST_TIME,
-    channel: 'Story',
-    media: `/api/og/schedule?league=${code}&date=${ymd}`,
-    headline: '',
-    caption: `${label} — every game on at American Heroes & Brew. 🍻`,
-    storyCaption: `${label} on every screen 🍻 Carlsbad Village.`,
+    channel: 'Story, Google',
+    media: `/api/og/schedule?league=ALL&date=${ymd}`,
+    headline: hasPadres ? 'Padres Game Day at Heroes' : "Today's Lineup at Heroes",
+    caption: `Today's lineup at American Heroes & Brew — every game, every screen. 16 TVs, full bar, Carlsbad Village.${franksCap} 🍻`,
+    storyCaption: `Today's lineup on every screen 🍻 Carlsbad Village.${franksStory}`,
     tags: TAGS,
-    league,
+    league: 'ALL',
   };
 }
 
@@ -175,17 +188,17 @@ export function curatePromos(events: UnifiedEvent[]): CuratedPromo[] {
     if (e.eventType === 'SPORTS' && isBiggestGame(e)) out.push(feedPostPromo(e));
   }
 
-  // Schedule Stories: one per WC game-day, one per Sunday with NFL games.
-  const wcDays = new Map<string, string>(); // ymd -> dateLabel
-  const nflSundays = new Map<string, string>();
+  // Daily lineup Story + Google: one poster per game-day (any sport on the TVs),
+  // leading with — and pushing Friar Frank on — Padres days.
+  const gameDays = new Map<string, { label: string; padres: boolean }>();
   for (const e of events) {
     if (e.eventType !== 'SPORTS') continue;
     const p = ptParts(e.eventTimestamp);
-    if (e.league === 'WORLDCUP') wcDays.set(p.ymd, p.dateLabel);
-    if (e.league === 'NFL' && p.weekday === 'Sun') nflSundays.set(p.ymd, p.dateLabel);
+    const cur = gameDays.get(p.ymd) ?? { label: p.dateLabel, padres: false };
+    if (isPadres(e)) cur.padres = true;
+    gameDays.set(p.ymd, cur);
   }
-  for (const [ymd, label] of wcDays) out.push(scheduleStoryPromo('WORLDCUP', ymd, label));
-  for (const [ymd, label] of nflSundays) out.push(scheduleStoryPromo('NFL', ymd, label));
+  for (const [ymd, info] of gameDays) out.push(dailyLineupPromo(ymd, info.label, info.padres));
 
   return out;
 }

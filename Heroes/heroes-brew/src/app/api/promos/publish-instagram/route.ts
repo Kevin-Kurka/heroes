@@ -42,8 +42,10 @@ type FacebookResult =
 const ALLOWED_IMAGE_PREFIXES = [
   'https://americanheroesandbrew.com/promos/',
   'https://americanheroesandbrew.com/api/og/', // auto matchup art (Story invites)
+  'https://americanheroesandbrew.com/images/polished/', // curated food/brand photo library (evergreen feed posts)
   'https://heroes-tau-neon.vercel.app/promos/',
   'https://heroes-tau-neon.vercel.app/api/og/',
+  'https://heroes-tau-neon.vercel.app/images/polished/',
 ];
 const ALLOWED_VIDEO_PREFIXES = [
   'https://americanheroesandbrew.com/promos-video/',
@@ -155,6 +157,22 @@ export async function POST(req: NextRequest) {
       }
     } catch (err) {
       console.warn('Instagram dedup check failed (continuing to publish):', err);
+    }
+  }
+
+  // ── Step 0.5: pre-warm dynamically-rendered posters ──────────────────────
+  // The /api/og/* posters are rendered on demand (Satori). On a cold Lambda the
+  // first render can take several seconds; when Instagram fetches image_url during
+  // that cold start the container silently fails (status_code ERROR) and the post
+  // never lands — the root cause of the auto-curated matchup/lineup posts that
+  // stopped hitting the feed. Fetch it ourselves first so the function is warm and
+  // the edge cache is primed before Instagram pulls it. Best-effort; static
+  // /promos/ and /images/ files skip this (they're served instantly).
+  if (!isVideo && typeof imageUrl === 'string' && imageUrl.includes('/api/og/')) {
+    try {
+      await fetch(imageUrl, { cache: 'no-store' });
+    } catch (err) {
+      console.warn('Instagram poster pre-warm failed (continuing):', err);
     }
   }
 

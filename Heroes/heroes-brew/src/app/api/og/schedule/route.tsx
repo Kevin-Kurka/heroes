@@ -12,8 +12,19 @@ const ADDRESS = '300 Carlsbad Village Dr #120, Carlsbad';
 const NAVY = '#0a1a3f';
 const RED = '#b22234';
 
-const LEAGUE_OF: Record<string, string> = { WC: 'WORLDCUP', NFL: 'NFL' };
-const TITLE_OF: Record<string, string> = { WC: 'WORLD CUP — TODAY', NFL: 'NFL SUNDAY' };
+// Single-league codes → the UnifiedEvent.league value they select.
+const LEAGUE_OF: Record<string, string> = {
+  WC: 'WORLDCUP', NFL: 'NFL', MLB: 'MLB', NBA: 'NBA', NHL: 'NHL', MLS: 'MLS', CFB: 'CFB',
+};
+const TITLE_OF: Record<string, string> = {
+  WC: 'WORLD CUP — TODAY', NFL: 'NFL SUNDAY', MLB: 'PADRES & MLB TODAY',
+  NBA: 'NBA TODAY', NHL: 'NHL TODAY', MLS: 'MLS TODAY', CFB: 'COLLEGE FOOTBALL',
+  ALL: 'TODAY AT HEROES', TODAY: 'TODAY AT HEROES',
+};
+// Short chips shown per row in the multi-league (ALL/TODAY) slate.
+const LEAGUE_CHIP: Record<string, string> = {
+  MLB: 'MLB', NFL: 'NFL', NBA: 'NBA', NHL: 'NHL', MLS: 'MLS', WORLDCUP: 'WC', CFB: 'CFB',
+};
 
 function ptYmd(iso: string): string {
   const parts = new Intl.DateTimeFormat('en-US', {
@@ -33,15 +44,27 @@ export async function GET(req: Request) {
   const { searchParams, origin } = new URL(req.url);
   const code = (searchParams.get('league') ?? 'WC').toUpperCase();
   const date = searchParams.get('date') ?? '';
+  // ALL/TODAY → every sport on that date (the daily "Today at Heroes" lineup);
+  // otherwise a single league's slate.
+  const isAll = code === 'ALL' || code === 'TODAY';
   const league = LEAGUE_OF[code] ?? 'WORLDCUP';
   const heading = TITLE_OF[code] ?? 'TODAY';
   const badge = `${origin}/badge-clean.png`;
 
+  // Local team lead the slate so the Padres/Chargers game is always at the top.
+  const PRIORITY = new Set(['San Diego Padres', 'Los Angeles Chargers']);
+  const isLocal = (e: UnifiedEvent) =>
+    (!!e.homeTeam && PRIORITY.has(e.homeTeam)) || (!!e.awayTeam && PRIORITY.has(e.awayTeam));
+
   const all = await getAllEvents();
   const games: UnifiedEvent[] = all
-    .filter((e) => e.league === league && (!date || ptYmd(e.eventTimestamp) === date))
-    .sort((a, b) => new Date(a.eventTimestamp).getTime() - new Date(b.eventTimestamp).getTime())
-    .slice(0, 10);
+    .filter((e) => e.eventType === 'SPORTS' && (isAll || e.league === league) && (!date || ptYmd(e.eventTimestamp) === date))
+    .sort((a, b) => {
+      // In the multi-league slate, surface the local team first; otherwise chronological.
+      if (isAll && isLocal(a) !== isLocal(b)) return isLocal(a) ? -1 : 1;
+      return new Date(a.eventTimestamp).getTime() - new Date(b.eventTimestamp).getTime();
+    })
+    .slice(0, isAll ? 8 : 10);
 
   return new ImageResponse(
     (
@@ -65,8 +88,15 @@ export async function GET(req: Request) {
           ) : (
             games.map((g) => (
               <div key={g.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '2px solid rgba(255,255,255,0.15)', paddingBottom: 18 }}>
-                <div style={{ display: 'flex', fontSize: 46, fontWeight: 700, maxWidth: 720 }}>
-                  {g.awayTeam && g.homeTeam ? `${g.awayTeam} vs ${g.homeTeam}` : g.eventTitle}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 18, maxWidth: 760 }}>
+                  {isAll && g.league && LEAGUE_CHIP[g.league] && (
+                    <div style={{ display: 'flex', fontSize: 26, fontWeight: 800, color: NAVY, background: '#ffd54a', borderRadius: 8, padding: '4px 12px' }}>
+                      {LEAGUE_CHIP[g.league]}
+                    </div>
+                  )}
+                  <div style={{ display: 'flex', fontSize: 46, fontWeight: 700 }}>
+                    {g.awayTeam && g.homeTeam ? `${g.awayTeam} vs ${g.homeTeam}` : g.eventTitle}
+                  </div>
                 </div>
                 <div style={{ display: 'flex', fontSize: 42, fontWeight: 800, color: '#ffd54a' }}>{ptTime(g.eventTimestamp)}</div>
               </div>
