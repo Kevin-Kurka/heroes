@@ -35,8 +35,6 @@ export interface CuratedPromo {
 
 const TAGS = '#AmericanHeroesAndBrew #CarlsbadVillage #SportsBar';
 const EVENT_POST_TIME = '10:00 AM';
-const STORY_POST_TIME = '9:00 AM';
-const FEED_POST_TIME = '11:00 AM';
 const EVENT_DURATION_MS = 2.5 * 60 * 60 * 1000;
 
 /** The Padres game-day special, pushed on every Padres post. */
@@ -48,9 +46,6 @@ function isPadres(e: UnifiedEvent): boolean {
 
 /** Teams whose every game becomes a Google Event (league-scoped below). */
 const GOOGLE_EVENT_TEAMS = new Set(['San Diego Padres', 'Los Angeles Chargers']);
-
-/** Teams whose HOME games are "biggest" and also earn an IG feed post. */
-const FEED_HOME_TEAMS = new Set(['San Diego Padres', 'Los Angeles Chargers']);
 
 function isUsaOrMexicoWC(e: UnifiedEvent): boolean {
   if (e.league !== 'WORLDCUP') return false;
@@ -65,15 +60,6 @@ function isGoogleEventTeamGame(e: UnifiedEvent): boolean {
 
 function isGoogleEvent(e: UnifiedEvent): boolean {
   return isUsaOrMexicoWC(e) || isGoogleEventTeamGame(e) || isMondayNight(e);
-}
-
-/**
- * "Biggest" games that also earn an Instagram FEED post (matchup poster to the grid):
- * USA/Mexico World Cup games and Padres/Chargers HOME games. Narrower than isGoogleEvent
- * — Monday-Night and away games stay Event+Story only, to keep the feed from flooding.
- */
-function isBiggestGame(e: UnifiedEvent): boolean {
-  return isUsaOrMexicoWC(e) || (!!e.homeTeam && FEED_HOME_TEAMS.has(e.homeTeam));
 }
 
 /** PT calendar parts of an ISO timestamp. */
@@ -137,50 +123,6 @@ function googleEventPromo(e: UnifiedEvent): CuratedPromo {
   };
 }
 
-function feedPostPromo(e: UnifiedEvent): CuratedPromo {
-  const start = ptParts(e.eventTimestamp);
-  const m = matchup(e);
-  return {
-    postType: 'feed-post',
-    key: `feed-${e.id}`,
-    date: start.dateLabel,
-    time: FEED_POST_TIME,
-    channel: 'Feed',
-    media: eventPoster(e, `${start.weekday} ${start.timeLabel}`, '4x5'),
-    headline: `${m} — Game Day at Heroes`,
-    caption: `Big one today: ${m}. Catch every minute at American Heroes & Brew — 16 TVs, full bar, ice-cold beer, Carlsbad Village. First pitch/kickoff ${start.timeLabel}.${isPadres(e) ? ` ${FRIAR_FRANK_PUSH}` : ''} 🇺🇸🍻`,
-    storyCaption: '',
-    tags: TAGS,
-    league: e.league ?? '',
-    // Padres/Chargers home matchups auto-post to the grid; other biggest games (WC) stay manual.
-    autoApprove: isGoogleEventTeamGame(e),
-  };
-}
-
-/**
- * The daily "Today at Heroes" lineup — one poster per game-day listing every game
- * on the TVs, posted to BOTH the IG Story and Google. Auto-approves (schedule-story).
- * On Padres days it carries the Friar Frank push and leads with the Padres game.
- */
-function dailyLineupPromo(ymd: string, dateLabel: string, hasPadres: boolean): CuratedPromo {
-  const franksCap = hasPadres ? ` Padres today — ${FRIAR_FRANK_PUSH}` : '';
-  const franksStory = hasPadres ? ' Padres today — Friar Franks $6! 🌭' : '';
-  return {
-    postType: 'schedule-story',
-    key: `sched-ALL-${ymd}`,
-    date: dateLabel,
-    time: STORY_POST_TIME,
-    channel: 'Story, Google',
-    media: `/api/og/schedule?league=ALL&date=${ymd}`,
-    headline: hasPadres ? 'Padres Game Day at Heroes' : "Today's Lineup at Heroes",
-    caption: `Today's lineup at American Heroes & Brew — every game, every screen. 16 TVs, full bar, Carlsbad Village.${franksCap} 🍻`,
-    storyCaption: `Today's lineup on every screen 🍻 Carlsbad Village.${franksStory}`,
-    tags: TAGS,
-    league: 'ALL',
-    autoApprove: true,
-  };
-}
-
 /**
  * Pure curation: turn a fetched event list into curated promo rows. Separated from
  * the fetch so it can be unit-tested with fixtures (the 7-day window is already
@@ -189,27 +131,11 @@ function dailyLineupPromo(ymd: string, dateLabel: string, hasPadres: boolean): C
 export function curatePromos(events: UnifiedEvent[]): CuratedPromo[] {
   const out: CuratedPromo[] = [];
 
-  // Google Events: one per qualifying game.
+  // Games post ONLY as Google Events (with a start + end time). No schedule/lineup
+  // Story posters, no game feed posters — one Google Event per qualifying game.
   for (const e of events) {
     if (e.eventType === 'SPORTS' && isGoogleEvent(e)) out.push(googleEventPromo(e));
   }
-
-  // IG Feed posts: only the biggest games (USA/Mexico WC, Padres/Chargers home).
-  for (const e of events) {
-    if (e.eventType === 'SPORTS' && isBiggestGame(e)) out.push(feedPostPromo(e));
-  }
-
-  // Daily lineup Story + Google: one poster per game-day (any sport on the TVs),
-  // leading with — and pushing Friar Frank on — Padres days.
-  const gameDays = new Map<string, { label: string; padres: boolean }>();
-  for (const e of events) {
-    if (e.eventType !== 'SPORTS') continue;
-    const p = ptParts(e.eventTimestamp);
-    const cur = gameDays.get(p.ymd) ?? { label: p.dateLabel, padres: false };
-    if (isPadres(e)) cur.padres = true;
-    gameDays.set(p.ymd, cur);
-  }
-  for (const [ymd, info] of gameDays) out.push(dailyLineupPromo(ymd, info.label, info.padres));
 
   return out;
 }

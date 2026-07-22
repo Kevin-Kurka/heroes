@@ -20,17 +20,20 @@ const W = 1080, H = 1350, U = W / 200;
 
 // Each post: polished photo + kicker chip + 1–2-line headline + subline. Accent
 // alternates red/blue (v11 complementary look). slug → public/promos/<slug>-feed.jpg
+// Each headline is the REAL menu item; each sub is that item's actual description
+// (from src/lib/menu.ts). Photos verified against their source names + contents so
+// the image matches the item shown.
 const POSTS = [
-  { slug: 'wings',        img: 'buffalo-wings.jpg',             kicker: 'Wing Wednesday', lines: ['Buffalo Wings'],   sub: 'Tossed to order · wells $6',            accent: 'red' },
-  { slug: 'juicy-lucy',   img: 'minneapolis-juicy-lucy.jpg',    kicker: 'Burgers & Beer', lines: ['Juicy Lucy'],      sub: 'Cheese-stuffed · griddled to order',    accent: 'blue' },
-  { slug: 'french-dip',   img: 'los-angeles-sandwich.jpg',      kicker: 'Hero Sandwich',  lines: ['The Los', 'Angeles'], sub: 'French dip · roast beef · au jus',   accent: 'red' },
-  { slug: 'chx-sliders',  img: 'sliders.jpg',                   kicker: 'Shareables',     lines: ['Sliders'],         sub: 'Crispy chicken · bacon · all the fixings', accent: 'blue' },
-  { slug: 'loaded-fries', img: 'cheesesteak-fries.jpg',         kicker: 'Loaded Fries',   lines: ['Cheesesteak', 'Fries'], sub: 'Steak · melted cheese · signature sauce', accent: 'red' },
-  { slug: 'hoboken',      img: 'hoboken-sandwich.jpg',          kicker: 'Hero Sandwich',  lines: ['The Hoboken'],     sub: 'Italian deli meats · provolone · fresh', accent: 'blue' },
-  { slug: 'gameday-hq',   img: 'venue.jpg',                     kicker: 'Game Day HQ',    lines: ['Watch It', 'Here'], sub: '16 TVs · cold drafts · Carlsbad Village', accent: 'red' },
-  { slug: 'fried-pickles',img: 'fried-pickles.jpg',             kicker: 'Appetizers',     lines: ['Fried Pickles'],   sub: 'Crunchy · tangy · dangerously snackable', accent: 'blue' },
-  { slug: 'hero-stack',   img: 'hero-sandwich-unspecified.jpg', kicker: 'Hero Sandwich',  lines: ['Stacked High'],    sub: 'Made to order · piled high',            accent: 'red' },
-  { slug: 'hiring',       img: 'venue.jpg',                     kicker: 'Join the Team',  lines: ['Now Hiring'],      sub: 'All positions · apply inside or DM us', accent: 'red' },
+  { slug: 'wings',        img: 'buffalo-wings.jpg',          kicker: 'Wing Wednesday', lines: ['Wings'],                sub: '8 tossed to order · Buffalo · Mango Hab · Old Bay',       accent: 'red' },
+  { slug: 'juicy-lucy',   img: 'minneapolis-juicy-lucy.jpg', kicker: 'Hero Burger',    lines: ['Juicy Lucy'],           sub: '½lb patty stuffed with American cheese · Hero sauce',    accent: 'blue' },
+  { slug: 'philly',       img: 'philly-billy-sandwich.jpg',  kicker: 'Philly Billy',   lines: ['Philly', 'Cheesesteak'],sub: 'Thin-sliced grilled ribeye · your choice of cheese',     accent: 'red' },
+  { slug: 'kalua-sliders',img: 'kalua-pork-sliders.jpg',     kicker: 'Mahalo Monday',  lines: ['Kalua Pork', 'Sliders'],sub: '3 on a brioche bun · coleslaw & aloha sauce',            accent: 'blue' },
+  { slug: 'nachos',       img: 'chicken-nachos.jpg',         kicker: 'Shareables',     lines: ['Nachos'],               sub: 'Cheddar jack · AHB Wiz · beans · jalapeños · guac',      accent: 'red' },
+  { slug: 'hoboken',      img: 'hoboken-sandwich.jpg',       kicker: 'Italian Hero',   lines: ['The Hoboken'],          sub: 'Ham · salami · capicola · provolone · oil & vinegar',    accent: 'blue' },
+  { slug: 'friar-frank',  img: 'friar-frank.jpg',            kicker: 'Padres Game Days',lines: ['Friar Frank'],         sub: 'Stadium dog · grilled onions & relish · $6 on game days', accent: 'red' },
+  { slug: 'tacos',        img: 'village-tacos.jpg',          kicker: 'Taco Tuesday',   lines: ['Village Tacos'],        sub: '3 street tacos · carnitas · carne asada · baja fish',    accent: 'blue' },
+  { slug: 'pasadena',     img: 'pasadena-burger.jpg',        kicker: 'Hero Burger',    lines: ['The Pasadena'],         sub: 'OG cheeseburger · American cheese · Hero sauce',         accent: 'red' },
+  { slug: 'hiring',       img: 'venue.jpg',                  kicker: 'Join the Team',  lines: ['Now Hiring'],           sub: 'All positions · apply inside or DM us',                  accent: 'red' },
 ];
 
 const crest = await loadImage(join(PUB, 'icon-512.png'));
