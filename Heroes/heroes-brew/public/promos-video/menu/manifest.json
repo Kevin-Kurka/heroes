@@ -1,0 +1,465 @@
+{
+  "summary": {
+    "total_photos_processed": 46,
+    "total_items_with_photos": 23,
+    "menu_items_in_taxonomy": 44,
+    "pro_masters_created": 23,
+    "unknowns": 3,
+    "nonfood": 7
+  },
+  "coverage_by_category": {
+    "Burgers": {
+      "total_items": 7,
+      "with_photos": 3,
+      "missing_photos": 4,
+      "coverage_percent": 43,
+      "items_with_photos": [
+        {
+          "slug": "pasadena-og-cheeseburger",
+          "photo_count": 3,
+          "pro_master": "pasadena-og-cheeseburger-pro.jpg"
+        },
+        {
+          "slug": "tombstone-cowboy",
+          "photo_count": 1,
+          "pro_master": "tombstone-cowboy-pro.jpg"
+        },
+        {
+          "slug": "minneapolis-juicy-lucy",
+          "photo_count": 1,
+          "pro_master": "minneapolis-juicy-lucy-pro.jpg"
+        }
+      ],
+      "items_missing": [
+        "austin-jalapeno",
+        "irwindale-sriracha-honey",
+        "leucadia-smash",
+        "bama-slama-jamma-pb-j"
+      ]
+    },
+    "Hero Sandwiches": {
+      "total_items": 7,
+      "with_photos": 6,
+      "missing_photos": 1,
+      "coverage_percent": 86,
+      "items_with_photos": [
+        {
+          "slug": "san-diego-california-burrito",
+          "photo_count": 1,
+          "pro_master": "san-diego-california-burrito-pro.jpg"
+        },
+        {
+          "slug": "carlsbad-blt-plus",
+          "photo_count": 2,
+          "pro_master": "carlsbad-blt-plus-pro.jpg"
+        },
+        {
+          "slug": "maui-kalua-pork",
+          "photo_count": 1,
+          "pro_master": "maui-kalua-pork-pro.jpg"
+        },
+        {
+          "slug": "hoboken-italian",
+          "photo_count": 2,
+          "pro_master": "hoboken-italian-pro.jpg"
+        },
+        {
+          "slug": "manhattan-reuben",
+          "photo_count": 4,
+          "pro_master": "manhattan-reuben-pro.jpg"
+        },
+        {
+          "slug": "philly-billy-cheesesteak",
+          "photo_count": 1,
+          "pro_master": "philly-billy-cheesesteak-pro.jpg"
+        }
+      ],
+      "items_missing": [
+        "los-angeles-french-dip"
+      ]
+    },
+    "Shareables": {
+      "total_items": 7,
+      "with_photos": 6,
+      "missing_photos": 1,
+      "coverage_percent": 86,
+      "items_with_photos": [
+        {
+          "slug": "wings",
+          "photo_count": 1,
+          "pro_master": "wings-pro.jpg"
+        },
+        {
+          "slug": "sliders-kalua-pork",
+          "photo_count": 1,
+          "pro_master": "sliders-kalua-pork-pro.jpg"
+        },
+        {
+          "slug": "village-tacos",
+          "photo_count": 1,
+          "pro_master": "village-tacos-pro.jpg"
+        },
+        {
+          "slug": "friar-frank",
+          "photo_count": 1,
+          "pro_master": "friar-frank-pro.jpg"
+        },
+        {
+          "slug": "nachos",
+          "photo_count": 1,
+          "pro_master": "nachos-pro.jpg"
+        },
+        {
+          "slug": "loaded-fries",
+          "photo_count": 1,
+          "pro_master": "loaded-fries-pro.jpg"
+        }
+      ],
+      "items_missing": [
+        "tenders"
+      ]
+    },
+    "Munchies": {
+      "total_items": 6,
+      "with_photos": 0,
+      "missing_photos": 6,
+      "coverage_percent": 0,
+      "items_with_photos": [],
+      "items_missing": [
+        "hummus-plate",
+        "fried-pickles",
+        "corn-dogs",
+        "pretzel-bites",
+        "mozzarella-sticks",
+        "jalapeno-poppers"
+      ]
+    },
+    "Sides": {
+      "total_items": 7,
+      "with_photos": 1,
+      "missing_photos": 6,
+      "coverage_percent": 14,
+      "items_with_photos": [
+        {
+          "slug": "mac-and-cheese",
+          "photo_count": 1,
+          "pro_master": "mac-and-cheese-pro.jpg"
+        }
+      ],
+      "items_missing": [
+        "fries",
+        "onion-rings",
+        "frings",
+        "potato-salad",
+        "macaroni-salad",
+        "chips-and-salsa"
+      ]
+    },
+    "Salads": {
+      "total_items": 5,
+      "with_photos": 2,
+      "missing_photos": 3,
+      "coverage_percent": 40,
+      "items_with_photos": [
+        {
+          "slug": "antipasto",
+          "photo_count": 2,
+          "pro_master": "antipasto-pro.jpg"
+        },
+        {
+          "slug": "house-salad",
+          "photo_count": 1,
+          "pro_master": "house-salad-pro.jpg"
+        }
+      ],
+      "items_missing": [
+        "healthy-hero",
+        "cobb",
+        "caesar"
+      ]
+    },
+    "Sweets": {
+      "total_items": 1,
+      "with_photos": 1,
+      "missing_photos": 0,
+      "coverage_percent": 100,
+      "items_with_photos": [
+        {
+          "slug": "key-lime-pie",
+          "photo_count": 1,
+          "pro_master": "key-lime-pie-pro.jpg"
+        }
+      ],
+      "items_missing": []
+    },
+    "Drinks": {
+      "total_items": 4,
+      "with_photos": 4,
+      "missing_photos": 0,
+      "coverage_percent": 100,
+      "items_with_photos": [
+        {
+          "slug": "beer",
+          "photo_count": 5,
+          "pro_master": "beer-pro.jpg"
+        },
+        {
+          "slug": "cocktails",
+          "photo_count": 2,
+          "pro_master": "cocktails-pro.jpg"
+        },
+        {
+          "slug": "margarita",
+          "photo_count": 1,
+          "pro_master": "margarita-pro.jpg"
+        },
+        {
+          "slug": "sangria",
+          "photo_count": 1,
+          "pro_master": "sangria-pro.jpg"
+        }
+      ],
+      "items_missing": []
+    }
+  },
+  "has_photos": [
+    {
+      "item": "antipasto",
+      "category": "Salads",
+      "photos": 2,
+      "pro_master": "antipasto-pro.jpg"
+    },
+    {
+      "item": "beer",
+      "category": "Drinks",
+      "photos": 5,
+      "pro_master": "beer-pro.jpg"
+    },
+    {
+      "item": "carlsbad-blt-plus",
+      "category": "Hero Sandwiches",
+      "photos": 2,
+      "pro_master": "carlsbad-blt-plus-pro.jpg"
+    },
+    {
+      "item": "cocktails",
+      "category": "Drinks",
+      "photos": 2,
+      "pro_master": "cocktails-pro.jpg"
+    },
+    {
+      "item": "friar-frank",
+      "category": "Shareables",
+      "photos": 1,
+      "pro_master": "friar-frank-pro.jpg"
+    },
+    {
+      "item": "hoboken-italian",
+      "category": "Hero Sandwiches",
+      "photos": 2,
+      "pro_master": "hoboken-italian-pro.jpg"
+    },
+    {
+      "item": "house-salad",
+      "category": "Salads",
+      "photos": 1,
+      "pro_master": "house-salad-pro.jpg"
+    },
+    {
+      "item": "key-lime-pie",
+      "category": "Sweets",
+      "photos": 1,
+      "pro_master": "key-lime-pie-pro.jpg"
+    },
+    {
+      "item": "loaded-fries",
+      "category": "Shareables",
+      "photos": 1,
+      "pro_master": "loaded-fries-pro.jpg"
+    },
+    {
+      "item": "mac-and-cheese",
+      "category": "Sides",
+      "photos": 1,
+      "pro_master": "mac-and-cheese-pro.jpg"
+    },
+    {
+      "item": "manhattan-reuben",
+      "category": "Hero Sandwiches",
+      "photos": 4,
+      "pro_master": "manhattan-reuben-pro.jpg"
+    },
+    {
+      "item": "margarita",
+      "category": "Drinks",
+      "photos": 1,
+      "pro_master": "margarita-pro.jpg"
+    },
+    {
+      "item": "maui-kalua-pork",
+      "category": "Hero Sandwiches",
+      "photos": 1,
+      "pro_master": "maui-kalua-pork-pro.jpg"
+    },
+    {
+      "item": "minneapolis-juicy-lucy",
+      "category": "Burgers",
+      "photos": 1,
+      "pro_master": "minneapolis-juicy-lucy-pro.jpg"
+    },
+    {
+      "item": "nachos",
+      "category": "Shareables",
+      "photos": 1,
+      "pro_master": "nachos-pro.jpg"
+    },
+    {
+      "item": "pasadena-og-cheeseburger",
+      "category": "Burgers",
+      "photos": 3,
+      "pro_master": "pasadena-og-cheeseburger-pro.jpg"
+    },
+    {
+      "item": "philly-billy-cheesesteak",
+      "category": "Hero Sandwiches",
+      "photos": 1,
+      "pro_master": "philly-billy-cheesesteak-pro.jpg"
+    },
+    {
+      "item": "san-diego-california-burrito",
+      "category": "Hero Sandwiches",
+      "photos": 1,
+      "pro_master": "san-diego-california-burrito-pro.jpg"
+    },
+    {
+      "item": "sangria",
+      "category": "Drinks",
+      "photos": 1,
+      "pro_master": "sangria-pro.jpg"
+    },
+    {
+      "item": "sliders-kalua-pork",
+      "category": "Shareables",
+      "photos": 1,
+      "pro_master": "sliders-kalua-pork-pro.jpg"
+    },
+    {
+      "item": "tombstone-cowboy",
+      "category": "Burgers",
+      "photos": 1,
+      "pro_master": "tombstone-cowboy-pro.jpg"
+    },
+    {
+      "item": "village-tacos",
+      "category": "Shareables",
+      "photos": 1,
+      "pro_master": "village-tacos-pro.jpg"
+    },
+    {
+      "item": "wings",
+      "category": "Shareables",
+      "photos": 1,
+      "pro_master": "wings-pro.jpg"
+    }
+  ],
+  "missing_photos": [
+    {
+      "item": "austin-jalapeno",
+      "category": "Burgers"
+    },
+    {
+      "item": "bama-slama-jamma-pb-j",
+      "category": "Burgers"
+    },
+    {
+      "item": "caesar",
+      "category": "Salads"
+    },
+    {
+      "item": "chips-and-salsa",
+      "category": "Sides"
+    },
+    {
+      "item": "cobb",
+      "category": "Salads"
+    },
+    {
+      "item": "corn-dogs",
+      "category": "Munchies"
+    },
+    {
+      "item": "fried-pickles",
+      "category": "Munchies"
+    },
+    {
+      "item": "fries",
+      "category": "Sides"
+    },
+    {
+      "item": "frings",
+      "category": "Sides"
+    },
+    {
+      "item": "healthy-hero",
+      "category": "Salads"
+    },
+    {
+      "item": "hummus-plate",
+      "category": "Munchies"
+    },
+    {
+      "item": "irwindale-sriracha-honey",
+      "category": "Burgers"
+    },
+    {
+      "item": "jalapeno-poppers",
+      "category": "Munchies"
+    },
+    {
+      "item": "leucadia-smash",
+      "category": "Burgers"
+    },
+    {
+      "item": "los-angeles-french-dip",
+      "category": "Hero Sandwiches"
+    },
+    {
+      "item": "macaroni-salad",
+      "category": "Sides"
+    },
+    {
+      "item": "mozzarella-sticks",
+      "category": "Munchies"
+    },
+    {
+      "item": "onion-rings",
+      "category": "Sides"
+    },
+    {
+      "item": "potato-salad",
+      "category": "Sides"
+    },
+    {
+      "item": "pretzel-bites",
+      "category": "Munchies"
+    },
+    {
+      "item": "tenders",
+      "category": "Shareables"
+    }
+  ],
+  "unknown_files": [
+    "_unknown-1.jpg",
+    "_unknown-2.jpeg",
+    "_unknown-3.jpeg"
+  ],
+  "nonfood_files": [
+    "_nonfood-1.jpeg",
+    "_nonfood-2.jpeg",
+    "_nonfood-3.jpeg",
+    "_nonfood-4.jpeg",
+    "_nonfood-5.png",
+    "_nonfood-6.webp",
+    "_nonfood-7.jpg"
+  ]
+}

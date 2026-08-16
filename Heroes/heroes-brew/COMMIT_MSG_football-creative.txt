@@ -1,0 +1,25 @@
+Rebuild football creative on a real field background
+
+The fantasy and gameday assets carried no football imagery at all:
+fantasy-join-league.jpg was a burger photo, fantasy-launch-4x5.jpg was a
+green/amber gradient with a vector football (off-brand per CLAUDE.md), and
+fantasy-1/2 + gameday-1/2 were flat black text cards. Meanwhile
+scripts/specials-video/_nfl/ held real field photography nothing used.
+
+- New night-stadium plate built from a verified clean grass crop (no player,
+  number, logo or team mark survives) plus procedural mow stripes, receding
+  yard lines, converging sidelines and a light bank. Shipped as reusable
+  field-bg-{9x16,4x3,16x9}.jpg.
+- Rebuilt fantasy-launch-4x5, fantasy-join-league and fantasy-draft-hq on it
+  in brand navy/red/white; added nfl-sunday-4x5.
+- Re-rendered fantasy-1/2, gameday-1/2, fantasy-launch-9x16 and
+  fantasy-launch-4x5 as two-beat Stories over the field with a Ken Burns
+  push-in and the repo's licensed sports bed (previously silent).
+- /api/og/schedule: full-bleed field background (bg=0 opts out), a `title`
+  override so NFL Thursday/Monday/Thanksgiving/Kickoff slates can reuse the
+  route, translucent row panels for legibility, and #ffd54a gold swapped for
+  brand red/white.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_017pozXmizgM4iTq6WMji6rk
+

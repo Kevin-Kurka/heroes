@@ -1,5 +1,8 @@
 # Republic Protocol - Session Memory
 
+- [Roadmap status](roadmap_status.md) — rev 8: 19/30 at Phase C; details + per-rev promotion notes
+- [E2E coverage](e2e_coverage.md) — what specs exist + pass post-strip; corrects the stale "no full bilateral E2E" claim
+
 ## Project Architecture
 - **Main workspace**: `/Cargo.toml` with `src/core/crypto`, `src/core/network`, `src/core/backend`, `src/core/protocol`
 - **Demo workspace**: `/demo/Cargo.toml` (standalone)
@@ -170,12 +173,35 @@
 - Phase 6 (ops docs): added `docs/operations/DEPLOYMENT.md`, `docs/operations/DISASTER_RECOVERY.md`, `docs/security/AUDIT_SCOPE.md`.
 - Critical re-framings: (1) STARK proofs are audit artifacts not validation gates per intentional design, (2) demo server is signaling-only — no settlement processing, no STARK verification gate to add, (3) nullifier endpoint is opaque-hash-only by privacy design.
 
+## RDNP v2 Phases 3-5 (April 2026 — `tranquil-gossiping-shard` via `luminous-shipping-keystone`)
+- Plan: `/Users/kmk/.claude/plans/tranquil-gossiping-shard.md` — 9 tasks, executed under PR #38
+- Phase 3 (gossip transport — Tasks 3.1–3.4): `demo/src/peers.rs` (PeerRegistry, PeerInfo, PeerStatus, parse from `SEED_NODES` env), `demo/src/rdnp_gossip.rs` (background poll task with 10s interval + 5s timeout + 3-failure quarantine, manifest reconciliation via per-shard delta pull with ML-DSA-87 verify, push-on-write notify fan-out + receiver path).
+- Phase 4 (peer discovery — Tasks 4.1+4.2): recursive BFS over known peers' `/api/v1/nodes` every 60s, capped at 100 peers. Single-seed bootstrap satisfied automatically.
+- Phase 5 (rebalancing — Tasks 5.1+5.2): `citizen-app-core/src/rdnp/assignment.rs` `shards_for_node(id, total_nodes)` (modulo for prototype, consistent hashing TBD), `broadcast_goodbye` POST to all peers' `/api/v1/nodes/goodbye`, receivers mark Quarantined.
+- Phase 5 Task 5.3 (multi-node integration test) DEFERRED — would need axum_test scaffolding for 3 in-process servers. Helpers individually unit-tested (5 rdnp_gossip + 8 assignment tests pass). Tracked in V010_FOLLOWUP_DEBT.
+- New routes: `POST /api/v1/registry/entries/notify`, `POST /api/v1/nodes/goodbye`.
+
+## Anonymous-VSA STARK Proof (May 2026 — branch `spec-anon-vsa-stark`, 12 tasks COMPLETE)
+- Plan: `docs/superpowers/plans/2026-05-12-anon-vsa-stark-proof-impl.md` (1556 lines, in-repo)
+- Replaces SHA3 placeholder in `prepare_anonymous_vsa` with real Winterfell STARK proof that the server's `verify_anon_citizenship_proof` accepts.
+- WASM-side prover `citizen-app-wasm/src/anon_citizenship_stark.rs` is byte-identical to native (`ProofOptions(28,16,4,Quadratic,8,31,...)`). Cross-crate round-trip test `citizen-app-wasm/tests/cross_verify.rs` is the AIR-drift canary (single-leaf + two-leaf cases).
+- New server endpoint: `GET /api/v1/act/path/by-leaf/:leaf_hex` (`demo/src/vsa_handlers.rs:get_act_path_by_leaf`). Migration 032: `idx_act_leaves_value_hex`.
+- New WASM exports on ProtocolVault: `prepare_anonymous_vsa(biometric, merkle_path_json)`, `compute_anon_leaf_hex`, `compute_anon_secret_hex`, `compute_vsa_slot_id_hex(biometric)`, `compute_vault_state_hash`. TS bridge wrappers in `src/wallet/web/src/lib/wasm/crypto-bridge.ts`.
+- Web Worker pre-compute: `src/wallet/web/src/lib/vsa/vsa-worker.ts` + `vsa-worker.client.ts`. Worker receives primitive inputs (anon_secret_hex, path siblings, slot_id, vault_state_hash, act_root) and calls `generate_anon_citizenship_proof_wasm`. 15s timeout.
+- Zustand cache: `src/wallet/web/src/lib/vsa/vsa-cache.ts`. Invalidation: vault_state_hash mismatch, act_root mismatch, 60s TTL. 6 unit tests.
+- Vault store wiring (`src/wallet/web/src/stores/vault.ts`): `primeVsaCache` fires on `initializeVault` success; cache cleared + re-primed on `settleOutbound` / `settleInbound` / `releaseOutbound` / `releaseInbound` / `dispose`.
+- KernelTransactionFlow (`src/wallet/web/src/features/bilateral/KernelTransactionFlow.tsx:136-184`) consumes cache on `'announcing'`; falls back inline (path fetch + WASM proof) on miss; existing try/catch backstop preserved.
+- E2E `src/wallet/web/tests/e2e/vsa-real-proof.spec.ts` — Chromium-only; asserts `/api/v1/act/path/by-leaf/` request fires within 15s of vault unlock (worker pipeline canary). Does NOT exercise full bilateral send (existing E2E never has).
+- Anon-secret derivation matches **demo server**: `SHA3-256("republic_anon_leaf_seed:" || citizen_id)`. NOT `citizen_app_core::compute_anon_secret(signing_key)`. Out of scope to migrate per spec.
+- Final test counts: demo 262, WASM 119 lib + 2 cross_verify, main workspace lib 616, frontend vitest 798 (42 files), E2E 1.
+- Known follow-ups: (a) Task 4's wasm-only test gate is inverted (`cfg(target_arch="wasm32")` — never runs); cross-crate test compensates. (b) `create_test_app_state` duplicated in `vault_handlers.rs` and `vsa_handlers.rs` — drift risk. Both logged in TaskCreate.
+
 ## Active Plan
 - **Full feature plan**: `/Users/kmk/.claude/plans/virtual-growing-wilkinson.md` — ALL PHASES COMPLETE
 - **Production readiness**: `/Users/kmk/.claude/plans/production-readiness.md` — security hardening + decentralization
 - **Prototype plan**: `/Users/kmk/.claude/plans/proud-whistling-locket.md`
 - **VSA Global Scale**: `/Users/kmk/.claude/plans/majestic-forging-lightning.md` — ALL 6 PHASES COMPLETE
 - **DNN**: `/Users/kmk/.claude/plans/majestic-forging-lightning.md` — ALL 4 PHASES COMPLETE (A-D)
-- **RDNP v2**: Phase 1-2 complete. Phase 3-5 pending (gossip protocol, peer discovery, shard rebalancing).
+- **RDNP v2**: Phase 1-2 complete (April 2026). Phase 3-5 complete via `tranquil-gossiping-shard.md` under PR #38 (Tasks 3.1–3.4, 4.1, 4.2, 5.1, 5.2 done; Task 5.3 multi-node integration test deferred).
 - **Production readiness**: `/Users/kmk/.claude/plans/sparkling-growing-wave.md` — Phase 0-1 are production gates
 - **Hardening anvil**: `/Users/kmk/.claude/plans/resolute-hardening-anvil.md` — ALL 27 TASKS COMPLETE

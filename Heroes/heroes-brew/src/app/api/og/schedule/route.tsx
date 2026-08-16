@@ -48,8 +48,13 @@ export async function GET(req: Request) {
   // otherwise a single league's slate.
   const isAll = code === 'ALL' || code === 'TODAY';
   const league = LEAGUE_OF[code] ?? 'WORLDCUP';
-  const heading = TITLE_OF[code] ?? 'TODAY';
+  // `title` overrides the derived heading (NFL gameday events reuse this route for
+  // Thursday/Monday/Thanksgiving/Kickoff slates, which aren't in TITLE_OF).
+  const heading = searchParams.get('title') || TITLE_OF[code] || 'TODAY';
   const badge = `${origin}/badge-clean.png`;
+  // Full-bleed night-field photo background. `bg=0` opts out (flat navy).
+  const showBg = searchParams.get('bg') !== '0';
+  const fieldBg = `${origin}/promos/field-bg-9x16.jpg`;
 
   // Local team lead the slate so the Padres/Chargers game is always at the top.
   const PRIORITY = new Set(['San Diego Padres', 'Los Angeles Chargers']);
@@ -71,10 +76,20 @@ export async function GET(req: Request) {
       <div
         style={{
           height: '100%', width: '100%', display: 'flex', flexDirection: 'column',
+          position: 'relative',
           background: `linear-gradient(160deg, ${NAVY} 0%, #050a1a 100%)`,
           color: '#fafafa', fontFamily: 'sans-serif', padding: '90px 70px',
         }}
       >
+        {showBg && (
+          <img
+            src={fieldBg}
+            width={SIZE.width}
+            height={SIZE.height}
+            alt=""
+            style={{ position: 'absolute', top: 0, left: 0, objectFit: 'cover' }}
+          />
+        )}
         <div style={{ display: 'flex', alignItems: 'center', gap: 24, marginBottom: 24 }}>
           <img src={badge} width={96} height={96} alt="" />
           <div style={{ display: 'flex', fontSize: 34, fontWeight: 800, letterSpacing: 4, color: '#ffffff' }}>
@@ -87,10 +102,10 @@ export async function GET(req: Request) {
             <div style={{ display: 'flex', fontSize: 44, color: '#cbd5e1' }}>Every game. Every screen.</div>
           ) : (
             games.map((g) => (
-              <div key={g.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '2px solid rgba(255,255,255,0.15)', paddingBottom: 18 }}>
+              <div key={g.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '2px solid rgba(255,255,255,0.18)', paddingBottom: 18, background: 'rgba(6,14,32,0.55)', borderRadius: 12, paddingLeft: 16, paddingRight: 16, paddingTop: 10 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 18, maxWidth: 760 }}>
                   {isAll && g.league && LEAGUE_CHIP[g.league] && (
-                    <div style={{ display: 'flex', fontSize: 26, fontWeight: 800, color: NAVY, background: '#ffd54a', borderRadius: 8, padding: '4px 12px' }}>
+                    <div style={{ display: 'flex', fontSize: 26, fontWeight: 800, color: '#ffffff', background: RED, borderRadius: 8, padding: '4px 12px' }}>
                       {LEAGUE_CHIP[g.league]}
                     </div>
                   )}
@@ -98,7 +113,7 @@ export async function GET(req: Request) {
                     {g.awayTeam && g.homeTeam ? `${g.awayTeam} vs ${g.homeTeam}` : g.eventTitle}
                   </div>
                 </div>
-                <div style={{ display: 'flex', fontSize: 42, fontWeight: 800, color: '#ffd54a' }}>{ptTime(g.eventTimestamp)}</div>
+                <div style={{ display: 'flex', fontSize: 42, fontWeight: 800, color: '#ffffff' }}>{ptTime(g.eventTimestamp)}</div>
               </div>
             ))
           )}
