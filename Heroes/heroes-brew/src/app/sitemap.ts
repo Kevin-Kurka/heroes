@@ -11,8 +11,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: '/restaurant', priority: 0.9, changeFrequency: 'monthly' },
     { path: '/burgers', priority: 0.85, changeFrequency: 'monthly' },
     { path: '/cheesesteak', priority: 0.85, changeFrequency: 'monthly' },
-    { path: '/world-cup', priority: 0.9, changeFrequency: 'daily' },
     { path: '/watch', priority: 0.9, changeFrequency: 'weekly' },
+    { path: '/world-cup', priority: 0.5, changeFrequency: 'yearly' },
     { path: '/near-legoland', priority: 0.8, changeFrequency: 'monthly' },
     { path: '/breakfast', priority: 0.8, changeFrequency: 'monthly' },
     { path: '/happy-hour', priority: 0.8, changeFrequency: 'monthly' },
@@ -25,8 +25,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // Per-event watch-party landing pages (one per promoted reel).
     ...WATCH_PARTY_SLUGS.map((slug) => ({
       path: `/watch-party/${slug}`,
-      priority: 0.85,
-      changeFrequency: 'daily' as const,
+      priority: 0.4,
+      changeFrequency: 'yearly' as const,
     })),
   ];
 

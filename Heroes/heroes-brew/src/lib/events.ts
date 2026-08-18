@@ -286,7 +286,7 @@ interface HolidayDef {
 
 // Fixed-date holidays. Variable-date ones (Easter, Thanksgiving, etc.) are computed below.
 const FIXED_HOLIDAYS: HolidayDef[] = [
-  { month: 1, day: 1, name: "New Year's Day", emoji: '🎆', theme: 'amber', message: 'Ring in the New Year with craft brews & big screens!' },
+  { month: 1, day: 1, name: "New Year's Day", emoji: '🎆', theme: 'amber', message: 'Ring in the New Year with house drafts & big screens!' },
   { month: 2, day: 2, name: 'Super Bowl Sunday', emoji: '🏈', theme: 'green', message: 'Super Bowl watch party! Wings, beer & the biggest game of the year.' },
   { month: 2, day: 14, name: "Valentine's Day", emoji: '❤️', theme: 'rose', message: "Date night at Heroes — craft cocktails & a game on every screen." },
   { month: 3, day: 17, name: "St. Patrick's Day", emoji: '☘️', theme: 'emerald', message: "Slainte! Green beer, Irish specials & good craic all day." },

@@ -37,8 +37,8 @@ export default function AboutFaqSection() {
             lunch, or bring the family.
           </p>
           <p className="text-foreground/70 text-sm">
-            Popular: <Link href="/world-cup" className="text-accent hover:underline">Watch the World Cup in Carlsbad</Link>{' · '}
-            <Link href="/watch" className="text-accent hover:underline">Where to watch the game in Carlsbad</Link>{' · '}
+            Popular: <Link href="/watch" className="text-accent hover:underline">Where to watch NFL game day in Carlsbad</Link>{' · '}
+            <Link href="/fantasy-football" className="text-accent hover:underline">Fantasy Football</Link>{' · '}
             <Link href="/near-legoland" className="text-accent hover:underline">Family dining near LEGOLAND</Link>{' · '}
             <Link href="/breakfast" className="text-accent hover:underline">Weekend breakfast</Link>{' · '}
             <Link href="/happy-hour" className="text-accent hover:underline">Happy hour &amp; daily specials</Link>{' · '}

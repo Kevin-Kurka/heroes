@@ -24,8 +24,8 @@ export const metadata: Metadata = {
   },
 };
 
-// Timely content (World Cup) — keep it fresh on a short revalidate.
-export const revalidate = 3600;
+// Archive page — the 2026 tournament has ended; hourly rebuild is unnecessary.
+export const revalidate = 86400;
 
 export default function WorldCupPage() {
   const restaurant = getRestaurantInfo();
