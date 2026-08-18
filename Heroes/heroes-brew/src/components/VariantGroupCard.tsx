@@ -68,14 +68,18 @@ function ChipRow({
   );
 }
 
-export default function VariantGroupCard({ group }: VariantGroupCardProps) {
+export default function VariantGroupCard({ group, elevated }: VariantGroupCardProps) {
   const description = group.description ? stripPriceTokens(group.description) : undefined;
   const loneItem = group.items.length === 1 ? group.items[0] : null;
   const groupIsTheItem = Boolean(loneItem && loneItem.name === group.name);
   const showItemList = group.items.length > 1 || (Boolean(loneItem) && !groupIsTheItem);
 
   return (
-    <section>
+    <section
+      className={`rounded-xl border border-white/[0.06] p-5 backdrop-blur-md ${
+        elevated ? 'bg-card-elevated/60' : 'bg-card/70'
+      }`}
+    >
       <div className="mb-3 flex items-baseline justify-between gap-4">
         <h2 className="text-lg font-semibold tracking-tight text-foreground sm:text-xl">
           {group.name}

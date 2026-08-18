@@ -142,6 +142,7 @@ describe('photo allowlist', () => {
   it('renders public menu cards as standardized text-only chrome', () => {
     const menuCard = readFileSync(resolve(__dirname, '../components/MenuCard.tsx'), 'utf8');
     const variant = readFileSync(resolve(__dirname, '../components/VariantGroupCard.tsx'), 'utf8');
+    const menuPage = readFileSync(resolve(__dirname, '../app/menu/MenuPageClient.tsx'), 'utf8');
     expect(menuCard).toContain('bg-white/5');
     expect(menuCard).toContain('rounded-xl');
     expect(menuCard).toContain('text-foreground');
@@ -153,12 +154,15 @@ describe('photo allowlist', () => {
     expect(menuCard).not.toContain('imageUrl');
     expect(menuCard).not.toContain('from-black/');
     expect(menuCard).not.toContain('md:max-w-[400px]');
+    expect(variant).toContain('bg-card/70');
+    expect(variant).toContain('bg-card-elevated/60');
+    expect(variant).toContain('border-white/[0.06]');
     expect(variant).toContain('bg-white/5');
-    expect(variant).not.toContain('bg-card/70');
-    expect(variant).not.toContain('border-white/[0.06]');
     expect(variant).not.toContain('DishBackdrop');
     expect(variant).not.toContain('next/image');
     expect(variant).not.toContain('imageUrl');
+    expect(menuPage).toContain('bg-card/70');
+    expect(menuPage).toContain('bg-white/5');
   });
 
   it('does not attach plates to the public menu', () => {
