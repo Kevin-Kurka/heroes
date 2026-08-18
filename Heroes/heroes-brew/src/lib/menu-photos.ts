@@ -38,6 +38,10 @@ export const MENU_PHOTO_PATHS: Record<string, string> = {
   'key lime pie': '/images/polished/key-lime-pie.jpg',
   draft: '/images/polished/beer.jpg',
   cocktails: '/images/polished/cocktails.jpg',
+  // TODO: commit Kevin's attached 800x450 kitchen JPEG as public/images/polished/oreo-churros.jpg
+  // (attachment bytes were not available to this agent — do not invent a substitute plate).
+  'oreo churros': '/images/polished/oreo-churros.jpg',
+  'oreo churro': '/images/polished/oreo-churros.jpg',
 };
 
 /**
@@ -97,6 +101,12 @@ export const CRUNCH_WRAPS = [
     description: 'Pressed tortilla, carne asada, cheese.',
   },
 ] as const;
+
+export const OREO_CHURROS = {
+  id: 'sweets-oreo-churros',
+  name: 'Oreo Churros',
+  description: 'Oreo-dusted churros with chocolate and caramel dip.',
+} as const;
 
 const WEEKLY_SPECIALS_RE = /^(specials|daily specials|daily lineup)$/i;
 const BURGER_WRAP_KEY = 'burger wrap';
@@ -309,12 +319,28 @@ function ensureCrunchWraps(groups: MenuGroup[]) {
   wraps.items = orderCrunchWraps(wraps.items);
 }
 
+function ensureOreoChurros(groups: MenuGroup[]) {
+  if (hasNamedItem(groups, OREO_CHURROS.name)) return;
+  let sweets = findGroup(groups, (g) => /^(sweets?|sweet stuff)$/i.test(g.name));
+  if (!sweets) {
+    sweets = { id: 'sweets', name: 'Sweets', items: [] };
+    const weeklyIdx = groups.findIndex((g) => WEEKLY_SPECIALS_RE.test(g.name));
+    if (weeklyIdx >= 0) groups.splice(weeklyIdx, 0, sweets);
+    else groups.push(sweets);
+  }
+  sweets.items = [
+    ...sweets.items,
+    { id: OREO_CHURROS.id, name: OREO_CHURROS.name, description: OREO_CHURROS.description },
+  ];
+}
+
 /** Attach honest photos, kitchen specials, and the Crunch Wraps section. Used by the public /menu. */
 export function applyMenuPresentation(menus: Menu[]): Menu[] {
   const next = cloneMenus(menus);
   for (const menu of next) {
     ensureKitchenSpecials(menu.groups);
     ensureCrunchWraps(menu.groups);
+    ensureOreoChurros(menu.groups);
     applyDescriptions(menu.groups);
     applyPhotos(menu.groups);
   }

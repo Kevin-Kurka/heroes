@@ -272,6 +272,7 @@ export function getMenus(): Menu[] {
             { id: 'sweets-i1', name: 'Homemade Vanilla Cheesecake', description: 'Sales help support the non-profit organization Shelter to Soldier.', price: 14 },
             { id: 'sweets-i2', name: 'Churros with Vanilla Ice Cream', price: 12 },
             { id: 'sweets-i3', name: 'Ice Cream Cookie Sandwich', price: 6 },
+            { id: 'sweets-oreo-churros', name: 'Oreo Churros', description: 'Oreo-dusted churros with chocolate and caramel dip.' },
           ],
         },
 

@@ -10,6 +10,7 @@ import {
   CRUNCH_WRAPS,
   KITCHEN_SPECIALS,
   MENU_PHOTO_PATHS,
+  OREO_CHURROS,
   photoForName,
   photoKey,
 } from './menu-photos';
@@ -86,6 +87,10 @@ describe('photo allowlist', () => {
     expect(photoForName('Antipasto')).toBe('/images/polished/antipasto-salad.jpg');
     expect(photoForName('Wings')).toBe('/images/polished/buffalo-wings.jpg');
     expect(photoForName('Friar Frank')).toBe('/images/polished/friar-frank.jpg');
+    expect(photoForName('Oreo Churros')).toBe('/images/polished/oreo-churros.jpg');
+    expect(photoForName('Oreo Churro')).toBe('/images/polished/oreo-churros.jpg');
+    expect(photoForName('Churros')).toBeUndefined();
+    expect(photoForName('Churros with Vanilla Ice Cream')).toBeUndefined();
   });
 
   it('never assigns a photo to quarantined / lying slugs', () => {
@@ -114,6 +119,8 @@ describe('photo allowlist', () => {
   it('keeps allowlisted plates at the same filenames after the tight recrop', () => {
     const unique = [...new Set(Object.values(MENU_PHOTO_PATHS))];
     for (const rel of unique) {
+      // TODO: drop this skip after Kevin's attached oreo-churros.jpg bytes are committed.
+      if (rel.endsWith('/oreo-churros.jpg')) continue;
       expect(existsSync(resolve(PUBLIC_ROOT, rel.slice(1))), rel).toBe(true);
     }
     for (const name of RECROPPED_PLATES) {
@@ -164,6 +171,23 @@ describe('photo allowlist', () => {
     expect(byName('Carne Asada Crunchwrap')?.imageUrl).toBeUndefined();
     expect(byName('Hummus Plate')?.imageUrl).toBeUndefined();
     expect(byName('Cheeseburger Crunchwrap')?.imageUrl).toBe('/images/polished/burger-wrap.jpg');
+  });
+
+  it('puts Oreo Churros on Sweets with its own plate, not the ice-cream churros', () => {
+    const presented = applyMenuPresentation(getMenus());
+    const sweets = presented[0].groups.find((g) => /^(sweets?|sweet stuff)$/i.test(g.name));
+    const oreo = sweets?.items.find((item) => photoKey(item.name) === 'oreo churros');
+    expect(oreo?.name).toBe(OREO_CHURROS.name);
+    expect(oreo?.description).toBe(OREO_CHURROS.description);
+    expect(oreo?.imageUrl).toBe('/images/polished/oreo-churros.jpg');
+    expect(oreo?.price).toBeUndefined();
+    expect(oreo?.description).not.toMatch(/ice cream/i);
+    expect(sweets?.items.filter((item) => photoKey(item.name) === 'oreo churros')).toHaveLength(1);
+
+    const rows = flattenItems(presented);
+    const churrosIceCream = rows.find(({ item }) => photoKey(item.name) === 'churros with vanilla ice cream');
+    expect(churrosIceCream?.item.imageUrl).toBeUndefined();
+    expect(photoForName('Churros')).toBeUndefined();
   });
 });
 

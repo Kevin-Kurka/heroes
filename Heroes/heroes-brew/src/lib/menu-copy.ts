@@ -93,6 +93,7 @@ add(COPY, ['Churros w/ Ice Cream', 'Churros with Ice Cream', 'Churros with Vanil
 add(COPY, ['Ice Cream Sandwich', 'Ice Cream Cookie Sandwich'], 'Chocolate chip cookies with ice cream.');
 add(COPY, ['Churros'], 'Warm churros.');
 add(COPY, ['Chocolate Chip Cookie'], 'A chocolate chip cookie.');
+add(COPY, ['Oreo Churros', 'Oreo Churro'], 'Oreo-dusted churros with chocolate and caramel dip.');
 
 add(COPY, ['Small Chicken Tenders', 'Kids Chicken Tenders'], 'Chicken tenders and fries.');
 add(COPY, ['Large Chicken Tenders'], 'A larger order of chicken tenders and fries.');
