@@ -67,7 +67,9 @@ export default function VariantGroupCard({ group, elevated }: VariantGroupCardPr
   const description = group.description ? stripPriceTokens(group.description) : undefined;
   const withPhotos = group.items.filter((item) => item.imageUrl);
   const withoutPhotos = group.items.filter((item) => !item.imageUrl);
-  const showItemGrid = group.items.length > 1;
+  const loneItem = group.items.length === 1 ? group.items[0] : null;
+  const groupIsTheItem = Boolean(loneItem && loneItem.name === group.name);
+  const showItemGrid = group.items.length > 1 || (Boolean(loneItem) && !groupIsTheItem);
   const heroSrc = group.imageUrl;
 
   return (

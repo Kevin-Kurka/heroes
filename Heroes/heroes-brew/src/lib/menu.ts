@@ -113,7 +113,16 @@ export function getMenus(): Menu[] {
               displayMode: 'variants',
               items: [
                 { id: 'mains-kitchen-specials-spicy-chicken', name: 'Spicy Chicken', description: 'Crispy chicken, bacon, melted jack.' },
-                { id: 'mains-kitchen-specials-burger-wrap', name: 'Burger Wrap', description: 'Pressed tortilla, beef, cheese.' },
+              ],
+            },
+            {
+              id: 'mains-crunch-wraps',
+              name: 'Crunch Wraps',
+              displayMode: 'variants',
+              items: [
+                { id: 'mains-crunch-wraps-cheeseburger', name: 'Cheeseburger Crunchwrap', description: 'Pressed tortilla, beef, cheese.' },
+                { id: 'mains-crunch-wraps-carnitas', name: 'Carnitas Crunchwrap', description: 'Pressed tortilla, carnitas, cheese.' },
+                { id: 'mains-crunch-wraps-carne-asada', name: 'Carne Asada Crunchwrap', description: 'Pressed tortilla, carne asada, cheese.' },
               ],
             },
             {

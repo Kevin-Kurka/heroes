@@ -8,6 +8,7 @@ import type { Menu, MenuGroup, MenuItem } from '@/types';
 export const MENU_PHOTO_PATHS: Record<string, string> = {
   calamari: '/images/polished/calamari.jpg',
   'spicy chicken': '/images/polished/spicy-chicken.jpg',
+  'cheeseburger crunchwrap': '/images/polished/burger-wrap.jpg',
   'burger wrap': '/images/polished/burger-wrap.jpg',
   hoboken: '/images/polished/hoboken-sandwich.jpg',
   'hoboken italian': '/images/polished/hoboken-sandwich.jpg',
@@ -76,15 +77,28 @@ export const KITCHEN_SPECIALS = [
     description: 'Crispy chicken, bacon, melted jack.',
     place: 'kitchen-specials' as const,
   },
+] as const;
+
+export const CRUNCH_WRAPS = [
   {
-    id: 'mains-kitchen-specials-burger-wrap',
-    name: 'Burger Wrap',
+    id: 'mains-crunch-wraps-cheeseburger',
+    name: 'Cheeseburger Crunchwrap',
     description: 'Pressed tortilla, beef, cheese.',
-    place: 'kitchen-specials' as const,
+  },
+  {
+    id: 'mains-crunch-wraps-carnitas',
+    name: 'Carnitas Crunchwrap',
+    description: 'Pressed tortilla, carnitas, cheese.',
+  },
+  {
+    id: 'mains-crunch-wraps-carne-asada',
+    name: 'Carne Asada Crunchwrap',
+    description: 'Pressed tortilla, carne asada, cheese.',
   },
 ] as const;
 
 const WEEKLY_SPECIALS_RE = /^(specials|daily specials|daily lineup)$/i;
+const BURGER_WRAP_KEY = 'burger wrap';
 
 export function photoKey(name: string): string {
   return name
@@ -94,6 +108,11 @@ export function photoKey(name: string): string {
     .trim()
     .replace(/\s+/g, ' ');
 }
+
+const CRUNCH_WRAP_KEYS = new Set<string>([
+  BURGER_WRAP_KEY,
+  ...CRUNCH_WRAPS.map((wrap) => photoKey(wrap.name)),
+]);
 
 export function photoForName(name: string): string | undefined {
   const key = photoKey(name);
@@ -200,11 +219,82 @@ function ensureKitchenSpecials(groups: MenuGroup[]) {
   specials.items = [...specials.items, ...newItems];
 }
 
-/** Attach honest photos and the three live kitchen specials. Used by the public /menu. */
+function insertIntoMains(groups: MenuGroup[], section: MenuGroup, afterName?: RegExp) {
+  const mains = findGroup(groups, (g) => /^(mains?)$/i.test(g.name));
+  if (mains) {
+    const subs = mains.subGroups ?? [];
+    const afterIdx = afterName ? subs.findIndex((g) => afterName.test(g.name)) : -1;
+    mains.subGroups = afterIdx >= 0
+      ? [...subs.slice(0, afterIdx + 1), section, ...subs.slice(afterIdx + 1)]
+      : [section, ...subs];
+    if (!mains.displayMode) mains.displayMode = 'starters';
+    return;
+  }
+  const weeklyIdx = groups.findIndex((g) => WEEKLY_SPECIALS_RE.test(g.name));
+  if (weeklyIdx >= 0) groups.splice(weeklyIdx, 0, section);
+  else groups.push(section);
+}
+
+function retireBurgerWrap(item: MenuItem) {
+  const cheese = CRUNCH_WRAPS[0];
+  item.id = cheese.id;
+  item.name = cheese.name;
+  item.description = cheese.description;
+}
+
+function orderCrunchWraps(items: MenuItem[]): MenuItem[] {
+  const rank = new Map(CRUNCH_WRAPS.map((wrap, i) => [photoKey(wrap.name), i]));
+  return [...items].sort((a, b) => (rank.get(photoKey(a.name)) ?? 99) - (rank.get(photoKey(b.name)) ?? 99));
+}
+
+function ensureCrunchWraps(groups: MenuGroup[]) {
+  walkGroups(groups, (group) => {
+    for (const item of group.items) {
+      if (photoKey(item.name) === BURGER_WRAP_KEY) retireBurgerWrap(item);
+    }
+  });
+
+  let wraps = findGroup(groups, (g) => /crunch wraps?/i.test(g.name));
+  if (!wraps) {
+    wraps = {
+      id: 'mains-crunch-wraps',
+      name: 'Crunch Wraps',
+      displayMode: 'variants',
+      items: [],
+    };
+    insertIntoMains(groups, wraps, /kitchen specials/i);
+  }
+
+  walkGroups(groups, (group) => {
+    if (group === wraps) return;
+    const stay: MenuItem[] = [];
+    for (const item of group.items) {
+      if (!CRUNCH_WRAP_KEYS.has(photoKey(item.name))) {
+        stay.push(item);
+        continue;
+      }
+      if (!wraps.items.some((existing) => photoKey(existing.name) === photoKey(item.name))) {
+        wraps.items.push(item);
+      }
+    }
+    group.items = stay;
+  });
+
+  for (const wrap of CRUNCH_WRAPS) {
+    if (!hasNamedItem(groups, wrap.name)) {
+      wraps.items.push({ id: wrap.id, name: wrap.name, description: wrap.description });
+    }
+  }
+
+  wraps.items = orderCrunchWraps(wraps.items);
+}
+
+/** Attach honest photos, kitchen specials, and the Crunch Wraps section. Used by the public /menu. */
 export function applyMenuPresentation(menus: Menu[]): Menu[] {
   const next = cloneMenus(menus);
   for (const menu of next) {
     ensureKitchenSpecials(menu.groups);
+    ensureCrunchWraps(menu.groups);
     applyPhotos(menu.groups);
   }
   return next;
