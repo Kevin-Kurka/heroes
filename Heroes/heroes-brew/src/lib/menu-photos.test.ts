@@ -131,12 +131,29 @@ describe('photo allowlist', () => {
     });
   });
 
-  it('serves dish photos full-width on mobile and 400px on desktop', () => {
-    const src = readFileSync(resolve(__dirname, '../components/MenuCard.tsx'), 'utf8');
-    expect(src).toContain('sizes="(max-width: 768px) 100vw, 400px"');
-    expect(src).toContain('md:max-w-[400px]');
-    expect(src).toContain('object-cover object-[center_68%]');
-    expect(src).not.toContain('group-hover:scale');
+  it('uses a full-bleed photo with a dark wash instead of a 400px inset', () => {
+    const menuCard = readFileSync(resolve(__dirname, '../components/MenuCard.tsx'), 'utf8');
+    const variant = readFileSync(resolve(__dirname, '../components/VariantGroupCard.tsx'), 'utf8');
+    expect(menuCard).toContain('sizes={PHOTO_SIZES}');
+    expect(menuCard).toContain('(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 520px');
+    expect(menuCard).toContain('from-black/75');
+    expect(menuCard).toContain('object-cover object-[center_68%]');
+    expect(menuCard).not.toContain('md:max-w-[400px]');
+    expect(menuCard).not.toContain('group-hover:scale');
+    expect(menuCard).toContain('{item.imageUrl && <DishBackdrop');
+    expect(variant).toContain('DishBackdrop');
+    expect(variant).toContain('usePhotoBackdrop && heroSrc && <DishBackdrop');
+  });
+
+  it('does not force an image onto text-only cards', () => {
+    const presented = applyMenuPresentation(getMenus());
+    const rows = flattenItems(presented);
+    const byName = (name: string) => rows.find(({ item }) => photoKey(item.name) === photoKey(name))?.item;
+    expect(byName('Tenders')?.imageUrl).toBeUndefined();
+    expect(byName('Carnitas Crunchwrap')?.imageUrl).toBeUndefined();
+    expect(byName('Carne Asada Crunchwrap')?.imageUrl).toBeUndefined();
+    expect(byName('Hummus Plate')?.imageUrl).toBeUndefined();
+    expect(byName('Cheeseburger Crunchwrap')?.imageUrl).toBe('/images/polished/burger-wrap.jpg');
   });
 });
 
