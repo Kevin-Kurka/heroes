@@ -13,6 +13,7 @@ import {
   photoForName,
   photoKey,
 } from './menu-photos';
+import { copyForName } from './menu-copy';
 import type { Menu, MenuItem } from '@/types';
 
 const PUBLIC_ROOT = resolve(__dirname, '../../public');
@@ -136,8 +137,8 @@ describe('photo allowlist', () => {
     const variant = readFileSync(resolve(__dirname, '../components/VariantGroupCard.tsx'), 'utf8');
     expect(menuCard).toContain('sizes={PHOTO_SIZES}');
     expect(menuCard).toContain('(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 520px');
-    expect(menuCard).toContain('from-black/90 via-black/70 to-black/45');
-    expect(menuCard).toContain('group-hover:from-black/85');
+    expect(menuCard).toContain('from-black/95 via-black/85 to-black/70');
+    expect(menuCard).toContain('group-hover:from-black/92');
     expect(menuCard).toContain('text-white/90');
     expect(menuCard).toContain('PHOTO_TEXT_SHADOW');
     expect(menuCard).toContain('drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)]');
@@ -163,6 +164,57 @@ describe('photo allowlist', () => {
     expect(byName('Carne Asada Crunchwrap')?.imageUrl).toBeUndefined();
     expect(byName('Hummus Plate')?.imageUrl).toBeUndefined();
     expect(byName('Cheeseburger Crunchwrap')?.imageUrl).toBe('/images/polished/burger-wrap.jpg');
+  });
+});
+
+describe('kitchen recipe copy', () => {
+  it('resolves guest lines for philly, nachos, pasadena, and hoboken', () => {
+    expect(copyForName('Philly Cheesesteak (Philly Billy)')).toBe(
+      'Shaved ribeye, grilled onions, mushrooms, red pepper relish, cherry peppers, and melted provolone on an Amoroso roll.',
+    );
+    expect(copyForName('Philly Billy')).toBe(copyForName('Philadelphia'));
+    expect(copyForName('Nachos')).toBe(
+      'Crisp chips piled with beans, guacamole, melted cheese, Cheez Whiz, cilantro-lime crema, pico, and jalapeños.',
+    );
+    expect(copyForName('Pasadena (The OG Cheeseburger)')).toBe(
+      'American cheese, lettuce, onion, pickles, tomato, and hero sauce on a brioche bun.',
+    );
+    expect(copyForName('Hoboken (Italian)')).toBe(
+      'Ham, salami, capicola, mortadella, and provolone with lettuce, tomato, red onion, oil, vinegar, and oregano on an Italian roll.',
+    );
+  });
+
+  it('applies recipe copy on the presented menu and on matching group cards', () => {
+    const presented = applyMenuPresentation(getMenus());
+    const rows = flattenItems(presented);
+    const byName = (name: string) => rows.find(({ item }) => photoKey(item.name) === photoKey(name))?.item;
+    expect(byName('Philly Cheesesteak (Philly Billy)')?.description).toBe(
+      'Shaved ribeye, grilled onions, mushrooms, red pepper relish, cherry peppers, and melted provolone on an Amoroso roll.',
+    );
+    expect(byName('Nachos')?.description).toBe(
+      'Crisp chips piled with beans, guacamole, melted cheese, Cheez Whiz, cilantro-lime crema, pico, and jalapeños.',
+    );
+    expect(byName('Pasadena (The OG Cheeseburger)')?.description).toBe(
+      'American cheese, lettuce, onion, pickles, tomato, and hero sauce on a brioche bun.',
+    );
+    expect(byName('Hoboken (Italian)')?.description).toBe(
+      'Ham, salami, capicola, mortadella, and provolone with lettuce, tomato, red onion, oil, vinegar, and oregano on an Italian roll.',
+    );
+    expect(byName('Cheeseburger Crunchwrap')?.description).toBe('Pressed tortilla, beef, cheese.');
+    expect(byName('Carnitas Crunchwrap')?.description).toBe('Pressed tortilla, carnitas, cheese.');
+    expect(byName('Antipasto')?.description).toMatch(/Italian vinaigrette/);
+
+    const mains = presented[0].groups.find((g) => g.name === 'Mains');
+    const starting = presented[0].groups.find((g) => g.name === 'Starting');
+    const nachos = starting?.subGroups?.find((g) => g.name === 'Nachos');
+    const sliders = starting?.subGroups?.find((g) => g.name === 'Sliders');
+    const philly = mains?.subGroups?.find((g) => /philly/i.test(g.name));
+    expect(nachos?.description).toBe(copyForName('Nachos'));
+    expect(sliders?.description).toBe(copyForName('Sliders'));
+    expect(philly?.description).toBe(copyForName('Philly Billy'));
+
+    const breakfastCarne = rows.find(({ group, item }) => group === 'SD Burrito' && item.name === 'Carne Asada');
+    expect(breakfastCarne?.item.description).toBeUndefined();
   });
 });
 

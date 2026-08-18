@@ -28,7 +28,7 @@ export function DishBackdrop({ src, alt }: { src: string; alt: string }) {
       />
       <div
         aria-hidden
-        className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/70 to-black/45 transition-colors duration-300 group-hover:from-black/85 group-hover:via-black/65 group-hover:to-black/40"
+        className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/85 to-black/70 transition-colors duration-300 group-hover:from-black/92 group-hover:via-black/80 group-hover:to-black/65"
       />
     </>
   );

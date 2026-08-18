@@ -1,4 +1,5 @@
 import type { Menu, MenuGroup, MenuItem } from '@/types';
+import { copyForName, shouldReplaceDescription } from './menu-copy';
 
 /**
  * Honest plate photos only. Keys are normalized item/group names
@@ -151,6 +152,25 @@ function findGroup(groups: MenuGroup[], pred: (g: MenuGroup) => boolean): MenuGr
   return found;
 }
 
+function applyDescriptions(groups: MenuGroup[]) {
+  walkGroups(groups, (group, parent) => {
+    if (WEEKLY_SPECIALS_RE.test(group.name) || (parent && WEEKLY_SPECIALS_RE.test(parent.name))) {
+      return;
+    }
+
+    const groupCopy = copyForName(group.name);
+    if (groupCopy) group.description = groupCopy;
+
+    for (const item of group.items) {
+      const itemKey = photoKey(item.name);
+      if (CRUNCH_WRAP_KEYS.has(itemKey)) continue;
+      if (!shouldReplaceDescription(item.name, item.description)) continue;
+      const copy = copyForName(item.name, group.name);
+      if (copy) item.description = copy;
+    }
+  });
+}
+
 function applyPhotos(groups: MenuGroup[]) {
   walkGroups(groups, (group, parent) => {
     // Weekly deal cards are copy, not dishes — don't attach food photos by name collision.
@@ -295,6 +315,7 @@ export function applyMenuPresentation(menus: Menu[]): Menu[] {
   for (const menu of next) {
     ensureKitchenSpecials(menu.groups);
     ensureCrunchWraps(menu.groups);
+    applyDescriptions(menu.groups);
     applyPhotos(menu.groups);
   }
   return next;
