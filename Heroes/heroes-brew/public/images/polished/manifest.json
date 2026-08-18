@@ -18,6 +18,15 @@
     "note": "Beer lineup on bar"
   },
   {
+    "slug": "burger-wrap",
+    "file": "images/polished/burger-wrap.jpg",
+    "category": "Kitchen Specials",
+    "display": "Burger Wrap",
+    "source": "live-plate",
+    "quality": 5,
+    "note": "Pressed tortilla wrap with beef and melted cheese, cut to show the plate"
+  },
+  {
     "slug": "buffalo-wings",
     "file": "images/polished/buffalo-wings.jpg",
     "category": "Wings, Tenders",
@@ -25,6 +34,15 @@
     "source": "Wings-3.webp",
     "quality": 5,
     "note": "Plain wings, golden and crispy"
+  },
+  {
+    "slug": "calamari",
+    "file": "images/polished/calamari.jpg",
+    "category": "Munchies",
+    "display": "Calamari",
+    "source": "live-plate",
+    "quality": 5,
+    "note": "Fried rings and tentacles with marinara and house aioli"
   },
   {
     "slug": "carlsbad-sandwich",
@@ -286,6 +304,15 @@
     "source": "927DD24E-52AC-44B1-8CCC-B808C02804F7.jpg",
     "quality": 4,
     "note": "Chicken sandwich with bacon, lettuce and quality presentation"
+  },
+  {
+    "slug": "spicy-chicken",
+    "file": "images/polished/spicy-chicken.jpg",
+    "category": "Kitchen Specials",
+    "display": "Spicy Chicken",
+    "source": "live-plate",
+    "quality": 5,
+    "note": "Crispy chicken sandwich with bacon and melted jack"
   },
   {
     "slug": "tombstone-burger",

@@ -237,7 +237,7 @@ function getStyleCSS(s: StyleKey, m: ModeKey): string {
 /* ============================================================
    SHARED RENDERERS
    ============================================================ */
-function fmtPrice(p: number) { return `${p}`; }
+function fmtPrice(p?: number) { return p == null ? '' : `${p}`; }
 
 function Header({ style: s }: { style: StyleKey }) {
   if (s === 'editorial') return (
@@ -289,13 +289,12 @@ function VGroup({ g, style: s }: { g: MenuGroup; style: StyleKey }) {
   );
 }
 
-function ItemRow({ name, sub, desc, price }: { name: string; sub?: string; desc?: string; price: number }) {
+function ItemRow({ name, sub, desc, price }: { name: string; sub?: string; desc?: string; price?: number }) {
   return <>
     <div className="row">
       <span className="row-nm">{name}</span>
       {sub && <span className="row-sub">{sub}</span>}
-      <span className="row-dots" />
-      <span className="row-pr">{fmtPrice(price)}</span>
+      {price != null && <><span className="row-dots" /><span className="row-pr">{fmtPrice(price)}</span></>}
     </div>
     {desc && <div className="row-desc">{desc}</div>}
   </>;
@@ -578,7 +577,7 @@ function groupToRows(g: MenuGroup, tab: string, section: string): string[][] {
 
   g.items.forEach((item: MenuItem) => {
     const name = item.subtitle ? `${item.name} ${item.subtitle}` : item.name;
-    rows.push([tab, section, name, String(item.price), item.description ?? '', '', '', '']);
+    rows.push([tab, section, name, item.price != null ? String(item.price) : '', item.description ?? '', '', '', '']);
   });
 
   // Variant groups list their options/upcharges at the group level.
@@ -666,7 +665,7 @@ export default function PrintableMenuClient({ menus }: { menus: Menu[] }) {
       <div className="no-print" style={{ position: 'sticky', top: 0, zIndex: 50, background: '#111827', color: '#fff', padding: '10px 16px', boxShadow: '0 4px 16px rgba(0,0,0,.4)', fontFamily: 'system-ui,sans-serif' }}>
         <div style={{ maxWidth: 820, margin: '0 auto' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-            <h1 style={{ fontSize: 16, fontWeight: 700, margin: 0 }}>Print & Export Menus</h1>
+            <h1 style={{ fontSize: 16, fontWeight: 700, margin: 0 }}>Staff menus — print & export</h1>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               {STYLES.map(st => (
                 <button key={st.key} onClick={() => setStyle(st.key)} style={{ padding: '5px 10px', borderRadius: 5, border: 'none', fontSize: 11, fontWeight: 600, cursor: 'pointer', background: style === st.key ? '#f59e0b' : '#374151', color: style === st.key ? '#000' : '#9ca3af', transition: 'all .15s' }}>
