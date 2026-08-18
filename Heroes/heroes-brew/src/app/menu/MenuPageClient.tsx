@@ -187,7 +187,7 @@ export default function MenuPageClient({ menus }: Props) {
                 {secretNote && (
                   <p className="mb-6 text-sm font-medium text-accent">{secretNote}</p>
                 )}
-                <div className="grid gap-5 sm:grid-cols-2">
+                <div className="grid gap-4 sm:grid-cols-2">
                   {secretItems.map((item, i) => (
                     <MenuCard key={item.id} item={item} index={i} />
                   ))}
@@ -251,7 +251,7 @@ export default function MenuPageClient({ menus }: Props) {
                   <VariantGroupCard group={sub} />
                 </div>
               ))}
-              <div className="grid gap-5 sm:grid-cols-2">
+              <div className="grid gap-4 sm:grid-cols-2">
                 {currentGroup?.items.map((item, i) => (
                   <MenuCard key={item.id} item={item} index={i} />
                 ))}

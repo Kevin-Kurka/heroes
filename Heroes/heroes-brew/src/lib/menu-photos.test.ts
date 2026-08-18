@@ -142,17 +142,20 @@ describe('photo allowlist', () => {
   it('renders public menu cards as standardized text-only chrome', () => {
     const menuCard = readFileSync(resolve(__dirname, '../components/MenuCard.tsx'), 'utf8');
     const variant = readFileSync(resolve(__dirname, '../components/VariantGroupCard.tsx'), 'utf8');
-    expect(menuCard).toContain('bg-card/70');
-    expect(menuCard).toContain('p-5 sm:p-6');
+    expect(menuCard).toContain('bg-white/5');
+    expect(menuCard).toContain('rounded-xl');
     expect(menuCard).toContain('text-foreground');
     expect(menuCard).toContain('text-muted');
+    expect(menuCard).not.toMatch(/\bborder\b/);
+    expect(menuCard).not.toContain('bg-card/70');
     expect(menuCard).not.toContain('DishBackdrop');
     expect(menuCard).not.toContain('next/image');
     expect(menuCard).not.toContain('imageUrl');
     expect(menuCard).not.toContain('from-black/');
     expect(menuCard).not.toContain('md:max-w-[400px]');
-    expect(variant).toContain('bg-card/70');
-    expect(variant).toContain('p-5 sm:p-6');
+    expect(variant).toContain('bg-white/5');
+    expect(variant).not.toContain('bg-card/70');
+    expect(variant).not.toContain('border-white/[0.06]');
     expect(variant).not.toContain('DishBackdrop');
     expect(variant).not.toContain('next/image');
     expect(variant).not.toContain('imageUrl');
