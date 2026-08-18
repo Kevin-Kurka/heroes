@@ -7,10 +7,12 @@ import DoorDashIcon from '@/components/DoorDashIcon';
 import { DOORDASH_URL } from '@/lib/doordash';
 import { useDoorDashAvailable } from '@/hooks/use-doordash-available';
 import { trackEvent } from '@/lib/analytics';
+import { SEASONAL_NAV } from '@/lib/seasonal';
 
 const navItems = [
   { label: 'Social', href: '/social' },
   { label: 'Menu', href: '/menu' },
+  { label: SEASONAL_NAV.label, href: SEASONAL_NAV.href },
   { label: 'Scoreboard', href: '/events' },
   { label: 'Location', href: '/location' },
 ];

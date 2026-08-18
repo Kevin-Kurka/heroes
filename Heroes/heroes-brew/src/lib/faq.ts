@@ -100,7 +100,7 @@ export const FAQ: FaqEntry[] = [
   {
     question: 'Where is the best place to watch soccer and the World Cup in Carlsbad?',
     answer:
-      'American Heroes & Brew is Carlsbad Village’s home for soccer — every 2026 FIFA World Cup match and big international game live on 16 TVs, with sound up for the marquee fixtures, a full bar, and food all day. It’s a family-friendly watch-party spot at 300 Carlsbad Village Drive, Carlsbad. Walk-ins welcome, no cover.',
+      'American Heroes & Brew hosted 2026 FIFA World Cup watch parties in Carlsbad Village on 16 TVs. The tournament has ended — football season is the lead now (every NFL game), and we still show soccer and other sports with the sound up for the big fixtures, a full bar, and food all day. 300 Carlsbad Village Drive, Carlsbad. Walk-ins welcome, no cover.',
   },
   {
     question: 'How rated is American Heroes & Brew, and is it a good place to watch the game?',

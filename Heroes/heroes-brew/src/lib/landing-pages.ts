@@ -47,38 +47,38 @@ const ADDRESS = '300 Carlsbad Village Drive, Suite 120, Carlsbad, CA 92008';
 export const LANDING_PAGES: Record<string, LandingPageContent> = {
   'world-cup': {
     slug: 'world-cup',
-    metaTitle: 'Where to Watch the World Cup in Carlsbad — 16 TVs, Every Match',
+    metaTitle: '2026 World Cup Watch Parties in Carlsbad — What We Hosted',
     metaDescription:
-      'Watch the 2026 FIFA World Cup in Carlsbad at American Heroes & Brew — every match live on 16 TVs in Carlsbad Village. Family-friendly, full bar, food all day, and watch-party energy for every game. Walk-ins welcome.',
-    h1: 'Where to Watch the World Cup in Carlsbad',
-    tagline: 'Every match live on 16 TVs — Carlsbad Village’s World Cup HQ.',
+      'American Heroes & Brew hosted 2026 FIFA World Cup watch parties in Carlsbad Village on 16 TVs. The tournament has ended — football season is on: every NFL game, full bar, food all day. Walk-ins welcome.',
+    h1: '2026 World Cup Watch Parties in Carlsbad',
+    tagline: 'We hosted the tournament on 16 TVs — football season is the lead now.',
     intro: [
-      'Looking for where to watch the World Cup in Carlsbad? American Heroes & Brew shows every match of the 2026 FIFA World Cup live on 16 TVs in the heart of Carlsbad Village. Group-stage drama, the knockout rounds, and the final — we’ve got the game on, the sound up for the big ones, a full bar, and the kitchen open all day. Family-friendly, walk-ins welcome, no cover.',
-      'With the 2026 tournament hosted across the USA, Canada, and Mexico, every kickoff is a reason to gather. We’re at ' +
+      'American Heroes & Brew hosted 2026 FIFA World Cup watch parties in the heart of Carlsbad Village — group-stage matches, knockouts, and the final on 16 TVs with the sound up for the big ones, a full bar, and the kitchen open all day. The tournament ended in July 2026.',
+      'Looking for where to watch the game in Carlsbad now? Football season is on: every NFL Sunday, Thursday Night, and Monday Night Football still plays here at ' +
         ADDRESS +
-        ' — walkable in the Village, steps from Carlsbad State Beach and minutes from LEGOLAND, so it’s an easy spot for locals and visitors to catch a match.',
+        ' — walkable in the Village, steps from Carlsbad State Beach and minutes from LEGOLAND. Family-friendly, walk-ins welcome, no cover.',
     ],
     sections: [
       {
-        heading: 'Why watch the World Cup here',
+        heading: 'What we hosted during the World Cup',
         bullets: [
           '16 TVs — every match, plus the marquee games with sound',
-          'Full bar, craft beer, and daily drink specials',
+          'Full bar, house drafts (contract pours), and daily drink specials',
           'All-American food all day — burgers, wings, loaded fries, the Philly cheesesteak',
           'Family-friendly with a kids’ menu — bring everyone',
           'Walkable Carlsbad Village location, minutes from the beach and LEGOLAND',
         ],
       },
       {
-        heading: 'Watch-party energy for the big matches',
+        heading: 'Football season is the lead now',
         body: [
-          'USA matches, rivalry games, and the knockout rounds bring the crowd and the noise. Get there early for the marquee kickoffs to grab a good seat — we’ll have the match on the big screens. Want to organize a group watch? Call us at (760) 994-0187.',
+          'The 2026 FIFA World Cup is over. American Heroes & Brew is Carlsbad Village’s game-day sports bar for the NFL season — every game on 16 TVs, plus college football, NBA, and pay-per-view UFC. Want to organize a group watch? Call us at (760) 994-0187.',
         ],
       },
       {
-        heading: 'More than the match',
+        heading: 'Still a soccer-friendly sports bar',
         body: [
-          'Catch a match over weekend breakfast (served Fri–Sun) with bottomless mimosas, or make a day of it with lunch and the game. Beyond the World Cup, we show every game year-round — NFL, NBA, college football, and pay-per-view UFC.',
+          'We still show big international soccer and every other sport year-round. Catch a match or an NFL kickoff over weekend breakfast (served Fri–Sun) with bottomless mimosas, or make a day of it with lunch and the game.',
         ],
       },
     ],
@@ -86,22 +86,22 @@ export const LANDING_PAGES: Record<string, LandingPageContent> = {
       {
         question: 'Where can I watch the World Cup in Carlsbad?',
         answer:
-          'American Heroes & Brew in Carlsbad Village shows every 2026 FIFA World Cup match live on 16 TVs. It’s a family-friendly sports bar with a full bar and full menu at 300 Carlsbad Village Drive — walk-ins welcome, no cover.',
+          'American Heroes & Brew in Carlsbad Village hosted 2026 FIFA World Cup watch parties on 16 TVs. The tournament has ended. We still show soccer and every NFL game at 300 Carlsbad Village Drive — walk-ins welcome, no cover.',
       },
       {
-        question: 'Does American Heroes & Brew show every World Cup game?',
+        question: 'Did American Heroes & Brew show every World Cup game?',
         answer:
-          'Yes — we show every World Cup match across our 16 TVs, with sound on the marquee games. Group stage through the final.',
+          'Yes — during the 2026 FIFA World Cup we showed every match across our 16 TVs, with sound on the marquee games, from the group stage through the final.',
       },
       {
-        question: 'Is it family-friendly for World Cup watch parties?',
+        question: 'Is it family-friendly for watch parties?',
         answer:
-          'Absolutely. American Heroes & Brew is a family-friendly sports bar with a kids’ menu, so the whole family can watch the World Cup together in Carlsbad Village.',
+          'Absolutely. American Heroes & Brew is a family-friendly sports bar with a kids’ menu, so the whole family can watch NFL game days and soccer together in Carlsbad Village.',
       },
       {
-        question: 'Should I arrive early for big World Cup matches?',
+        question: 'Where should I watch football in Carlsbad now?',
         answer:
-          'For USA matches, rivalry games, and the knockout rounds, arriving early is smart to grab a good seat. Walk-ins are welcome; call (760) 994-0187 to plan a group.',
+          'American Heroes & Brew shows every NFL game — Sundays, Thursday Night Football, and Monday Night Football — on 16 TVs in Carlsbad Village. Walk-ins are welcome; call (760) 994-0187 to plan a group.',
       },
     ],
     breadcrumbLabel: 'World Cup',
@@ -128,7 +128,7 @@ export const LANDING_PAGES: Record<string, LandingPageContent> = {
           'College football — Saturday slates on multiple screens',
           'NBA & MLB — regular season and playoffs',
           'UFC — pay-per-view fight nights',
-          'Soccer & the World Cup — big international matchups',
+          'Soccer — big international matchups (we hosted 2026 World Cup watch parties)',
         ],
       },
       {
@@ -315,7 +315,7 @@ export const LANDING_PAGES: Record<string, LandingPageContent> = {
           'Mahalo Monday — Kalua pork sliders $4 each; Modelo, Ultra, Coors & Miller Lite $3 each',
           'Taco Tuesday — Village tacos $4 each; all tequila cocktails $2 off; industry drafts & wells $5 each (all day)',
           'Wings & Well Wednesday — wings $6 off; well cocktails $6 each',
-          'Thirsty Thursday — all burgers $5 off; house drafts (Blonde, IPA, Amber, Lager) $5 each',
+          'Thirsty Thursday — all burgers $5 off; house drafts (Blonde, IPA, Amber, Lager — contract pours) $5 each',
           'Friday Funday (1–4 PM) — drinks & munchies $2 off',
         ],
       },

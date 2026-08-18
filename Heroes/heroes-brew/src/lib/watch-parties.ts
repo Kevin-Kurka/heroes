@@ -56,30 +56,30 @@ export const WATCH_PARTIES: Record<string, WatchParty> = {
     endDate: '2026-06-24T20:30:00-07:00',
     videoFile: 'AHB-watchparty_mexico-czechia.mp4',
     thumbFile: 'mexico-vs-czechia.jpg',
-    tagline: 'Mexico vs Czechia — today at 6:00 PM on 16 TVs in Carlsbad Village.',
+    tagline: 'Mexico vs Czechia — hosted June 24, 2026 on 16 TVs in Carlsbad Village.',
     intro: [
-      'Watch Mexico vs Czechia at American Heroes & Brew — Carlsbad Village’s home for the 2026 FIFA World Cup. Kickoff is today at 6:00 PM and we’ve got the match on 16 TVs with the sound up, a full bar, ice-cold drafts, and the kitchen open all day. Family-friendly, walk-ins welcome, no cover.',
-      'Pick your side, round up the crew, and catch every goal at ' +
+      'On June 24, 2026, American Heroes & Brew hosted Mexico vs Czechia as a 2026 FIFA World Cup watch party in Carlsbad Village. Kickoff was 6:00 PM — the match was on 16 TVs with the sound up, a full bar, house drafts (contract pours), and the kitchen open all day. Family-friendly, walk-ins welcome, no cover.',
+      'The tournament has ended. Football season is the lead now — every NFL game still plays here at ' +
         ADDRESS +
-        ' — walkable in the Village, minutes from Carlsbad State Beach and LEGOLAND. Organizing a group? Call us at ' +
+        ' — walkable in the Village, minutes from Carlsbad State Beach and LEGOLAND. Organizing a group for game day? Call us at ' +
         PHONE +
         '.',
     ],
     faqs: [
       {
-        question: 'Where can I watch Mexico vs Czechia in Carlsbad?',
+        question: 'Where did people watch Mexico vs Czechia in Carlsbad?',
         answer:
-          'American Heroes & Brew in Carlsbad Village is showing Mexico vs Czechia live on 16 TVs, today at 6:00 PM. It’s a family-friendly sports bar with a full bar and full menu at 300 Carlsbad Village Drive — walk-ins welcome, no cover.',
+          'American Heroes & Brew in Carlsbad Village hosted Mexico vs Czechia on June 24, 2026, on 16 TVs at 6:00 PM. It’s a family-friendly sports bar with a full bar and full menu at 300 Carlsbad Village Drive — walk-ins welcome, no cover.',
       },
       {
-        question: 'What time is the Mexico vs Czechia watch party?',
+        question: 'What time was the Mexico vs Czechia watch party?',
         answer:
-          'Kickoff is today at 6:00 PM at American Heroes & Brew, 300 Carlsbad Village Drive, Carlsbad. Get there early for the marquee match to grab a seat — the game is on 16 TVs with the sound up.',
+          'Kickoff was 6:00 PM on June 24, 2026 at American Heroes & Brew, 300 Carlsbad Village Drive, Carlsbad. The game was on 16 TVs with the sound up.',
       },
       {
-        question: 'Is there a cover charge or do I need a reservation for the watch party?',
+        question: 'Is there a cover charge or do I need a reservation for a watch party?',
         answer:
-          'No cover and no reservation needed — walk-ins are always welcome at American Heroes & Brew. There’s a full bar, craft beer, and food all day during the Mexico vs Czechia watch party.',
+          'No cover and no reservation needed — walk-ins are always welcome at American Heroes & Brew. There’s a full bar, house drafts (contract pours), and food all day. Catch NFL game days and the next big matchup here.',
       },
     ],
     keywords: [
@@ -99,16 +99,16 @@ export const WATCH_PARTIES: Record<string, WatchParty> = {
     endDate: '2026-06-18T20:30:00-07:00',
     videoFile: 'AHB-watchparty_mexico-southkorea.mp4',
     thumbFile: 'mexico-vs-south-korea.jpg',
-    tagline: 'Mexico vs South Korea — on 16 TVs in Carlsbad Village.',
+    tagline: 'Mexico vs South Korea — hosted June 18, 2026 on 16 TVs in Carlsbad Village.',
     intro: [
-      'Watch Mexico vs South Korea at American Heroes & Brew, Carlsbad Village’s World Cup HQ. Every match of the 2026 FIFA World Cup is live on 16 TVs with the sound up for the big ones, plus a full bar, ice-cold drafts, and food all day. Family-friendly, walk-ins welcome, no cover.',
-      'Find us at ' + ADDRESS + ' — walkable in the Village and minutes from the beach and LEGOLAND. Call ' + PHONE + ' to plan a group watch.',
+      'On June 18, 2026, American Heroes & Brew hosted Mexico vs South Korea as a 2026 FIFA World Cup watch party in Carlsbad Village. The match was on 16 TVs with the sound up, plus a full bar, house drafts (contract pours), and food all day. Family-friendly, walk-ins welcome, no cover.',
+      'The tournament has ended. Find us at ' + ADDRESS + ' for NFL game days and every sport on 16 TVs — walkable in the Village and minutes from the beach and LEGOLAND. Call ' + PHONE + ' to plan a group watch.',
     ],
     faqs: [
       {
-        question: 'Where can I watch Mexico vs South Korea in Carlsbad?',
+        question: 'Where did people watch Mexico vs South Korea in Carlsbad?',
         answer:
-          'American Heroes & Brew in Carlsbad Village shows Mexico vs South Korea and every 2026 FIFA World Cup match live on 16 TVs. It’s a family-friendly sports bar at 300 Carlsbad Village Drive — full bar, full menu, walk-ins welcome, no cover.',
+          'American Heroes & Brew in Carlsbad Village hosted Mexico vs South Korea on June 18, 2026, on 16 TVs. It’s a family-friendly sports bar at 300 Carlsbad Village Drive — full bar, full menu, walk-ins welcome, no cover.',
       },
     ],
     keywords: [
@@ -127,4 +127,9 @@ export function getWatchParty(slug: string): WatchParty | undefined {
 
 export function getAllWatchParties(): WatchParty[] {
   return WATCH_PARTY_SLUGS.map((s) => WATCH_PARTIES[s]);
+}
+
+/** True once the watch party's end time is in the past (Pacific-offset ISO). */
+export function isPastWatchParty(party: WatchParty, now = new Date()): boolean {
+  return new Date(party.endDate).getTime() < now.getTime();
 }

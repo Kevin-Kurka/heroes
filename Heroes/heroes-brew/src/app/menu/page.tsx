@@ -4,9 +4,9 @@ import { getMenuJsonLd } from '@/lib/structured-data';
 import MenuPageClient from './MenuPageClient';
 
 export const metadata: Metadata = {
-  title: 'Menu — Burgers, Wings & Craft Beer',
+  title: 'Menu — Burgers, Wings & House Drafts',
   description:
-    'Our full menu of burgers, wings, sandwiches, and craft brews at American Heroes & Brew — the best sports bar in Carlsbad & North County.',
+    'Our full menu of burgers, wings, sandwiches, and house drafts (contract pours) at American Heroes & Brew — the best sports bar in Carlsbad & North County.',
   alternates: { canonical: '/menu' },
 };
 

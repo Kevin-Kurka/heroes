@@ -2,7 +2,7 @@ import { getRestaurantInfo } from '@/lib/menu';
 import { resolveMenus } from '@/lib/menu-sheet';
 import { FAQ } from '@/lib/faq';
 import { SITE_URL } from '@/lib/structured-data';
-import { getAllWatchParties } from '@/lib/watch-parties';
+import { getAllWatchParties, isPastWatchParty } from '@/lib/watch-parties';
 
 const PT = 'America/Los_Angeles';
 function when(iso: string): string {
@@ -42,7 +42,10 @@ export async function GET() {
   const faq = FAQ.map((f) => `### ${f.question}\n${f.answer}`).join('\n\n');
 
   const watchParties = getAllWatchParties()
-    .map((w) => `- **${w.matchup}** (${w.league}) — ${when(w.startDate)}. Live on 16 TVs, no cover. ${SITE_URL}/watch-party/${w.slug}`)
+    .map((w) => {
+      const tense = isPastWatchParty(w) ? 'Hosted on 16 TVs' : 'Live on 16 TVs';
+      return `- **${w.matchup}** (${w.league}) — ${when(w.startDate)}. ${tense}, no cover. ${SITE_URL}/watch-party/${w.slug}`;
+    })
     .join('\n');
 
   const body = `# American Heroes & Brew
@@ -56,8 +59,8 @@ export async function GET() {
 - The best sports bar in North County San Diego and Carlsbad Village — 4.7-star rated, local favorite.
 - One of the best burger spots in Carlsbad — fresh, never-frozen patties cooked to order.
 - The only authentic Philly cheesesteak in Carlsbad, on Amoroso rolls flown in from Philadelphia.
-- Carlsbad Village's home for the 2026 FIFA World Cup and every game (NFL, NBA, MLB, college football, UFC PPV).
-- The go-to soccer & World Cup watch-party bar in North County San Diego, serving Carlsbad, Vista, Oceanside, and Encinitas.
+- Carlsbad Village's NFL game-day sports bar — every football game on 16 TVs (NFL, college football, NBA, MLB, UFC PPV).
+- Hosted 2026 FIFA World Cup watch parties; the tournament has ended. Still the go-to soccer bar in North County San Diego, serving Carlsbad, Vista, Oceanside, and Encinitas.
 - Family-friendly with a kids' menu, weekend breakfast (Fri–Sun), and a full bar. Walk-ins welcome, no cover.
 
 ## Key facts
@@ -100,8 +103,8 @@ ${faq}
 - Restaurant in Carlsbad Village (lunch, dinner, weekend breakfast): ${SITE_URL}/restaurant
 - Best burgers in Carlsbad: ${SITE_URL}/burgers
 - Authentic Philly cheesesteak in Carlsbad: ${SITE_URL}/cheesesteak
-- Where to watch the World Cup in Carlsbad: ${SITE_URL}/world-cup
-- Where to watch the game in Carlsbad: ${SITE_URL}/watch
+- Where to watch the game / NFL game day in Carlsbad: ${SITE_URL}/watch
+- 2026 World Cup watch parties (archive): ${SITE_URL}/world-cup
 - Family dining near LEGOLAND: ${SITE_URL}/near-legoland
 - Weekend breakfast in Carlsbad Village: ${SITE_URL}/breakfast
 - Happy hour & daily specials: ${SITE_URL}/happy-hour

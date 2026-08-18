@@ -352,14 +352,17 @@ export function getVideoObjectJsonLd(party: WatchParty) {
 export function getWatchPartyEventJsonLd(party: WatchParty) {
   const r = getRestaurantInfo();
   const pageUrl = `${SITE_URL}/watch-party/${party.slug}`;
+  const past = new Date(party.endDate).getTime() < Date.now();
   return {
     '@context': 'https://schema.org',
     '@type': 'Event',
     '@id': `${pageUrl}#event`,
-    name: `Watch ${party.matchup} at American Heroes & Brew`,
-    description:
-      `${party.matchup} (${party.league}) live on 16 TVs at American Heroes & Brew in Carlsbad Village. ` +
-      `Family-friendly sports bar, full bar, food all day. Walk-ins welcome, no cover.`,
+    name: past
+      ? `${party.matchup} watch party at American Heroes & Brew`
+      : `Watch ${party.matchup} at American Heroes & Brew`,
+    description: past
+      ? `${party.matchup} (${party.league}) was hosted on 16 TVs at American Heroes & Brew in Carlsbad Village. Family-friendly sports bar, full bar, food all day. Walk-ins welcome, no cover.`
+      : `${party.matchup} (${party.league}) live on 16 TVs at American Heroes & Brew in Carlsbad Village. Family-friendly sports bar, full bar, food all day. Walk-ins welcome, no cover.`,
     startDate: party.startDate,
     endDate: party.endDate,
     eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',

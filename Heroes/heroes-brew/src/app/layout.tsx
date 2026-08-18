@@ -43,7 +43,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'American Heroes & Brew | Best Sports Bar in Carlsbad',
     description:
-      'Carlsbad & North County\'s go-to sports bar — great food, craft brews, and every game on the big screens.',
+      'Carlsbad & North County\'s go-to sports bar — great food, a full bar, and every NFL game on the big screens.',
     url: SITE_URL,
     siteName: 'American Heroes & Brew',
     locale: 'en_US',

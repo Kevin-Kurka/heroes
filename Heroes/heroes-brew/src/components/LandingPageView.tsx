@@ -23,7 +23,12 @@ interface Props {
  */
 export default function LandingPageView({ page, restaurant }: Props) {
   const tel = restaurant.phone.replace(/\D/g, '');
-  const otherPages = Object.values(LANDING_PAGES).filter((p) => p.slug !== page.slug);
+  const otherPages = Object.values(LANDING_PAGES)
+    .filter((p) => p.slug !== page.slug)
+    .sort((a, b) => {
+      const rank = (slug: string) => (slug === 'watch' ? 0 : slug === 'world-cup' ? 2 : 1);
+      return rank(a.slug) - rank(b.slug);
+    });
 
   return (
     <div className="relative">

@@ -8,6 +8,7 @@ import { FAQ } from '@/lib/faq';
 import {
   WATCH_PARTY_SLUGS,
   getWatchParty,
+  isPastWatchParty,
   type WatchParty,
 } from '@/lib/watch-parties';
 import {
@@ -42,10 +43,13 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
   const party = getWatchParty(slug);
   if (!party) return {};
-  const title = `Watch ${party.matchup} in Carlsbad — ${party.league} Watch Party`;
-  const description =
-    `Watch ${party.matchup} live on 16 TVs at American Heroes & Brew in Carlsbad Village. ` +
-    `${formatWhen(party.startDate)}. Full bar, food all day, family-friendly, walk-ins welcome.`;
+  const past = isPastWatchParty(party);
+  const title = past
+    ? `${party.matchup} Watch Party in Carlsbad — ${party.league}`
+    : `Watch ${party.matchup} in Carlsbad — ${party.league} Watch Party`;
+  const description = past
+    ? `American Heroes & Brew hosted ${party.matchup} on 16 TVs in Carlsbad Village. ${formatWhen(party.startDate)}. Football season is on — every NFL game, full bar, walk-ins welcome.`
+    : `Watch ${party.matchup} live on 16 TVs at American Heroes & Brew in Carlsbad Village. ${formatWhen(party.startDate)}. Full bar, food all day, family-friendly, walk-ins welcome.`;
   const url = `${SITE_URL}/watch-party/${party.slug}`;
   return {
     title,
@@ -64,7 +68,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 
 const WHY_HERE = [
   '16 TVs — every match, with the sound up for the big games',
-  'Full bar, craft beer on tap, and daily drink specials',
+  'Full bar, house drafts (contract pours), and daily drink specials',
   'All-American food all day — burgers, signature wings, the authentic Philly cheesesteak',
   'Family-friendly with a kids’ menu — bring everyone',
   'Walkable in Carlsbad Village, minutes from the beach and LEGOLAND',
@@ -78,11 +82,14 @@ export default async function WatchPartyPage({ params }: Params) {
 
   const r = getRestaurantInfo();
   const url = `${SITE_URL}/watch-party/${party.slug}`;
+  const past = isPastWatchParty(party);
   const allFaqs = [...party.faqs, ...FAQ];
   const tel = r.phone.replace(/\D/g, '');
   const directionsUrl =
     'https://www.google.com/maps/dir//American+Heroes+%26+Brew,+300+Carlsbad+Village+Dr+STE+120,+Carlsbad,+CA+92008';
-  const shareText = `${party.matchup} on 16 TVs at American Heroes & Brew — ${formatWhen(party.startDate)}. Let's go! 🍻`;
+  const shareText = past
+    ? `${party.matchup} watch party recap at American Heroes & Brew — ${formatWhen(party.startDate)}. Catch NFL game days on 16 TVs.`
+    : `${party.matchup} on 16 TVs at American Heroes & Brew — ${formatWhen(party.startDate)}. Let's go! 🍻`;
 
   const jsonLd = [
     getWebPageJsonLd({
@@ -124,7 +131,7 @@ export default async function WatchPartyPage({ params }: Params) {
             {party.league} Watch Party · Carlsbad Village
           </p>
           <h1 className="text-4xl md:text-5xl font-extrabold mt-2 leading-tight">
-            Where to Watch {party.matchup} in Carlsbad
+            {past ? `${party.matchup} Watch Party in Carlsbad` : `Where to Watch ${party.matchup} in Carlsbad`}
           </h1>
           <p className="text-lg text-foreground/70 mt-3">{party.tagline}</p>
           <p className="mt-4 inline-flex items-center gap-2 rounded-lg bg-card px-4 py-2 text-foreground/90 font-semibold">
@@ -135,7 +142,9 @@ export default async function WatchPartyPage({ params }: Params) {
         {/* Primary calls to action — get them in the door, then invite the crew. */}
         <section className="mb-8 rounded-xl border border-accent/30 bg-accent/5 p-5">
           <p className="text-lg font-bold text-foreground mb-4">
-            Round up your crew and get down here. 🍻
+            {past
+              ? 'This watch party is over. Catch NFL game days and the next matchup here. 🏈'
+              : 'Round up your crew and get down here. 🍻'}
           </p>
           <div className="flex flex-col sm:flex-row flex-wrap gap-3 mb-3">
             <a
@@ -153,17 +162,17 @@ export default async function WatchPartyPage({ params }: Params) {
               <Phone size={18} /> Call {r.phone}
             </a>
             <Link
-              href="/menu"
+              href={past ? '/watch' : '/menu'}
               className="inline-flex items-center justify-center gap-2 bg-card border border-border text-foreground font-semibold px-6 py-3 rounded-sm hover:border-accent/40 transition-colors"
             >
-              <UtensilsCrossed size={18} /> See the Menu
+              <UtensilsCrossed size={18} /> {past ? 'NFL Game Day' : 'See the Menu'}
             </Link>
           </div>
           <InviteActions
-            shareTitle={`Watch ${party.matchup} at American Heroes & Brew`}
+            shareTitle={past ? `${party.matchup} at American Heroes & Brew` : `Watch ${party.matchup} at American Heroes & Brew`}
             shareText={shareText}
             shareUrl={url}
-            calendar={{
+            calendar={past ? undefined : {
               title: `Watch ${party.matchup} at American Heroes & Brew`,
               startISO: party.startDate,
               endISO: party.endDate,
@@ -235,5 +244,5 @@ export default async function WatchPartyPage({ params }: Params) {
   );
 }
 
-// Game-day pages reference live-ish dates; rebuild hourly so "today" copy stays fresh.
-export const revalidate = 3600;
+// Archived matchup pages are static recaps; daily rebuild is enough.
+export const revalidate = 86400;

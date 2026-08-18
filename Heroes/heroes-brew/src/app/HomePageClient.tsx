@@ -15,6 +15,7 @@ import DoorDashIcon from '@/components/DoorDashIcon';
 import { trackEvent } from '@/lib/analytics';
 import { DOORDASH_URL } from '@/lib/doordash';
 import { useDoorDashAvailable } from '@/hooks/use-doordash-available';
+import { FOOTBALL_SEASON } from '@/lib/seasonal';
 
 const DAILY_SPECIALS = [
   {
@@ -149,13 +150,13 @@ export default function HomePageClient({ events, todayIndex }: Props) {
               className="text-2xl md:text-3xl font-bold text-foreground"
               style={{ textShadow: '0 2px 8px rgba(0,0,0,0.8), 0 4px 20px rgba(0,0,0,0.6)' }}
             >
-              North County&apos;s Best Sports Bar
+              {FOOTBALL_SEASON.homeHeadline}
             </h2>
             <p
               className="text-foreground/80 text-base md:text-lg max-w-md mx-auto mt-1"
               style={{ textShadow: '0 2px 8px rgba(0,0,0,0.8), 0 4px 16px rgba(0,0,0,0.5)' }}
             >
-              Everyone&apos;s favorites, all day — every day!
+              {FOOTBALL_SEASON.homeBody}
             </p>
           </motion.div>
 
@@ -205,6 +206,39 @@ export default function HomePageClient({ events, todayIndex }: Props) {
 
       {/* Live Ticker */}
       <Ticker events={events} />
+
+      {/* Seasonal football lead */}
+      <section className="max-w-4xl mx-auto px-4 pt-10">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25, ease: [0, 0, 0.2, 1] }}
+          className="relative overflow-hidden bg-card border border-accent/30 rounded-lg p-6"
+        >
+          <div className="absolute top-0 left-0 w-1 h-full bg-accent" />
+          <span className="text-[10px] font-bold uppercase tracking-widest text-accent">
+            {FOOTBALL_SEASON.eyebrow}
+          </span>
+          <h2 className="text-xl md:text-2xl font-bold text-foreground mt-1">
+            {FOOTBALL_SEASON.homeHeadline}
+          </h2>
+          <p className="mt-2 text-foreground/80 leading-relaxed">{FOOTBALL_SEASON.homeBody}</p>
+          <div className="mt-4 flex flex-col sm:flex-row gap-3">
+            <Link
+              href={FOOTBALL_SEASON.watchHref}
+              className="inline-flex items-center justify-center gap-2 bg-accent text-white font-semibold px-5 py-2.5 rounded-sm hover:bg-accent-dim transition-colors"
+            >
+              {FOOTBALL_SEASON.watchCta} <ChevronRight size={16} />
+            </Link>
+            <Link
+              href={FOOTBALL_SEASON.fantasyHref}
+              className="inline-flex items-center justify-center gap-2 bg-card border border-border text-foreground font-semibold px-5 py-2.5 rounded-sm hover:border-accent/40 transition-colors"
+            >
+              {FOOTBALL_SEASON.fantasyCta} <ChevronRight size={16} />
+            </Link>
+          </div>
+        </motion.div>
+      </section>
 
       {/* Flag background below ticker */}
       <div className="relative overflow-hidden">

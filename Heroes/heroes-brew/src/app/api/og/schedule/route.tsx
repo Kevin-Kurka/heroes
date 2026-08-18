@@ -17,7 +17,7 @@ const LEAGUE_OF: Record<string, string> = {
   WC: 'WORLDCUP', NFL: 'NFL', MLB: 'MLB', NBA: 'NBA', NHL: 'NHL', MLS: 'MLS', CFB: 'CFB',
 };
 const TITLE_OF: Record<string, string> = {
-  WC: 'WORLD CUP — TODAY', NFL: 'NFL SUNDAY', MLB: 'PADRES & MLB TODAY',
+  WC: 'WORLD CUP', NFL: 'NFL SUNDAY', MLB: 'PADRES & MLB TODAY',
   NBA: 'NBA TODAY', NHL: 'NHL TODAY', MLS: 'MLS TODAY', CFB: 'COLLEGE FOOTBALL',
   ALL: 'TODAY AT HEROES', TODAY: 'TODAY AT HEROES',
 };
@@ -42,7 +42,7 @@ function ptTime(iso: string): string {
 
 export async function GET(req: Request) {
   const { searchParams, origin } = new URL(req.url);
-  const code = (searchParams.get('league') ?? 'WC').toUpperCase();
+  const code = (searchParams.get('league') ?? 'NFL').toUpperCase();
   const date = searchParams.get('date') ?? '';
   // ALL/TODAY → every sport on that date (the daily "Today at Heroes" lineup);
   // otherwise a single league's slate.

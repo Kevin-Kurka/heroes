@@ -585,12 +585,37 @@ function seedTodaySpecial() {
   if (seedSpecialOn_(currentMonthSheet_(), new Date())) scheduleNext();
 }
 
-// Month tab for a given Date (creating it with headers if missing).
+// Nearest earlier month tab (used as a template so Channel/Approval dropdowns survive).
+function previousMonthSheet_(date) {
+  var probe = new Date(date.getFullYear(), date.getMonth(), 1);
+  for (var i = 0; i < 18; i++) {
+    probe.setMonth(probe.getMonth() - 1);
+    var name = MONTH_NAMES[probe.getMonth()] + ' ' + probe.getFullYear();
+    var sh = ss_().getSheetByName(name);
+    if (sh) return sh;
+  }
+  return null;
+}
+
+// Month tab for a given Date. Missing tabs are duplicated from the previous month
+// (not insertSheet) so Channel/Approval dropdowns and column formatting stay intact.
 function monthSheetFor_(date) {
   var tz = Session.getScriptTimeZone();
   var name = MONTH_NAMES[Number(Utilities.formatDate(date, tz, 'M')) - 1] + ' ' + Utilities.formatDate(date, tz, 'yyyy');
-  var sh = ss_().getSheetByName(name);
-  if (!sh) { sh = ss_().insertSheet(name); sh.appendRow(HEADERS); sh.setFrozenRows(1); }
+  var ss = ss_();
+  var sh = ss.getSheetByName(name);
+  if (sh) return sh;
+  var template = previousMonthSheet_(date);
+  if (template) {
+    sh = template.copyTo(ss);
+    sh.setName(name);
+    var last = sh.getLastRow();
+    if (last > 1) sh.getRange(2, 1, last - 1, sh.getLastColumn()).clearContent();
+    return sh;
+  }
+  sh = ss.insertSheet(name);
+  sh.appendRow(HEADERS);
+  sh.setFrozenRows(1);
   return sh;
 }
 
@@ -714,8 +739,8 @@ function seedCuratedRows() {
     if (c.cap >= 0) rowArr[c.cap] = item.caption || '';
     if (c.storyCap >= 0) rowArr[c.storyCap] = item.storyCaption || '';
     if (c.tags >= 0) rowArr[c.tags] = item.tags || '';
-    // The curator decides what auto-posts: daily lineups + local-team (Padres/Chargers)
-    // Events & feed posts carry autoApprove; Monday-Night/other Events stay manual (blank).
+    // The curator decides what auto-posts: Padres matchups + in-season NFL gameday
+    // Events carry autoApprove; anything else stays manual (blank).
     if (c.appr >= 0) rowArr[c.appr] = item.autoApprove ? 'Approve' : '';
     if (c.notes >= 0) rowArr[c.notes] = item.key;
     if (c.eventStart >= 0 && item.eventStart) rowArr[c.eventStart] = item.eventStart;

@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: 'American Heroes & Brew',
     short_name: 'Heroes & Brew',
     description:
-      "Carlsbad's best sports bar — burgers, craft brews, and every game on the big screens.",
+      "Carlsbad's best sports bar — burgers, house drafts, and every NFL game on the big screens.",
     start_url: '/',
     display: 'standalone',
     background_color: '#0a0a0a',
