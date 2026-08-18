@@ -2,7 +2,7 @@
 
 import { MenuGroup } from '@/types';
 import { SHOW_PRICES, stripPriceTokens } from '@/lib/config';
-import MenuCard, { DishBackdrop } from '@/components/MenuCard';
+import MenuCard, { DishBackdrop, PHOTO_TEXT_PANEL, PHOTO_TEXT_SHADOW } from '@/components/MenuCard';
 
 interface VariantGroupCardProps {
   group: MenuGroup;
@@ -104,27 +104,36 @@ export default function VariantGroupCard({ group, elevated }: VariantGroupCardPr
       {usePhotoBackdrop && heroSrc && <DishBackdrop src={heroSrc} alt={group.name} />}
 
       <div className="relative z-10 p-5 sm:p-6">
-        <div className="mb-3 flex items-baseline justify-between gap-4">
-          <h2
-            className={`text-lg font-semibold tracking-tight sm:text-xl ${
-              usePhotoBackdrop ? 'text-white' : 'text-foreground'
-            }`}
-          >
-            {group.name}
-          </h2>
-          {SHOW_PRICES && group.basePrice != null && (
-            <span className="shrink-0 font-mono text-lg font-semibold text-accent">{group.basePrice}</span>
-          )}
-        </div>
-
-        {description && (
-          <p
-            className={`mb-5 max-w-2xl text-sm leading-relaxed ${
-              usePhotoBackdrop ? 'text-white/90' : 'text-muted'
-            }`}
-          >
-            {description}
-          </p>
+        {usePhotoBackdrop ? (
+          <div className={`${PHOTO_TEXT_PANEL} mb-5 max-w-2xl`}>
+            <div className="flex items-baseline justify-between gap-4">
+              <h2 className={`text-lg font-semibold tracking-tight text-white sm:text-xl ${PHOTO_TEXT_SHADOW}`}>
+                {group.name}
+              </h2>
+              {SHOW_PRICES && group.basePrice != null && (
+                <span className="shrink-0 font-mono text-lg font-semibold text-accent">{group.basePrice}</span>
+              )}
+            </div>
+            {description && (
+              <p className={`mt-1.5 text-sm leading-relaxed text-white/90 ${PHOTO_TEXT_SHADOW}`}>
+                {description}
+              </p>
+            )}
+          </div>
+        ) : (
+          <>
+            <div className="mb-3 flex items-baseline justify-between gap-4">
+              <h2 className="text-lg font-semibold tracking-tight text-foreground sm:text-xl">
+                {group.name}
+              </h2>
+              {SHOW_PRICES && group.basePrice != null && (
+                <span className="shrink-0 font-mono text-lg font-semibold text-accent">{group.basePrice}</span>
+              )}
+            </div>
+            {description && (
+              <p className="mb-5 max-w-2xl text-sm leading-relaxed text-muted">{description}</p>
+            )}
+          </>
         )}
 
         {showItemGrid && withPhotos.length > 0 && (

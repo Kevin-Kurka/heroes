@@ -139,12 +139,19 @@ describe('photo allowlist', () => {
     expect(menuCard).toContain('from-black/90 via-black/70 to-black/45');
     expect(menuCard).toContain('group-hover:from-black/85');
     expect(menuCard).toContain('text-white/90');
+    expect(menuCard).toContain('bg-black/35');
+    expect(menuCard).toContain('backdrop-blur-md');
+    expect(menuCard).toContain('shadow-lg shadow-black/50');
+    expect(menuCard).toContain('drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)]');
+    expect(menuCard).toContain('hasPhoto ? PHOTO_TEXT_PANEL');
     expect(menuCard).toContain('object-cover object-[center_68%]');
     expect(menuCard).not.toContain('md:max-w-[400px]');
     expect(menuCard).not.toContain('group-hover:scale');
     expect(menuCard).toContain('{item.imageUrl && <DishBackdrop');
     expect(variant).toContain('DishBackdrop');
     expect(variant).toContain('usePhotoBackdrop && heroSrc && <DishBackdrop');
+    expect(variant).toContain('PHOTO_TEXT_PANEL');
+    expect(variant).toContain('usePhotoBackdrop ? (');
   });
 
   it('does not force an image onto text-only cards', () => {
