@@ -120,7 +120,7 @@ export default function VariantGroupCard({ group, elevated }: VariantGroupCardPr
         {description && (
           <p
             className={`mb-5 max-w-2xl text-sm leading-relaxed ${
-              usePhotoBackdrop ? 'text-white/80' : 'text-muted'
+              usePhotoBackdrop ? 'text-white/90' : 'text-muted'
             }`}
           >
             {description}
@@ -163,7 +163,7 @@ export default function VariantGroupCard({ group, elevated }: VariantGroupCardPr
                     {itemDesc && (
                       <p
                         className={`mt-1 text-sm leading-relaxed ${
-                          usePhotoBackdrop ? 'text-white/80' : 'text-muted'
+                          usePhotoBackdrop ? 'text-white/90' : 'text-muted'
                         }`}
                       >
                         {itemDesc}

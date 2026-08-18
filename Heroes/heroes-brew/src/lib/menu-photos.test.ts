@@ -136,7 +136,9 @@ describe('photo allowlist', () => {
     const variant = readFileSync(resolve(__dirname, '../components/VariantGroupCard.tsx'), 'utf8');
     expect(menuCard).toContain('sizes={PHOTO_SIZES}');
     expect(menuCard).toContain('(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 520px');
-    expect(menuCard).toContain('from-black/75');
+    expect(menuCard).toContain('from-black/90 via-black/70 to-black/45');
+    expect(menuCard).toContain('group-hover:from-black/85');
+    expect(menuCard).toContain('text-white/90');
     expect(menuCard).toContain('object-cover object-[center_68%]');
     expect(menuCard).not.toContain('md:max-w-[400px]');
     expect(menuCard).not.toContain('group-hover:scale');

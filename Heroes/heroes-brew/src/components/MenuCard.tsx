@@ -25,7 +25,7 @@ export function DishBackdrop({ src, alt }: { src: string; alt: string }) {
       />
       <div
         aria-hidden
-        className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/45 to-black/25 transition-colors duration-300 group-hover:from-black/60 group-hover:via-black/35 group-hover:to-black/15"
+        className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/70 to-black/45 transition-colors duration-300 group-hover:from-black/85 group-hover:via-black/65 group-hover:to-black/40"
       />
     </>
   );
@@ -60,7 +60,7 @@ export default function MenuCard({ item }: MenuCardProps) {
               )}
             </h3>
             {description && (
-              <p className={`mt-1.5 text-sm leading-relaxed ${hasPhoto ? 'text-white/80' : 'text-muted'}`}>
+              <p className={`mt-1.5 text-sm leading-relaxed ${hasPhoto ? 'text-white/90' : 'text-muted'}`}>
                 {description}
               </p>
             )}
