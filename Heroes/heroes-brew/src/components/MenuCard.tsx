@@ -20,13 +20,13 @@ export function DishPhoto({
   className?: string;
 }) {
   return (
-    <div className={`relative overflow-hidden bg-black/25 ${className}`}>
+    <div className={`relative overflow-hidden bg-black/25 w-full md:max-w-[400px] ${className}`}>
       <Image
         src={src}
         alt={alt}
         fill
-        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 520px"
-        className="object-cover object-[center_68%] transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+        sizes="(max-width: 768px) 100vw, 400px"
+        className="object-cover object-[center_68%]"
       />
     </div>
   );

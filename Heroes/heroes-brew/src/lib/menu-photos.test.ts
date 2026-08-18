@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, statSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { getMenus } from './menu';
@@ -118,12 +118,25 @@ describe('photo allowlist', () => {
     for (const name of RECROPPED_PLATES) {
       const file = resolve(PUBLIC_ROOT, 'images/polished', name);
       expect(existsSync(file), name).toBe(true);
-      expect(jpegSize(file), name).toEqual({ width: 1600, height: 900 });
+      const { width, height } = jpegSize(file);
+      expect(width, name).toBeLessThanOrEqual(800);
+      expect(height, name).toBeLessThanOrEqual(450);
+      expect([width, height], name).not.toEqual([1600, 900]);
+      expect(width / height, name).toBeCloseTo(16 / 9, 1);
+      expect(statSync(file).size, name).toBeLessThan(300 * 1024);
     }
     expect(jpegSize(resolve(PUBLIC_ROOT, 'images/polished/beer.jpg'))).toEqual({
       width: 360,
       height: 360,
     });
+  });
+
+  it('serves dish photos full-width on mobile and 400px on desktop', () => {
+    const src = readFileSync(resolve(__dirname, '../components/MenuCard.tsx'), 'utf8');
+    expect(src).toContain('sizes="(max-width: 768px) 100vw, 400px"');
+    expect(src).toContain('md:max-w-[400px]');
+    expect(src).toContain('object-cover object-[center_68%]');
+    expect(src).not.toContain('group-hover:scale');
   });
 });
 
