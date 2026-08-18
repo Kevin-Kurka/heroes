@@ -1,3 +1,5 @@
+import { existsSync, readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { getMenus } from './menu';
 import { getMenuJsonLd } from './structured-data';
@@ -7,10 +9,49 @@ import {
   BLOCKED_PHOTO_KEYS,
   CRUNCH_WRAPS,
   KITCHEN_SPECIALS,
+  MENU_PHOTO_PATHS,
   photoForName,
   photoKey,
 } from './menu-photos';
 import type { Menu, MenuItem } from '@/types';
+
+const PUBLIC_ROOT = resolve(__dirname, '../../public');
+const RECROPPED_PLATES = [
+  'philly-billy-sandwich.jpg',
+  'pasadena-burger.jpg',
+  'manhattan-sandwich.jpg',
+  'carlsbad-sandwich.jpg',
+  'hoboken-sandwich.jpg',
+  'minneapolis-juicy-lucy.jpg',
+  'chicken-nachos.jpg',
+  'friar-frank.jpg',
+  'village-tacos.jpg',
+  'kalua-pork-sliders.jpg',
+  'buffalo-wings.jpg',
+  'pretzel-bites.jpg',
+  'mac-and-cheese.jpg',
+  'antipasto-salad.jpg',
+  'key-lime-pie.jpg',
+  'calamari.jpg',
+  'spicy-chicken.jpg',
+  'burger-wrap.jpg',
+  'cocktails.jpg',
+] as const;
+
+function jpegSize(filePath: string) {
+  const buf = readFileSync(filePath);
+  let offset = 2;
+  while (offset < buf.length) {
+    if (buf[offset] !== 0xff) break;
+    const marker = buf[offset + 1];
+    const length = buf.readUInt16BE(offset + 2);
+    if (marker === 0xc0 || marker === 0xc1 || marker === 0xc2) {
+      return { height: buf.readUInt16BE(offset + 5), width: buf.readUInt16BE(offset + 7) };
+    }
+    offset += 2 + length;
+  }
+  throw new Error(`no JPEG size in ${filePath}`);
+}
 
 function flattenItems(menus: Menu[]) {
   const items: Array<{ group: string; item: MenuItem }> = [];
@@ -67,6 +108,22 @@ describe('photo allowlist', () => {
     for (const key of BLOCKED_PHOTO_KEYS) {
       expect(photoForName(key), key).toBeUndefined();
     }
+  });
+
+  it('keeps allowlisted plates at the same filenames after the tight recrop', () => {
+    const unique = [...new Set(Object.values(MENU_PHOTO_PATHS))];
+    for (const rel of unique) {
+      expect(existsSync(resolve(PUBLIC_ROOT, rel.slice(1))), rel).toBe(true);
+    }
+    for (const name of RECROPPED_PLATES) {
+      const file = resolve(PUBLIC_ROOT, 'images/polished', name);
+      expect(existsSync(file), name).toBe(true);
+      expect(jpegSize(file), name).toEqual({ width: 1600, height: 900 });
+    }
+    expect(jpegSize(resolve(PUBLIC_ROOT, 'images/polished/beer.jpg'))).toEqual({
+      width: 360,
+      height: 360,
+    });
   });
 });
 

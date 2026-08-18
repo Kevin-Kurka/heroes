@@ -13,7 +13,7 @@ interface MenuCardProps {
 export function DishPhoto({
   src,
   alt,
-  className = 'aspect-[4/3]',
+  className = 'aspect-[16/10]',
 }: {
   src: string;
   alt: string;
@@ -26,13 +26,13 @@ export function DishPhoto({
         alt={alt}
         fill
         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 520px"
-        className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+        className="object-cover object-[center_68%] transition-transform duration-500 ease-out group-hover:scale-[1.03]"
       />
     </div>
   );
 }
 
-export default function MenuCard({ item, featured }: MenuCardProps) {
+export default function MenuCard({ item }: MenuCardProps) {
   const description = item.description ? stripPriceTokens(item.description) : undefined;
 
   return (
@@ -41,7 +41,7 @@ export default function MenuCard({ item, featured }: MenuCardProps) {
         <DishPhoto
           src={item.imageUrl}
           alt={item.name}
-          className={featured ? 'aspect-[16/10]' : 'aspect-[4/3]'}
+          className="aspect-[16/10]"
         />
       )}
       <div className={item.imageUrl ? 'px-5 py-4' : 'px-5 py-4'}>
