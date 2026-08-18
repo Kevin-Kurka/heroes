@@ -12,10 +12,8 @@ interface MenuCardProps {
 
 const PHOTO_SIZES = '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 520px';
 
-export const PHOTO_TEXT_PANEL =
-  'min-w-0 rounded-lg bg-black/35 px-3 py-2 -mx-1 shadow-lg shadow-black/50 backdrop-blur-md';
-
-export const PHOTO_TEXT_SHADOW = 'drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)]';
+export const PHOTO_TEXT_SHADOW =
+  'drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)] drop-shadow-[0_2px_6px_rgba(0,0,0,0.75)]';
 
 /** Absolute fill plate + wash. Parent must be `relative overflow-hidden`. */
 export function DishBackdrop({ src, alt }: { src: string; alt: string }) {
@@ -51,7 +49,7 @@ export default function MenuCard({ item }: MenuCardProps) {
       {item.imageUrl && <DishBackdrop src={item.imageUrl} alt={item.name} />}
       <div className={`relative z-10 ${hasPhoto ? 'p-5 sm:p-6' : 'px-5 py-4'}`}>
         <div className="flex items-start justify-between gap-3">
-          <div className={hasPhoto ? PHOTO_TEXT_PANEL : 'min-w-0'}>
+          <div className="min-w-0">
             <h3
               className={`text-[17px] font-semibold tracking-tight ${
                 hasPhoto ? `text-white ${PHOTO_TEXT_SHADOW}` : 'text-foreground'
