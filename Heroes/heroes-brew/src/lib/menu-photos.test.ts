@@ -139,55 +139,57 @@ describe('photo allowlist', () => {
     });
   });
 
-  it('uses a full-bleed photo with a dark wash instead of a 400px inset', () => {
+  it('renders public menu cards as standardized text-only chrome', () => {
     const menuCard = readFileSync(resolve(__dirname, '../components/MenuCard.tsx'), 'utf8');
     const variant = readFileSync(resolve(__dirname, '../components/VariantGroupCard.tsx'), 'utf8');
-    expect(menuCard).toContain('sizes={PHOTO_SIZES}');
-    expect(menuCard).toContain('(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 520px');
-    expect(menuCard).toContain('from-black/95 via-black/85 to-black/70');
-    expect(menuCard).toContain('group-hover:from-black/92');
-    expect(menuCard).toContain('text-white/90');
-    expect(menuCard).toContain('PHOTO_TEXT_SHADOW');
-    expect(menuCard).toContain('drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)]');
-    expect(menuCard).toContain('drop-shadow-[0_2px_6px_rgba(0,0,0,0.75)]');
-    expect(menuCard).not.toContain('PHOTO_TEXT_PANEL');
-    expect(menuCard).not.toContain('bg-black/35');
-    expect(menuCard).toContain('object-cover object-[center_68%]');
+    expect(menuCard).toContain('bg-card/70');
+    expect(menuCard).toContain('p-5 sm:p-6');
+    expect(menuCard).toContain('text-foreground');
+    expect(menuCard).toContain('text-muted');
+    expect(menuCard).not.toContain('DishBackdrop');
+    expect(menuCard).not.toContain('next/image');
+    expect(menuCard).not.toContain('imageUrl');
+    expect(menuCard).not.toContain('from-black/');
     expect(menuCard).not.toContain('md:max-w-[400px]');
-    expect(menuCard).not.toContain('group-hover:scale');
-    expect(menuCard).toContain('{item.imageUrl && <DishBackdrop');
-    expect(variant).toContain('DishBackdrop');
-    expect(variant).toContain('usePhotoBackdrop && heroSrc && <DishBackdrop');
-    expect(variant).toContain('PHOTO_TEXT_SHADOW');
-    expect(variant).not.toContain('PHOTO_TEXT_PANEL');
+    expect(variant).toContain('bg-card/70');
+    expect(variant).toContain('p-5 sm:p-6');
+    expect(variant).not.toContain('DishBackdrop');
+    expect(variant).not.toContain('next/image');
+    expect(variant).not.toContain('imageUrl');
   });
 
-  it('does not force an image onto text-only cards', () => {
+  it('does not attach plates to the public menu', () => {
     const presented = applyMenuPresentation(getMenus());
     const rows = flattenItems(presented);
-    const byName = (name: string) => rows.find(({ item }) => photoKey(item.name) === photoKey(name))?.item;
-    expect(byName('Tenders')?.imageUrl).toBeUndefined();
-    expect(byName('Carnitas Crunchwrap')?.imageUrl).toBeUndefined();
-    expect(byName('Carne Asada Crunchwrap')?.imageUrl).toBeUndefined();
-    expect(byName('Hummus Plate')?.imageUrl).toBeUndefined();
-    expect(byName('Cheeseburger Crunchwrap')?.imageUrl).toBe('/images/polished/burger-wrap.jpg');
+    for (const { item, group } of rows) {
+      expect(item.imageUrl, `${group}/${item.name}`).toBeUndefined();
+    }
+    for (const menu of presented) {
+      const walk = (groups: typeof menu.groups) => {
+        for (const g of groups) {
+          expect(g.imageUrl, g.name).toBeUndefined();
+          if (g.subGroups) walk(g.subGroups);
+        }
+      };
+      walk(menu.groups);
+    }
+    expect(photoForName('Cheeseburger Crunchwrap')).toBe('/images/polished/burger-wrap.jpg');
+    expect(photoForName('Oreo Churros')).toBe('/images/polished/oreo-churros.jpg');
   });
 
-  it('puts Oreo Churros on Sweets with its own plate, not the ice-cream churros', () => {
+  it('puts Oreo Churros on Sweets without attaching that plate to ice-cream churros', () => {
     const presented = applyMenuPresentation(getMenus());
     const sweets = presented[0].groups.find((g) => /^(sweets?|sweet stuff)$/i.test(g.name));
     const oreo = sweets?.items.find((item) => photoKey(item.name) === 'oreo churros');
     expect(oreo?.name).toBe(OREO_CHURROS.name);
     expect(oreo?.description).toBe(OREO_CHURROS.description);
-    expect(oreo?.imageUrl).toBe('/images/polished/oreo-churros.jpg');
+    expect(oreo?.imageUrl).toBeUndefined();
     expect(oreo?.price).toBeUndefined();
     expect(oreo?.description).not.toMatch(/ice cream/i);
     expect(sweets?.items.filter((item) => photoKey(item.name) === 'oreo churros')).toHaveLength(1);
-
-    const rows = flattenItems(presented);
-    const churrosIceCream = rows.find(({ item }) => photoKey(item.name) === 'churros with vanilla ice cream');
-    expect(churrosIceCream?.item.imageUrl).toBeUndefined();
+    expect(photoForName('Oreo Churros')).toBe('/images/polished/oreo-churros.jpg');
     expect(photoForName('Churros')).toBeUndefined();
+    expect(photoForName('Churros with Vanilla Ice Cream')).toBeUndefined();
   });
 });
 
@@ -243,14 +245,14 @@ describe('kitchen recipe copy', () => {
 });
 
 describe('applyMenuPresentation', () => {
-  it('adds the kitchen specials with honest photos', () => {
+  it('adds the kitchen specials without attaching plates', () => {
     const presented = applyMenuPresentation(getMenus());
     const items = flattenItems(presented).map(({ item }) => item);
     for (const special of KITCHEN_SPECIALS) {
       const found = items.find((item) => photoKey(item.name) === photoKey(special.name));
       expect(found, special.name).toBeTruthy();
       expect(found?.description).toBe(special.description);
-      expect(found?.imageUrl).toMatch(/^\/images\/polished\//);
+      expect(found?.imageUrl).toBeUndefined();
       expect(found?.price).toBeUndefined();
     }
   });
@@ -279,7 +281,7 @@ describe('applyMenuPresentation', () => {
     expect(kitchen?.items.some((item) => /wrap/i.test(item.name))).toBe(false);
 
     const cheese = crunch?.items.find((item) => item.name === 'Cheeseburger Crunchwrap');
-    expect(cheese?.imageUrl).toBe('/images/polished/burger-wrap.jpg');
+    expect(cheese?.imageUrl).toBeUndefined();
     expect(crunch?.items.find((item) => item.name === 'Carnitas Crunchwrap')?.imageUrl).toBeUndefined();
     expect(crunch?.items.find((item) => item.name === 'Carne Asada Crunchwrap')?.imageUrl).toBeUndefined();
     expect(crunch?.imageUrl).toBeUndefined();
@@ -380,7 +382,7 @@ describe('applyMenuPresentation', () => {
 
     const cheese = rows.find(({ item }) => item.name === 'Cheeseburger Crunchwrap');
     expect(cheese?.group).toBe('Crunch Wraps');
-    expect(cheese?.item.imageUrl).toBe('/images/polished/burger-wrap.jpg');
+    expect(cheese?.item.imageUrl).toBeUndefined();
     expect(rows.find(({ item }) => item.name === 'Carnitas Crunchwrap')?.item.imageUrl).toBeUndefined();
     expect(rows.find(({ item }) => item.name === 'Carne Asada Crunchwrap')?.item.imageUrl).toBeUndefined();
     expect(rows.filter(({ group, item }) => group === 'Kitchen Specials' && /wrap/i.test(item.name))).toHaveLength(0);

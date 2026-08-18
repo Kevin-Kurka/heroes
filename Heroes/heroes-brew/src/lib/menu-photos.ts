@@ -181,22 +181,11 @@ function applyDescriptions(groups: MenuGroup[]) {
   });
 }
 
-function applyPhotos(groups: MenuGroup[]) {
-  walkGroups(groups, (group, parent) => {
-    // Weekly deal cards are copy, not dishes — don't attach food photos by name collision.
-    if (WEEKLY_SPECIALS_RE.test(group.name) || (parent && WEEKLY_SPECIALS_RE.test(parent.name))) {
-      return;
-    }
-    for (const item of group.items) {
-      const src = photoForName(item.name);
-      if (src) item.imageUrl = src;
-    }
-    const groupSrc = photoForName(group.name);
-    if (groupSrc) {
-      group.imageUrl = groupSrc;
-    } else if (group.items.length === 1 && group.items[0].imageUrl) {
-      group.imageUrl = group.items[0].imageUrl;
-    }
+/** Public /menu is text-only. Allowlisted paths stay in MENU_PHOTO_PATHS for later use. */
+function stripPublicPhotos(groups: MenuGroup[]) {
+  walkGroups(groups, (group) => {
+    delete group.imageUrl;
+    for (const item of group.items) delete item.imageUrl;
   });
 }
 
@@ -334,7 +323,7 @@ function ensureOreoChurros(groups: MenuGroup[]) {
   ];
 }
 
-/** Attach honest photos, kitchen specials, and the Crunch Wraps section. Used by the public /menu. */
+/** Kitchen specials, Crunch Wraps, recipe copy. Public /menu stays text-only. */
 export function applyMenuPresentation(menus: Menu[]): Menu[] {
   const next = cloneMenus(menus);
   for (const menu of next) {
@@ -342,7 +331,7 @@ export function applyMenuPresentation(menus: Menu[]): Menu[] {
     ensureCrunchWraps(menu.groups);
     ensureOreoChurros(menu.groups);
     applyDescriptions(menu.groups);
-    applyPhotos(menu.groups);
+    stripPublicPhotos(menu.groups);
   }
   return next;
 }
