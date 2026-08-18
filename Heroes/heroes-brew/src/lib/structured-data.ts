@@ -1,5 +1,6 @@
 import { getRestaurantInfo } from './menu';
 import { FAQ } from './faq';
+import { SHOW_PRICES, stripPriceTokens } from './config';
 import type { Menu, MenuGroup } from '@/types';
 import type { WatchParty } from './watch-parties';
 
@@ -260,21 +261,29 @@ export function getWatchPartyEventsJsonLd(events: ReadonlyArray<{
 
 /** Recursively convert a MenuGroup (and its subGroups/items) into a MenuSection. */
 function groupToMenuSection(group: MenuGroup): Record<string, unknown> {
+  const description = group.description ? stripPriceTokens(group.description) : undefined;
   const section: Record<string, unknown> = {
     '@type': 'MenuSection',
     name: group.name,
-    ...(group.description ? { description: group.description } : {}),
+    ...(description ? { description } : {}),
   };
-  const items = group.items.map((item) => ({
-    '@type': 'MenuItem',
-    name: item.name,
-    ...(item.description ? { description: item.description } : {}),
-    offers: {
-      '@type': 'Offer',
-      price: item.price.toFixed(2),
-      priceCurrency: 'USD',
-    },
-  }));
+  const items = group.items.map((item) => {
+    const itemDesc = item.description ? stripPriceTokens(item.description) : undefined;
+    const node: Record<string, unknown> = {
+      '@type': 'MenuItem',
+      name: item.name,
+      ...(itemDesc ? { description: itemDesc } : {}),
+      ...(item.imageUrl ? { image: `${SITE_URL}${item.imageUrl}` } : {}),
+    };
+    if (SHOW_PRICES && item.price != null) {
+      node.offers = {
+        '@type': 'Offer',
+        price: item.price.toFixed(2),
+        priceCurrency: 'USD',
+      };
+    }
+    return node;
+  });
   if (items.length) section.hasMenuItem = items;
   if (group.subGroups?.length) {
     section.hasMenuSection = group.subGroups.map(groupToMenuSection);
@@ -284,8 +293,7 @@ function groupToMenuSection(group: MenuGroup): Record<string, unknown> {
 
 /**
  * schema.org/Menu JSON-LD for /menu, built from the curated menu so AI search
- * can cite specific dishes and prices. Linked to the Restaurant via inLanguage
- * + the shared SITE_URL identity.
+ * can cite specific dishes. Prices are omitted while SHOW_PRICES is false.
  */
 export function getMenuJsonLd(menus: Menu[]) {
   const sections = menus.flatMap((menu) => menu.groups.map(groupToMenuSection));

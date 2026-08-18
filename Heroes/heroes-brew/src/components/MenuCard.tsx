@@ -1,42 +1,67 @@
 'use client';
 
+import Image from 'next/image';
 import { MenuItem } from '@/types';
 import { SHOW_PRICES, stripPriceTokens } from '@/lib/config';
 
 interface MenuCardProps {
   item: MenuItem;
-  index: number;
+  index?: number;
+  featured?: boolean;
 }
 
-export default function MenuCard({ item }: MenuCardProps) {
+export function DishPhoto({
+  src,
+  alt,
+  className = 'aspect-[4/3]',
+}: {
+  src: string;
+  alt: string;
+  className?: string;
+}) {
   return (
-    <div className="group rounded-md bg-card/70 backdrop-blur-md border border-white/10 p-4 hover:border-accent/30 hover:bg-card/80 hover:scale-[1.015] transition-all duration-200">
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-foreground group-hover:text-accent transition-colors leading-tight">
-            {item.name}
-            {item.subtitle && <span className="text-xs font-bold text-muted ml-1.5">{item.subtitle}</span>}
-          </h3>
-          {item.description && (
-            <div className="text-sm text-muted mt-1">
-              {stripPriceTokens(item.description).split('\n').map((line, li) => (
-                <p key={li} className={li > 0 ? 'mt-1' : ''}>
-                  {line.split(/(\+\d+)/).map((part, i) =>
-                    /^\+\d+$/.test(part)
-                      ? <span key={i} className="text-accent font-mono font-semibold">{part}</span>
-                      : part
-                  )}
-                </p>
-              ))}
-            </div>
+    <div className={`relative overflow-hidden bg-black/25 ${className}`}>
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 520px"
+        className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+      />
+    </div>
+  );
+}
+
+export default function MenuCard({ item, featured }: MenuCardProps) {
+  const description = item.description ? stripPriceTokens(item.description) : undefined;
+
+  return (
+    <article className="group overflow-hidden rounded-xl border border-white/[0.06] bg-card/70 backdrop-blur-md transition-colors duration-200 hover:border-white/12 hover:bg-card/85">
+      {item.imageUrl && (
+        <DishPhoto
+          src={item.imageUrl}
+          alt={item.name}
+          className={featured ? 'aspect-[16/10]' : 'aspect-[4/3]'}
+        />
+      )}
+      <div className={item.imageUrl ? 'px-5 py-4' : 'px-5 py-4'}>
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <h3 className="text-[17px] font-semibold tracking-tight text-foreground">
+              {item.name}
+              {item.subtitle && (
+                <span className="ml-1.5 text-xs font-medium text-muted">{item.subtitle}</span>
+              )}
+            </h3>
+            {description && (
+              <p className="mt-1.5 text-sm leading-relaxed text-muted">{description}</p>
+            )}
+          </div>
+          {SHOW_PRICES && item.price != null && (
+            <span className="shrink-0 font-mono text-sm font-semibold text-accent">{item.price}</span>
           )}
         </div>
-        {SHOW_PRICES && !!item.price && (
-          <span className="text-accent font-mono font-semibold text-sm shrink-0">
-            {item.price}
-          </span>
-        )}
       </div>
-    </div>
+    </article>
   );
 }

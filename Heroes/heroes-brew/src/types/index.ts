@@ -46,7 +46,8 @@ export interface MenuItem {
   name: string;
   subtitle?: string;
   description?: string;
-  price: number;
+  /** Staff-only. Public /menu never renders this (see SHOW_PRICES). */
+  price?: number;
   imageUrl?: string;
   calories?: number;
 }
@@ -68,6 +69,9 @@ export interface MenuGroup {
   description?: string;
   items: MenuItem[];
   displayMode?: 'cards' | 'variants' | 'starters';
+  /** Honest plate photo for the group (single-item cards, nachos, drafts, etc.). */
+  imageUrl?: string;
+  /** Staff-only. Public /menu never renders this (see SHOW_PRICES). */
   basePrice?: number;
   addOns?: MenuGroupAddOn[];
   addOnLabel?: string;

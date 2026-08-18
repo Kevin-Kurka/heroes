@@ -1,6 +1,7 @@
 import 'server-only';
 import { Menu, MenuGroup, MenuGroupAddOn, MenuGroupChoice, MenuItem } from '@/types';
 import { getMenus } from './menu';
+import { applyMenuPresentation } from './menu-photos';
 import { SECRET_MENU_ITEMS } from './secret-menu';
 
 /**
@@ -221,9 +222,9 @@ export async function fetchMenusFromSheet(): Promise<Menu[] | null> {
 /** Live PUBLIC menu — sheet when configured (minus the Secret tab), else static. */
 export async function resolveMenus(): Promise<Menu[]> {
   const sheet = await fetchMenusFromSheet();
-  if (!sheet) return getMenus();
+  if (!sheet) return applyMenuPresentation(getMenus());
   const groups = sheet[0].groups.filter((g) => !isSecretTab(g.name));
-  return [{ ...sheet[0], groups }];
+  return applyMenuPresentation([{ ...sheet[0], groups }]);
 }
 
 /**

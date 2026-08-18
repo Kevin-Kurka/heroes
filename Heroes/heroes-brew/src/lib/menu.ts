@@ -22,6 +22,7 @@ export function getMenus(): Menu[] {
               name: 'Munchies',
               displayMode: 'variants',
               items: [
+                { id: 'starting-munchies-calamari', name: 'Calamari', description: 'Rings & tentacles, marinara + house aioli.' },
                 { id: 'starting-munchies-i0', name: 'Hummus Plate', description: 'Red Pepper Hummus, celery, carrots, cucumber and pita bread.', price: 12 },
                 { id: 'starting-munchies-i1', name: 'Fried Pickles', description: 'With house-made chipotle ranch.', price: 12 },
                 { id: 'starting-munchies-i2', name: "Chef Mariano's Champion Chili", description: 'Topped with sour cream, shredded cheese and red onion.', price: 12 },
@@ -106,6 +107,15 @@ export function getMenus(): Menu[] {
           displayMode: 'starters',
           items: [],
           subGroups: [
+            {
+              id: 'mains-kitchen-specials',
+              name: 'Kitchen Specials',
+              displayMode: 'variants',
+              items: [
+                { id: 'mains-kitchen-specials-spicy-chicken', name: 'Spicy Chicken', description: 'Crispy chicken, bacon, melted jack.' },
+                { id: 'mains-kitchen-specials-burger-wrap', name: 'Burger Wrap', description: 'Pressed tortilla, beef, cheese.' },
+              ],
+            },
             {
               id: 'mains-hero-sandwiches',
               name: 'Hero Sandwiches',

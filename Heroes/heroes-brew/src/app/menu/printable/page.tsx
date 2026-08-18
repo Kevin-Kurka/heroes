@@ -4,7 +4,7 @@ import PrintableMenuClient from './PrintableMenuClient';
 
 export const metadata: Metadata = {
   title: 'Printable Menus',
-  description: 'Print-ready menu pages for staff use.',
+  description: 'Staff-only print-ready menus with prices. Not for public use.',
   robots: { index: false, follow: false },
 };
 
