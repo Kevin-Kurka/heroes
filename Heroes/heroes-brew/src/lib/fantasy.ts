@@ -33,7 +33,7 @@ export const MAX_LEAGUES_PER_USER = 3;
  *  stores it as plain text and doesn't auto-convert it to a Date — which would
  *  break the per-league counts/caps keyed on this id. */
 export const OFFICIAL_LEAGUES: OfficialLeague[] = [
-  { id: 'aug28-fri', label: 'Fri, Aug 28', time: '4:00 PM', capacity: 10 },
+  { id: 'aug28-fri', label: 'Fri, Sep 4 (moved from Aug 28)', time: '4:00 PM', capacity: 10 },
   { id: 'aug29-sat', label: 'Sat, Aug 29', time: '4:00 PM', capacity: 10 },
   { id: 'aug30-sun', label: 'Sun, Aug 30', time: '3:00 PM', capacity: 10 },
   { id: 'sep04-fri', label: 'Fri, Sep 4', time: '4:00 PM', capacity: 10 },
