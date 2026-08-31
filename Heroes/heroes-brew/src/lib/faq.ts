@@ -20,7 +20,7 @@ export const FAQ: FaqEntry[] = [
   {
     question: 'What are American Heroes & Brew’s hours?',
     answer:
-      'We’re open every day: Monday–Thursday 11am–10pm, Friday 10am–midnight, Saturday 8am–midnight, and Sunday 8am–10pm.',
+      'We’re open every day: Monday–Thursday 11am–10pm, Friday 9am–midnight, Saturday 9am–midnight, and Sunday 9am–10pm.',
   },
   {
     question: 'What kind of food does American Heroes & Brew serve?',

@@ -68,7 +68,7 @@ Address:  300 Carlsbad Village Drive, Suite 120, Carlsbad, CA 92008
 Phone:    (760) 994-0187
 Website:  https://americanheroesandbrew.com
 Category: Sports bar (primary); Restaurant; Sandwich shop; American restaurant
-Hours:    Mon–Thu 11am–10pm · Fri 10am–12am · Sat 8am–12am · Sun 8am–10pm
+Hours:    Mon–Thu 11am–10pm · Fri 9am–12am · Sat 9am–12am · Sun 9am–10pm
 ```
 
 **Short description (for directories):**

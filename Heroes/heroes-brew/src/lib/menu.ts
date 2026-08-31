@@ -488,9 +488,9 @@ export function getRestaurantInfo(): Restaurant {
       { dayOfWeek: 'Tuesday', open: '11:00 AM', close: '10:00 PM' },
       { dayOfWeek: 'Wednesday', open: '11:00 AM', close: '10:00 PM' },
       { dayOfWeek: 'Thursday', open: '11:00 AM', close: '10:00 PM' },
-      { dayOfWeek: 'Friday', open: '10:00 AM', close: '12:00 AM' },
-      { dayOfWeek: 'Saturday', open: '8:00 AM', close: '12:00 AM' },
-      { dayOfWeek: 'Sunday', open: '8:00 AM', close: '10:00 PM' },
+      { dayOfWeek: 'Friday', open: '9:00 AM', close: '12:00 AM' },
+      { dayOfWeek: 'Saturday', open: '9:00 AM', close: '12:00 AM' },
+      { dayOfWeek: 'Sunday', open: '9:00 AM', close: '10:00 PM' },
     ],
   };
 }
