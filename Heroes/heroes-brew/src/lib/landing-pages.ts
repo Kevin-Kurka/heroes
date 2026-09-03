@@ -200,7 +200,7 @@ export const LANDING_PAGES: Record<string, LandingPageContent> = {
       {
         heading: 'Food the whole family will like',
         body: [
-          'Our all-American menu has something for everyone: juicy burgers, signature wings, loaded fries, nachos, salads, and the only authentic Philly cheesesteak in Carlsbad — made on Amoroso rolls flown in from Philadelphia. Kids have their own menu, and weekend breakfast runs Friday through Sunday (with a 2-for-$22 breakfast deal and bottomless mimosas for the grown-ups).',
+          'Our all-American menu has something for everyone: juicy burgers, signature wings, loaded fries, nachos, salads, and the only authentic Philly cheesesteak in Carlsbad — made on Amoroso rolls flown in from Philadelphia. Kids have their own menu, and weekend brunch runs Friday through Sunday (with Chilaquiles as a brunch special and bottomless mimosas for the grown-ups).',
         ],
       },
       {
@@ -224,7 +224,7 @@ export const LANDING_PAGES: Record<string, LandingPageContent> = {
       {
         question: 'Is there a place near LEGOLAND that serves breakfast before the park?',
         answer:
-          'Yes — American Heroes & Brew serves weekend breakfast Friday through Sunday in Carlsbad Village, minutes from LEGOLAND, including a 2-for-$22 breakfast deal. A good fuel-up before a day at the park.',
+          'Yes — American Heroes & Brew serves weekend brunch Friday through Sunday in Carlsbad Village, minutes from LEGOLAND, including Chilaquiles as a brunch special. A good fuel-up before a day at the park.',
       },
       {
         question: 'Is it kid-friendly?',
@@ -239,11 +239,11 @@ export const LANDING_PAGES: Record<string, LandingPageContent> = {
     slug: 'breakfast',
     metaTitle: 'Weekend Breakfast & Brunch in Carlsbad Village',
     metaDescription:
-      'Weekend breakfast in Carlsbad Village at American Heroes & Brew — breakfast burritos, benedicts, French toast, a 2-for-$22 deal, and bottomless mimosas. Served Friday–Sunday. The only sports bar in Carlsbad doing breakfast.',
-    h1: 'Weekend Breakfast in Carlsbad Village',
-    tagline: 'Served Friday–Sunday — the only sports bar in Carlsbad doing breakfast.',
+      'Weekend brunch in Carlsbad Village at American Heroes & Brew — breakfast burritos, benedicts, French toast, Chilaquiles, and bottomless mimosas. Served Friday–Sunday. The only sports bar in Carlsbad doing brunch.',
+    h1: 'Weekend Brunch in Carlsbad Village',
+    tagline: 'Served Friday–Sunday — the only sports bar in Carlsbad doing brunch.',
     intro: [
-      'Looking for breakfast or brunch in Carlsbad Village? American Heroes & Brew serves weekend breakfast Friday through Sunday — breakfast burritos, eggs benedict, French toast, and more — plus a 2-for-$22 breakfast deal and bottomless mimosas. We’re the only sports bar in Carlsbad that does breakfast, so you can have a great morning meal with the game on in the background.',
+      'Looking for breakfast or brunch in Carlsbad Village? American Heroes & Brew serves weekend brunch Friday through Sunday — breakfast burritos, eggs benedict, French toast, the American Hero Breakfast, and more — plus Chilaquiles as a brunch special and bottomless mimosas. We’re the only sports bar in Carlsbad that does brunch, so you can have a great morning meal with the game on in the background.',
       'Find us at ' +
         ADDRESS +
         ', in the heart of the Village, steps from Carlsbad Village Beach and minutes from LEGOLAND — a perfect breakfast stop whether you’re a local or visiting.',
@@ -254,15 +254,15 @@ export const LANDING_PAGES: Record<string, LandingPageContent> = {
         bullets: [
           'Breakfast burritos with escalating protein options',
           'Eggs benedict',
-          'French toast and classic American breakfast plates',
-          '2-for-$22 breakfast deal on two breakfast entrées',
+          'French toast and classic American breakfast plates, including the American Hero Breakfast',
+          'Chilaquiles — brunch special',
           'Bottomless mimosas',
         ],
       },
       {
-        heading: 'When we serve breakfast',
+        heading: 'When we serve brunch',
         body: [
-          'Breakfast is served Friday, Saturday, and Sunday. We open at 8am on Saturday and Sunday — great for an early start before the beach or LEGOLAND. Walk-ins welcome; no reservations needed.',
+          'Brunch is served Friday, Saturday, and Sunday. We open at 9am those days — great for an early start before the beach or LEGOLAND. Walk-ins welcome; no reservations needed.',
         ],
       },
       {
@@ -276,17 +276,17 @@ export const LANDING_PAGES: Record<string, LandingPageContent> = {
       {
         question: 'Where can I get breakfast in Carlsbad Village?',
         answer:
-          'American Heroes & Brew serves weekend breakfast in Carlsbad Village, Friday through Sunday — breakfast burritos, eggs benedict, French toast, a 2-for-$22 breakfast deal, and bottomless mimosas. It’s at 300 Carlsbad Village Drive, and it’s the only sports bar in Carlsbad serving breakfast.',
+          'American Heroes & Brew serves weekend brunch in Carlsbad Village, Friday through Sunday — breakfast burritos, eggs benedict, French toast, Chilaquiles as a brunch special, and bottomless mimosas. It’s at 300 Carlsbad Village Drive, and it’s the only sports bar in Carlsbad serving brunch.',
       },
       {
         question: 'What days does American Heroes & Brew serve breakfast?',
         answer:
-          'Breakfast is served Friday, Saturday, and Sunday at American Heroes & Brew in Carlsbad Village. We open at 8am on Saturday and Sunday.',
+          'Brunch is served Friday, Saturday, and Sunday at American Heroes & Brew in Carlsbad Village. We open at 9am those days.',
       },
       {
         question: 'Is there brunch with bottomless mimosas in Carlsbad?',
         answer:
-          'Yes — American Heroes & Brew offers weekend brunch with bottomless mimosas and a 2-for-$22 breakfast deal in Carlsbad Village, Friday through Sunday.',
+          'Yes — American Heroes & Brew offers weekend brunch with bottomless mimosas and Chilaquiles as a brunch special in Carlsbad Village, Friday through Sunday.',
       },
       {
         question: 'Can I watch the game during breakfast?',
@@ -322,7 +322,7 @@ export const LANDING_PAGES: Record<string, LandingPageContent> = {
       {
         heading: 'Weekend',
         body: [
-          'Weekends bring breakfast (Friday–Sunday) with a 2-for-$22 deal and bottomless mimosas — plus the game on all 16 TVs. Specials can change, so check the live scoreboard or call us for today’s deal.',
+          'Weekends bring brunch (Friday–Sunday) with Chilaquiles as a brunch special and bottomless mimosas — plus the game on all 16 TVs. Specials can change, so check the live scoreboard or call us for today’s deal.',
         ],
       },
     ],
@@ -366,7 +366,7 @@ export const LANDING_PAGES: Record<string, LandingPageContent> = {
           'Fresh, never-frozen burgers cooked to order',
           'The only authentic Philly cheesesteak in Carlsbad — Amoroso rolls from Philadelphia',
           'Signature wings, loaded fries, sandwiches & salads',
-          'Weekend breakfast (Fri–Sun), including the 2-for-$22 deal',
+          'Weekend brunch (Fri–Sun), including Chilaquiles as a brunch special',
           'Full bar, craft beer, and daily food & drink specials',
           'Family-friendly with a kids’ menu — bring everyone',
         ],

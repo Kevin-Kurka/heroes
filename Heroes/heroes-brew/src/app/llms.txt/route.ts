@@ -86,7 +86,7 @@ Full menu: ${SITE_URL}/menu
 - Wed: Wings & Well Wednesday — wings $6 off, well cocktails $6ea
 - Thu: Thirsty Thursday — all burgers $5 off, house drafts $5ea
 - Fri: Friday Funday 1–4pm — drinks & munchies $2 off
-- Breakfast: served Fri–Sun, incl. 2-for-$22 breakfast
+- Brunch: served Fri–Sun, including the Chilaquiles brunch special
 
 ## Watch parties (featured events with date & time)
 ${watchParties}
