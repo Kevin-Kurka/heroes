@@ -187,10 +187,12 @@ export default function MenuPageClient({ menus }: Props) {
                 {secretNote && (
                   <p className="mb-6 text-sm font-medium text-accent">{secretNote}</p>
                 )}
-                <div className="grid gap-5 sm:grid-cols-2">
-                  {secretItems.map((item, i) => (
-                    <MenuCard key={item.id} item={item} index={i} />
-                  ))}
+                <div className="rounded-xl border border-white/[0.06] bg-card/70 p-5 backdrop-blur-md">
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    {secretItems.map((item, i) => (
+                      <MenuCard key={item.id} item={item} index={i} />
+                    ))}
+                  </div>
                 </div>
               </div>
             ) : (
@@ -222,13 +224,13 @@ export default function MenuPageClient({ menus }: Props) {
                 <VariantGroupCard key={sub.id} group={sub} elevated />
               ))}
               {currentGroup.addOns && currentGroup.addOns.length > 0 && (
-                <div className="border-t border-white/10 pt-5">
+                <div className="rounded-xl border border-white/[0.06] bg-card/70 p-5 backdrop-blur-md">
                   <p className="mb-3 text-[11px] font-medium uppercase tracking-[0.16em] text-muted">
                     {currentGroup.addOnLabel || 'Add'}
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {currentGroup.addOns.map((addOn) => (
-                      <span key={addOn.name} className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-sm">
+                      <span key={addOn.name} className="inline-flex items-center gap-1.5 rounded-full bg-white/5 px-3 py-1 text-sm">
                         <span className="text-foreground/75">{addOn.name}</span>
                         {SHOW_PRICES && <span className="font-mono text-xs font-semibold text-accent">{addOn.price}</span>}
                       </span>
@@ -251,47 +253,53 @@ export default function MenuPageClient({ menus }: Props) {
                   <VariantGroupCard group={sub} />
                 </div>
               ))}
-              <div className="grid gap-5 sm:grid-cols-2">
-                {currentGroup?.items.map((item, i) => (
-                  <MenuCard key={item.id} item={item} index={i} />
-                ))}
-              </div>
-              {currentGroup?.mods && currentGroup.mods.length > 0 && (
-                <div className="mt-8 border-t border-white/10 pt-5">
-                  <p className="mb-3 text-[11px] font-medium uppercase tracking-[0.16em] text-muted">Mods</p>
-                  <div className="flex flex-wrap gap-2">
-                    {currentGroup.mods.map((mod) => (
-                      <span
-                        key={mod.name}
-                        className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-sm"
-                        title={mod.description || undefined}
-                      >
-                        <span className="text-foreground/75">{mod.name}</span>
-                        {SHOW_PRICES && <span className="font-mono text-xs font-semibold text-accent">{mod.price}</span>}
-                      </span>
-                    ))}
-                  </div>
+              {(currentGroup?.items.length || currentGroup?.mods?.length || currentGroup?.addOns?.length) ? (
+                <div className="rounded-xl border border-white/[0.06] bg-card/70 p-5 backdrop-blur-md">
+                  {currentGroup.items.length > 0 && (
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      {currentGroup.items.map((item, i) => (
+                        <MenuCard key={item.id} item={item} index={i} />
+                      ))}
+                    </div>
+                  )}
+                  {currentGroup.mods && currentGroup.mods.length > 0 && (
+                    <div className={currentGroup.items.length > 0 ? 'mt-4' : undefined}>
+                      <p className="mb-3 text-[11px] font-medium uppercase tracking-[0.16em] text-muted">Mods</p>
+                      <div className="flex flex-wrap gap-2">
+                        {currentGroup.mods.map((mod) => (
+                          <span
+                            key={mod.name}
+                            className="inline-flex items-center gap-1.5 rounded-full bg-white/5 px-3 py-1 text-sm"
+                            title={mod.description || undefined}
+                          >
+                            <span className="text-foreground/75">{mod.name}</span>
+                            {SHOW_PRICES && <span className="font-mono text-xs font-semibold text-accent">{mod.price}</span>}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {currentGroup.addOns && currentGroup.addOns.length > 0 && (
+                    <div className={currentGroup.items.length > 0 || (currentGroup.mods && currentGroup.mods.length > 0) ? 'mt-4' : undefined}>
+                      <p className="mb-3 text-[11px] font-medium uppercase tracking-[0.16em] text-muted">
+                        {currentGroup.addOnLabel || 'Add'}
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {currentGroup.addOns.map((addOn) => (
+                          <span
+                            key={addOn.name}
+                            className="inline-flex items-center gap-1.5 rounded-full bg-white/5 px-3 py-1 text-sm"
+                            title={addOn.description || undefined}
+                          >
+                            <span className="text-foreground/75">{addOn.name}</span>
+                            {SHOW_PRICES && <span className="font-mono text-xs font-semibold text-accent">{addOn.price}</span>}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
-              )}
-              {currentGroup?.addOns && currentGroup.addOns.length > 0 && (
-                <div className="mt-8 border-t border-white/10 pt-5">
-                  <p className="mb-3 text-[11px] font-medium uppercase tracking-[0.16em] text-muted">
-                    {currentGroup.addOnLabel || 'Add'}
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {currentGroup.addOns.map((addOn) => (
-                      <span
-                        key={addOn.name}
-                        className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-sm"
-                        title={addOn.description || undefined}
-                      >
-                        <span className="text-foreground/75">{addOn.name}</span>
-                        {SHOW_PRICES && <span className="font-mono text-xs font-semibold text-accent">{addOn.price}</span>}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
+              ) : null}
             </>
           )}
         </div>

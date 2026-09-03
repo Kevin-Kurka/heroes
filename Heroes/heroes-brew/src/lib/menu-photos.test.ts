@@ -1,3 +1,5 @@
+import { existsSync, readFileSync, statSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { getMenus } from './menu';
 import { getMenuJsonLd } from './structured-data';
@@ -5,11 +7,53 @@ import { SHOW_PRICES, stripPriceTokens } from './config';
 import {
   applyMenuPresentation,
   BLOCKED_PHOTO_KEYS,
+  CRUNCH_WRAPS,
   KITCHEN_SPECIALS,
+  MENU_PHOTO_PATHS,
+  OREO_CHURROS,
   photoForName,
   photoKey,
 } from './menu-photos';
+import { copyForName } from './menu-copy';
 import type { Menu, MenuItem } from '@/types';
+
+const PUBLIC_ROOT = resolve(__dirname, '../../public');
+const RECROPPED_PLATES = [
+  'philly-billy-sandwich.jpg',
+  'pasadena-burger.jpg',
+  'manhattan-sandwich.jpg',
+  'carlsbad-sandwich.jpg',
+  'hoboken-sandwich.jpg',
+  'minneapolis-juicy-lucy.jpg',
+  'chicken-nachos.jpg',
+  'friar-frank.jpg',
+  'village-tacos.jpg',
+  'kalua-pork-sliders.jpg',
+  'buffalo-wings.jpg',
+  'pretzel-bites.jpg',
+  'mac-and-cheese.jpg',
+  'antipasto-salad.jpg',
+  'key-lime-pie.jpg',
+  'calamari.jpg',
+  'spicy-chicken.jpg',
+  'burger-wrap.jpg',
+  'cocktails.jpg',
+] as const;
+
+function jpegSize(filePath: string) {
+  const buf = readFileSync(filePath);
+  let offset = 2;
+  while (offset < buf.length) {
+    if (buf[offset] !== 0xff) break;
+    const marker = buf[offset + 1];
+    const length = buf.readUInt16BE(offset + 2);
+    if (marker === 0xc0 || marker === 0xc1 || marker === 0xc2) {
+      return { height: buf.readUInt16BE(offset + 5), width: buf.readUInt16BE(offset + 7) };
+    }
+    offset += 2 + length;
+  }
+  throw new Error(`no JPEG size in ${filePath}`);
+}
 
 function flattenItems(menus: Menu[]) {
   const items: Array<{ group: string; item: MenuItem }> = [];
@@ -27,7 +71,10 @@ describe('photo allowlist', () => {
   it('maps only honest dish names', () => {
     expect(photoForName('Calamari')).toBe('/images/polished/calamari.jpg');
     expect(photoForName('Spicy Chicken')).toBe('/images/polished/spicy-chicken.jpg');
+    expect(photoForName('Cheeseburger Crunchwrap')).toBe('/images/polished/burger-wrap.jpg');
     expect(photoForName('Burger Wrap')).toBe('/images/polished/burger-wrap.jpg');
+    expect(photoForName('Carnitas Crunchwrap')).toBeUndefined();
+    expect(photoForName('Carne Asada Crunchwrap')).toBeUndefined();
     expect(photoForName('Hoboken (Italian)')).toBe('/images/polished/hoboken-sandwich.jpg');
     expect(photoForName('Minneapolis (Juicy Lucy)')).toBe('/images/polished/minneapolis-juicy-lucy.jpg');
     expect(photoForName('Philly Cheesesteak (Philly Billy)')).toBe('/images/polished/philly-billy-sandwich.jpg');
@@ -40,6 +87,10 @@ describe('photo allowlist', () => {
     expect(photoForName('Antipasto')).toBe('/images/polished/antipasto-salad.jpg');
     expect(photoForName('Wings')).toBe('/images/polished/buffalo-wings.jpg');
     expect(photoForName('Friar Frank')).toBe('/images/polished/friar-frank.jpg');
+    expect(photoForName('Oreo Churros')).toBe('/images/polished/oreo-churros.jpg');
+    expect(photoForName('Oreo Churro')).toBe('/images/polished/oreo-churros.jpg');
+    expect(photoForName('Churros')).toBeUndefined();
+    expect(photoForName('Churros with Vanilla Ice Cream')).toBeUndefined();
   });
 
   it('never assigns a photo to quarantined / lying slugs', () => {
@@ -64,19 +115,183 @@ describe('photo allowlist', () => {
       expect(photoForName(key), key).toBeUndefined();
     }
   });
+
+  it('keeps allowlisted plates at the same filenames after the tight recrop', () => {
+    const unique = [...new Set(Object.values(MENU_PHOTO_PATHS))];
+    for (const rel of unique) {
+      // TODO: drop this skip after Kevin's attached oreo-churros.jpg bytes are committed.
+      if (rel.endsWith('/oreo-churros.jpg')) continue;
+      expect(existsSync(resolve(PUBLIC_ROOT, rel.slice(1))), rel).toBe(true);
+    }
+    for (const name of RECROPPED_PLATES) {
+      const file = resolve(PUBLIC_ROOT, 'images/polished', name);
+      expect(existsSync(file), name).toBe(true);
+      const { width, height } = jpegSize(file);
+      expect(width, name).toBeLessThanOrEqual(800);
+      expect(height, name).toBeLessThanOrEqual(450);
+      expect([width, height], name).not.toEqual([1600, 900]);
+      expect(width / height, name).toBeCloseTo(16 / 9, 1);
+      expect(statSync(file).size, name).toBeLessThan(300 * 1024);
+    }
+    expect(jpegSize(resolve(PUBLIC_ROOT, 'images/polished/beer.jpg'))).toEqual({
+      width: 360,
+      height: 360,
+    });
+  });
+
+  it('renders public menu cards as standardized text-only chrome', () => {
+    const menuCard = readFileSync(resolve(__dirname, '../components/MenuCard.tsx'), 'utf8');
+    const variant = readFileSync(resolve(__dirname, '../components/VariantGroupCard.tsx'), 'utf8');
+    const menuPage = readFileSync(resolve(__dirname, '../app/menu/MenuPageClient.tsx'), 'utf8');
+    expect(menuCard).toContain('bg-white/5');
+    expect(menuCard).toContain('rounded-xl');
+    expect(menuCard).toContain('text-foreground');
+    expect(menuCard).toContain('text-muted');
+    expect(menuCard).not.toMatch(/\bborder\b/);
+    expect(menuCard).not.toContain('bg-card/70');
+    expect(menuCard).not.toContain('DishBackdrop');
+    expect(menuCard).not.toContain('next/image');
+    expect(menuCard).not.toContain('imageUrl');
+    expect(menuCard).not.toContain('from-black/');
+    expect(menuCard).not.toContain('md:max-w-[400px]');
+    expect(variant).toContain('bg-card/70');
+    expect(variant).toContain('bg-card-elevated/60');
+    expect(variant).toContain('border-white/[0.06]');
+    expect(variant).toContain('bg-white/5');
+    expect(variant).not.toContain('DishBackdrop');
+    expect(variant).not.toContain('next/image');
+    expect(variant).not.toContain('imageUrl');
+    expect(menuPage).toContain('bg-card/70');
+    expect(menuPage).toContain('bg-white/5');
+  });
+
+  it('does not attach plates to the public menu', () => {
+    const presented = applyMenuPresentation(getMenus());
+    const rows = flattenItems(presented);
+    for (const { item, group } of rows) {
+      expect(item.imageUrl, `${group}/${item.name}`).toBeUndefined();
+    }
+    for (const menu of presented) {
+      const walk = (groups: typeof menu.groups) => {
+        for (const g of groups) {
+          expect(g.imageUrl, g.name).toBeUndefined();
+          if (g.subGroups) walk(g.subGroups);
+        }
+      };
+      walk(menu.groups);
+    }
+    expect(photoForName('Cheeseburger Crunchwrap')).toBe('/images/polished/burger-wrap.jpg');
+    expect(photoForName('Oreo Churros')).toBe('/images/polished/oreo-churros.jpg');
+  });
+
+  it('puts Oreo Churros on Sweets without attaching that plate to ice-cream churros', () => {
+    const presented = applyMenuPresentation(getMenus());
+    const sweets = presented[0].groups.find((g) => /^(sweets?|sweet stuff)$/i.test(g.name));
+    const oreo = sweets?.items.find((item) => photoKey(item.name) === 'oreo churros');
+    expect(oreo?.name).toBe(OREO_CHURROS.name);
+    expect(oreo?.description).toBe(OREO_CHURROS.description);
+    expect(oreo?.imageUrl).toBeUndefined();
+    expect(oreo?.price).toBeUndefined();
+    expect(oreo?.description).not.toMatch(/ice cream/i);
+    expect(sweets?.items.filter((item) => photoKey(item.name) === 'oreo churros')).toHaveLength(1);
+    expect(photoForName('Oreo Churros')).toBe('/images/polished/oreo-churros.jpg');
+    expect(photoForName('Churros')).toBeUndefined();
+    expect(photoForName('Churros with Vanilla Ice Cream')).toBeUndefined();
+  });
+});
+
+describe('kitchen recipe copy', () => {
+  it('resolves guest lines for philly, nachos, pasadena, and hoboken', () => {
+    expect(copyForName('Philly Cheesesteak (Philly Billy)')).toBe(
+      'Shaved ribeye, grilled onions, mushrooms, red pepper relish, cherry peppers, and melted provolone on an Amoroso roll.',
+    );
+    expect(copyForName('Philly Billy')).toBe(copyForName('Philadelphia'));
+    expect(copyForName('Nachos')).toBe(
+      'Crisp chips piled with beans, guacamole, melted cheese, Cheez Whiz, cilantro-lime crema, pico, and jalapeños.',
+    );
+    expect(copyForName('Pasadena (The OG Cheeseburger)')).toBe(
+      'American cheese, lettuce, onion, pickles, tomato, and hero sauce on a brioche bun.',
+    );
+    expect(copyForName('Hoboken (Italian)')).toBe(
+      'Ham, salami, capicola, mortadella, and provolone with lettuce, tomato, red onion, oil, vinegar, and oregano on an Italian roll.',
+    );
+  });
+
+  it('applies recipe copy on the presented menu and on matching group cards', () => {
+    const presented = applyMenuPresentation(getMenus());
+    const rows = flattenItems(presented);
+    const byName = (name: string) => rows.find(({ item }) => photoKey(item.name) === photoKey(name))?.item;
+    expect(byName('Philly Cheesesteak (Philly Billy)')?.description).toBe(
+      'Shaved ribeye, grilled onions, mushrooms, red pepper relish, cherry peppers, and melted provolone on an Amoroso roll.',
+    );
+    expect(byName('Nachos')?.description).toBe(
+      'Crisp chips piled with beans, guacamole, melted cheese, Cheez Whiz, cilantro-lime crema, pico, and jalapeños.',
+    );
+    expect(byName('Pasadena (The OG Cheeseburger)')?.description).toBe(
+      'American cheese, lettuce, onion, pickles, tomato, and hero sauce on a brioche bun.',
+    );
+    expect(byName('Hoboken (Italian)')?.description).toBe(
+      'Ham, salami, capicola, mortadella, and provolone with lettuce, tomato, red onion, oil, vinegar, and oregano on an Italian roll.',
+    );
+    expect(byName('Cheeseburger Crunchwrap')?.description).toBe('Pressed tortilla, beef, cheese.');
+    expect(byName('Carnitas Crunchwrap')?.description).toBe('Pressed tortilla, carnitas, cheese.');
+    expect(byName('Antipasto')?.description).toMatch(/Italian vinaigrette/);
+
+    const mains = presented[0].groups.find((g) => g.name === 'Mains');
+    const starting = presented[0].groups.find((g) => g.name === 'Starting');
+    const nachos = starting?.subGroups?.find((g) => g.name === 'Nachos');
+    const sliders = starting?.subGroups?.find((g) => g.name === 'Sliders');
+    const philly = mains?.subGroups?.find((g) => /philly/i.test(g.name));
+    expect(nachos?.description).toBe(copyForName('Nachos'));
+    expect(sliders?.description).toBe(copyForName('Sliders'));
+    expect(philly?.description).toBe(copyForName('Philly Billy'));
+
+    const breakfastCarne = rows.find(({ group, item }) => group === 'SD Burrito' && item.name === 'Carne Asada');
+    expect(breakfastCarne?.item.description).toBeUndefined();
+  });
 });
 
 describe('applyMenuPresentation', () => {
-  it('adds the three kitchen specials with honest photos', () => {
+  it('adds the kitchen specials without attaching plates', () => {
     const presented = applyMenuPresentation(getMenus());
     const items = flattenItems(presented).map(({ item }) => item);
     for (const special of KITCHEN_SPECIALS) {
       const found = items.find((item) => photoKey(item.name) === photoKey(special.name));
       expect(found, special.name).toBeTruthy();
       expect(found?.description).toBe(special.description);
-      expect(found?.imageUrl).toMatch(/^\/images\/polished\//);
+      expect(found?.imageUrl).toBeUndefined();
       expect(found?.price).toBeUndefined();
     }
+  });
+
+  it('puts Crunch Wraps on Mains and retires leftover Burger Wrap', () => {
+    const presented = applyMenuPresentation(getMenus());
+    const mains = presented[0].groups.find((g) => g.name === 'Mains');
+    const crunch = mains?.subGroups?.find((g) => g.name === 'Crunch Wraps');
+    const kitchen = mains?.subGroups?.find((g) => g.name === 'Kitchen Specials');
+    expect(crunch).toBeTruthy();
+    expect(crunch?.items.map((item) => item.name)).toEqual([
+      'Cheeseburger Crunchwrap',
+      'Carnitas Crunchwrap',
+      'Carne Asada Crunchwrap',
+    ]);
+    expect(crunch?.items.map((item) => item.description)).toEqual([
+      'Pressed tortilla, beef, cheese.',
+      'Pressed tortilla, carnitas, cheese.',
+      'Pressed tortilla, carne asada, cheese.',
+    ]);
+    expect(crunch?.items.every((item) => item.price == null)).toBe(true);
+
+    const rows = flattenItems(presented);
+    expect(rows.filter(({ item }) => photoKey(item.name) === 'burger wrap')).toHaveLength(0);
+    expect(rows.filter(({ item }) => photoKey(item.name) === 'cheeseburger crunchwrap')).toHaveLength(1);
+    expect(kitchen?.items.some((item) => /wrap/i.test(item.name))).toBe(false);
+
+    const cheese = crunch?.items.find((item) => item.name === 'Cheeseburger Crunchwrap');
+    expect(cheese?.imageUrl).toBeUndefined();
+    expect(crunch?.items.find((item) => item.name === 'Carnitas Crunchwrap')?.imageUrl).toBeUndefined();
+    expect(crunch?.items.find((item) => item.name === 'Carne Asada Crunchwrap')?.imageUrl).toBeUndefined();
+    expect(crunch?.imageUrl).toBeUndefined();
   });
 
   it('does not invent photos for quarantined dishes on the live menu', () => {
@@ -132,8 +347,52 @@ describe('applyMenuPresentation', () => {
     const names = flattenItems(presented).map(({ item }) => item.name);
     expect(names).toContain('Calamari');
     expect(names).toContain('Spicy Chicken');
-    expect(names).toContain('Burger Wrap');
+    expect(names).toContain('Cheeseburger Crunchwrap');
+    expect(names).toContain('Carnitas Crunchwrap');
+    expect(names).toContain('Carne Asada Crunchwrap');
+    expect(names).not.toContain('Burger Wrap');
     expect(names.filter((n) => n === 'Calamari')).toHaveLength(1);
+    expect(names.filter((n) => n === 'Cheeseburger Crunchwrap')).toHaveLength(1);
+  });
+
+  it('migrates a leftover Burger Wrap kitchen special into Crunch Wraps once', () => {
+    const leftover: Menu[] = [{
+      id: 'menu-live',
+      name: 'Menu',
+      groups: [
+        {
+          id: 'mains',
+          name: 'Mains',
+          displayMode: 'starters',
+          items: [],
+          subGroups: [
+            {
+              id: 'mains-kitchen-specials',
+              name: 'Kitchen Specials',
+              items: [
+                { id: 'mains-kitchen-specials-spicy-chicken', name: 'Spicy Chicken', description: 'Crispy chicken, bacon, melted jack.' },
+                { id: 'mains-kitchen-specials-burger-wrap', name: 'Burger Wrap', description: 'Pressed tortilla, beef, cheese.' },
+              ],
+            },
+          ],
+        },
+      ],
+    }];
+    const presented = applyMenuPresentation(leftover);
+    const rows = flattenItems(presented);
+    const names = rows.map(({ item }) => item.name);
+    expect(names).toContain('Cheeseburger Crunchwrap');
+    expect(names).toContain('Carnitas Crunchwrap');
+    expect(names).toContain('Carne Asada Crunchwrap');
+    expect(names).not.toContain('Burger Wrap');
+    expect(names.filter((n) => n === 'Cheeseburger Crunchwrap')).toHaveLength(1);
+
+    const cheese = rows.find(({ item }) => item.name === 'Cheeseburger Crunchwrap');
+    expect(cheese?.group).toBe('Crunch Wraps');
+    expect(cheese?.item.imageUrl).toBeUndefined();
+    expect(rows.find(({ item }) => item.name === 'Carnitas Crunchwrap')?.item.imageUrl).toBeUndefined();
+    expect(rows.find(({ item }) => item.name === 'Carne Asada Crunchwrap')?.item.imageUrl).toBeUndefined();
+    expect(rows.filter(({ group, item }) => group === 'Kitchen Specials' && /wrap/i.test(item.name))).toHaveLength(0);
   });
 
   it('does not duplicate specials already on the static menu', () => {
@@ -141,7 +400,13 @@ describe('applyMenuPresentation', () => {
     const names = flattenItems(presented).map(({ item }) => photoKey(item.name));
     expect(names.filter((n) => n === 'calamari')).toHaveLength(1);
     expect(names.filter((n) => n === 'spicy chicken')).toHaveLength(1);
-    expect(names.filter((n) => n === 'burger wrap')).toHaveLength(1);
+    expect(names.filter((n) => n === 'cheeseburger crunchwrap')).toHaveLength(1);
+    expect(names.filter((n) => n === 'carnitas crunchwrap')).toHaveLength(1);
+    expect(names.filter((n) => n === 'carne asada crunchwrap')).toHaveLength(1);
+    expect(names.filter((n) => n === 'burger wrap')).toHaveLength(0);
+    for (const wrap of CRUNCH_WRAPS) {
+      expect(names.filter((n) => n === photoKey(wrap.name))).toHaveLength(1);
+    }
   });
 });
 
@@ -172,6 +437,9 @@ describe('public menu prices', () => {
     expect(blob).not.toMatch(/\$\d/);
     expect(blob).toContain('Calamari');
     expect(blob).toContain('Spicy Chicken');
-    expect(blob).toContain('Burger Wrap');
+    expect(blob).toContain('Cheeseburger Crunchwrap');
+    expect(blob).toContain('Carnitas Crunchwrap');
+    expect(blob).toContain('Carne Asada Crunchwrap');
+    expect(blob).not.toContain('Burger Wrap');
   });
 });

@@ -113,7 +113,16 @@ export function getMenus(): Menu[] {
               displayMode: 'variants',
               items: [
                 { id: 'mains-kitchen-specials-spicy-chicken', name: 'Spicy Chicken', description: 'Crispy chicken, bacon, melted jack.' },
-                { id: 'mains-kitchen-specials-burger-wrap', name: 'Burger Wrap', description: 'Pressed tortilla, beef, cheese.' },
+              ],
+            },
+            {
+              id: 'mains-crunch-wraps',
+              name: 'Crunch Wraps',
+              displayMode: 'variants',
+              items: [
+                { id: 'mains-crunch-wraps-cheeseburger', name: 'Cheeseburger Crunchwrap', description: 'Pressed tortilla, beef, cheese.' },
+                { id: 'mains-crunch-wraps-carnitas', name: 'Carnitas Crunchwrap', description: 'Pressed tortilla, carnitas, cheese.' },
+                { id: 'mains-crunch-wraps-carne-asada', name: 'Carne Asada Crunchwrap', description: 'Pressed tortilla, carne asada, cheese.' },
               ],
             },
             {
@@ -263,6 +272,7 @@ export function getMenus(): Menu[] {
             { id: 'sweets-i1', name: 'Homemade Vanilla Cheesecake', description: 'Sales help support the non-profit organization Shelter to Soldier.', price: 14 },
             { id: 'sweets-i2', name: 'Churros with Vanilla Ice Cream', price: 12 },
             { id: 'sweets-i3', name: 'Ice Cream Cookie Sandwich', price: 6 },
+            { id: 'sweets-oreo-churros', name: 'Oreo Churros', description: 'Oreo-dusted churros with chocolate and caramel dip.' },
           ],
         },
 
