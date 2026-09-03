@@ -4,7 +4,7 @@ import { useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
-import { UtensilsCrossed, CalendarDays, MapPin, ChevronRight, Trophy, Flame, Egg, Heart } from 'lucide-react';
+import { UtensilsCrossed, CalendarDays, MapPin, ChevronRight, Trophy, Flame, Heart } from 'lucide-react';
 import { UnifiedEvent } from '@/types';
 import Ticker from '@/components/Ticker';
 import EventCard from '@/components/EventCard';
@@ -15,6 +15,7 @@ import DoorDashIcon from '@/components/DoorDashIcon';
 import { trackEvent } from '@/lib/analytics';
 import { DOORDASH_URL } from '@/lib/doordash';
 import { useDoorDashAvailable } from '@/hooks/use-doordash-available';
+import { HOME_SPECIALS } from '@/lib/menu-specials';
 
 const DAILY_SPECIALS = [
   {
@@ -363,27 +364,27 @@ export default function HomePageClient({ events, todayIndex }: Props) {
         </section>
       )}
 
-      {/* 2 for 22 Breakfast */}
+      {/* Kitchen & brunch specials — no public prices */}
       <section className="max-w-4xl mx-auto px-4 py-12">
         <div className="flex items-center gap-2 mb-6">
-          <Egg size={20} className="text-accent" />
-          <h2 className="text-2xl font-bold text-foreground">2 for 22 Breakfast</h2>
+          <Flame size={20} className="text-accent" />
+          <h2 className="text-2xl font-bold text-foreground">Specials</h2>
         </div>
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.25, ease: [0, 0, 0.2, 1] }}
-          className="relative overflow-hidden bg-card border border-accent/30 rounded-lg p-6"
-        >
-          <div className="absolute top-0 left-0 w-1 h-full bg-accent" />
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-lg font-bold text-foreground">2 Breakfast Entrées</h3>
-            <span className="text-lg font-bold text-accent">22</span>
-          </div>
-          <div className="border-t border-border/50 pt-3 text-sm text-muted">
-            <span>Breakfast served Friday – Sunday</span>
-          </div>
-        </motion.div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {HOME_SPECIALS.map((special, i) => (
+            <motion.div
+              key={special.name}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.25, delay: i * 0.06, ease: [0, 0, 0.2, 1] }}
+              className="relative overflow-hidden bg-card border border-border rounded-lg p-4"
+            >
+              <div className="absolute top-0 left-0 w-0.5 h-full bg-border" />
+              <h3 className="font-semibold text-foreground text-sm">{special.name}</h3>
+              <p className="text-xs text-muted mt-1">{special.description}</p>
+            </motion.div>
+          ))}
+        </div>
       </section>
 
       {/* Upcoming Events Preview */}

@@ -1,5 +1,16 @@
 import type { Menu, MenuGroup, MenuItem } from '@/types';
 import { copyForName, shouldReplaceDescription } from './menu-copy';
+import {
+  CALAMARI,
+  CHILAQUILES,
+  CRUNCHWRAPS,
+  HOGZILLA,
+  OREO_CHURROS,
+  SPICY_CHICKEN,
+} from './menu-specials';
+
+export { CALAMARI, CHILAQUILES, CRUNCHWRAPS, HOGZILLA, OREO_CHURROS, SPICY_CHICKEN };
+export { HOME_SPECIALS } from './menu-specials';
 
 /**
  * Honest plate photos only. Keys are normalized item/group names
@@ -69,47 +80,20 @@ export const BLOCKED_PHOTO_KEYS = [
   'event promo',
 ] as const;
 
+/** Injected kitchen-board specials. Calamari stays on Munchies. */
 export const KITCHEN_SPECIALS = [
-  {
-    id: 'starting-munchies-calamari',
-    name: 'Calamari',
-    description: 'Rings & tentacles, marinara + house aioli.',
-    place: 'munchies' as const,
-  },
-  {
-    id: 'mains-kitchen-specials-spicy-chicken',
-    name: 'Spicy Chicken',
-    description: 'Crispy chicken, bacon, melted jack.',
-    place: 'kitchen-specials' as const,
-  },
+  { ...CALAMARI, place: 'munchies' as const },
+  { ...HOGZILLA, place: 'kitchen-specials' as const },
+  { ...CRUNCHWRAPS, place: 'kitchen-specials' as const },
 ] as const;
-
-export const CRUNCH_WRAPS = [
-  {
-    id: 'mains-crunch-wraps-cheeseburger',
-    name: 'Cheeseburger Crunchwrap',
-    description: 'Pressed tortilla, beef, cheese.',
-  },
-  {
-    id: 'mains-crunch-wraps-carnitas',
-    name: 'Carnitas Crunchwrap',
-    description: 'Pressed tortilla, carnitas, cheese.',
-  },
-  {
-    id: 'mains-crunch-wraps-carne-asada',
-    name: 'Carne Asada Crunchwrap',
-    description: 'Pressed tortilla, carne asada, cheese.',
-  },
-] as const;
-
-export const OREO_CHURROS = {
-  id: 'sweets-oreo-churros',
-  name: 'Oreo Churros',
-  description: 'Oreo-dusted churros with chocolate and caramel dip.',
-} as const;
 
 const WEEKLY_SPECIALS_RE = /^(specials|daily specials|daily lineup)$/i;
-const BURGER_WRAP_KEY = 'burger wrap';
+const LEGACY_WRAP_KEYS = new Set([
+  'burger wrap',
+  'cheeseburger crunchwrap',
+  'carnitas crunchwrap',
+  'carne asada crunchwrap',
+]);
 
 export function photoKey(name: string): string {
   return name
@@ -119,11 +103,6 @@ export function photoKey(name: string): string {
     .trim()
     .replace(/\s+/g, ' ');
 }
-
-const CRUNCH_WRAP_KEYS = new Set<string>([
-  BURGER_WRAP_KEY,
-  ...CRUNCH_WRAPS.map((wrap) => photoKey(wrap.name)),
-]);
 
 export function photoForName(name: string): string | undefined {
   const key = photoKey(name);
@@ -172,8 +151,6 @@ function applyDescriptions(groups: MenuGroup[]) {
     if (groupCopy) group.description = groupCopy;
 
     for (const item of group.items) {
-      const itemKey = photoKey(item.name);
-      if (CRUNCH_WRAP_KEYS.has(itemKey)) continue;
       if (!shouldReplaceDescription(item.name, item.description)) continue;
       const copy = copyForName(item.name, group.name);
       if (copy) item.description = copy;
@@ -189,123 +166,183 @@ function stripPublicPhotos(groups: MenuGroup[]) {
   });
 }
 
-function ensureKitchenSpecials(groups: MenuGroup[]) {
-  const calamari = KITCHEN_SPECIALS[0];
-  if (!hasNamedItem(groups, calamari.name)) {
-    const munchies = findGroup(groups, (g) => /munchies/i.test(g.name));
-    const starting = findGroup(groups, (g) => /^(starting|starters)$/i.test(g.name));
-    const target = munchies ?? starting;
-    if (target) {
-      target.items = [
-        { id: calamari.id, name: calamari.name, description: calamari.description },
-        ...target.items,
-      ];
-    } else if (groups[0]) {
-      groups[0].items = [
-        { id: calamari.id, name: calamari.name, description: calamari.description },
-        ...groups[0].items,
-      ];
-    }
-  }
-
-  const mains = findGroup(groups, (g) => /^(mains?)$/i.test(g.name));
-  const needed = KITCHEN_SPECIALS.filter((s) => s.place === 'kitchen-specials' && !hasNamedItem(groups, s.name));
-  if (!needed.length) return;
-
-  const newItems: MenuItem[] = needed.map((s) => ({
-    id: s.id,
-    name: s.name,
-    description: s.description,
-  }));
-
-  let specials = findGroup(groups, (g) => /kitchen specials/i.test(g.name));
-  if (!specials) {
-    specials = {
-      id: 'mains-kitchen-specials',
-      name: 'Kitchen Specials',
-      displayMode: 'variants',
-      items: [],
-    };
-    if (mains) {
-      mains.subGroups = [specials, ...(mains.subGroups ?? [])];
-      if (!mains.displayMode) mains.displayMode = 'starters';
-    } else {
-      const weeklyIdx = groups.findIndex((g) => WEEKLY_SPECIALS_RE.test(g.name));
-      if (weeklyIdx >= 0) groups.splice(weeklyIdx, 0, specials);
-      else groups.push(specials);
-    }
-  }
-  specials.items = [...specials.items, ...newItems];
+function asItem(special: { id: string; name: string; description: string }): MenuItem {
+  return { id: special.id, name: special.name, description: special.description };
 }
 
-function insertIntoMains(groups: MenuGroup[], section: MenuGroup, afterName?: RegExp) {
+function ensureCalamari(groups: MenuGroup[]) {
+  if (hasNamedItem(groups, CALAMARI.name)) return;
+  const munchies = findGroup(groups, (g) => /munchies/i.test(g.name));
+  const starting = findGroup(groups, (g) => /^(starting|starters)$/i.test(g.name));
+  const target = munchies ?? starting;
+  if (target) {
+    target.items = [asItem(CALAMARI), ...target.items];
+  } else if (groups[0]) {
+    groups[0].items = [asItem(CALAMARI), ...groups[0].items];
+  }
+}
+
+function ensureKitchenSpecialsGroup(groups: MenuGroup[]): MenuGroup {
+  let specials = findGroup(groups, (g) => /kitchen specials/i.test(g.name));
+  if (specials) return specials;
+
+  specials = {
+    id: 'mains-kitchen-specials',
+    name: 'Kitchen Specials',
+    displayMode: 'variants',
+    items: [],
+  };
+  const mains = findGroup(groups, (g) => /^(mains?)$/i.test(g.name));
+  if (mains) {
+    mains.subGroups = [specials, ...(mains.subGroups ?? [])];
+    if (!mains.displayMode) mains.displayMode = 'starters';
+  } else {
+    const weeklyIdx = groups.findIndex((g) => WEEKLY_SPECIALS_RE.test(g.name));
+    if (weeklyIdx >= 0) groups.splice(weeklyIdx, 0, specials);
+    else groups.push(specials);
+  }
+  return specials;
+}
+
+function ensureHeroSandwichesGroup(groups: MenuGroup[]): MenuGroup {
+  let heroes = findGroup(groups, (g) => /hero sandwiches/i.test(g.name));
+  if (heroes) return heroes;
+
+  heroes = {
+    id: 'mains-hero-sandwiches',
+    name: 'Hero Sandwiches',
+    displayMode: 'variants',
+    items: [],
+  };
   const mains = findGroup(groups, (g) => /^(mains?)$/i.test(g.name));
   if (mains) {
     const subs = mains.subGroups ?? [];
-    const afterIdx = afterName ? subs.findIndex((g) => afterName.test(g.name)) : -1;
-    mains.subGroups = afterIdx >= 0
-      ? [...subs.slice(0, afterIdx + 1), section, ...subs.slice(afterIdx + 1)]
-      : [section, ...subs];
+    const kitchenIdx = subs.findIndex((g) => /kitchen specials/i.test(g.name));
+    mains.subGroups = kitchenIdx >= 0
+      ? [...subs.slice(0, kitchenIdx + 1), heroes, ...subs.slice(kitchenIdx + 1)]
+      : [heroes, ...subs];
     if (!mains.displayMode) mains.displayMode = 'starters';
-    return;
+  } else {
+    groups.push(heroes);
   }
-  const weeklyIdx = groups.findIndex((g) => WEEKLY_SPECIALS_RE.test(g.name));
-  if (weeklyIdx >= 0) groups.splice(weeklyIdx, 0, section);
-  else groups.push(section);
+  return heroes;
 }
 
-function retireBurgerWrap(item: MenuItem) {
-  const cheese = CRUNCH_WRAPS[0];
-  item.id = cheese.id;
-  item.name = cheese.name;
-  item.description = cheese.description;
+/** Kitchen Specials = Hogzilla + Crunchwraps only. */
+function ensureKitchenSpecials(groups: MenuGroup[]) {
+  ensureCalamari(groups);
+  const specials = ensureKitchenSpecialsGroup(groups);
+  const keep = new Set([photoKey(HOGZILLA.name), photoKey(CRUNCHWRAPS.name)]);
+
+  specials.items = specials.items.filter((item) => keep.has(photoKey(item.name)));
+
+  if (!specials.items.some((item) => photoKey(item.name) === photoKey(HOGZILLA.name))) {
+    specials.items.push(asItem(HOGZILLA));
+  }
+  if (!specials.items.some((item) => photoKey(item.name) === photoKey(CRUNCHWRAPS.name))) {
+    specials.items.push(asItem(CRUNCHWRAPS));
+  }
+
+  specials.items = [HOGZILLA, CRUNCHWRAPS]
+    .map((wanted) => specials.items.find((item) => photoKey(item.name) === photoKey(wanted.name)))
+    .filter((item): item is MenuItem => Boolean(item))
+    .map((item) => {
+      if (photoKey(item.name) === photoKey(HOGZILLA.name)) {
+        return { ...item, name: HOGZILLA.name, description: item.description?.trim() || HOGZILLA.description };
+      }
+      return {
+        ...item,
+        name: CRUNCHWRAPS.name,
+        description: item.description?.trim() || CRUNCHWRAPS.description,
+      };
+    });
 }
 
-function orderCrunchWraps(items: MenuItem[]): MenuItem[] {
-  const rank = new Map(CRUNCH_WRAPS.map((wrap, i) => [photoKey(wrap.name), i]));
-  return [...items].sort((a, b) => (rank.get(photoKey(a.name)) ?? 99) - (rank.get(photoKey(b.name)) ?? 99));
-}
-
-function ensureCrunchWraps(groups: MenuGroup[]) {
+function takeNamedItem(groups: MenuGroup[], name: string): MenuItem | undefined {
+  const key = photoKey(name);
+  let taken: MenuItem | undefined;
   walkGroups(groups, (group) => {
-    for (const item of group.items) {
-      if (photoKey(item.name) === BURGER_WRAP_KEY) retireBurgerWrap(item);
+    const idx = group.items.findIndex((item) => photoKey(item.name) === key);
+    if (idx >= 0 && !taken) {
+      [taken] = group.items.splice(idx, 1);
     }
   });
+  return taken;
+}
 
-  let wraps = findGroup(groups, (g) => /crunch wraps?/i.test(g.name));
-  if (!wraps) {
-    wraps = {
-      id: 'mains-crunch-wraps',
-      name: 'Crunch Wraps',
+/** Spicy Chicken lives under Hero Sandwiches — never duplicated. */
+function ensureSpicyChickenOnHeroes(groups: MenuGroup[]) {
+  const existing = takeNamedItem(groups, SPICY_CHICKEN.name);
+  const heroes = ensureHeroSandwichesGroup(groups);
+  if (heroes.items.some((item) => photoKey(item.name) === photoKey(SPICY_CHICKEN.name))) return;
+  heroes.items.push(
+    existing
+      ? { ...existing, name: SPICY_CHICKEN.name, description: existing.description?.trim() || SPICY_CHICKEN.description }
+      : asItem(SPICY_CHICKEN),
+  );
+}
+
+function isLegacyCrunchSection(name: string): boolean {
+  return /^(crunch\s*wraps?|burger wraps?)$/i.test(name.trim());
+}
+
+/** Drop the old Mains Crunch Wraps section and leftover wrap SKUs. */
+function retireLegacyCrunchWraps(groups: MenuGroup[]) {
+  const strip = (list: MenuGroup[]): MenuGroup[] =>
+    list
+      .filter((group) => !isLegacyCrunchSection(group.name))
+      .map((group) => {
+        group.items = group.items.filter((item) => !LEGACY_WRAP_KEYS.has(photoKey(item.name)));
+        if (group.subGroups?.length) group.subGroups = strip(group.subGroups);
+        return group;
+      });
+
+  const next = strip(groups);
+  groups.splice(0, groups.length, ...next);
+}
+
+function ensureBrunchGroup(groups: MenuGroup[]): MenuGroup {
+  walkGroups(groups, (group) => {
+    if (/^breakfast$/i.test(group.name)) group.name = 'Brunch';
+    if (group.id === 'breakfast') group.id = 'brunch';
+  });
+
+  let brunch = findGroup(groups, (g) => /^(brunch|breakfast)$/i.test(g.name));
+  if (brunch) {
+    brunch.name = 'Brunch';
+    if (brunch.id === 'breakfast') brunch.id = 'brunch';
+    return brunch;
+  }
+
+  brunch = {
+    id: 'brunch',
+    name: 'Brunch',
+    displayMode: 'starters',
+    items: [],
+    subGroups: [],
+  };
+  const drinksIdx = groups.findIndex((g) => /^(drinks|specials)$/i.test(g.name));
+  if (drinksIdx >= 0) groups.splice(drinksIdx, 0, brunch);
+  else groups.push(brunch);
+  return brunch;
+}
+
+function ensureChilaquiles(groups: MenuGroup[]) {
+  const brunch = ensureBrunchGroup(groups);
+  if (hasNamedItem(groups, CHILAQUILES.name)) return;
+
+  let specials = brunch.subGroups?.find((g) => /brunch specials/i.test(g.name));
+  if (!specials) {
+    specials = {
+      id: 'brunch-specials',
+      name: 'Brunch Specials',
       displayMode: 'variants',
       items: [],
     };
-    insertIntoMains(groups, wraps, /kitchen specials/i);
+    brunch.subGroups = [specials, ...(brunch.subGroups ?? [])];
+    brunch.displayMode = 'starters';
   }
-
-  walkGroups(groups, (group) => {
-    if (group === wraps) return;
-    const stay: MenuItem[] = [];
-    for (const item of group.items) {
-      if (!CRUNCH_WRAP_KEYS.has(photoKey(item.name))) {
-        stay.push(item);
-        continue;
-      }
-      if (!wraps.items.some((existing) => photoKey(existing.name) === photoKey(item.name))) {
-        wraps.items.push(item);
-      }
-    }
-    group.items = stay;
-  });
-
-  for (const wrap of CRUNCH_WRAPS) {
-    if (!hasNamedItem(groups, wrap.name)) {
-      wraps.items.push({ id: wrap.id, name: wrap.name, description: wrap.description });
-    }
-  }
-
-  wraps.items = orderCrunchWraps(wraps.items);
+  specials.items = [asItem(CHILAQUILES), ...specials.items];
 }
 
 function ensureOreoChurros(groups: MenuGroup[]) {
@@ -323,12 +360,14 @@ function ensureOreoChurros(groups: MenuGroup[]) {
   ];
 }
 
-/** Kitchen specials, Crunch Wraps, recipe copy. Public /menu stays text-only. */
+/** Kitchen specials, brunch rename, recipe copy. Public /menu stays text-only. */
 export function applyMenuPresentation(menus: Menu[]): Menu[] {
   const next = cloneMenus(menus);
   for (const menu of next) {
+    retireLegacyCrunchWraps(menu.groups);
+    ensureSpicyChickenOnHeroes(menu.groups);
     ensureKitchenSpecials(menu.groups);
-    ensureCrunchWraps(menu.groups);
+    ensureChilaquiles(menu.groups);
     ensureOreoChurros(menu.groups);
     applyDescriptions(menu.groups);
     stripPublicPhotos(menu.groups);

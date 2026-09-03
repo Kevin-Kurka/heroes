@@ -7,10 +7,14 @@ import { SHOW_PRICES, stripPriceTokens } from './config';
 import {
   applyMenuPresentation,
   BLOCKED_PHOTO_KEYS,
-  CRUNCH_WRAPS,
+  CHILAQUILES,
+  CRUNCHWRAPS,
+  HOGZILLA,
+  HOME_SPECIALS,
   KITCHEN_SPECIALS,
   MENU_PHOTO_PATHS,
   OREO_CHURROS,
+  SPICY_CHICKEN,
   photoForName,
   photoKey,
 } from './menu-photos';
@@ -233,8 +237,9 @@ describe('kitchen recipe copy', () => {
     expect(byName('Hoboken (Italian)')?.description).toBe(
       'Ham, salami, capicola, mortadella, and provolone with lettuce, tomato, red onion, oil, vinegar, and oregano on an Italian roll.',
     );
-    expect(byName('Cheeseburger Crunchwrap')?.description).toBe('Pressed tortilla, beef, cheese.');
-    expect(byName('Carnitas Crunchwrap')?.description).toBe('Pressed tortilla, carnitas, cheese.');
+    expect(byName('Hogzilla')?.description).toBe(HOGZILLA.description);
+    expect(byName('Crunchwraps')?.description).toBe(CRUNCHWRAPS.description);
+    expect(byName('Chilaquiles')?.description).toBe(CHILAQUILES.description);
     expect(byName('Antipasto')?.description).toMatch(/Italian vinaigrette/);
 
     const mains = presented[0].groups.find((g) => g.name === 'Mains');
@@ -246,8 +251,8 @@ describe('kitchen recipe copy', () => {
     expect(sliders?.description).toBe(copyForName('Sliders'));
     expect(philly?.description).toBe(copyForName('Philly Billy'));
 
-    const breakfastCarne = rows.find(({ group, item }) => group === 'SD Burrito' && item.name === 'Carne Asada');
-    expect(breakfastCarne?.item.description).toBeUndefined();
+    const brunchCarne = rows.find(({ group, item }) => group === 'SD Burrito' && item.name === 'Carne Asada');
+    expect(brunchCarne?.item.description).toBeUndefined();
   });
 });
 
@@ -264,34 +269,57 @@ describe('applyMenuPresentation', () => {
     }
   });
 
-  it('puts Crunch Wraps on Mains and retires leftover Burger Wrap', () => {
+  it('puts Spicy Chicken under Hero Sandwiches with the existing description', () => {
     const presented = applyMenuPresentation(getMenus());
     const mains = presented[0].groups.find((g) => g.name === 'Mains');
-    const crunch = mains?.subGroups?.find((g) => g.name === 'Crunch Wraps');
+    const heroes = mains?.subGroups?.find((g) => g.name === 'Hero Sandwiches');
     const kitchen = mains?.subGroups?.find((g) => g.name === 'Kitchen Specials');
-    expect(crunch).toBeTruthy();
-    expect(crunch?.items.map((item) => item.name)).toEqual([
-      'Cheeseburger Crunchwrap',
-      'Carnitas Crunchwrap',
-      'Carne Asada Crunchwrap',
+    const spicy = heroes?.items.find((item) => photoKey(item.name) === photoKey(SPICY_CHICKEN.name));
+    expect(spicy?.name).toBe('Spicy Chicken');
+    expect(spicy?.description).toBe(SPICY_CHICKEN.description);
+    expect(spicy?.imageUrl).toBeUndefined();
+    expect(kitchen?.items.some((item) => photoKey(item.name) === 'spicy chicken')).toBe(false);
+    expect(flattenItems(presented).filter(({ item }) => photoKey(item.name) === 'spicy chicken')).toHaveLength(1);
+  });
+
+  it('keeps Kitchen Specials as Hogzilla and one Crunchwraps special', () => {
+    const presented = applyMenuPresentation(getMenus());
+    const mains = presented[0].groups.find((g) => g.name === 'Mains');
+    const kitchen = mains?.subGroups?.find((g) => g.name === 'Kitchen Specials');
+    const crunchSection = mains?.subGroups?.find((g) => /crunch\s*wraps?/i.test(g.name));
+    expect(crunchSection).toBeUndefined();
+    expect(kitchen?.items.map((item) => item.name)).toEqual(['Hogzilla', 'Crunchwraps']);
+    expect(kitchen?.items.map((item) => item.description)).toEqual([
+      HOGZILLA.description,
+      CRUNCHWRAPS.description,
     ]);
-    expect(crunch?.items.map((item) => item.description)).toEqual([
-      'Pressed tortilla, beef, cheese.',
-      'Pressed tortilla, carnitas, cheese.',
-      'Pressed tortilla, carne asada, cheese.',
-    ]);
-    expect(crunch?.items.every((item) => item.price == null)).toBe(true);
+    expect(CRUNCHWRAPS.proteins).toEqual(['Carne Asada', 'Carnitas', 'Chicken']);
+    expect(kitchen?.items.every((item) => item.price == null)).toBe(true);
+    expect(kitchen?.items.every((item) => item.imageUrl == null)).toBe(true);
 
     const rows = flattenItems(presented);
     expect(rows.filter(({ item }) => photoKey(item.name) === 'burger wrap')).toHaveLength(0);
-    expect(rows.filter(({ item }) => photoKey(item.name) === 'cheeseburger crunchwrap')).toHaveLength(1);
-    expect(kitchen?.items.some((item) => /wrap/i.test(item.name))).toBe(false);
+    expect(rows.filter(({ item }) => photoKey(item.name) === 'cheeseburger crunchwrap')).toHaveLength(0);
+    expect(rows.filter(({ item }) => photoKey(item.name) === 'carnitas crunchwrap')).toHaveLength(0);
+    expect(rows.filter(({ item }) => photoKey(item.name) === 'carne asada crunchwrap')).toHaveLength(0);
+    expect(rows.filter(({ item }) => photoKey(item.name) === 'crunchwraps')).toHaveLength(1);
+  });
 
-    const cheese = crunch?.items.find((item) => item.name === 'Cheeseburger Crunchwrap');
-    expect(cheese?.imageUrl).toBeUndefined();
-    expect(crunch?.items.find((item) => item.name === 'Carnitas Crunchwrap')?.imageUrl).toBeUndefined();
-    expect(crunch?.items.find((item) => item.name === 'Carne Asada Crunchwrap')?.imageUrl).toBeUndefined();
-    expect(crunch?.imageUrl).toBeUndefined();
+  it('renames the Breakfast tab to Brunch and adds Chilaquiles', () => {
+    const presented = applyMenuPresentation(getMenus());
+    const tabs = presented[0].groups.map((g) => g.name);
+    expect(tabs).toContain('Brunch');
+    expect(tabs).not.toContain('Breakfast');
+    const brunch = presented[0].groups.find((g) => g.name === 'Brunch');
+    expect(brunch?.id).toBe('brunch');
+    const specials = brunch?.subGroups?.find((g) => g.name === 'Brunch Specials');
+    const chilaquiles = specials?.items.find((item) => item.name === 'Chilaquiles');
+    expect(chilaquiles?.name).toBe('Chilaquiles');
+    expect(chilaquiles?.description).toBe(CHILAQUILES.description);
+    expect(chilaquiles?.description).not.toMatch(/salsa|crema|egg|tortilla|verde|roja/i);
+    expect(chilaquiles?.price).toBeUndefined();
+    expect(chilaquiles?.imageUrl).toBeUndefined();
+    expect(flattenItems(presented).filter(({ item }) => photoKey(item.name) === 'chilaquiles')).toHaveLength(1);
   });
 
   it('does not invent photos for quarantined dishes on the live menu', () => {
@@ -347,19 +375,39 @@ describe('applyMenuPresentation', () => {
     const names = flattenItems(presented).map(({ item }) => item.name);
     expect(names).toContain('Calamari');
     expect(names).toContain('Spicy Chicken');
-    expect(names).toContain('Cheeseburger Crunchwrap');
-    expect(names).toContain('Carnitas Crunchwrap');
-    expect(names).toContain('Carne Asada Crunchwrap');
+    expect(names).toContain('Hogzilla');
+    expect(names).toContain('Crunchwraps');
+    expect(names).toContain('Chilaquiles');
     expect(names).not.toContain('Burger Wrap');
+    expect(names).not.toContain('Cheeseburger Crunchwrap');
     expect(names.filter((n) => n === 'Calamari')).toHaveLength(1);
-    expect(names.filter((n) => n === 'Cheeseburger Crunchwrap')).toHaveLength(1);
+    expect(names.filter((n) => n === 'Crunchwraps')).toHaveLength(1);
+    expect(names.filter((n) => n === 'Spicy Chicken')).toHaveLength(1);
+    const rows = flattenItems(presented);
+    expect(rows.find(({ item }) => item.name === 'Spicy Chicken')?.group).toBe('Hero Sandwiches');
+    expect(rows.find(({ item }) => item.name === 'Hogzilla')?.group).toBe('Kitchen Specials');
+    expect(rows.find(({ item }) => item.name === 'Crunchwraps')?.group).toBe('Kitchen Specials');
+    expect(presented[0].groups.some((g) => g.name === 'Brunch')).toBe(true);
   });
 
-  it('migrates a leftover Burger Wrap kitchen special into Crunch Wraps once', () => {
+  it('moves leftover Spicy Chicken onto Heroes and retires old wrap SKUs', () => {
     const leftover: Menu[] = [{
       id: 'menu-live',
       name: 'Menu',
       groups: [
+        {
+          id: 'breakfast',
+          name: 'Breakfast',
+          displayMode: 'starters',
+          items: [],
+          subGroups: [
+            {
+              id: 'breakfast-plates',
+              name: 'Plates',
+              items: [{ id: 'breakfast-plates-i0', name: 'American Hero Breakfast' }],
+            },
+          ],
+        },
         {
           id: 'mains',
           name: 'Mains',
@@ -374,6 +422,14 @@ describe('applyMenuPresentation', () => {
                 { id: 'mains-kitchen-specials-burger-wrap', name: 'Burger Wrap', description: 'Pressed tortilla, beef, cheese.' },
               ],
             },
+            {
+              id: 'mains-crunch-wraps',
+              name: 'Crunch Wraps',
+              items: [
+                { id: 'mains-crunch-wraps-cheeseburger', name: 'Cheeseburger Crunchwrap', description: 'Pressed tortilla, beef, cheese.' },
+                { id: 'mains-crunch-wraps-carnitas', name: 'Carnitas Crunchwrap', description: 'Pressed tortilla, carnitas, cheese.' },
+              ],
+            },
           ],
         },
       ],
@@ -381,18 +437,22 @@ describe('applyMenuPresentation', () => {
     const presented = applyMenuPresentation(leftover);
     const rows = flattenItems(presented);
     const names = rows.map(({ item }) => item.name);
-    expect(names).toContain('Cheeseburger Crunchwrap');
-    expect(names).toContain('Carnitas Crunchwrap');
-    expect(names).toContain('Carne Asada Crunchwrap');
+    expect(names).toContain('Hogzilla');
+    expect(names).toContain('Crunchwraps');
+    expect(names).toContain('Spicy Chicken');
+    expect(names).toContain('Chilaquiles');
     expect(names).not.toContain('Burger Wrap');
-    expect(names.filter((n) => n === 'Cheeseburger Crunchwrap')).toHaveLength(1);
+    expect(names).not.toContain('Cheeseburger Crunchwrap');
+    expect(names).not.toContain('Carnitas Crunchwrap');
+    expect(names.filter((n) => n === 'Crunchwraps')).toHaveLength(1);
+    expect(names.filter((n) => n === 'Spicy Chicken')).toHaveLength(1);
 
-    const cheese = rows.find(({ item }) => item.name === 'Cheeseburger Crunchwrap');
-    expect(cheese?.group).toBe('Crunch Wraps');
-    expect(cheese?.item.imageUrl).toBeUndefined();
-    expect(rows.find(({ item }) => item.name === 'Carnitas Crunchwrap')?.item.imageUrl).toBeUndefined();
-    expect(rows.find(({ item }) => item.name === 'Carne Asada Crunchwrap')?.item.imageUrl).toBeUndefined();
-    expect(rows.filter(({ group, item }) => group === 'Kitchen Specials' && /wrap/i.test(item.name))).toHaveLength(0);
+    expect(rows.find(({ item }) => item.name === 'Spicy Chicken')?.group).toBe('Hero Sandwiches');
+    expect(rows.find(({ item }) => item.name === 'Crunchwraps')?.group).toBe('Kitchen Specials');
+    expect(rows.filter(({ group, item }) => group === 'Kitchen Specials' && item.name === 'Spicy Chicken')).toHaveLength(0);
+    expect(presented[0].groups.find((g) => g.name === 'Mains')?.subGroups?.some((g) => /crunch\s*wraps?/i.test(g.name))).toBe(false);
+    expect(presented[0].groups.some((g) => g.name === 'Brunch')).toBe(true);
+    expect(presented[0].groups.some((g) => g.name === 'Breakfast')).toBe(false);
   });
 
   it('does not duplicate specials already on the static menu', () => {
@@ -400,13 +460,11 @@ describe('applyMenuPresentation', () => {
     const names = flattenItems(presented).map(({ item }) => photoKey(item.name));
     expect(names.filter((n) => n === 'calamari')).toHaveLength(1);
     expect(names.filter((n) => n === 'spicy chicken')).toHaveLength(1);
-    expect(names.filter((n) => n === 'cheeseburger crunchwrap')).toHaveLength(1);
-    expect(names.filter((n) => n === 'carnitas crunchwrap')).toHaveLength(1);
-    expect(names.filter((n) => n === 'carne asada crunchwrap')).toHaveLength(1);
+    expect(names.filter((n) => n === 'hogzilla')).toHaveLength(1);
+    expect(names.filter((n) => n === 'crunchwraps')).toHaveLength(1);
+    expect(names.filter((n) => n === 'chilaquiles')).toHaveLength(1);
+    expect(names.filter((n) => n === 'cheeseburger crunchwrap')).toHaveLength(0);
     expect(names.filter((n) => n === 'burger wrap')).toHaveLength(0);
-    for (const wrap of CRUNCH_WRAPS) {
-      expect(names.filter((n) => n === photoKey(wrap.name))).toHaveLength(1);
-    }
   });
 });
 
@@ -437,9 +495,32 @@ describe('public menu prices', () => {
     expect(blob).not.toMatch(/\$\d/);
     expect(blob).toContain('Calamari');
     expect(blob).toContain('Spicy Chicken');
-    expect(blob).toContain('Cheeseburger Crunchwrap');
-    expect(blob).toContain('Carnitas Crunchwrap');
-    expect(blob).toContain('Carne Asada Crunchwrap');
+    expect(blob).toContain('Hogzilla');
+    expect(blob).toContain('Crunchwraps');
+    expect(blob).toContain('Chilaquiles');
+    expect(blob).not.toContain('Cheeseburger Crunchwrap');
     expect(blob).not.toContain('Burger Wrap');
+  });
+});
+
+describe('home specials', () => {
+  it('swaps the 2-for-22 breakfast promo for Hogzilla, Chilaquiles, and Crunchwraps', () => {
+    expect(HOME_SPECIALS.map((s) => s.name)).toEqual(['Hogzilla', 'Chilaquiles', 'Crunchwraps']);
+    expect(HOME_SPECIALS.map((s) => s.description)).toEqual([
+      HOGZILLA.description,
+      CHILAQUILES.description,
+      CRUNCHWRAPS.description,
+    ]);
+    for (const special of HOME_SPECIALS) {
+      expect(special.description).not.toMatch(/\$|\b22\b|price/i);
+    }
+
+    const home = readFileSync(resolve(__dirname, '../app/HomePageClient.tsx'), 'utf8');
+    expect(home).toContain('HOME_SPECIALS');
+    expect(home).toContain('grid-cols-1 sm:grid-cols-3');
+    expect(home).toContain('bg-card');
+    expect(home).toContain('border-border');
+    expect(home).not.toMatch(/2 for 22|2-for-22|2 Breakfast Entrées/);
+    expect(home).not.toContain('Egg');
   });
 });
