@@ -105,6 +105,9 @@ add(COPY, ['Kids Corn Dog'], 'A corn dog and fries.');
 add(COPY, ['Kids Grilled Cheese'], 'American and cheddar on Amish bread.');
 
 add(COPY, ['Spicy Chicken'], 'Crispy chicken, bacon, melted jack.');
+add(COPY, ['Hogzilla'], 'Carolina BBQ sauced pulled pork, ham, bacon, coleslaw and fried pickle chips on a brioche bun.');
+add(COPY, ['Crunchwraps'], 'Carne Asada, Carnitas, or Chicken.');
+add(COPY, ['Chilaquiles'], 'Brunch special.');
 
 export const MENU_DESCRIPTIONS: Readonly<Record<string, string>> = COPY;
 

@@ -112,17 +112,8 @@ export function getMenus(): Menu[] {
               name: 'Kitchen Specials',
               displayMode: 'variants',
               items: [
-                { id: 'mains-kitchen-specials-spicy-chicken', name: 'Spicy Chicken', description: 'Crispy chicken, bacon, melted jack.' },
-              ],
-            },
-            {
-              id: 'mains-crunch-wraps',
-              name: 'Crunch Wraps',
-              displayMode: 'variants',
-              items: [
-                { id: 'mains-crunch-wraps-cheeseburger', name: 'Cheeseburger Crunchwrap', description: 'Pressed tortilla, beef, cheese.' },
-                { id: 'mains-crunch-wraps-carnitas', name: 'Carnitas Crunchwrap', description: 'Pressed tortilla, carnitas, cheese.' },
-                { id: 'mains-crunch-wraps-carne-asada', name: 'Carne Asada Crunchwrap', description: 'Pressed tortilla, carne asada, cheese.' },
+                { id: 'mains-kitchen-specials-hogzilla', name: 'Hogzilla', description: 'Carolina BBQ sauced pulled pork, ham, bacon, coleslaw and fried pickle chips on a brioche bun.' },
+                { id: 'mains-kitchen-specials-crunchwraps', name: 'Crunchwraps', description: 'Carne Asada, Carnitas, or Chicken.' },
               ],
             },
             {
@@ -136,6 +127,7 @@ export function getMenus(): Menu[] {
                 { id: 'mains-hero-sandwiches-i3', name: 'Maui (Kalua Pork)', description: 'Kalua pork, coleslaw, aloha sauce and a pickle on a brioche bun.', price: 18 },
                 { id: 'mains-hero-sandwiches-i4', name: 'Hoboken (Italian)', description: 'Ham, salami, capicola, mortadella, provolone cheese, lettuce, tomato, red onion, oil & vinegar, oregano. Your choice: Grinder style (lightly toasted) or cold.', price: 22 },
                 { id: 'mains-hero-sandwiches-i5', name: 'Manhattan (Reuben)', description: 'Pastrami, sauerkraut, Swiss cheese, Russian dressing, on rye bread.', price: 22 },
+                { id: 'mains-hero-sandwiches-spicy-chicken', name: 'Spicy Chicken', description: 'Crispy chicken, bacon, melted jack.' },
               ],
             },
             {
@@ -276,13 +268,21 @@ export function getMenus(): Menu[] {
           ],
         },
 
-        // ─── BREAKFAST ───
+        // ─── BRUNCH ───
         {
-          id: 'breakfast',
-          name: 'Breakfast',
+          id: 'brunch',
+          name: 'Brunch',
           displayMode: 'starters',
           items: [],
           subGroups: [
+            {
+              id: 'brunch-specials',
+              name: 'Brunch Specials',
+              displayMode: 'variants',
+              items: [
+                { id: 'brunch-specials-chilaquiles', name: 'Chilaquiles', description: 'Brunch special.' },
+              ],
+            },
             {
               id: 'breakfast-handhelds',
               name: 'Handhelds',
