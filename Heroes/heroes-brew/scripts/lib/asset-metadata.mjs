@@ -99,8 +99,8 @@ const SPECIALS = {
     keywords: ['Philly cheesesteak Carlsbad', 'cheesesteak', 'best cheesesteak'],
   },
   breakfast: {
-    title: 'Weekend Breakfast at American Heroes & Brew',
-    desc: 'Weekend breakfast Friday–Sunday at American Heroes & Brew — the only sports bar in Carlsbad Village serving breakfast. 2-for-$22 and bottomless mimosas.',
+    title: 'Weekend Brunch at American Heroes & Brew',
+    desc: 'Weekend brunch Friday–Sunday at American Heroes & Brew — the only sports bar in Carlsbad Village serving brunch. Chilaquiles brunch special and bottomless mimosas.',
     keywords: ['breakfast Carlsbad Village', 'brunch', 'bottomless mimosas', 'weekend breakfast'],
   },
 };

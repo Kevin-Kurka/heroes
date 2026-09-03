@@ -40,7 +40,7 @@ export const FAQ: FaqEntry[] = [
   {
     question: 'Does American Heroes & Brew serve breakfast?',
     answer:
-      'Yes — breakfast is served Friday through Sunday, including our 2-for-$22 breakfast deal on two breakfast entrées.',
+      'Yes — brunch is served Friday through Sunday, including our Chilaquiles brunch special.',
   },
   {
     question: 'Are there daily specials or happy-hour deals?',
