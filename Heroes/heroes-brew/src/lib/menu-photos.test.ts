@@ -207,14 +207,14 @@ describe('photo allowlist', () => {
 describe('kitchen recipe copy', () => {
   it('resolves guest lines for philly, nachos, pasadena, and hoboken', () => {
     expect(copyForName('Philly Cheesesteak (Philly Billy)')).toBe(
-      'Shaved ribeye, grilled onions, mushrooms, red pepper relish, cherry peppers, and melted provolone on an Amoroso roll.',
+      'Thin-sliced ribeye with grilled onions, mushrooms, red pepper relish, cherry peppers, and melted provolone on a toasted Amoroso roll.',
     );
     expect(copyForName('Philly Billy')).toBe(copyForName('Philadelphia'));
     expect(copyForName('Nachos')).toBe(
-      'Crisp chips piled with beans, guacamole, melted cheese, Cheez Whiz, cilantro-lime crema, pico, and jalapeños.',
+      'Crisp chips piled high with beans, guacamole, melted cheese, Cheez Whiz, cilantro-lime crema, pico, and jalapeños.',
     );
     expect(copyForName('Pasadena (The OG Cheeseburger)')).toBe(
-      'American cheese, lettuce, onion, pickles, tomato, and hero sauce on a brioche bun.',
+      'American cheese, crisp lettuce, onion, pickles, tomato, and hero sauce on a toasted brioche bun.',
     );
     expect(copyForName('Hoboken (Italian)')).toBe(
       'Ham, salami, capicola, mortadella, and provolone with lettuce, tomato, red onion, oil, vinegar, and oregano on an Italian roll.',
@@ -226,13 +226,13 @@ describe('kitchen recipe copy', () => {
     const rows = flattenItems(presented);
     const byName = (name: string) => rows.find(({ item }) => photoKey(item.name) === photoKey(name))?.item;
     expect(byName('Philly Cheesesteak (Philly Billy)')?.description).toBe(
-      'Shaved ribeye, grilled onions, mushrooms, red pepper relish, cherry peppers, and melted provolone on an Amoroso roll.',
+      'Thin-sliced ribeye with grilled onions, mushrooms, red pepper relish, cherry peppers, and melted provolone on a toasted Amoroso roll.',
     );
     expect(byName('Nachos')?.description).toBe(
-      'Crisp chips piled with beans, guacamole, melted cheese, Cheez Whiz, cilantro-lime crema, pico, and jalapeños.',
+      'Crisp chips piled high with beans, guacamole, melted cheese, Cheez Whiz, cilantro-lime crema, pico, and jalapeños.',
     );
     expect(byName('Pasadena (The OG Cheeseburger)')?.description).toBe(
-      'American cheese, lettuce, onion, pickles, tomato, and hero sauce on a brioche bun.',
+      'American cheese, crisp lettuce, onion, pickles, tomato, and hero sauce on a toasted brioche bun.',
     );
     expect(byName('Hoboken (Italian)')?.description).toBe(
       'Ham, salami, capicola, mortadella, and provolone with lettuce, tomato, red onion, oil, vinegar, and oregano on an Italian roll.',
@@ -252,7 +252,127 @@ describe('kitchen recipe copy', () => {
     expect(philly?.description).toBe(copyForName('Philly Billy'));
 
     const brunchCarne = rows.find(({ group, item }) => group === 'SD Burrito' && item.name === 'Carne Asada');
-    expect(brunchCarne?.item.description).toBeUndefined();
+    expect(brunchCarne).toBeUndefined();
+  });
+});
+
+function walkGroups(groups: Menu['groups'], visit: (group: Menu['groups'][number]) => void) {
+  for (const group of groups) {
+    visit(group);
+    if (group.subGroups) walkGroups(group.subGroups, visit);
+  }
+}
+
+describe('SD Burrito public shape', () => {
+  it('reads as one burrito with six meat choices and no Note chip', () => {
+    const presented = applyMenuPresentation(getMenus());
+    let burrito: Menu['groups'][number] | undefined;
+    walkGroups(presented[0].groups, (group) => {
+      if (group.name === 'SD Burrito') burrito = group;
+    });
+    expect(burrito).toBeTruthy();
+    expect(burrito?.description).toMatch(/scrambled eggs/i);
+    expect(burrito?.description).toMatch(/guacamole/i);
+    expect(burrito?.description).toMatch(/pico de gallo/i);
+    expect(burrito?.description).toMatch(/fries/i);
+    expect(burrito?.description).toMatch(/jack|cheddar/i);
+    expect(burrito?.choices?.some((c) => /^note$/i.test(c.label))).toBe(false);
+    const meat = burrito?.choices?.find((c) => /meat|protein/i.test(c.label));
+    expect(meat?.options).toEqual(['Sausage', 'Bacon', 'Chicken', 'Carnitas', 'Carne Asada', 'Pastrami']);
+    expect(burrito?.items.every((item) => item.name === 'SD Burrito' || !item.description)).toBe(true);
+  });
+
+  it('keeps priced protein items on the printable static source', () => {
+    let burrito: Menu['groups'][number] | undefined;
+    walkGroups(getMenus()[0].groups, (group) => {
+      if (group.name === 'SD Burrito') burrito = group;
+    });
+    expect(burrito?.items.map((item) => item.name)).toEqual([
+      'Sausage',
+      'Bacon',
+      'Chicken',
+      'Carnitas',
+      'Carne Asada',
+      'Pastrami',
+    ]);
+    expect(burrito?.items.every((item) => item.price != null)).toBe(true);
+    expect(burrito?.choices?.some((c) => /^note$/i.test(c.label))).toBeFalsy();
+    expect(burrito?.description).toMatch(/scrambled eggs/i);
+  });
+});
+
+describe('public menu notes and headers', () => {
+  it('removes every Note-labeled choice from the presented menu', () => {
+    const presented = applyMenuPresentation(getMenus());
+    const labels: string[] = [];
+    walkGroups(presented[0].groups, (group) => {
+      for (const choice of group.choices ?? []) labels.push(choice.label);
+    });
+    expect(labels.filter((label) => /^note$/i.test(label))).toEqual([]);
+    expect(readFileSync(resolve(__dirname, './menu.ts'), 'utf8')).not.toMatch(/label:\s*['"]Note['"]/);
+  });
+
+  it('folds Plates hours and sides into the group description', () => {
+    const presented = applyMenuPresentation(getMenus());
+    let plates: Menu['groups'][number] | undefined;
+    walkGroups(presented[0].groups, (group) => {
+      if (group.name === 'Plates') plates = group;
+    });
+    expect(plates?.description).toMatch(/Friday/i);
+    expect(plates?.description).toMatch(/hashbrown/i);
+    expect(plates?.description).toMatch(/fruit/i);
+    expect(plates?.choices?.some((c) => /^note$/i.test(c.label))).toBeFalsy();
+  });
+
+  it('makes public section headers and category tabs ALL CAPS and smaller', () => {
+    const variant = readFileSync(resolve(__dirname, '../components/VariantGroupCard.tsx'), 'utf8');
+    const menuPage = readFileSync(resolve(__dirname, '../app/menu/MenuPageClient.tsx'), 'utf8');
+    expect(variant).toMatch(/<h2 className="[^"]*uppercase[^"]*"/);
+    expect(variant).toMatch(/<h2 className="[^"]*text-sm[^"]*sm:text-base/);
+    expect(variant).not.toMatch(/<h2 className="text-lg font-semibold tracking-tight/);
+    expect(menuPage).toMatch(/<h1[\s\S]*?className="mt-2 text-4xl font-semibold tracking-tight text-foreground"/);
+    expect(menuPage).not.toMatch(/<h1[^>]*uppercase/);
+    expect(menuPage).toMatch(/rounded-full[^"]*uppercase/);
+    expect(menuPage).toMatch(/text-\[11px\]/);
+  });
+});
+
+describe('guest-facing descriptions', () => {
+  it('gives bottles and cans manufacturer-based blurbs', () => {
+    const presented = applyMenuPresentation(getMenus());
+    const rows = flattenItems(presented);
+    const byName = (name: string) => rows.find(({ item }) => photoKey(item.name) === photoKey(name))?.item;
+    expect(byName('Modelo')?.description).toMatch(/pilsner|lager|crisp/i);
+    expect(byName('Michelob Ultra')?.description).toMatch(/light/i);
+    expect(byName('Miller Lite')?.description).toMatch(/light|pilsner/i);
+    expect(byName('Coors Banquet')?.description).toMatch(/lager|golden|rocky mountain/i);
+    expect(byName('Guinness')?.description).toMatch(/stout|creamy|irish/i);
+    expect(byName('High Noon')?.description).toMatch(/vodka|juice|seltzer/i);
+    expect(byName('Sun Cruiser Tea')?.description).toMatch(/tea|vodka/i);
+    expect(byName('Nutrl Watermelon')?.description).toMatch(/watermelon|vodka/i);
+    expect(byName('White Claw')?.description).toMatch(/black cherry/i);
+    expect(byName('White Claw')?.description).toMatch(/mango/i);
+    expect(byName('Corona N/A')?.description).toMatch(/non-alcoholic|non alcoholic|alcohol-free/i);
+    expect(byName('Athletic Lite N/A')?.description).toMatch(/non-alcoholic|non alcoholic|alcohol-free/i);
+  });
+
+  it('covers nearly every public item with an appetizing description', () => {
+    const presented = applyMenuPresentation(getMenus());
+    const missing = flattenItems(presented)
+      .filter(({ group, item }) => {
+        if (group === 'SD Burrito' && item.name !== 'SD Burrito') return false;
+        return !item.description?.trim();
+      })
+      .map(({ group, item }) => `${group}/${item.name}`);
+    expect(missing).toEqual([]);
+  });
+
+  it('spells Chilaquiles correctly and never calls the bar a brewery', () => {
+    const presented = applyMenuPresentation(getMenus());
+    const blob = JSON.stringify(presented);
+    expect(blob).toMatch(/Chilaquiles/);
+    expect(blob).not.toMatch(/chiliquiles/i);
+    expect(blob).not.toMatch(/brewery/i);
   });
 });
 
@@ -302,7 +422,7 @@ describe('applyMenuPresentation', () => {
     expect(rows.filter(({ item }) => photoKey(item.name) === 'cheeseburger crunchwrap')).toHaveLength(0);
     expect(rows.filter(({ item }) => photoKey(item.name) === 'carnitas crunchwrap')).toHaveLength(0);
     expect(rows.filter(({ item }) => photoKey(item.name) === 'carne asada crunchwrap')).toHaveLength(0);
-    expect(rows.filter(({ item }) => photoKey(item.name) === 'crunchwraps')).toHaveLength(1);
+    expect(kitchen?.items.filter((item) => photoKey(item.name) === 'crunchwraps')).toHaveLength(1);
   });
 
   it('renames the Breakfast tab to Brunch and adds Chilaquiles', () => {
@@ -319,7 +439,7 @@ describe('applyMenuPresentation', () => {
     expect(chilaquiles?.description).not.toMatch(/salsa|crema|egg|tortilla|verde|roja/i);
     expect(chilaquiles?.price).toBeUndefined();
     expect(chilaquiles?.imageUrl).toBeUndefined();
-    expect(flattenItems(presented).filter(({ item }) => photoKey(item.name) === 'chilaquiles')).toHaveLength(1);
+    expect(flattenItems(presented).filter(({ item }) => photoKey(item.name) === 'chilaquiles').length).toBeGreaterThanOrEqual(1);
   });
 
   it('does not invent photos for quarantined dishes on the live menu', () => {
@@ -381,12 +501,15 @@ describe('applyMenuPresentation', () => {
     expect(names).not.toContain('Burger Wrap');
     expect(names).not.toContain('Cheeseburger Crunchwrap');
     expect(names.filter((n) => n === 'Calamari')).toHaveLength(1);
-    expect(names.filter((n) => n === 'Crunchwraps')).toHaveLength(1);
     expect(names.filter((n) => n === 'Spicy Chicken')).toHaveLength(1);
     const rows = flattenItems(presented);
     expect(rows.find(({ item }) => item.name === 'Spicy Chicken')?.group).toBe('Hero Sandwiches');
-    expect(rows.find(({ item }) => item.name === 'Hogzilla')?.group).toBe('Kitchen Specials');
-    expect(rows.find(({ item }) => item.name === 'Crunchwraps')?.group).toBe('Kitchen Specials');
+    expect(rows.filter(({ item }) => item.name === 'Hogzilla').map(({ group }) => group)).toEqual(
+      expect.arrayContaining(['Kitchen Specials', 'Kitchen']),
+    );
+    expect(rows.filter(({ item }) => item.name === 'Crunchwraps').map(({ group }) => group)).toEqual(
+      expect.arrayContaining(['Kitchen Specials', 'Kitchen']),
+    );
     expect(presented[0].groups.some((g) => g.name === 'Brunch')).toBe(true);
   });
 
@@ -444,11 +567,12 @@ describe('applyMenuPresentation', () => {
     expect(names).not.toContain('Burger Wrap');
     expect(names).not.toContain('Cheeseburger Crunchwrap');
     expect(names).not.toContain('Carnitas Crunchwrap');
-    expect(names.filter((n) => n === 'Crunchwraps')).toHaveLength(1);
     expect(names.filter((n) => n === 'Spicy Chicken')).toHaveLength(1);
 
     expect(rows.find(({ item }) => item.name === 'Spicy Chicken')?.group).toBe('Hero Sandwiches');
-    expect(rows.find(({ item }) => item.name === 'Crunchwraps')?.group).toBe('Kitchen Specials');
+    expect(rows.filter(({ item }) => item.name === 'Crunchwraps').map(({ group }) => group)).toEqual(
+      expect.arrayContaining(['Kitchen Specials']),
+    );
     expect(rows.filter(({ group, item }) => group === 'Kitchen Specials' && item.name === 'Spicy Chicken')).toHaveLength(0);
     expect(presented[0].groups.find((g) => g.name === 'Mains')?.subGroups?.some((g) => /crunch\s*wraps?/i.test(g.name))).toBe(false);
     expect(presented[0].groups.some((g) => g.name === 'Brunch')).toBe(true);
@@ -460,11 +584,26 @@ describe('applyMenuPresentation', () => {
     const names = flattenItems(presented).map(({ item }) => photoKey(item.name));
     expect(names.filter((n) => n === 'calamari')).toHaveLength(1);
     expect(names.filter((n) => n === 'spicy chicken')).toHaveLength(1);
-    expect(names.filter((n) => n === 'hogzilla')).toHaveLength(1);
-    expect(names.filter((n) => n === 'crunchwraps')).toHaveLength(1);
-    expect(names.filter((n) => n === 'chilaquiles')).toHaveLength(1);
     expect(names.filter((n) => n === 'cheeseburger crunchwrap')).toHaveLength(0);
     expect(names.filter((n) => n === 'burger wrap')).toHaveLength(0);
+  });
+
+  it('puts Hogzilla, Crunchwraps, and Chilaquiles on the Specials tab first', () => {
+    const presented = applyMenuPresentation(getMenus());
+    const specials = presented[0].groups.find((g) => g.name === 'Specials');
+    const kitchen = specials?.subGroups?.find((g) => /kitchen|featured/i.test(g.name));
+    expect(kitchen?.items.map((item) => item.name)).toEqual(['Hogzilla', 'Crunchwraps', 'Chilaquiles']);
+    expect(kitchen?.items.map((item) => item.description)).toEqual([
+      HOGZILLA.description,
+      CRUNCHWRAPS.description,
+      CHILAQUILES.description,
+    ]);
+    expect(kitchen?.items.every((item) => item.price == null)).toBe(true);
+    expect(kitchen?.items.every((item) => item.imageUrl == null)).toBe(true);
+    expect(specials?.items[0]?.name).toBe('Mahalo Monday');
+    expect(flattenItems(presented).filter(({ item }) => photoKey(item.name) === 'hogzilla')).toHaveLength(2);
+    expect(flattenItems(presented).filter(({ item }) => photoKey(item.name) === 'crunchwraps')).toHaveLength(2);
+    expect(flattenItems(presented).filter(({ item }) => photoKey(item.name) === 'chilaquiles')).toHaveLength(2);
   });
 });
 

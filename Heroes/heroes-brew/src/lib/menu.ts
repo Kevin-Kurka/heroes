@@ -1,4 +1,5 @@
 import { Menu, Restaurant } from '@/types';
+import { CALAMARI, CHILAQUILES, CRUNCHWRAPS, HOGZILLA, OREO_CHURROS, SPICY_CHICKEN } from './menu-specials';
 
 // Static fallback menu — June 2026 food book. Mirrors exactly what
 // parseMenuRows() in menu-sheet.ts produces from the live Google Sheet CSV
@@ -22,7 +23,7 @@ export function getMenus(): Menu[] {
               name: 'Munchies',
               displayMode: 'variants',
               items: [
-                { id: 'starting-munchies-calamari', name: 'Calamari', description: 'Rings & tentacles, marinara + house aioli.' },
+                { id: 'starting-munchies-calamari', name: 'Calamari', description: CALAMARI.description },
                 { id: 'starting-munchies-i0', name: 'Hummus Plate', description: 'Red Pepper Hummus, celery, carrots, cucumber and pita bread.', price: 12 },
                 { id: 'starting-munchies-i1', name: 'Fried Pickles', description: 'With house-made chipotle ranch.', price: 12 },
                 { id: 'starting-munchies-i2', name: "Chef Mariano's Champion Chili", description: 'Topped with sour cream, shredded cheese and red onion.', price: 12 },
@@ -112,8 +113,8 @@ export function getMenus(): Menu[] {
               name: 'Kitchen Specials',
               displayMode: 'variants',
               items: [
-                { id: 'mains-kitchen-specials-hogzilla', name: 'Hogzilla', description: 'Carolina BBQ sauced pulled pork, ham, bacon, coleslaw and fried pickle chips on a brioche bun.' },
-                { id: 'mains-kitchen-specials-crunchwraps', name: 'Crunchwraps', description: 'Carne Asada, Carnitas, or Chicken.' },
+                { id: HOGZILLA.id, name: HOGZILLA.name, description: HOGZILLA.description },
+                { id: CRUNCHWRAPS.id, name: CRUNCHWRAPS.name, description: CRUNCHWRAPS.description },
               ],
             },
             {
@@ -127,7 +128,7 @@ export function getMenus(): Menu[] {
                 { id: 'mains-hero-sandwiches-i3', name: 'Maui (Kalua Pork)', description: 'Kalua pork, coleslaw, aloha sauce and a pickle on a brioche bun.', price: 18 },
                 { id: 'mains-hero-sandwiches-i4', name: 'Hoboken (Italian)', description: 'Ham, salami, capicola, mortadella, provolone cheese, lettuce, tomato, red onion, oil & vinegar, oregano. Your choice: Grinder style (lightly toasted) or cold.', price: 22 },
                 { id: 'mains-hero-sandwiches-i5', name: 'Manhattan (Reuben)', description: 'Pastrami, sauerkraut, Swiss cheese, Russian dressing, on rye bread.', price: 22 },
-                { id: 'mains-hero-sandwiches-spicy-chicken', name: 'Spicy Chicken', description: 'Crispy chicken, bacon, melted jack.' },
+                { id: SPICY_CHICKEN.id, name: SPICY_CHICKEN.name, description: SPICY_CHICKEN.description },
               ],
             },
             {
@@ -264,7 +265,7 @@ export function getMenus(): Menu[] {
             { id: 'sweets-i1', name: 'Homemade Vanilla Cheesecake', description: 'Sales help support the non-profit organization Shelter to Soldier.', price: 14 },
             { id: 'sweets-i2', name: 'Churros with Vanilla Ice Cream', price: 12 },
             { id: 'sweets-i3', name: 'Ice Cream Cookie Sandwich', price: 6 },
-            { id: 'sweets-oreo-churros', name: 'Oreo Churros', description: 'Oreo-dusted churros with chocolate and caramel dip.' },
+            { id: OREO_CHURROS.id, name: OREO_CHURROS.name, description: OREO_CHURROS.description },
           ],
         },
 
@@ -280,7 +281,7 @@ export function getMenus(): Menu[] {
               name: 'Brunch Specials',
               displayMode: 'variants',
               items: [
-                { id: 'brunch-specials-chilaquiles', name: 'Chilaquiles', description: 'Brunch special.' },
+                { id: CHILAQUILES.id, name: CHILAQUILES.name, description: CHILAQUILES.description },
               ],
             },
             {
@@ -301,9 +302,8 @@ export function getMenus(): Menu[] {
               id: 'breakfast-sd-burrito',
               name: 'SD Burrito',
               displayMode: 'variants',
-              choices: [
-                { label: 'Note', options: ['Wrapped with scrambled eggs, guacamole, pico de gallo, fries, and shredded jack/cheddar cheese'] },
-              ],
+              description:
+                'Choose your meat — wrapped with fluffy scrambled eggs, creamy guacamole, pico de gallo, golden fries, and melted jack and cheddar.',
               items: [
                 { id: 'breakfast-sd-burrito-i0', name: 'Sausage', price: 15 },
                 { id: 'breakfast-sd-burrito-i1', name: 'Bacon', price: 15 },
@@ -328,9 +328,7 @@ export function getMenus(): Menu[] {
               id: 'breakfast-plates',
               name: 'Plates',
               displayMode: 'variants',
-              choices: [
-                { label: 'Note', options: ['Available Friday–Sunday 9am–1pm · All breakfast entrees served with a side of hashbrowns & fruit'] },
-              ],
+              description: 'Friday–Sunday 9am–1pm. Every plate comes with hashbrowns and fruit.',
               items: [
                 { id: 'breakfast-plates-i0', name: 'American Hero Breakfast', description: 'Bacon, sausage patty, or ham, 2 eggs any style, hashbrowns, choice of: biscuit, white, wheat, or rye toast.', price: 12 },
                 { id: 'breakfast-plates-i1', name: 'Fallbrook', description: 'Avocado toast served with 2 poached eggs, tomato, and sprouts on white, wheat, or rye toast.', price: 16 },
@@ -398,7 +396,7 @@ export function getMenus(): Menu[] {
                 { id: 'drinks-bottles-cans-i5', name: 'High Noon', price: 7 },
                 { id: 'drinks-bottles-cans-i6', name: 'Sun Cruiser Tea', price: 8 },
                 { id: 'drinks-bottles-cans-i7', name: 'Nutrl Watermelon', price: 8 },
-                { id: 'drinks-bottles-cans-i8', name: 'White Claw', description: 'Black Cherry · Mango', price: 7 },
+                { id: 'drinks-bottles-cans-i8', name: 'White Claw', description: 'Crisp hard seltzer — Black Cherry or Mango.', price: 7 },
                 { id: 'drinks-bottles-cans-i9', name: 'Corona N/A', price: 7 },
                 { id: 'drinks-bottles-cans-i10', name: 'Athletic Lite N/A', price: 7 },
               ],
@@ -468,6 +466,18 @@ export function getMenus(): Menu[] {
         {
           id: 'specials',
           name: 'Specials',
+          subGroups: [
+            {
+              id: 'specials-kitchen',
+              name: 'Kitchen',
+              displayMode: 'variants',
+              items: [
+                { id: 'specials-kitchen-hogzilla', name: HOGZILLA.name, description: HOGZILLA.description },
+                { id: 'specials-kitchen-crunchwraps', name: CRUNCHWRAPS.name, description: CRUNCHWRAPS.description },
+                { id: 'specials-kitchen-chilaquiles', name: CHILAQUILES.name, description: CHILAQUILES.description },
+              ],
+            },
+          ],
           items: [
             { id: 'specials-i0', name: 'Mahalo Monday', description: 'Kalua Pork Sliders $4ea · Modelo, Ultra, Coors & Miller Lite $3ea.', price: 4 },
             { id: 'specials-i1', name: 'Taco Tuesday', description: 'Village Tacos $4ea · All Tequila Cocktails $2 off · Industry Drafts or Wells $5ea (all day).', price: 4 },

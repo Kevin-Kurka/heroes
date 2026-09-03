@@ -24,40 +24,43 @@
 export const CALAMARI = {
   id: 'starting-munchies-calamari',
   name: 'Calamari',
-  description: 'Rings & tentacles, marinara + house aioli.',
+  description: 'Crisp rings and tentacles with marinara and house aioli.',
 } as const;
 
 export const SPICY_CHICKEN = {
   id: 'mains-hero-sandwiches-spicy-chicken',
   name: 'Spicy Chicken',
-  description: 'Crispy chicken, bacon, melted jack.',
+  description: 'Crispy chicken, smoky bacon, and melted jack.',
 } as const;
 
 export const HOGZILLA = {
   id: 'mains-kitchen-specials-hogzilla',
   name: 'Hogzilla',
   description:
-    'Carolina BBQ sauced pulled pork, ham, bacon, coleslaw and fried pickle chips on a brioche bun.',
+    'Carolina BBQ pulled pork stacked with ham, bacon, crisp coleslaw, and fried pickle chips on a toasted brioche bun.',
 } as const;
 
 export const CRUNCHWRAPS = {
   id: 'mains-kitchen-specials-crunchwraps',
   name: 'Crunchwraps',
-  description: 'Carne Asada, Carnitas, or Chicken.',
+  description: 'Golden, pressed wraps — Carne Asada, Carnitas, or Chicken.',
   proteins: ['Carne Asada', 'Carnitas', 'Chicken'],
 } as const;
 
 export const CHILAQUILES = {
   id: 'brunch-specials-chilaquiles',
   name: 'Chilaquiles',
-  description: 'Brunch special.',
+  description: 'A weekend brunch favorite from the kitchen.',
 } as const;
 
 export const OREO_CHURROS = {
   id: 'sweets-oreo-churros',
   name: 'Oreo Churros',
-  description: 'Oreo-dusted churros with chocolate and caramel dip.',
+  description: 'Warm Oreo-dusted churros with chocolate and caramel for dipping.',
 } as const;
+
+/** Kitchen food specials shared by home, /menu Specials, and Mains. */
+export const FOOD_SPECIALS = [HOGZILLA, CRUNCHWRAPS, CHILAQUILES] as const;
 
 /** Homepage featured specials — no prices. */
 export const HOME_SPECIALS = [
