@@ -81,7 +81,7 @@ export default function VariantGroupCard({ group, elevated }: VariantGroupCardPr
       }`}
     >
       <div className="mb-3 flex items-baseline justify-between gap-4">
-        <h2 className="text-lg font-semibold tracking-tight text-foreground sm:text-xl">
+        <h2 className="text-sm font-semibold uppercase tracking-wider text-foreground sm:text-base">
           {group.name}
         </h2>
         {SHOW_PRICES && group.basePrice != null && (

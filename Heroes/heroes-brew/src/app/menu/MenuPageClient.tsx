@@ -159,7 +159,7 @@ export default function MenuPageClient({ menus }: Props) {
                       setActiveGroup(tab.id);
                     }
                   }}
-                  className={`relative shrink-0 px-4 py-2 rounded-full text-[13px] font-medium tracking-wide transition-colors duration-300 ${
+                  className={`relative shrink-0 px-4 py-2 rounded-full text-[11px] font-medium uppercase tracking-wide transition-colors duration-300 ${
                     active
                       ? 'text-white'
                       : 'bg-white/5 text-muted hover:text-foreground hover:bg-white/10 border border-white/10'
