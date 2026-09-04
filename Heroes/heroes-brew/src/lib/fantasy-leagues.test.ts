@@ -93,6 +93,14 @@ describe('filterUpcomingLeagues', () => {
     expect(afterThree.map((l) => l.id)).toEqual(['05', '06', '07']);
     expect(afterThree.reduce((n, l) => n + l.spotsLeft, 0)).toBe(11);
   });
+
+  it('prefers raw sheet dateLabel (with year) over the formatted label', () => {
+    const rows = [
+      { id: 'past', label: 'Sat, Aug 29', dateLabel: '8/29/26', time: '4:00 PM', spotsLeft: 5 },
+      { id: 'next', label: 'Sat, Sep 5', dateLabel: '9/5/26', time: '4:00 PM', spotsLeft: 6 },
+    ];
+    expect(filterUpcomingLeagues(rows, FRI_SEP4_2PM).map((l) => l.id)).toEqual(['next']);
+  });
 });
 
 describe('bundled remaining official drafts', () => {

@@ -38,12 +38,12 @@
 
 export const YAHOO_FANTASY_URL = 'https://football.fantasysports.yahoo.com/';
 
-/** A draft slot = one official Heroes league (10 players). `id` is the date key
- *  (YYYY-MM-DD) used everywhere (form value, Sheet column, counts map). */
+/** A draft slot = one official Heroes league (10 players). `id` is a non-date
+ *  token (bundled config / form value). Live joins key on the Sheet league name. */
 export interface OfficialLeague {
-  id: string;        // 'YYYY-MM-DD'
-  label: string;     // 'Fri, Aug 28'
-  time?: string;     // '4:00 PM' (Fridays); blank = day-of time confirmed after signup
+  id: string;        // 'sep04-3pm'
+  label: string;     // 'Fri, Sep 4'
+  time?: string;     // '3:00 PM' / '4:00 PM'
   capacity: number;  // 10
 }
 

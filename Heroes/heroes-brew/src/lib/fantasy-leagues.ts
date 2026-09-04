@@ -166,11 +166,13 @@ export function isUpcomingDraft(
   return compareWall(draft, pacificWallClock(now)) >= 0;
 }
 
-export function filterUpcomingLeagues<T extends { label: string; time?: string }>(
+export function filterUpcomingLeagues<T extends { label: string; time?: string; dateLabel?: string }>(
   leagues: T[],
   now: Date = new Date(),
 ): T[] {
-  return leagues.filter((league) => isUpcomingDraft(league.label, league.time, now));
+  return leagues.filter((league) =>
+    isUpcomingDraft(league.dateLabel || league.label, league.time, now),
+  );
 }
 
 /**
@@ -213,11 +215,12 @@ export async function getLeagueAvailability(): Promise<LeagueAvailability[]> {
               full: spotsLeft <= 0,
             };
           });
-          // Prefer the raw sheet dateLabel (keeps the year) when filtering.
-          return mapped.filter((league, idx) => {
-            const raw = String(data[idx]?.dateLabel || '');
-            return isUpcomingDraft(raw || league.label, league.time);
-          });
+          return filterUpcomingLeagues(
+            mapped.map((league, idx) => ({
+              ...league,
+              dateLabel: String(data[idx]?.dateLabel || ''),
+            })),
+          ).map(({ dateLabel: _dateLabel, ...league }) => league);
         }
       }
     } catch {
