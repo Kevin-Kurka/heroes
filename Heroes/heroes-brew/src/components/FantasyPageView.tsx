@@ -10,7 +10,8 @@ const PERK_ICON = { trophy: Trophy, wings: UtensilsCrossed, tv: Tv } as const;
 /**
  * Server-rendered Heroes Fantasy Football League hub. Plain HTML for
  * info/perks/how-to/FAQ; embeds the two client signup cards (Join / Register).
- * `leagues` carries live per-league availability for the Join card.
+ * `leagues` carries live upcoming-league availability; spotsOpen is the sum of
+ * those rows only (no hardcoded total).
  */
 export default function FantasyPageView({ leagues }: { leagues: LeagueAvailability[] }) {
   const spotsOpen = leagues.reduce((n, l) => n + l.spotsLeft, 0);
@@ -66,7 +67,7 @@ export default function FantasyPageView({ leagues }: { leagues: LeagueAvailabili
                 No league? Hop into one of our official Heroes leagues — {LEAGUE_CAPACITY} open spots each (the commissioner takes the 10th). Join up to {MAX_LEAGUES_PER_USER}.
                 {spotsOpen > 0 ? ` ${spotsOpen} spots open right now.` : ''}
               </p>
-              <p className="mb-4 text-xs text-muted">Free to join · $100 to the champ · drafts the two weekends before kickoff.</p>
+              <p className="mb-4 text-xs text-muted">Free to join · $100 to the champ · remaining drafts this Labor Day weekend.</p>
               <JoinLeagueForm leagues={leagues} />
             </div>
 
