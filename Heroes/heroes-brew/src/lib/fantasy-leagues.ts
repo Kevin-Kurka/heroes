@@ -185,7 +185,7 @@ export function filterUpcomingLeagues<T extends { label: string; time?: string; 
  * America/Los_Angeles are dropped so open-spot totals exclude completed drafts.
  *
  * On failure (env unset or endpoint unreachable) this returns [] — NOT the bundled
- * OFFICIAL_LEAGUES. The bundled ids are date tokens ('sep04-4pm') that don't match
+ * OFFICIAL_LEAGUES. The bundled ids are date tokens ('sep05-sat') that don't match
  * the Sheet's league names, so a join made against them is always rejected by the
  * Apps Script. Rendering an empty list makes the Join form show its graceful
  * "reach out to us" state instead of an unjoinable form. The page is force-dynamic,

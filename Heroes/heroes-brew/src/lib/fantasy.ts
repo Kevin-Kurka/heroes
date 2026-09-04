@@ -12,8 +12,8 @@
  *  - JOIN a Heroes league  → name, email, pick an official draft date (cap 10/league)
  *  - REGISTER your league  → commissioner name, league name, email, phone, draft date
  *
- * Remaining official drafts are this Labor Day weekend: Fri Sep 4 at 4pm,
- * Sat Sep 5 at 4pm, and Sun Sep 6 at 3pm. The Fri Sep 4 3pm draft was
+ * Remaining official drafts are this Labor Day weekend: Sat Sep 5 at 4pm
+ * and Sun Sep 6 at 3pm. Both Friday Sep 4 drafts (3pm and 4pm) were
  * cancelled. Signups land in a Google Sheet via Apps Script (env
  * FANTASY_SIGNUP_URL); live per-league counts read back via
  * FANTASY_COUNTS_URL. See docs/fantasy-football-signup-setup.md.
@@ -42,8 +42,8 @@ export const YAHOO_FANTASY_URL = 'https://football.fantasysports.yahoo.com/';
 /** A draft slot = one official Heroes league (10 players). `id` is a non-date
  *  token (bundled config / form value). Live joins key on the Sheet league name. */
 export interface OfficialLeague {
-  id: string;        // 'sep04-4pm'
-  label: string;     // 'Fri, Sep 4'
+  id: string;        // 'sep05-sat'
+  label: string;     // 'Sat, Sep 5'
   time?: string;     // '4:00 PM'
   capacity: number;  // 10
 }
@@ -53,11 +53,10 @@ export const LEAGUE_CAPACITY = 9; // 9 open spots per league — the commissione
 export const MAX_LEAGUES_PER_USER = 3;
 
 /** Remaining official drafts this Labor Day weekend 2026.
- *  `id` is intentionally a non-date token (e.g. 'sep04-4pm') so Google Sheets
+ *  `id` is intentionally a non-date token (e.g. 'sep05-sat') so Google Sheets
  *  stores it as plain text and doesn't auto-convert it to a Date — which would
  *  break the per-league counts/caps keyed on this id. */
 export const OFFICIAL_LEAGUES: OfficialLeague[] = [
-  { id: 'sep04-4pm', label: 'Fri, Sep 4', time: '4:00 PM', capacity: 10 },
   { id: 'sep05-sat', label: 'Sat, Sep 5', time: '4:00 PM', capacity: 10 },
   { id: 'sep06-sun', label: 'Sun, Sep 6', time: '3:00 PM', capacity: 10 },
 ];
@@ -114,7 +113,7 @@ export const FANTASY = {
     {
       question: 'When are the official Heroes league drafts?',
       answer:
-        'Remaining official Heroes drafts are this Labor Day weekend: Friday Sep 4 at 4pm, Saturday Sep 5 at 4pm, and Sunday Sep 6 at 3pm. Each league has 9 open spots (the commissioner takes the 10th), so they fill up fast. You pick your draft date when you sign up.',
+        'Remaining official Heroes drafts are this Labor Day weekend: Saturday Sep 5 at 4pm and Sunday Sep 6 at 3pm. Each league has 9 open spots (the commissioner takes the 10th), so they fill up fast. You pick your draft date when you sign up.',
     },
     {
       question: 'What does the winner get?',

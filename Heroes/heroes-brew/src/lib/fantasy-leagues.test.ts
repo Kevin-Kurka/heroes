@@ -17,7 +17,7 @@
  * - ✅ Filters sheet dates and formatted labels that are already past
  * - ✅ Keeps same-day drafts that have not started yet
  * - ✅ End-of-day cutoff when time is missing
- * - ✅ Bundled list excludes the cancelled Fri Sep 4 3pm draft
+ * - ✅ Bundled list excludes the cancelled Fri Sep 4 3pm and 4pm drafts
  *
  * RELATED FILES:
  * - src/lib/fantasy-leagues.ts
@@ -107,26 +107,24 @@ describe('filterUpcomingLeagues', () => {
 describe('bundled remaining official drafts', () => {
   it('lists only the remaining Labor Day weekend slots', () => {
     expect(OFFICIAL_LEAGUES.map(leagueDateText)).toEqual([
-      'Fri, Sep 4 · 4:00 PM',
       'Sat, Sep 5 · 4:00 PM',
       'Sun, Sep 6 · 3:00 PM',
     ]);
-    expect(OFFICIAL_LEAGUES.some((l) => l.id === 'sep04-3pm')).toBe(false);
-    expect(OFFICIAL_LEAGUES.some((l) => l.label === 'Fri, Sep 4' && l.time === '3:00 PM')).toBe(false);
+    expect(OFFICIAL_LEAGUES.some((l) => l.id === 'sep04-3pm' || l.id === 'sep04-4pm')).toBe(false);
+    expect(OFFICIAL_LEAGUES.some((l) => /Fri|Sep\s*4/i.test(`${l.id} ${l.label} ${l.time || ''}`))).toBe(false);
     expect(OFFICIAL_LEAGUES.some((l) => /aug\s*2[89]|aug\s*30|moved from/i.test(`${l.id} ${l.label}`))).toBe(false);
   });
 
   it('FAQ no longer advertises the full two-weekend slate', () => {
     const draftsFaq = FANTASY.faqs.find((f) => /when are the official/i.test(f.question));
     expect(draftsFaq?.answer).toMatch(/Labor Day weekend/i);
-    expect(draftsFaq?.answer).toMatch(/Sep(?:tember)? 4/);
-    expect(draftsFaq?.answer).toMatch(/4pm/);
     expect(draftsFaq?.answer).toMatch(/Sat(?:urday)? Sep 5 at 4pm/);
     expect(draftsFaq?.answer).toMatch(/Sun(?:day)? Sep 6 at 3pm/);
+    expect(draftsFaq?.answer).not.toMatch(/Friday/i);
+    expect(draftsFaq?.answer).not.toMatch(/Sep(?:tember)? 4/);
     expect(draftsFaq?.answer).not.toMatch(/two weekends/i);
     expect(draftsFaq?.answer).not.toMatch(/two Friday/i);
     expect(draftsFaq?.answer).not.toMatch(/3pm and 4pm/);
-    expect(draftsFaq?.answer).not.toMatch(/Friday Sep 4 at 3pm/i);
     expect(draftsFaq?.answer).not.toMatch(/Aug(?:ust)? 2[89]|Aug(?:ust)? 30/);
   });
 
