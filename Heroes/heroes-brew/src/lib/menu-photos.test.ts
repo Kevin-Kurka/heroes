@@ -358,6 +358,10 @@ describe('Toast fish taco / cilantro-lime crema', () => {
     expect(copyForName('Village Tacos')).toBe(
       'Three tacos, topped with onion, cilantro, and queso fresco. Served with refried beans and chips.',
     );
+    expect(copyForName('Chicken Taco')).toBe(
+      'Seasoned chicken taco topped with onion, cilantro, and queso fresco.',
+    );
+    expect(copyForName('Portland')).toMatch(/spinach wrap/i);
 
     const presented = applyMenuPresentation(getMenus());
     const blob = JSON.stringify(presented);
@@ -418,6 +422,10 @@ describe('guest-facing descriptions', () => {
     const presented = applyMenuPresentation(getMenus());
     const rows = flattenItems(presented);
     const byName = (name: string) => rows.find(({ item }) => photoKey(item.name) === photoKey(name))?.item;
+    expect(byName('Cadillac Margarita')?.description).toMatch(/Casa Azul|tequila|lime/i);
+    expect(byName('Heroes Old Fashioned')?.description).toMatch(/Bulleit|bourbon|bitters/i);
+    expect(byName('Irish Coffee')?.description).toMatch(/whiskey|cream/i);
+    expect(byName('Mimosa')?.description).not.toMatch(/\$|\+\s*\d/);
     expect(byName('Modelo')?.description).toMatch(/pilsner|lager|crisp/i);
     expect(byName('Michelob Ultra')?.description).toMatch(/light/i);
     expect(byName('Miller Lite')?.description).toMatch(/light|pilsner/i);

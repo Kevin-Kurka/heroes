@@ -67,7 +67,7 @@ add(COPY, ['Hamburger', 'Hamburger Slider'], 'Mini hamburger slider on a toasted
 add(COPY, ['Chicken Slider', 'Fried Chicken Slider'], 'Fried chicken slider with lettuce and pickle on a toasted brioche bun.');
 add(COPY, ['Kalua Pork Slider'], 'Kalua pork slider with coleslaw and aloha sauce.');
 
-add(COPY, ['Fries', 'Single Fries'], 'A pile of crisp, golden fries.');
+add(COPY, ['Fries', 'Single Fries'], 'Crispy golden fries, cooked to order.');
 add(COPY, ['Large Fries'], 'A bigger pile of crisp, golden fries.');
 add(COPY, ['Onion Rings', 'Single Onion Rings'], 'Crispy beer-battered onion rings.');
 add(COPY, ['Large Onion Rings'], 'A bigger pile of golden onion rings.');
@@ -79,8 +79,8 @@ add(COPY, ['Potato Salad'], 'Creamy house potato salad.');
 add(COPY, ['Chips & Salsa'], 'Crisp tortilla chips with house salsa.');
 add(COPY, ['Cup Chili'], "A cup of Chef Mariano's champion chili finished with onions and cool crema.");
 add(COPY, ['Macaroni Salad'], 'Creamy house macaroni salad.');
-add(COPY, ['Coleslaw'], 'Crisp, cool house slaw.');
-add(COPY, ['Side Fruit', 'Fruit'], 'A bowl of seasonal fruit.');
+add(COPY, ['Coleslaw'], 'Cool, crisp house coleslaw.');
+add(COPY, ['Side Fruit', 'Fruit'], 'A fresh side of seasonal fruit.');
 
 add(COPY, ['Cobb', 'Cobb Salad'], 'Mixed greens loaded with bacon, egg, avocado, tomato, red onion, blue cheese, and ranch.');
 add(COPY, ['Chicken Caesar'], 'Crisp romaine and grilled chicken with croutons, parmesan, and Caesar.');
@@ -151,7 +151,10 @@ add(COPY, ['Chilaquiles'], CHILAQUILES.description);
 
 add(COPY, ['SD Burrito'], 'Choose your meat — wrapped with fluffy scrambled eggs, creamy guacamole, pico de gallo, golden fries, and melted jack and cheddar.');
 add(COPY, ['Plates'], 'Friday–Sunday 9am–1pm. Every plate comes with hashbrowns and fruit.');
-add(COPY, ['Handhelds', 'Bagel Melt'], 'An egg any style and melted cheddar on your bagel.');
+add(COPY, ['Handhelds', 'Bagel Melt', 'Bagel Melts'], 'An egg any style and melted cheddar on your bagel.');
+add(COPY, ['Plain Bagel'], 'Toasted plain bagel.');
+add(COPY, ['Everything Bagel'], 'Everything bagel, toasted.');
+add(COPY, ['Jalapeno Bagel', 'Jalapeño Bagel'], 'Jalapeño bagel, toasted.');
 add(COPY, ['Denver', 'Denver Omelette'], 'Ham, bell pepper, grilled onions, and melted cheddar-jack, folded into a fluffy omelette.');
 add(COPY, ['Boulder', 'Boulder Omelette'], 'Ribeye, mushrooms, grilled onions, and American cheese, finished with sausage gravy.');
 add(COPY, ['Hamtown', 'Hamtown Omelette'], 'Ham and melted cheddar-jack in a fluffy omelette.');
@@ -179,11 +182,21 @@ add(COPY, ['Coffee'], 'Freshly brewed coffee.');
 add(COPY, ['Hot/Iced Tea', 'Hot Iced Tea'], 'Hot or iced tea.');
 add(COPY, ['Milk'], 'Cold milk.');
 add(COPY, ['Lemonade'], 'Fresh lemonade.');
-add(COPY, ['Mimosa'], 'A classic brunch mimosa.');
+add(COPY, ['Mimosa', 'Mimosa Single'], 'Fresh mimosa — bubbles and citrus.');
+add(COPY, ['Mimosa Bottomless', 'Bottomless Mimosa'], 'Bottomless mimosas while you brunch.');
 add(COPY, ['Michelada'], 'A spicy michelada.');
-add(COPY, ['Irish Coffee'], 'Irish coffee.');
-add(COPY, ['Bloody Mary'], 'A house bloody mary.');
+add(COPY, ['Irish Coffee'], 'Hot coffee, Irish whiskey, and a cloud of cream.');
+add(COPY, ['Bloody Mary'], 'Spicy Bloody Mary loaded and ready for brunch.');
 add(COPY, ['Espresso Martini'], 'An espresso martini.');
+add(COPY, ['South Ponto Sour'], 'Bright whiskey sour with a coastal twist.');
+add(COPY, ['Golden Hour Martini'], 'Elegant martini built for golden hour in the Village.');
+add(COPY, ['Flower Field Fizz'], 'Floral, fizzy cocktail inspired by Carlsbad flower fields.');
+add(COPY, ['Ashpresso'], 'Espresso cocktail with a bold coffee kick.');
+add(COPY, ['Starburst'], 'Bright, candy-sweet cocktail with a punchy finish.');
+add(COPY, ['Red Bull Vodka', 'Red Bull/Vodka'], 'Vodka and Red Bull served in a pint.');
+add(COPY, ['Margarita Rocks', 'Margarita (Rocks)'], 'Classic margarita on the rocks.');
+add(COPY, ['Padres Hot Dog'], 'Ballpark-style hot dog piled high for game day.');
+add(COPY, ['Monday Pork Slider'], 'Kalua pork slider with coleslaw and aloha sauce — Mahalo Monday favorite.');
 
 add(COPY, ['Modelo'], 'A rich, full-flavored pilsner-style Mexican lager with a crisp, well-balanced finish.');
 add(COPY, ['Michelob Ultra'], 'A superior light lager with a crisp, clean taste.');
