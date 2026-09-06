@@ -1,4 +1,5 @@
 import { Menu, Restaurant } from '@/types';
+import { BREAKFAST_HAPPY_HOUR, EARLY_BIRD } from './early-bird';
 import { CALAMARI, CHILAQUILES, CRUNCHWRAPS, HOGZILLA, OREO_CHURROS, SPICY_CHICKEN } from './menu-specials';
 
 // Static fallback menu — June 2026 food book. Mirrors exactly what
@@ -281,6 +282,8 @@ export function getMenus(): Menu[] {
               name: 'Brunch Specials',
               displayMode: 'variants',
               items: [
+                { id: EARLY_BIRD.id, name: EARLY_BIRD.name, description: EARLY_BIRD.description },
+                { id: BREAKFAST_HAPPY_HOUR.id, name: BREAKFAST_HAPPY_HOUR.name, description: BREAKFAST_HAPPY_HOUR.description },
                 { id: CHILAQUILES.id, name: CHILAQUILES.name, description: CHILAQUILES.description },
               ],
             },
@@ -363,10 +366,12 @@ export function getMenus(): Menu[] {
                 { id: 'breakfast-drinks-i4', name: 'Soda', description: 'Pepsi, Diet Pepsi, Dr. Pepper, Starry, Root Beer, Gingerale.', price: 3.5 },
                 { id: 'breakfast-drinks-i5', name: 'Juice', description: 'Short 4 / Tall 7. Orange, Pineapple, Apple, Cranberry, Grapefruit.', price: 4 },
                 { id: 'breakfast-drinks-i6', name: 'Mimosa', price: 10 },
-                { id: 'breakfast-drinks-i7', name: 'Michelada', price: 10 },
-                { id: 'breakfast-drinks-i8', name: 'Irish Coffee', price: 12 },
-                { id: 'breakfast-drinks-i9', name: 'Bloody Mary', price: 13 },
-                { id: 'breakfast-drinks-i10', name: 'Espresso Martini', price: 14 },
+                { id: 'breakfast-drinks-i7', name: 'Bottomless Mimosas' },
+                { id: 'breakfast-drinks-i8', name: 'Michelada', price: 10 },
+                { id: 'breakfast-drinks-i9', name: 'Irish Coffee', price: 12 },
+                { id: 'breakfast-drinks-i10', name: 'Bloody Mary', price: 13 },
+                { id: 'breakfast-drinks-i11', name: 'Espresso Martini', price: 14 },
+                { id: 'breakfast-drinks-i12', name: 'Blueberry Muffin Shot' },
               ],
             },
           ],
@@ -484,6 +489,7 @@ export function getMenus(): Menu[] {
             { id: 'specials-i2', name: 'Wings & Wells Wednesday', description: 'Wings $6 off · Well Cocktails $6ea.', price: 6 },
             { id: 'specials-i3', name: 'Burgers & Beer Thursday', description: 'All Burgers $5 off · House Drafts (Blonde, IPA, Amber, Lager) $5ea.', price: 5 },
             { id: 'specials-i4', name: 'Friday Funday 1–4pm', description: 'Drinks & Munchies $2 off.', price: 2 },
+            { id: 'specials-i6', name: EARLY_BIRD.name, description: EARLY_BIRD.description },
             { id: 'specials-i5', name: 'Padre Games Hot Dogs & Beer', description: 'Friar Franks $6 · Heroes Drafts $2 off.', price: 6 },
           ],
         },

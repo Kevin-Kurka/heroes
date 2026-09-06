@@ -1,6 +1,6 @@
 import { getRestaurantInfo } from './menu';
 import { FAQ } from './faq';
-import { SHOW_PRICES, stripPriceTokens } from './config';
+import { SHOW_PRICES, publicMenuCopy, stripPriceTokens } from './config';
 import type { Menu, MenuGroup } from '@/types';
 import type { WatchParty } from './watch-parties';
 
@@ -268,7 +268,7 @@ function groupToMenuSection(group: MenuGroup): Record<string, unknown> {
     ...(description ? { description } : {}),
   };
   const items = group.items.map((item) => {
-    const itemDesc = item.description ? stripPriceTokens(item.description) : undefined;
+    const itemDesc = publicMenuCopy(item.description, item.name);
     const node: Record<string, unknown> = {
       '@type': 'MenuItem',
       name: item.name,

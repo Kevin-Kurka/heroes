@@ -715,7 +715,8 @@ describe('public menu prices', () => {
     const json = getMenuJsonLd(applyMenuPresentation(getMenus()));
     const blob = JSON.stringify(json);
     expect(blob).not.toContain('"offers"');
-    expect(blob).not.toMatch(/\$\d/);
+    expect(blob).toMatch(/\$22/);
+    expect(blob.replace(/\$22/g, '').replace(/\$5(?!\s*off)/g, '')).not.toMatch(/\$\d/);
     expect(blob).toContain('Calamari');
     expect(blob).toContain('Spicy Chicken');
     expect(blob).toContain('Hogzilla');
@@ -727,7 +728,7 @@ describe('public menu prices', () => {
 });
 
 describe('home specials', () => {
-  it('swaps the 2-for-22 breakfast promo for Hogzilla, Chilaquiles, and Crunchwraps', () => {
+  it('keeps Hogzilla, Chilaquiles, and Crunchwraps as unpriced kitchen cards', () => {
     expect(HOME_SPECIALS.map((s) => s.name)).toEqual(['Hogzilla', 'Chilaquiles', 'Crunchwraps']);
     expect(HOME_SPECIALS.map((s) => s.description)).toEqual([
       HOGZILLA.description,
@@ -740,10 +741,12 @@ describe('home specials', () => {
 
     const home = readFileSync(resolve(__dirname, '../app/HomePageClient.tsx'), 'utf8');
     expect(home).toContain('HOME_SPECIALS');
+    expect(home).toContain('EARLY_BIRD_DAILY_DEALS');
     expect(home).toContain('grid-cols-1 sm:grid-cols-3');
     expect(home).toContain('bg-card');
     expect(home).toContain('border-border');
-    expect(home).not.toMatch(/2 for 22|2-for-22|2 Breakfast Entrées/);
-    expect(home).not.toContain('Egg');
+    expect(home).toMatch(/Early Bird/);
+    expect(home).not.toMatch(/2 Breakfast Entrées/);
+    expect(home).not.toMatch(/Steak & Eggs/);
   });
 });

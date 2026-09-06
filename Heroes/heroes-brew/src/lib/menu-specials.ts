@@ -16,6 +16,10 @@
  *
  * IMPLEMENTATION STATUS:
  * - ✅ Current specials: Hogzilla, Crunchwraps, Chilaquiles; Spicy Chicken as a hero
+ * - ✅ Early Bird lives in early-bird.ts (Brunch + Daily Lineup), not HOME_SPECIALS
+ *
+ * RELATED FILES:
+ * - src/lib/early-bird.ts
  *
  * LAST UPDATED: 2026-09-06
  * MAINTAINER: American Heroes & Brew

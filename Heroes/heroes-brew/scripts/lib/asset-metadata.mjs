@@ -100,8 +100,8 @@ const SPECIALS = {
   },
   breakfast: {
     title: 'Weekend Brunch at American Heroes & Brew',
-    desc: 'Weekend brunch Friday–Sunday at American Heroes & Brew — the only sports bar in Carlsbad Village serving brunch. Chilaquiles brunch special and bottomless mimosas.',
-    keywords: ['breakfast Carlsbad Village', 'brunch', 'bottomless mimosas', 'weekend breakfast'],
+    desc: 'Weekend breakfast Friday–Sunday at American Heroes & Brew. Early Bird 9–11 AM dine-in: two plates for $22 (American Hero Breakfast, Toasty Toast, Hamtown Omelette, Biscuits & Gravy) and $5 breakfast happy hour — Screwdriver, Tequila Sunrise, Sangria, Bloody Mary Shot.',
+    keywords: ['breakfast Carlsbad Village', 'brunch', 'Early Bird', 'bottomless mimosas', 'weekend breakfast'],
   },
 };
 

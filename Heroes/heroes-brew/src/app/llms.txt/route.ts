@@ -86,7 +86,8 @@ Full menu: ${SITE_URL}/menu
 - Wed: Wings & Well Wednesday — wings $6 off, well cocktails $6ea
 - Thu: Thirsty Thursday — all burgers $5 off, house drafts $5ea
 - Fri: Friday Funday 1–4pm — drinks & munchies $2 off
-- Brunch: served Fri–Sun, including the Chilaquiles brunch special
+- Early Bird Weekend Breakfast (Fri–Sun 9–11 AM dine-in): two plates for $22 — American Hero Breakfast, Toasty Toast, Hamtown Omelette, or Biscuits & Gravy (with two eggs). Breakfast happy hour $5: Screwdriver, Tequila Sunrise, Sangria, Bloody Mary Shot.
+- Brunch: served Fri–Sun (restaurant opens 9am). Early Bird deal window is 9–11 AM dine-in; Chilaquiles stays on as a brunch special. Pair with mimosas, bottomless mimosas, Bloody Marys, or a Blueberry Muffin Shot.
 
 ## Watch parties (featured events with date & time)
 ${watchParties}
