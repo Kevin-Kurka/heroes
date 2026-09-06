@@ -348,6 +348,25 @@ function ensureChilaquiles(groups: MenuGroup[]) {
   specials.items = [asItem(CHILAQUILES), ...specials.items];
 }
 
+/** Toast final: fish / Baja Fish use cilantro-lime crema — never tartar. */
+function scrubTartarText(text: string): string {
+  return text.replace(/chipotle\s+tartar(?:\s+sauce)?|tartar(?:\s+sauce)?/gi, (match) =>
+    /^[A-Z]/.test(match) ? 'Cilantro-Lime Crema' : 'cilantro-lime crema',
+  );
+}
+
+function scrubTartarCopy(groups: MenuGroup[]) {
+  walkGroups(groups, (group) => {
+    if (group.description) group.description = scrubTartarText(group.description);
+    for (const item of group.items) {
+      if (item.description) item.description = scrubTartarText(item.description);
+    }
+    for (const choice of group.choices ?? []) {
+      choice.options = choice.options.map(scrubTartarText);
+    }
+  });
+}
+
 function stripNoteChoices(groups: MenuGroup[]) {
   walkGroups(groups, (group) => {
     const notes = (group.choices ?? []).filter((choice) => NOTE_CHOICE_RE.test(choice.label));
@@ -438,6 +457,7 @@ export function applyMenuPresentation(menus: Menu[]): Menu[] {
     presentSdBurrito(menu.groups);
     stripNoteChoices(menu.groups);
     applyDescriptions(menu.groups);
+    scrubTartarCopy(menu.groups);
     stripPublicPhotos(menu.groups);
   }
   return next;

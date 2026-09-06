@@ -16,9 +16,10 @@
  * - shouldReplaceDescription
  *
  * IMPLEMENTATION STATUS:
- * - ✅ Appetizing rewrite from kitchen sheet + manufacturer bottle blurbs
+ * - ✅ Appetizing rewrite from Toast POS final map + existing site voice
+ * - ✅ Fish / Baja Fish: cilantro-lime crema only (no tartar)
  *
- * LAST UPDATED: 2026-09-03
+ * LAST UPDATED: 2026-09-06
  * MAINTAINER: American Heroes & Brew
  */
 
@@ -52,11 +53,11 @@ add(COPY, ['Nachos'], 'Crisp chips piled high with beans, guacamole, melted chee
 add(COPY, ['Fried Pickles', 'Fried Pickle Chips'], 'Crispy fried pickle chips with cool chipotle ranch.');
 add(COPY, ['Mozzarella Sticks'], 'Golden, gooey mozzarella sticks, fried until crisp.');
 add(COPY, ['Frings'], 'A heaping mix of crisp fries and golden onion rings.');
-add(COPY, ['Jalapeno Poppers'], 'Crispy fried jalapeño poppers, hot and gooey.');
+add(COPY, ['Jalapeno Poppers', 'Jalapeño Poppers'], 'Six pickled jalapeños stuffed with cream cheese and wrapped in bacon.');
 add(COPY, ['Hummus Plate'], 'Roasted red pepper hummus with crisp carrots, celery, cucumber, and warm pita.');
 add(COPY, ['Corn Dogs'], 'Two golden, crunchy corn dogs.');
 add(COPY, ['Pretzel Bites'], 'Warm soft pretzel bites with cheese whiz and Dijon.');
-add(COPY, ['Bowl Chili', 'Chili', "Chef Mariano's Champion Chili"], 'Hearty chili finished with onions and cool crema.');
+add(COPY, ['Bowl Chili', 'Chili', "Chef Mariano's Champion Chili"], "A bowl of Chef Mariano's champion chili finished with onions and cool crema.");
 add(COPY, ['Friar Frank', 'Hot Dog'], 'A grilled stadium dog piled with red pepper relish and onions.');
 add(COPY, ['Calamari'], CALAMARI.description);
 
@@ -82,6 +83,7 @@ add(COPY, ['Chicken Caesar'], 'Crisp romaine and grilled chicken with croutons, 
 add(COPY, ['Healthy Hero', 'Healthy Hero Salad'], 'Crisp mixed greens with cucumber, tomato, sprouts, red onion, croutons, and lemon vinaigrette.');
 add(COPY, ['Antipasto', 'Antipasto Salad'], 'Spring mix piled with ham, capicola, mortadella, salami, provolone, cherry peppers, tomato, and parmesan in Italian vinaigrette.');
 
+add(COPY, ['Loaded Fries'], 'Crispy fries loaded your way — garlic parm, chili cheese, carne asada, and more.');
 add(COPY, ['Loaded Carne Asada Fries', 'Loaded Fries Carne Asada'], 'Crisp fries loaded with carne asada, melted cheese, cheese sauce, crema, and pico.');
 add(COPY, ['Loaded Buffalo Chicken Fries', 'Loaded Fries Buffalo Chicken', 'Buffalo Chicken'], 'Crisp fries loaded with crispy tenders, pepper jack, buffalo, and chipotle ranch.');
 add(COPY, ['Loaded Garlic Parm Fries', 'Loaded Fries Garlic Parm', 'Garlic Parm'], 'Crisp fries tossed in garlic parmesan and shredded parm.');
@@ -96,26 +98,28 @@ add(COPY, [
   'Philly Billy',
   'Philly Cheesesteak (Philly Billy)',
   'Philly',
-], 'Thin-sliced ribeye with grilled onions, mushrooms, red pepper relish, cherry peppers, and melted provolone on a toasted Amoroso roll.');
-add(COPY, ['Carlsbad', 'Carlsbad BLT', 'Carlsbad (BLT+)'], 'Grilled chicken, crispy bacon, and avocado with roasted garlic aioli, lettuce, and tomato on an Italian roll.');
+], 'Classic Philly cheesesteak — thin-sliced ribeye on a toasted Amoroso roll, with your choice of white American, provolone, or Whiz.');
+add(COPY, ['Carlsbad', 'Carlsbad BLT', 'Carlsbad (BLT+)'], 'Grilled chicken breast, bacon, avocado, lettuce, tomato, and roasted garlic aioli on a toasted brioche bun.');
 add(COPY, ['Hoboken', 'Hoboken Italian', 'Hoboken (Italian)'], 'Ham, salami, capicola, mortadella, and provolone with lettuce, tomato, red onion, oil, vinegar, and oregano on an Italian roll.');
-add(COPY, ['Los Angeles', 'French Dip', 'Los Angeles (French Dip)'], 'Slow-cooked roast beef and melted provolone on an Italian roll, with au jus and horseradish aioli.');
-add(COPY, ['San Diego', 'California Burrito', 'San Diego (California Burrito)'], 'Carne asada, golden fries, guacamole, pico, melted cheese, and crema in a warm tortilla.');
-add(COPY, ['Manhattan', 'Manhattan Reuben', 'Manhattan (Reuben)'], 'Hot pastrami, Swiss, sauerkraut, and Russian dressing on rye.');
-add(COPY, ['Maui', 'Maui (Kalua Pork)'], 'Tender roast pork with crisp slaw, aloha sauce, and pickle on a brioche bun.');
+add(COPY, ['Los Angeles', 'French Dip', 'Los Angeles (French Dip)'], 'Slow-cooked roast beef and melted Swiss on an Italian roll, with au jus and horseradish aioli.');
+add(COPY, ['San Diego', 'California Burrito', 'San Diego (California Burrito)'], 'Carne asada, golden fries, guacamole, melted cheese, cilantro-lime crema, and pico in a warm tortilla.');
+add(COPY, ['Manhattan', 'Manhattan Reuben', 'Manhattan (Reuben)'], 'Hot pastrami with pickles and dark-ale mustard on rye — or make it a Reuben with Swiss, sauerkraut, and Russian dressing.');
+add(COPY, ['Maui', 'Maui (Kalua Pork)'], 'Kalua pork, coleslaw, and aloha sauce on a toasted roll — island vibes, mainland appetite.');
+add(COPY, ['Portland', 'Portland Vegetarian'], 'Spring mix, red pepper hummus, sprouts, cucumber, tomato, avocado, and red onion with citrus vinaigrette in a spinach wrap.');
 
-add(COPY, ['Pasadena', 'Pasadena the OG Cheeseburger', 'Pasadena (The OG Cheeseburger)'], 'American cheese, crisp lettuce, onion, pickles, tomato, and hero sauce on a toasted brioche bun.');
-add(COPY, ['Tombstone', 'Tombstone (Cowboy)'], 'Cheddar, a golden onion ring, caramelized onions, bacon, and BBQ on a brioche bun.');
+add(COPY, ['Pasadena', 'Pasadena the OG Cheeseburger', 'Pasadena (The OG Cheeseburger)'], 'A quarter-pound patty with shredded lettuce, tomato, pickle, red onion, AHB Hero sauce, and your choice of cheese on a toasted brioche bun.');
+add(COPY, ['Tombstone', 'Tombstone (Cowboy)'], 'A quarter-pound patty with bacon, grilled onions, cheddar, onion rings, and AHB BBQ on a toasted brioche bun.');
 add(COPY, ['Leucadia', 'Leucadia (Smash)'], 'American cheese, grilled onions, and AHB sauce on a toasted brioche bun.');
-add(COPY, ['Minneapolis', 'Juicy Lucy', 'Minneapolis (Juicy Lucy)', 'Minneapolis Juicy Lucy'], 'A double patty stuffed with American, Colby Jack & cheddar, grilled onions, and AHB sauce on brioche.');
-add(COPY, ['Austin', 'Austin (Jalapeno)'], 'Pepper jack, jalapeño poppers, jalapeños, and AHB sauce on brioche.');
+add(COPY, ['Minneapolis', 'Juicy Lucy', 'Minneapolis (Juicy Lucy)', 'Minneapolis Juicy Lucy'], 'Two quarter-pound patties stuffed with cheddar, topped with grilled onions, a cheddar skirt, and Hero sauce on a toasted brioche bun.');
+add(COPY, ['Austin', 'Austin (Jalapeno)'], 'Pepper jack, Cheez Whiz, jalapeños, grilled onions, and Hero sauce on a toasted brioche bun, topped with a jalapeño popper.');
 add(COPY, ['Irwindale', 'Irwindale (Sriracha Honey)'], 'Swiss, sweet-heat sriracha honey, garlic aioli, and slaw on brioche.');
 add(COPY, ['Bama Slama Jama', 'Bama Slama Jamma', 'Bama Slama Jamma (PB&J)'], 'Bacon jam, peanut butter, caramelized onions, and fried onions on brioche.');
 
-add(COPY, ['Village Tacos', 'Village Taco Plate'], 'Three street tacos with beans and chips — pick your tortillas and fillings.');
-add(COPY, ['Fish taco', 'Fish Taco'], 'Crisp fish, cabbage, pico, and cilantro-lime crema on a corn tortilla.');
-add(COPY, ['Carne Asada taco', 'Carne Asada Taco'], 'Seared ribeye with cilantro and onion on a corn tortilla.');
-add(COPY, ['Carnitas taco', 'Carnitas Taco'], 'Tender carnitas with onion and cilantro on a corn tortilla.');
+add(COPY, ['Village Tacos', 'Village Taco Plate'], 'Three tacos, topped with onion, cilantro, and queso fresco. Served with refried beans and chips.');
+add(COPY, ['Fish taco', 'Fish Taco', 'Baja Fish', 'Baja Fish Taco'], 'Crispy fish taco with cabbage, pico de gallo, queso fresco, cilantro, and cilantro-lime crema.');
+add(COPY, ['Carne Asada taco', 'Carne Asada Taco'], 'Grilled carne asada taco topped with onion, cilantro, and queso fresco.');
+add(COPY, ['Carnitas taco', 'Carnitas Taco'], 'Slow-cooked carnitas taco topped with onion, cilantro, and queso fresco.');
+add(COPY, ['Chicken taco', 'Chicken Taco', 'Grilled Chicken Taco'], 'Seasoned chicken taco topped with onion, cilantro, and queso fresco.');
 
 add(COPY, ['Key Lime', 'Key Lime Pie', 'Homemade Key Lime Pie'], 'Cool, tangy house key lime pie — sales help support Shelter to Soldier.');
 add(COPY, ['Creamy Cheesecake', 'Cheesecake', 'Homemade Vanilla Cheesecake', 'Vanilla Cheesecake'], 'Creamy house vanilla cheesecake — sales help support Shelter to Soldier.');
