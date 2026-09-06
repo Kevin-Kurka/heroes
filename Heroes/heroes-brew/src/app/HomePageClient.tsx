@@ -15,6 +15,7 @@ import DoorDashIcon from '@/components/DoorDashIcon';
 import { trackEvent } from '@/lib/analytics';
 import { DOORDASH_URL } from '@/lib/doordash';
 import { useDoorDashAvailable } from '@/hooks/use-doordash-available';
+import { EARLY_BIRD_DAILY_DEALS, EARLY_BIRD_HOURS_SHORT, FRIDAY_FUNDAY_DEAL } from '@/lib/early-bird';
 import { HOME_SPECIALS } from '@/lib/menu-specials';
 
 const DAILY_SPECIALS = [
@@ -53,17 +54,30 @@ const DAILY_SPECIALS = [
   },
   {
     day: 'Friday',
-    name: 'Friday Funday',
-    time: '1–4 PM',
+    name: 'Early Bird & Friday Funday',
     deals: [
-      { item: 'Drinks & Munchies', price: '$2 off' },
+      { item: 'Two breakfast plates', detail: `${EARLY_BIRD_HOURS_SHORT} dine-in`, price: '$22' },
+      { item: 'Breakfast happy hour', detail: EARLY_BIRD_HOURS_SHORT, price: '$5' },
+      FRIDAY_FUNDAY_DEAL,
     ],
+  },
+  {
+    day: 'Saturday',
+    name: 'Early Bird Weekend Breakfast',
+    time: EARLY_BIRD_HOURS_SHORT,
+    deals: EARLY_BIRD_DAILY_DEALS,
+  },
+  {
+    day: 'Sunday',
+    name: 'Early Bird Weekend Breakfast',
+    time: EARLY_BIRD_HOURS_SHORT,
+    deals: EARLY_BIRD_DAILY_DEALS,
   },
 ] as const;
 
 interface Props {
   events: UnifiedEvent[];
-  /** Index into DAILY_SPECIALS for today (Pacific), or -1 on Fri–Sun. Computed
+  /** Index into DAILY_SPECIALS for today (Pacific), 0=Mon … 6=Sun. Computed
    *  server-side in page.tsx so the right special shows on first paint. */
   todayIndex: number;
 }
@@ -221,8 +235,7 @@ export default function HomePageClient({ events, todayIndex }: Props) {
           <h2 className="text-2xl font-bold text-foreground">Daily Lineup</h2>
         </div>
 
-        {todayIndex >= 0 ? (
-          <>
+        <>
             {/* Today's featured special */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
@@ -235,10 +248,10 @@ export default function HomePageClient({ events, todayIndex }: Props) {
                 <div>
                   <span className="text-[10px] font-bold uppercase tracking-widest text-accent">Today&apos;s Special</span>
                   <h3 className="text-lg font-bold text-foreground leading-tight">
-                    {DAILY_SPECIALS[todayIndex].name}
+                    {DAILY_SPECIALS[todayIndex]?.name ?? DAILY_SPECIALS[0].name}
                   </h3>
                 </div>
-                {'time' in DAILY_SPECIALS[todayIndex] && (
+                {DAILY_SPECIALS[todayIndex] && 'time' in DAILY_SPECIALS[todayIndex] && (
                   <span className="text-xs font-bold text-accent whitespace-nowrap">
                     {DAILY_SPECIALS[todayIndex].time}
                   </span>
@@ -246,9 +259,9 @@ export default function HomePageClient({ events, todayIndex }: Props) {
               </div>
               <div className="border-t border-border/50 pt-3">
                 <ul className="space-y-2">
-                  {DAILY_SPECIALS[todayIndex].deals.map((deal) => (
+                  {(DAILY_SPECIALS[todayIndex] ?? DAILY_SPECIALS[0]).deals.map((deal) => (
                     <li key={deal.item} className="flex items-center justify-between text-sm gap-3">
-                      <span className="text-foreground/90">{deal.item}{'detail' in deal && <span className="text-xs text-accent/90 ml-1">{deal.detail}</span>}</span>
+                      <span className="text-foreground/90">{deal.item}{'detail' in deal && deal.detail ? <span className="text-xs text-accent/90 ml-1">{deal.detail}</span> : null}</span>
                       <span className="font-semibold text-accent whitespace-nowrap">{deal.price}</span>
                     </li>
                   ))}
@@ -272,14 +285,14 @@ export default function HomePageClient({ events, todayIndex }: Props) {
                       <h4 className="font-semibold text-foreground text-sm">{special.day}</h4>
                       <p className="text-xs text-muted">{special.name}</p>
                     </div>
-                    {'time' in special && (
+                    {'time' in special && special.time && (
                       <span className="text-xs font-semibold text-accent whitespace-nowrap">{special.time}</span>
                     )}
                   </div>
                   <ul className="space-y-1 border-t border-border/30 pt-2">
                     {special.deals.map((deal) => (
                       <li key={deal.item} className="flex items-center justify-between text-xs gap-2">
-                        <span className="text-foreground/70">{deal.item}{'detail' in deal && <span className="text-xs text-accent/90 ml-1">{deal.detail}</span>}</span>
+                        <span className="text-foreground/70">{deal.item}{'detail' in deal && deal.detail ? <span className="text-xs text-accent/90 ml-1">{deal.detail}</span> : null}</span>
                         <span className="font-medium text-accent ml-2 whitespace-nowrap">{deal.price}</span>
                       </li>
                     ))}
@@ -288,41 +301,6 @@ export default function HomePageClient({ events, todayIndex }: Props) {
               ))}
             </div>
           </>
-        ) : (
-          <>
-            <p className="text-muted text-sm mb-4">Come back Monday–Friday for daily specials!</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-              {DAILY_SPECIALS.map((special, i) => (
-                <motion.div
-                  key={special.day}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.25, delay: i * 0.06, ease: [0, 0, 0.2, 1] }}
-                  className="relative overflow-hidden bg-card border border-border rounded-lg p-4"
-                >
-                  <div className="absolute top-0 left-0 w-0.5 h-full bg-border" />
-                  <div className="flex items-start justify-between mb-2">
-                    <div>
-                      <h4 className="font-semibold text-foreground text-sm">{special.day}</h4>
-                      <p className="text-xs text-muted">{special.name}</p>
-                    </div>
-                    {'time' in special && (
-                      <span className="text-xs font-semibold text-accent whitespace-nowrap">{special.time}</span>
-                    )}
-                  </div>
-                  <ul className="space-y-1 border-t border-border/30 pt-2">
-                    {special.deals.map((deal) => (
-                      <li key={deal.item} className="flex items-center justify-between text-xs gap-2">
-                        <span className="text-foreground/70">{deal.item}{'detail' in deal && <span className="text-xs text-accent/90 ml-1">{deal.detail}</span>}</span>
-                        <span className="font-medium text-accent ml-2 whitespace-nowrap">{deal.price}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </motion.div>
-              ))}
-            </div>
-          </>
-        )}
       </section>
 
       {/* Hero of the Month — only when one has been chosen; shows the IG post

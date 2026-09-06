@@ -1,5 +1,6 @@
 import type { Menu, MenuGroup, MenuItem } from '@/types';
 import { copyForName, shouldReplaceDescription } from './menu-copy';
+import { BREAKFAST_HAPPY_HOUR, EARLY_BIRD } from './early-bird';
 import {
   CALAMARI,
   CHILAQUILES,
@@ -330,10 +331,8 @@ function ensureBrunchGroup(groups: MenuGroup[]): MenuGroup {
   return brunch;
 }
 
-function ensureChilaquiles(groups: MenuGroup[]) {
+function ensureBrunchSpecialsGroup(groups: MenuGroup[]) {
   const brunch = ensureBrunchGroup(groups);
-  if (hasNamedItem(groups, CHILAQUILES.name)) return;
-
   let specials = brunch.subGroups?.find((g) => /brunch specials/i.test(g.name));
   if (!specials) {
     specials = {
@@ -345,7 +344,24 @@ function ensureChilaquiles(groups: MenuGroup[]) {
     brunch.subGroups = [specials, ...(brunch.subGroups ?? [])];
     brunch.displayMode = 'starters';
   }
+  return specials;
+}
+
+function ensureChilaquiles(groups: MenuGroup[]) {
+  if (hasNamedItem(groups, CHILAQUILES.name)) return;
+  const specials = ensureBrunchSpecialsGroup(groups);
   specials.items = [asItem(CHILAQUILES), ...specials.items];
+}
+
+/** Early Bird + breakfast HH first on Brunch Specials (text-only frost cards). */
+function ensureEarlyBird(groups: MenuGroup[]) {
+  const specials = ensureBrunchSpecialsGroup(groups);
+  const rest = specials.items.filter(
+    (item) =>
+      photoKey(item.name) !== photoKey(EARLY_BIRD.name) &&
+      photoKey(item.name) !== photoKey(BREAKFAST_HAPPY_HOUR.name),
+  );
+  specials.items = [asItem(EARLY_BIRD), asItem(BREAKFAST_HAPPY_HOUR), ...rest];
 }
 
 /** Toast final: fish / Baja Fish use cilantro-lime crema — never tartar. */
@@ -405,6 +421,23 @@ function ensureSpecialsGroup(groups: MenuGroup[]): MenuGroup {
   return specials;
 }
 
+function ensureEarlyBirdWeekly(groups: MenuGroup[]) {
+  const specials = ensureSpecialsGroup(groups);
+  const existing = specials.items.find((item) => photoKey(item.name) === photoKey(EARLY_BIRD.name));
+  if (existing) {
+    existing.description = EARLY_BIRD.description;
+    return;
+  }
+  const row = {
+    id: 'specials-early-bird',
+    name: EARLY_BIRD.name,
+    description: EARLY_BIRD.description,
+  };
+  const fridayIdx = specials.items.findIndex((item) => /friday funday/i.test(item.name));
+  if (fridayIdx >= 0) specials.items.splice(fridayIdx + 1, 0, row);
+  else specials.items.push(row);
+}
+
 function ensureSpecialsTabFood(groups: MenuGroup[]) {
   const specials = ensureSpecialsGroup(groups);
   let kitchen = specials.subGroups?.find((g) => /^(kitchen|featured)$/i.test(g.name));
@@ -452,8 +485,10 @@ export function applyMenuPresentation(menus: Menu[]): Menu[] {
     ensureSpicyChickenOnHeroes(menu.groups);
     ensureKitchenSpecials(menu.groups);
     ensureChilaquiles(menu.groups);
+    ensureEarlyBird(menu.groups);
     ensureOreoChurros(menu.groups);
     ensureSpecialsTabFood(menu.groups);
+    ensureEarlyBirdWeekly(menu.groups);
     presentSdBurrito(menu.groups);
     stripNoteChoices(menu.groups);
     applyDescriptions(menu.groups);

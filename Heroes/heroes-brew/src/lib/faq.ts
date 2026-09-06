@@ -40,12 +40,22 @@ export const FAQ: FaqEntry[] = [
   {
     question: 'Does American Heroes & Brew serve breakfast?',
     answer:
-      'Yes — brunch is served Friday through Sunday, including our Chilaquiles brunch special.',
+      'Yes — brunch is served Friday through Sunday. Early Bird is Friday–Sunday 9–11 AM, dine-in: choose any two from American Hero Breakfast, Toasty Toast, Hamtown Omelette, or Biscuits & Gravy (with two eggs) for $22. We also run a $5 breakfast happy hour in that same window.',
+  },
+  {
+    question: 'Is there a breakfast deal at American Heroes & Brew?',
+    answer:
+      'Yes. Early Bird Weekend Breakfast is Friday–Sunday, 9–11 AM, dine-in — choose any two from American Hero Breakfast, Toasty Toast, Hamtown Omelette, or Biscuits & Gravy (with two eggs) for $22. Restaurant hours stay the same (we open at 9am Friday–Sunday); the $22 deal is the 9–11 AM window only.',
+  },
+  {
+    question: 'What drinks are on breakfast happy hour?',
+    answer:
+      'Yes. Breakfast happy hour is Friday–Sunday, 9–11 AM, dine-in: Screwdriver, Tequila Sunrise, Sangria (Pasmosa Red Sangria), and Bloody Mary Shot for $5 each.',
   },
   {
     question: 'Are there daily specials or happy-hour deals?',
     answer:
-      'Yes. We run daily specials Monday–Thursday — Mahalo Monday sliders, Taco Tuesday, Wings & Well Wednesday, and Thirsty Thursday burgers — plus drink deals throughout the week.',
+      'Yes. We run daily specials Monday–Thursday — Mahalo Monday sliders, Taco Tuesday, Wings & Well Wednesday, and Thirsty Thursday burgers — plus Friday Funday, weekend Early Bird (two plates for $22 and $5 breakfast happy hour, Friday–Sunday 9–11 AM dine-in), and drink deals throughout the week.',
   },
   {
     question: 'Does American Heroes & Brew have outdoor seating and take reservations?',
@@ -95,7 +105,7 @@ export const FAQ: FaqEntry[] = [
   {
     question: 'Does American Heroes & Brew have happy hour and drink specials?',
     answer:
-      'Yes — American Heroes & Brew runs daily specials all week, including Friday Funday happy-hour pricing on drinks and apps, plus Mahalo Monday, Taco Tuesday, Wings & Well Wednesday, and Thirsty Thursday. There’s a full bar with craft beer on tap. We’re in Carlsbad Village at 300 Carlsbad Village Drive.',
+      'Yes — American Heroes & Brew runs daily specials all week, including Friday Funday happy-hour pricing on drinks and apps, Early Bird Weekend Breakfast Friday–Sunday 9–11 AM dine-in (two plates for $22 and $5 Screwdriver, Tequila Sunrise, Sangria, or Bloody Mary Shot), plus Mahalo Monday, Taco Tuesday, Wings & Well Wednesday, and Thirsty Thursday. There’s a full bar with craft beer on tap. We’re in Carlsbad Village at 300 Carlsbad Village Drive.',
   },
   {
     question: 'Where is the best place to watch soccer and the World Cup in Carlsbad?',
