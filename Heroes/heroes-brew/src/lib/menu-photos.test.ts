@@ -326,6 +326,12 @@ describe('public menu notes and headers', () => {
     expect(plates?.description).toMatch(/Friday/i);
     expect(plates?.description).toMatch(/hashbrown/i);
     expect(plates?.description).toMatch(/fruit/i);
+    const ahb = plates?.items.find((item) => /american hero breakfast/i.test(item.name));
+    const fallbrook = plates?.items.find((item) => /fallbrook/i.test(item.name));
+    expect(ahb?.description).toMatch(/hashbrown|egg/i);
+    expect(ahb?.description).not.toMatch(/\$|\+\s*\d|taylor pork|potato cake/i);
+    expect(fallbrook?.description).toMatch(/amish/i);
+    expect(fallbrook?.description).not.toMatch(/\$|\+\s*\d|add bacon|add egg/i);
     expect(plates?.choices?.some((c) => /^note$/i.test(c.label))).toBeFalsy();
   });
 

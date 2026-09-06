@@ -52,7 +52,7 @@ add(COPY, ['Tenders'], 'Crispy tenders with crisp carrots, celery, and cool ranc
 add(COPY, ['Nachos'], 'Crisp chips piled high with beans, guacamole, melted cheese, Cheez Whiz, cilantro-lime crema, pico, and jalapeños.');
 add(COPY, ['Fried Pickles', 'Fried Pickle Chips'], 'Crispy fried pickle chips with cool chipotle ranch.');
 add(COPY, ['Mozzarella Sticks'], 'Golden, gooey mozzarella sticks, fried until crisp.');
-add(COPY, ['Frings'], 'A heaping mix of crisp fries and golden onion rings.');
+add(COPY, ['Frings', 'Frings 1/2 & 1/2'], 'Half fries, half onion rings — the best of both.');
 add(COPY, ['Jalapeno Poppers', 'Jalapeño Poppers'], 'Six pickled jalapeños stuffed with cream cheese and wrapped in bacon.');
 add(COPY, ['Hummus Plate'], 'Roasted red pepper hummus with crisp carrots, celery, cucumber, and warm pita.');
 add(COPY, ['Corn Dogs'], 'Two golden, crunchy corn dogs.');
@@ -62,18 +62,22 @@ add(COPY, ['Friar Frank', 'Hot Dog'], 'A grilled stadium dog piled with red pepp
 add(COPY, ['Calamari'], CALAMARI.description);
 
 add(COPY, ['Sliders', 'Kalua Pork Sliders'], 'Three juicy sliders on a toasted brioche bun — pick your favorite.');
+add(COPY, ['BBQ', 'BBQ Pork Slider', 'BBQ Slider'], 'BBQ pork slider with pickles on a toasted brioche bun.');
+add(COPY, ['Hamburger', 'Hamburger Slider'], 'Mini hamburger slider on a toasted brioche bun.');
+add(COPY, ['Chicken Slider', 'Fried Chicken Slider'], 'Fried chicken slider with lettuce and pickle on a toasted brioche bun.');
+add(COPY, ['Kalua Pork Slider'], 'Kalua pork slider with coleslaw and aloha sauce.');
 
 add(COPY, ['Fries', 'Single Fries'], 'A pile of crisp, golden fries.');
 add(COPY, ['Large Fries'], 'A bigger pile of crisp, golden fries.');
-add(COPY, ['Onion Rings', 'Single Onion Rings'], 'Golden, crunchy onion rings.');
+add(COPY, ['Onion Rings', 'Single Onion Rings'], 'Crispy beer-battered onion rings.');
 add(COPY, ['Large Onion Rings'], 'A bigger pile of golden onion rings.');
 add(COPY, ['Side Salad', 'House Salad'], 'Crisp mixed greens with carrot, tomato, cucumber, croutons, and ranch.');
 add(COPY, ['Mac & Cheese', 'Mac Cheese'], 'Creamy elbows in a rich house cheese sauce.');
 add(COPY, ['Bacon Mac & Cheese'], 'Creamy elbows in house cheese sauce, finished with bacon.');
 add(COPY, ['Side Caesar', 'Caesar Salad', 'Caesar', 'Plain Caesar'], 'Crisp romaine, croutons, and parmesan in creamy Caesar.');
 add(COPY, ['Potato Salad'], 'Creamy house potato salad.');
-add(COPY, ['Chips & Salsa'], 'Crisp chips with house salsa.');
-add(COPY, ['Cup Chili'], 'A cup of hearty chili with onions and crema.');
+add(COPY, ['Chips & Salsa'], 'Crisp tortilla chips with house salsa.');
+add(COPY, ['Cup Chili'], "A cup of Chef Mariano's champion chili finished with onions and cool crema.");
 add(COPY, ['Macaroni Salad'], 'Creamy house macaroni salad.');
 add(COPY, ['Coleslaw'], 'Crisp, cool house slaw.');
 add(COPY, ['Side Fruit', 'Fruit'], 'A bowl of seasonal fruit.');
@@ -121,12 +125,14 @@ add(COPY, ['Carne Asada taco', 'Carne Asada Taco'], 'Grilled carne asada taco to
 add(COPY, ['Carnitas taco', 'Carnitas Taco'], 'Slow-cooked carnitas taco topped with onion, cilantro, and queso fresco.');
 add(COPY, ['Chicken taco', 'Chicken Taco', 'Grilled Chicken Taco'], 'Seasoned chicken taco topped with onion, cilantro, and queso fresco.');
 
-add(COPY, ['Key Lime', 'Key Lime Pie', 'Homemade Key Lime Pie'], 'Cool, tangy house key lime pie — sales help support Shelter to Soldier.');
-add(COPY, ['Creamy Cheesecake', 'Cheesecake', 'Homemade Vanilla Cheesecake', 'Vanilla Cheesecake'], 'Creamy house vanilla cheesecake — sales help support Shelter to Soldier.');
-add(COPY, ['Churros w/ Ice Cream', 'Churros with Ice Cream', 'Churros with Vanilla Ice Cream'], 'Warm churros with a scoop of vanilla ice cream.');
-add(COPY, ['Ice Cream Sandwich', 'Ice Cream Cookie Sandwich'], 'Chocolate chip cookies sandwiching a scoop of ice cream.');
-add(COPY, ['Churros'], 'Warm, cinnamon-sugar churros.');
-add(COPY, ['Chocolate Chip Cookie'], 'A warm chocolate chip cookie.');
+add(COPY, ['Key Lime', 'Key Lime Pie', 'Homemade Key Lime Pie'], 'Cool, tangy homemade key lime pie — sales help support Shelter to Soldier.');
+add(COPY, ['Creamy Cheesecake', 'Cheesecake', 'Homemade Vanilla Cheesecake', 'Vanilla Cheesecake'], "Grandma's creamy cheesecake — sales help support Shelter to Soldier.");
+add(COPY, ['Churros w/ Ice Cream', 'Churros with Ice Cream', 'Churros with Vanilla Ice Cream'], 'Crispy churros with a scoop of vanilla ice cream.');
+add(COPY, ['Ice Cream Sandwich', 'Ice Cream Cookie Sandwich'], 'Vanilla ice cream sandwiched between chocolate chip cookies.');
+add(COPY, ['Churros'], 'Crispy churros dusted with cinnamon sugar.');
+add(COPY, ['Chocolate Chip Cookie'], 'A fresh-baked chocolate chip cookie.');
+add(COPY, ['Scoop Vanilla Ice Cream', 'Vanilla Ice Cream'], 'A scoop of vanilla ice cream.');
+add(COPY, ['Root Beer Float'], 'Classic root beer float with vanilla ice cream.');
 add(COPY, ['Oreo Churros', 'Oreo Churro'], OREO_CHURROS.description);
 
 add(COPY, ['Small Chicken Tenders', 'Kids Chicken Tenders', 'Chicken Tenders'], 'Crispy chicken tenders with fries.');
@@ -151,8 +157,14 @@ add(COPY, ['Boulder', 'Boulder Omelette'], 'Ribeye, mushrooms, grilled onions, a
 add(COPY, ['Hamtown', 'Hamtown Omelette'], 'Ham and melted cheddar-jack in a fluffy omelette.');
 add(COPY, ['Veggieville', 'Veggieville Omelette'], 'Bell peppers, onions, mushrooms, tomato, avocado, and white American cheese.');
 add(COPY, ['American Hero Breakfast', 'AHB Breakfast'], 'Bacon, sausage, or ham with two eggs any style, hashbrowns, and your choice of biscuit or toast.');
-add(COPY, ['Fallbrook'], 'Avocado toast with two poached eggs, tomato, and sprouts.');
+add(COPY, ['Fallbrook'], 'Avocado toast on thick-cut Amish bread with two poached eggs, tomato, and sprouts.');
 add(COPY, ['Toasty Toast'], 'Golden French toast with syrup and powdered sugar.');
+add(COPY, ['Bacon Burrito'], 'Breakfast burrito stuffed with eggs, bacon, and all the morning fixings.');
+add(COPY, ['Carne Asada Burrito'], 'Breakfast burrito with carne asada, eggs, and classic fixings.');
+add(COPY, ['Chicken Burrito'], 'Breakfast burrito with chicken, eggs, and classic fixings.');
+add(COPY, ['Carnitas Burrito'], 'Breakfast burrito with carnitas, eggs, and classic fixings.');
+add(COPY, ['Pastrami Burrito'], 'Breakfast burrito with pastrami, eggs, and classic fixings.');
+add(COPY, ['Sausage Burrito'], 'Breakfast burrito with sausage, eggs, and classic fixings.');
 
 add(COPY, ['Toast'], 'Your choice of toast.');
 add(COPY, ['Biscuit'], 'A warm biscuit.');
