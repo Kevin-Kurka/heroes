@@ -170,14 +170,14 @@ export function getMenus(): Menu[] {
               name: 'Village Tacos',
               displayMode: 'variants',
               basePrice: 17,
-              description: '(3) Street tacos served on your choice of flour or corn tortillas with refried beans, chips & salsa.',
+              description: 'Three tacos, topped with onion, cilantro, and queso fresco. Served with refried beans and chips.',
               choices: [
                 {
                   label: 'Pick Your Tacos',
                   options: [
                     'Carnitas — Onion, Cilantro, Salsa Verde',
                     'Carne Asada — Onion, Cilantro, Guacamole, Salsa',
-                    'Baja Fish — Cabbage, Pico de Gallo, Chipotle Tartar Sauce',
+                    'Baja Fish — Cabbage, Pico de Gallo, Cilantro-Lime Crema',
                     'Grilled Chicken — Onion, Cilantro, Guacamole',
                   ],
                 },
@@ -187,7 +187,7 @@ export function getMenus(): Menu[] {
                 { name: 'Guacamole', price: '+4' },
               ],
               items: [
-                { id: 'mains-village-tacos-i0', name: 'Village Tacos', description: '(3) Street tacos served on your choice of flour or corn tortillas with refried beans, chips & salsa.', price: 17 },
+                { id: 'mains-village-tacos-i0', name: 'Village Tacos', description: 'Three tacos, topped with onion, cilantro, and queso fresco. Served with refried beans and chips.', price: 17 },
               ],
             },
             {

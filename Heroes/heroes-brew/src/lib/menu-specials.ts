@@ -17,7 +17,7 @@
  * IMPLEMENTATION STATUS:
  * - ✅ Current specials: Hogzilla, Crunchwraps, Chilaquiles; Spicy Chicken as a hero
  *
- * LAST UPDATED: 2026-09-03
+ * LAST UPDATED: 2026-09-06
  * MAINTAINER: American Heroes & Brew
  */
 
@@ -30,7 +30,7 @@ export const CALAMARI = {
 export const SPICY_CHICKEN = {
   id: 'mains-hero-sandwiches-spicy-chicken',
   name: 'Spicy Chicken',
-  description: 'Crispy chicken, smoky bacon, and melted jack.',
+  description: 'Crispy spicy chicken with pickles and house sauce on a soft bun.',
 } as const;
 
 export const HOGZILLA = {
@@ -50,7 +50,8 @@ export const CRUNCHWRAPS = {
 export const CHILAQUILES = {
   id: 'brunch-specials-chilaquiles',
   name: 'Chilaquiles',
-  description: 'A weekend brunch favorite from the kitchen.',
+  description:
+    'Crispy tortilla chips simmered in salsa, topped with eggs, crema, queso fresco, and fresh fixings — a weekend brunch favorite.',
 } as const;
 
 export const OREO_CHURROS = {

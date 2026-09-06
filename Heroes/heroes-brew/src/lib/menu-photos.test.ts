@@ -207,14 +207,14 @@ describe('photo allowlist', () => {
 describe('kitchen recipe copy', () => {
   it('resolves guest lines for philly, nachos, pasadena, and hoboken', () => {
     expect(copyForName('Philly Cheesesteak (Philly Billy)')).toBe(
-      'Thin-sliced ribeye with grilled onions, mushrooms, red pepper relish, cherry peppers, and melted provolone on a toasted Amoroso roll.',
+      'Classic Philly cheesesteak — thin-sliced ribeye on a toasted Amoroso roll, with your choice of white American, provolone, or Whiz.',
     );
     expect(copyForName('Philly Billy')).toBe(copyForName('Philadelphia'));
     expect(copyForName('Nachos')).toBe(
       'Crisp chips piled high with beans, guacamole, melted cheese, Cheez Whiz, cilantro-lime crema, pico, and jalapeños.',
     );
     expect(copyForName('Pasadena (The OG Cheeseburger)')).toBe(
-      'American cheese, crisp lettuce, onion, pickles, tomato, and hero sauce on a toasted brioche bun.',
+      'A quarter-pound patty with shredded lettuce, tomato, pickle, red onion, AHB Hero sauce, and your choice of cheese on a toasted brioche bun.',
     );
     expect(copyForName('Hoboken (Italian)')).toBe(
       'Ham, salami, capicola, mortadella, and provolone with lettuce, tomato, red onion, oil, vinegar, and oregano on an Italian roll.',
@@ -226,17 +226,22 @@ describe('kitchen recipe copy', () => {
     const rows = flattenItems(presented);
     const byName = (name: string) => rows.find(({ item }) => photoKey(item.name) === photoKey(name))?.item;
     expect(byName('Philly Cheesesteak (Philly Billy)')?.description).toBe(
-      'Thin-sliced ribeye with grilled onions, mushrooms, red pepper relish, cherry peppers, and melted provolone on a toasted Amoroso roll.',
+      'Classic Philly cheesesteak — thin-sliced ribeye on a toasted Amoroso roll, with your choice of white American, provolone, or Whiz.',
     );
     expect(byName('Nachos')?.description).toBe(
       'Crisp chips piled high with beans, guacamole, melted cheese, Cheez Whiz, cilantro-lime crema, pico, and jalapeños.',
     );
     expect(byName('Pasadena (The OG Cheeseburger)')?.description).toBe(
-      'American cheese, crisp lettuce, onion, pickles, tomato, and hero sauce on a toasted brioche bun.',
+      'A quarter-pound patty with shredded lettuce, tomato, pickle, red onion, AHB Hero sauce, and your choice of cheese on a toasted brioche bun.',
     );
     expect(byName('Hoboken (Italian)')?.description).toBe(
       'Ham, salami, capicola, mortadella, and provolone with lettuce, tomato, red onion, oil, vinegar, and oregano on an Italian roll.',
     );
+    expect(byName('Carlsbad (BLT+)')?.description).toBe(
+      'Grilled chicken breast, bacon, avocado, lettuce, tomato, and roasted garlic aioli on a toasted brioche bun.',
+    );
+    expect(byName('Manhattan (Reuben)')?.description).toMatch(/pickles|dark-ale mustard|Reuben/i);
+    expect(byName('Austin (Jalapeno)')?.description).toMatch(/Cheez Whiz|jalapeño popper/i);
     expect(byName('Hogzilla')?.description).toBe(HOGZILLA.description);
     expect(byName('Crunchwraps')?.description).toBe(CRUNCHWRAPS.description);
     expect(byName('Chilaquiles')?.description).toBe(CHILAQUILES.description);
@@ -321,6 +326,12 @@ describe('public menu notes and headers', () => {
     expect(plates?.description).toMatch(/Friday/i);
     expect(plates?.description).toMatch(/hashbrown/i);
     expect(plates?.description).toMatch(/fruit/i);
+    const ahb = plates?.items.find((item) => /american hero breakfast/i.test(item.name));
+    const fallbrook = plates?.items.find((item) => /fallbrook/i.test(item.name));
+    expect(ahb?.description).toMatch(/hashbrown|egg/i);
+    expect(ahb?.description).not.toMatch(/\$|\+\s*\d|taylor pork|potato cake/i);
+    expect(fallbrook?.description).toMatch(/amish/i);
+    expect(fallbrook?.description).not.toMatch(/\$|\+\s*\d|add bacon|add egg/i);
     expect(plates?.choices?.some((c) => /^note$/i.test(c.label))).toBeFalsy();
   });
 
@@ -337,11 +348,84 @@ describe('public menu notes and headers', () => {
   });
 });
 
+describe('Toast fish taco / cilantro-lime crema', () => {
+  const FISH_TACO =
+    'Crispy fish taco with cabbage, pico de gallo, queso fresco, cilantro, and cilantro-lime crema.';
+
+  it('uses the Toast Fish Taco line and never prints tartar', () => {
+    expect(copyForName('Fish Taco')).toBe(FISH_TACO);
+    expect(copyForName('Baja Fish')).toBe(FISH_TACO);
+    expect(copyForName('Village Tacos')).toBe(
+      'Three tacos, topped with onion, cilantro, and queso fresco. Served with refried beans and chips.',
+    );
+    expect(copyForName('Chicken Taco')).toBe(
+      'Seasoned chicken taco topped with onion, cilantro, and queso fresco.',
+    );
+    expect(copyForName('Portland')).toMatch(/spinach wrap/i);
+
+    const presented = applyMenuPresentation(getMenus());
+    const blob = JSON.stringify(presented);
+    expect(blob).not.toMatch(/tartar/i);
+    expect(blob).toMatch(/cilantro-lime crema/i);
+
+    let village: Menu['groups'][number] | undefined;
+    walkGroups(presented[0].groups, (group) => {
+      if (group.name === 'Village Tacos') village = group;
+    });
+    const fishChoice = village?.choices
+      ?.flatMap((choice) => choice.options)
+      .find((option) => /baja fish/i.test(option));
+    expect(fishChoice).toMatch(/cilantro-lime crema/i);
+    expect(fishChoice).not.toMatch(/tartar/i);
+  });
+
+  it('rewrites leftover sheet tartar on Baja Fish choice labels', () => {
+    const leftover: Menu[] = [{
+      id: 'menu-live',
+      name: 'Menu',
+      groups: [
+        {
+          id: 'mains',
+          name: 'Mains',
+          items: [],
+          subGroups: [
+            {
+              id: 'mains-village-tacos',
+              name: 'Village Tacos',
+              items: [{ id: 'fish', name: 'Fish Taco', description: 'Crisp fish with chipotle tartar sauce.' }],
+              choices: [
+                {
+                  label: 'Pick Your Tacos',
+                  options: ['Baja Fish — Cabbage, Pico de Gallo, Chipotle Tartar Sauce'],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    }];
+    const presented = applyMenuPresentation(leftover);
+    const blob = JSON.stringify(presented);
+    expect(blob).not.toMatch(/tartar/i);
+    const rows = flattenItems(presented);
+    expect(rows.find(({ item }) => item.name === 'Fish Taco')?.item.description).toBe(FISH_TACO);
+    let village: Menu['groups'][number] | undefined;
+    walkGroups(presented[0].groups, (group) => {
+      if (group.name === 'Village Tacos') village = group;
+    });
+    expect(village?.choices?.[0]?.options[0]).toMatch(/Cilantro-Lime Crema/);
+  });
+});
+
 describe('guest-facing descriptions', () => {
   it('gives bottles and cans manufacturer-based blurbs', () => {
     const presented = applyMenuPresentation(getMenus());
     const rows = flattenItems(presented);
     const byName = (name: string) => rows.find(({ item }) => photoKey(item.name) === photoKey(name))?.item;
+    expect(byName('Cadillac Margarita')?.description).toMatch(/Casa Azul|tequila|lime/i);
+    expect(byName('Heroes Old Fashioned')?.description).toMatch(/Bulleit|bourbon|bitters/i);
+    expect(byName('Irish Coffee')?.description).toMatch(/whiskey|cream/i);
+    expect(byName('Mimosa')?.description).not.toMatch(/\$|\+\s*\d/);
     expect(byName('Modelo')?.description).toMatch(/pilsner|lager|crisp/i);
     expect(byName('Michelob Ultra')?.description).toMatch(/light/i);
     expect(byName('Miller Lite')?.description).toMatch(/light|pilsner/i);
@@ -436,7 +520,7 @@ describe('applyMenuPresentation', () => {
     const chilaquiles = specials?.items.find((item) => item.name === 'Chilaquiles');
     expect(chilaquiles?.name).toBe('Chilaquiles');
     expect(chilaquiles?.description).toBe(CHILAQUILES.description);
-    expect(chilaquiles?.description).not.toMatch(/salsa|crema|egg|tortilla|verde|roja/i);
+    expect(chilaquiles?.description).toMatch(/salsa|crema|egg|tortilla/i);
     expect(chilaquiles?.price).toBeUndefined();
     expect(chilaquiles?.imageUrl).toBeUndefined();
     expect(flattenItems(presented).filter(({ item }) => photoKey(item.name) === 'chilaquiles').length).toBeGreaterThanOrEqual(1);
