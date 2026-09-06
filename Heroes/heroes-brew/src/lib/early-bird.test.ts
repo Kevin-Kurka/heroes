@@ -37,6 +37,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { getKnowledge } from './ask';
+import { publicMenuCopy } from './config';
 import {
   BREAKFAST_HAPPY_HOUR,
   BRUNCH_PAIRING_DRINKS,
@@ -213,6 +214,8 @@ describe('Early Bird on guest-facing surfaces', () => {
     const hh = brunchSpecials?.items.find((item) => item.name === BREAKFAST_HAPPY_HOUR.name);
     expect(early?.description).toBe(earlyBirdMenuDescription());
     expect(hh?.description).toBe(breakfastHappyHourMenuDescription());
+    expect(publicMenuCopy(early?.description, early?.name)).toMatch(/\$22/);
+    expect(publicMenuCopy(hh?.description, hh?.name)).toMatch(/\$5/);
     expect(early?.imageUrl).toBeUndefined();
     expect(hh?.imageUrl).toBeUndefined();
 

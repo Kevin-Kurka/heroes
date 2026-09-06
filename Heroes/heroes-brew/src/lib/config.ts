@@ -1,11 +1,11 @@
 /**
  * Site-wide display configuration.
  *
- * SHOW_PRICES gates every price shown on the customer-facing menu. The owner
- * asked to suppress prices on the website; flip this to `true` to restore them
- * everywhere at once (MenuCard, VariantGroupCard, MenuPageClient, menu JSON-LD).
- * Staff printable at /menu/printable does not read this flag and may still
- * show prices.
+ * SHOW_PRICES gates every regular item price on the customer-facing menu.
+ * Published Early Bird deal prices ($22 / $5) stay visible via publicMenuCopy.
+ * Flip SHOW_PRICES to `true` to restore all prices (MenuCard, VariantGroupCard,
+ * MenuPageClient, menu JSON-LD). Staff printable at /menu/printable does not
+ * read this flag and may still show prices.
  */
 export const SHOW_PRICES = false;
 
@@ -54,4 +54,16 @@ export function stripPriceTokens(text: string, showPrices: boolean = SHOW_PRICES
     next = next.replace(re, '');
   }
   return tidyStrippedCopy(next);
+}
+
+/** Live Toast Early Bird / breakfast HH — deal $22 / $5 stay visible on /menu. */
+export function isPublishedDealName(name?: string): boolean {
+  return !!name && /early bird|breakfast happy hour/i.test(name);
+}
+
+/** Public card copy: hide regular prices, keep published Early Bird deal prices. */
+export function publicMenuCopy(text: string | undefined, name?: string): string | undefined {
+  if (!text) return undefined;
+  if (isPublishedDealName(name)) return text;
+  return stripPriceTokens(text);
 }

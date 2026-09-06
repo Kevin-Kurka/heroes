@@ -1,7 +1,7 @@
 'use client';
 
 import { MenuItem } from '@/types';
-import { SHOW_PRICES, stripPriceTokens } from '@/lib/config';
+import { SHOW_PRICES, publicMenuCopy } from '@/lib/config';
 
 interface MenuCardProps {
   item: MenuItem;
@@ -10,7 +10,7 @@ interface MenuCardProps {
 }
 
 export default function MenuCard({ item }: MenuCardProps) {
-  const description = item.description ? stripPriceTokens(item.description) : undefined;
+  const description = publicMenuCopy(item.description, item.name);
 
   return (
     <article className="rounded-xl bg-white/5 p-4 transition-colors duration-200 hover:bg-white/[0.08]">

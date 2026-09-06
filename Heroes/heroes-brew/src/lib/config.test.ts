@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { SHOW_PRICES, stripPriceTokens } from './config';
+import { SHOW_PRICES, publicMenuCopy, stripPriceTokens } from './config';
 
 describe('stripPriceTokens', () => {
   it('leaves copy alone when prices are shown', () => {
@@ -38,5 +38,15 @@ describe('stripPriceTokens', () => {
   it('defaults to the site SHOW_PRICES flag (off for the public menu)', () => {
     expect(SHOW_PRICES).toBe(false);
     expect(stripPriceTokens('Wings $6 off')).toBe('Wings');
+  });
+});
+
+describe('publicMenuCopy', () => {
+  it('keeps Early Bird $22 / $5 deal prices on guest menu cards', () => {
+    expect(publicMenuCopy('Two plates for $22. Friday–Sunday 9–11 AM.', 'Early Bird Weekend Breakfast'))
+      .toBe('Two plates for $22. Friday–Sunday 9–11 AM.');
+    expect(publicMenuCopy('$5 Screwdriver, Tequila Sunrise.', 'Breakfast Happy Hour'))
+      .toBe('$5 Screwdriver, Tequila Sunrise.');
+    expect(publicMenuCopy('Kalua Pork Sliders $4ea.', 'Mahalo Monday')).toBe('Kalua Pork Sliders.');
   });
 });

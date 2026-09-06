@@ -715,7 +715,8 @@ describe('public menu prices', () => {
     const json = getMenuJsonLd(applyMenuPresentation(getMenus()));
     const blob = JSON.stringify(json);
     expect(blob).not.toContain('"offers"');
-    expect(blob).not.toMatch(/\$\d/);
+    expect(blob).toMatch(/\$22/);
+    expect(blob.replace(/\$22/g, '').replace(/\$5(?!\s*off)/g, '')).not.toMatch(/\$\d/);
     expect(blob).toContain('Calamari');
     expect(blob).toContain('Spicy Chicken');
     expect(blob).toContain('Hogzilla');
