@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { UtensilsCrossed, MapPin, Phone, ChevronRight, Check, MessageCircleQuestion } from 'lucide-react';
 import type { Restaurant } from '@/types';
@@ -12,6 +13,8 @@ const DIRECTIONS_URL =
 interface Props {
   page: LandingPageContent;
   restaurant: Restaurant;
+  /** Optional extra block after the intro (e.g. Week 1 poster gallery on /watch). */
+  afterIntro?: ReactNode;
 }
 
 /**
@@ -21,7 +24,7 @@ interface Props {
  * that Google and answer engines read. The FAQ uses a native <details> accordion,
  * mirroring AboutFaqSection, and matches the page's FAQPage JSON-LD.
  */
-export default function LandingPageView({ page, restaurant }: Props) {
+export default function LandingPageView({ page, restaurant, afterIntro }: Props) {
   const tel = restaurant.phone.replace(/\D/g, '');
   const otherPages = Object.values(LANDING_PAGES).filter((p) => p.slug !== page.slug);
 
@@ -74,6 +77,8 @@ export default function LandingPageView({ page, restaurant }: Props) {
             />
           </div>
         </header>
+
+        {afterIntro && <div className="mb-8">{afterIntro}</div>}
 
         {/* Content sections */}
         <div className="space-y-8">

@@ -150,6 +150,13 @@ export const LANDING_PAGES: Record<string, LandingPageContent> = {
         ],
       },
       {
+        heading: 'NFL Week 1 watch parties',
+        body: [
+          'NFL Week 1 is on the TVs at American Heroes & Brew — walk-ins welcome, 16 TVs, 300 Carlsbad Village Dr. Kickoffs are listed in Pacific time. Soft fan watch-party framing only; not an official NFL or team partnership.',
+          'Local priority: Cardinals at Chargers, Sunday Sep 13 at 1:25 PM PT on CBS (SoFi). Also on the slate: Patriots at Seahawks (Wed Sep 9, 5:20 PM PT, NBC), 49ers at Rams in Melbourne (Thu Sep 10, 5:35 PM PT, Netflix), Cowboys at Giants (Sun Sep 13, 5:20 PM PT, NBC), and Broncos at Chiefs (Mon Sep 14, 5:15 PM PT, ESPN/ABC).',
+        ],
+      },
+      {
         heading: 'Game-day specials',
         body: [
           'There’s a deal almost every day: Taco Tuesday, Wings & Well Wednesday, and $5-off burgers on Thirsty Thursday — plus drink specials throughout the week. Check the live scoreboard for what’s on today.',
@@ -176,6 +183,11 @@ export const LANDING_PAGES: Record<string, LandingPageContent> = {
         question: 'Is it a good place to watch the game with kids?',
         answer:
           'Yes — American Heroes & Brew is a genuinely family-friendly sports bar with a kids’ menu, so you can bring the whole family to watch the game.',
+      },
+      {
+        question: 'Where can I watch NFL Week 1 and the Chargers in Carlsbad?',
+        answer:
+          'American Heroes & Brew in Carlsbad Village is showing NFL Week 1 on 16 TVs — including the local Chargers game (Cardinals at Chargers, Sun Sep 13, 1:25 PM PT, CBS). Walk-ins welcome, no cover, at 300 Carlsbad Village Drive. Fan watch-party only — not an official NFL or team partnership.',
       },
     ],
     breadcrumbLabel: 'Watch the Game',

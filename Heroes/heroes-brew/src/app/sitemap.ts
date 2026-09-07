@@ -13,6 +13,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: '/cheesesteak', priority: 0.85, changeFrequency: 'monthly' },
     { path: '/world-cup', priority: 0.9, changeFrequency: 'daily' },
     { path: '/watch', priority: 0.9, changeFrequency: 'weekly' },
+    { path: '/watch-party', priority: 0.85, changeFrequency: 'weekly' },
     { path: '/near-legoland', priority: 0.8, changeFrequency: 'monthly' },
     { path: '/breakfast', priority: 0.8, changeFrequency: 'monthly' },
     { path: '/happy-hour', priority: 0.8, changeFrequency: 'monthly' },
