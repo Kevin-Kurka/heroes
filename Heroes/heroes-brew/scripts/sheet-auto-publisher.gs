@@ -51,10 +51,10 @@ var HEADERS = ['Post Date', 'Post Time', 'Channel', 'Media', 'Headline', 'Captio
 // `deal`/`day`/`hours` drive the Google poster + caption; `startH`/`endH` are the PT Event
 // window (24h). The Google Event re-seeds every week, so it's recurring in effect.
 var SPECIALS = {
-  Mon: { key: 'mahalo',  name: 'Mahalo Monday',           day: 'Monday',    time: '11:00 AM', deal: '$4 Kalua Pork Sliders', hours: '10a–10p', startH: 10, endH: 22, cap: 'Sliders on my mind 🤙 Mahalo Monday at Heroes.' },
-  Tue: { key: 'taco',    name: 'Taco Tuesday',            day: 'Tuesday',   time: '11:00 AM', deal: '$4 Tacos + Tequila',     hours: '10a–10p', startH: 10, endH: 22, cap: 'I want some tacos! 🌮 Taco Tuesday at Heroes.' },
-  Wed: { key: 'wings',   name: 'Wings & Wells Wednesday', day: 'Wednesday', time: '11:00 AM', deal: '$6 Off Wings',          hours: '10a–10p', startH: 10, endH: 22, cap: "Wing it — it's Humpday 🍗 Wings & Wells Wednesday at Heroes." },
-  Thu: { key: 'burgers', name: 'Burgers & Beer Thursday', day: 'Thursday',  time: '11:00 AM', deal: '$5 Off Burgers',        hours: '10a–10p', startH: 10, endH: 22, cap: "Burger o'clock 🍔🍺 Burgers & Beer Thursday at Heroes." },
+  Mon: { key: 'mahalo',  name: 'Mahalo Monday',           day: 'Monday',    time: '11:00 AM', deal: '$4 Kalua Pork Sliders', hours: '11a–10p', startH: 11, endH: 22, cap: 'Sliders on my mind 🤙 Mahalo Monday at Heroes.' },
+  Tue: { key: 'taco',    name: 'Taco Tuesday',            day: 'Tuesday',   time: '11:00 AM', deal: '$4 Tacos + Tequila',     hours: '11a–10p', startH: 11, endH: 22, cap: 'I want some tacos! 🌮 Taco Tuesday at Heroes.' },
+  Wed: { key: 'wings',   name: 'Wings & Wells Wednesday', day: 'Wednesday', time: '11:00 AM', deal: '$6 Off Wings',          hours: '11a–10p', startH: 11, endH: 22, cap: "Wing it — it's Humpday 🍗 Wings & Wells Wednesday at Heroes." },
+  Thu: { key: 'burgers', name: 'Burgers & Beer Thursday', day: 'Thursday',  time: '11:00 AM', deal: '$5 Off Burgers',        hours: '11a–10p', startH: 11, endH: 22, cap: "Burger o'clock 🍔🍺 Burgers & Beer Thursday at Heroes." },
   Fri: { key: 'funday',  name: 'Friday Funday',           day: 'Friday',    time: '11:30 AM', deal: 'Happy Hour 1–4p · $2 Off', hours: '1–4p', startH: 13, endH: 16, cap: 'Cheers to Friday! 🍻 Friday Funday at Heroes.' }
 };
 var SPECIAL_DOWS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
@@ -585,12 +585,41 @@ function seedTodaySpecial() {
   if (seedSpecialOn_(currentMonthSheet_(), new Date())) scheduleNext();
 }
 
-// Month tab for a given Date (creating it with headers if missing).
+// Month tab for a given Date (creating it if missing).
 function monthSheetFor_(date) {
   var tz = Session.getScriptTimeZone();
   var name = MONTH_NAMES[Number(Utilities.formatDate(date, tz, 'M')) - 1] + ' ' + Utilities.formatDate(date, tz, 'yyyy');
-  var sh = ss_().getSheetByName(name);
-  if (!sh) { sh = ss_().insertSheet(name); sh.appendRow(HEADERS); sh.setFrozenRows(1); }
+  return ss_().getSheetByName(name) || newMonthSheet_(name);
+}
+
+// Create a month tab by DUPLICATING the newest existing one and clearing its rows.
+// insertSheet() would give a bare grid with no Channel/Approval data validation, so
+// every seeded row would land without its dropdowns — duplicate carries them over.
+// Falls back to a bare sheet + headers only if there's nothing to duplicate.
+function newMonthSheet_(name) {
+  var ss = ss_();
+  var months = monthSheets_().filter(function (s) { return MONTH_TAB_RE.test(s.getName()); });
+  var template = null, best = -1;
+  months.forEach(function (s) {
+    var m = s.getName().split(' ');
+    var idx = MONTH_NAMES.indexOf(m[0]);
+    if (idx < 0) return;
+    var rank = Number(m[1]) * 12 + idx;          // newest month wins
+    if (rank > best) { best = rank; template = s; }
+  });
+
+  var sh;
+  if (template) {
+    sh = template.copyTo(ss).setName(name);
+    var last = sh.getLastRow();
+    if (last > 1) sh.getRange(2, 1, last - 1, sh.getLastColumn()).clearContent();
+    ss.setActiveSheet(sh);
+    ss.moveActiveSheet(ss.getNumSheets());
+  } else {
+    sh = ss.insertSheet(name);
+    sh.appendRow(HEADERS);
+  }
+  sh.setFrozenRows(1);
   return sh;
 }
 
@@ -611,18 +640,21 @@ function backfillSpecials() {
   Logger.log('backfillSpecials: added ' + added + ' special rows through ' + Utilities.formatDate(endMonth, tz, 'MMM d, yyyy'));
 }
 
-function setupMonthlyTabs() {
+// Ensure the next N month tabs exist (default 2). Bump the span before a season
+// that seeds months ahead — e.g. the NFL gameday Events run through January 2027,
+// so `setupMonthlyTabs(6)` in September creates Oct/Nov/Dec/Jan up front.
+function setupMonthlyTabs(span) {
   var now = new Date();
-  for (var k = 0; k < 2; k++) {
+  var n = span || 2;
+  for (var k = 0; k < n; k++) {
     var d = new Date(now.getFullYear(), now.getMonth() + k, 1);
-    var name = MONTH_NAMES[d.getMonth()] + ' ' + d.getFullYear();
-    var sh = ss_().getSheetByName(name);
-    if (!sh) sh = ss_().insertSheet(name);
-    if (sh.getLastRow() === 0) {
-      sh.appendRow(HEADERS);
-      sh.setFrozenRows(1);
-    }
+    monthSheetFor_(d);
   }
+}
+
+/** Create every month tab the NFL season needs, in one call. */
+function setupSeasonTabs() {
+  setupMonthlyTabs(6);
 }
 
 function setup() {
