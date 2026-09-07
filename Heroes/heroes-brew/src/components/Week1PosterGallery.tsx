@@ -62,9 +62,10 @@ export default function Week1PosterGallery({
     return () => window.removeEventListener('keydown', onKey);
   }, [open]);
 
-  useEffect(() => {
+  const openPoster = (id: string) => {
     setStory(false);
-  }, [openId]);
+    setOpenId(id);
+  };
 
   return (
     <section id="week-1" className="bg-card border border-border rounded-lg p-6">
@@ -92,7 +93,7 @@ export default function Week1PosterGallery({
       <ul className="grid gap-4 sm:grid-cols-2">
         {WEEK1_POSTERS.map((poster) => (
           <li key={poster.id}>
-            <PosterCard poster={poster} onOpen={() => setOpenId(poster.id)} />
+            <PosterCard poster={poster} onOpen={() => openPoster(poster.id)} />
           </li>
         ))}
       </ul>
