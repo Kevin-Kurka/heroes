@@ -3,6 +3,7 @@ import { resolveMenus } from '@/lib/menu-sheet';
 import { FAQ } from '@/lib/faq';
 import { SITE_URL } from '@/lib/structured-data';
 import { getAllWatchParties } from '@/lib/watch-parties';
+import { WEEK1_DISCLAIMER, WEEK1_POSTERS } from '@/lib/week1-posters';
 
 const PT = 'America/Los_Angeles';
 function when(iso: string): string {
@@ -43,6 +44,10 @@ export async function GET() {
 
   const watchParties = getAllWatchParties()
     .map((w) => `- **${w.matchup}** (${w.league}) — ${when(w.startDate)}. Live on 16 TVs, no cover. ${SITE_URL}/watch-party/${w.slug}`)
+    .join('\n');
+
+  const week1 = WEEK1_POSTERS
+    .map((p) => `- **${p.away} at ${p.home}**${p.local ? ' (LOCAL · Chargers)' : ''} — ${p.when}. ${p.note}. Posters: ${SITE_URL}${p.feedSrc}`)
     .join('\n');
 
   const body = `# American Heroes & Brew
@@ -92,6 +97,12 @@ Full menu: ${SITE_URL}/menu
 ## Watch parties (featured events with date & time)
 ${watchParties}
 
+## NFL Week 1 watch-party posters
+Fan graphics for the openers — walk-ins welcome, 16 TVs, 300 Carlsbad Village Dr. Kickoffs in PT. ${WEEK1_DISCLAIMER}
+${week1}
+- Gallery: ${SITE_URL}/watch#week-1
+- Watch-party hub: ${SITE_URL}/watch-party
+
 ## FAQ
 ${faq}
 
@@ -103,6 +114,7 @@ ${faq}
 - Authentic Philly cheesesteak in Carlsbad: ${SITE_URL}/cheesesteak
 - Where to watch the World Cup in Carlsbad: ${SITE_URL}/world-cup
 - Where to watch the game in Carlsbad: ${SITE_URL}/watch
+- Watch parties (NFL Week 1 posters): ${SITE_URL}/watch-party
 - Family dining near LEGOLAND: ${SITE_URL}/near-legoland
 - Weekend breakfast in Carlsbad Village: ${SITE_URL}/breakfast
 - Happy hour & daily specials: ${SITE_URL}/happy-hour

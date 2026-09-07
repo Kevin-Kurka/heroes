@@ -17,6 +17,7 @@ import { DOORDASH_URL } from '@/lib/doordash';
 import { useDoorDashAvailable } from '@/hooks/use-doordash-available';
 import { EARLY_BIRD_DAILY_DEALS, EARLY_BIRD_HOURS_SHORT, FRIDAY_FUNDAY_DEAL } from '@/lib/early-bird';
 import { HOME_SPECIALS } from '@/lib/menu-specials';
+import { Week1HomeTeaser } from '@/components/Week1PosterGallery';
 
 const DAILY_SPECIALS = [
   {
@@ -379,6 +380,8 @@ export default function HomePageClient({ events, todayIndex }: Props) {
             Scoreboard <ChevronRight size={14} />
           </Link>
         </div>
+
+        <Week1HomeTeaser />
 
         {events.length === 0 ? (
           <p className="text-muted text-center py-8">No upcoming events this week.</p>

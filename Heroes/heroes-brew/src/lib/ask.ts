@@ -116,6 +116,18 @@ const CLAIMS: Omit<KnowledgeEntry, 'source'>[] = [
     keywords: ['best world cup bar carlsbad', 'best soccer bar north county', 'where to watch the world cup carlsbad'],
     url: `${SITE_URL}/world-cup`,
   },
+  {
+    id: 'claim-nfl-week1-chargers',
+    question: 'Where can I watch NFL Week 1 and the Chargers in Carlsbad?',
+    answer:
+      'American Heroes & Brew in Carlsbad Village is showing NFL Week 1 on 16 TVs — including the local Chargers game (Cardinals at Chargers, Sun Sep 13, 1:25 PM PT, CBS). Walk-ins welcome at 300 Carlsbad Village Drive. Fan watch-party only — not an official NFL or team partnership.',
+    keywords: [
+      'nfl week 1 carlsbad',
+      'chargers watch party carlsbad',
+      'where to watch the chargers carlsbad village',
+    ],
+    url: `${SITE_URL}/watch`,
+  },
 ];
 
 /** The full retrieval corpus: FAQ + bold claims + dated watch parties. */

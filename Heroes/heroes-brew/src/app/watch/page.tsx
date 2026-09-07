@@ -8,6 +8,7 @@ import {
   getBreadcrumbJsonLd,
 } from '@/lib/structured-data';
 import LandingPageView from '@/components/LandingPageView';
+import Week1PosterGallery from '@/components/Week1PosterGallery';
 
 const PAGE = LANDING_PAGES.watch;
 const PAGE_URL = `${SITE_URL}/${PAGE.slug}`;
@@ -46,7 +47,11 @@ export default function WatchPage() {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(obj) }}
         />
       ))}
-      <LandingPageView page={PAGE} restaurant={restaurant} />
+      <LandingPageView
+        page={PAGE}
+        restaurant={restaurant}
+        afterIntro={<Week1PosterGallery />}
+      />
     </>
   );
 }

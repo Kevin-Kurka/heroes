@@ -95,7 +95,7 @@ export default async function WatchPartyPage({ params }: Params) {
     getGenericFaqJsonLd(allFaqs, url),
     getBreadcrumbJsonLd([
       { name: 'Home', path: '/' },
-      { name: 'Watch Parties', path: '/events' },
+      { name: 'Watch Parties', path: '/watch-party' },
       { name: party.matchup, path: `/watch-party/${party.slug}` },
     ]),
   ];
@@ -114,7 +114,7 @@ export default async function WatchPartyPage({ params }: Params) {
         <nav className="text-sm text-foreground/50 mb-6" aria-label="Breadcrumb">
           <Link href="/" className="hover:text-accent">Home</Link>
           <span className="mx-2">/</span>
-          <Link href="/events" className="hover:text-accent">Watch Parties</Link>
+          <Link href="/watch-party" className="hover:text-accent">Watch Parties</Link>
           <span className="mx-2">/</span>
           <span className="text-foreground/80">{party.matchup}</span>
         </nav>
@@ -215,7 +215,7 @@ export default async function WatchPartyPage({ params }: Params) {
           <div className="mt-4 flex flex-wrap gap-3 text-sm">
             <Link href="/menu" className="rounded-lg bg-accent px-4 py-2 font-semibold text-black">See the menu</Link>
             <Link href="/location" className="rounded-lg border border-border px-4 py-2 font-semibold">Directions &amp; hours</Link>
-            <Link href="/events" className="rounded-lg border border-border px-4 py-2 font-semibold">All watch parties</Link>
+            <Link href="/watch-party" className="rounded-lg border border-border px-4 py-2 font-semibold">All watch parties</Link>
           </div>
         </section>
 
