@@ -30,8 +30,10 @@ const TOKEN_URL = 'https://oauth2.googleapis.com/token';
 // Only self-hosted promo images may be posted (same allow-list spirit as the IG route).
 const ALLOWED_IMAGE_PREFIXES = [
   'https://americanheroesandbrew.com/promos/',
+  'https://americanheroesandbrew.com/gameday/',
   'https://americanheroesandbrew.com/api/og/',
   'https://heroes-tau-neon.vercel.app/promos/',
+  'https://heroes-tau-neon.vercel.app/gameday/',
   'https://heroes-tau-neon.vercel.app/api/og/',
 ];
 
