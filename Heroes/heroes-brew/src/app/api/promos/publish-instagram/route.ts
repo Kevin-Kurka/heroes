@@ -41,9 +41,11 @@ type FacebookResult =
 /** Only self-hosted promo posters / generated OG cards may be published. */
 const ALLOWED_IMAGE_PREFIXES = [
   'https://americanheroesandbrew.com/promos/',
+  'https://americanheroesandbrew.com/gameday/', // NFL Week 1+ watch-party posters
   'https://americanheroesandbrew.com/api/og/', // auto matchup art (Story invites)
   'https://americanheroesandbrew.com/images/polished/', // curated food/brand photo library (evergreen feed posts)
   'https://heroes-tau-neon.vercel.app/promos/',
+  'https://heroes-tau-neon.vercel.app/gameday/',
   'https://heroes-tau-neon.vercel.app/api/og/',
   'https://heroes-tau-neon.vercel.app/images/polished/',
 ];
