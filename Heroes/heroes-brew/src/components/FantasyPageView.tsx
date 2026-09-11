@@ -1,21 +1,38 @@
-import { Trophy, UtensilsCrossed, Tv, Users, ClipboardList, MessageCircleQuestion, ExternalLink } from 'lucide-react';
-import { FANTASY, YAHOO_FANTASY_URL, LEAGUE_CAPACITY, MAX_LEAGUES_PER_USER } from '@/lib/fantasy';
-import type { LeagueAvailability } from '@/lib/fantasy-leagues';
-import JoinLeagueForm from '@/components/JoinLeagueForm';
-import RegisterLeagueForm from '@/components/RegisterLeagueForm';
+/**
+ * FILE: FantasyPageView.tsx
+ * PURPOSE: Archived Heroes Fantasy Football League page (no live signup).
+ *
+ * OVERVIEW:
+ * Server-rendered recap for /fantasy-football after official 2026 drafts
+ * completed. Past-tense copy, prize FAQ, and watch-the-games CTAs — no join
+ * forms, open-spot counts, or signup buttons.
+ *
+ * DEPENDENCIES:
+ * - @/lib/fantasy (FANTASY, FANTASY_ARCHIVED)
+ * - @/components/ReviewCTA
+ *
+ * EXPORTS:
+ * - FantasyPageView (default)
+ *
+ * IMPLEMENTATION STATUS:
+ * - ✅ Archive UI when FANTASY_ARCHIVED
+ * - ❌ Live Join / Register forms (closed for 2026)
+ *
+ * RELATED FILES:
+ * - src/app/fantasy-football/page.tsx
+ * - src/lib/fantasy-archive.test.ts
+ *
+ * LAST UPDATED: 2026-09-11
+ * MAINTAINER: American Heroes & Brew
+ */
+import { Trophy, UtensilsCrossed, Tv, MessageCircleQuestion, CalendarDays } from 'lucide-react';
+import Link from 'next/link';
+import { FANTASY, FANTASY_ARCHIVED } from '@/lib/fantasy';
 import ReviewCTA from '@/components/ReviewCTA';
 
 const PERK_ICON = { trophy: Trophy, wings: UtensilsCrossed, tv: Tv } as const;
 
-/**
- * Server-rendered Heroes Fantasy Football League hub. Plain HTML for
- * info/perks/how-to/FAQ; embeds the two client signup cards (Join / Register).
- * `leagues` carries live upcoming-league availability; spotsOpen is the sum of
- * those rows only (no hardcoded total).
- */
-export default function FantasyPageView({ leagues }: { leagues: LeagueAvailability[] }) {
-  const spotsOpen = leagues.reduce((n, l) => n + l.spotsLeft, 0);
-
+export default function FantasyPageView() {
   return (
     <div className="relative">
       <div className="fixed inset-0 -z-10 bg-[url('/home-bg.jpg')] bg-cover bg-center opacity-[0.07] pointer-events-none" />
@@ -25,17 +42,24 @@ export default function FantasyPageView({ leagues }: { leagues: LeagueAvailabili
           <span className="text-sm font-semibold uppercase tracking-widest text-accent">American Heroes &amp; Brew</span>
           <h1 className="mt-2 text-3xl font-bold text-foreground drop-shadow-lg md:text-4xl">{FANTASY.title}</h1>
           <p className="mt-2 text-lg font-medium text-accent">{FANTASY.tagline}</p>
+          {FANTASY_ARCHIVED && (
+            <p className="mt-3 inline-block rounded-sm border border-accent/40 bg-accent/10 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-accent">
+              Drafts completed · Season underway
+            </p>
+          )}
           <div className="mt-5 space-y-3 leading-relaxed text-foreground/85">
             {FANTASY.intro.map((p, i) => <p key={i}>{p}</p>)}
           </div>
-          <a href="#signup" className="mt-5 inline-flex items-center justify-center rounded-sm bg-accent px-6 py-3 font-semibold text-white transition-colors hover:bg-accent-dim">
-            Sign up — it’s free
-          </a>
+          <Link
+            href="/events"
+            className="mt-5 inline-flex items-center justify-center rounded-sm bg-accent px-6 py-3 font-semibold text-white transition-colors hover:bg-accent-dim"
+          >
+            Watch the games on the Scoreboard
+          </Link>
         </header>
 
-        {/* Perks / rules */}
         <section className="mb-10">
-          <h2 className="mb-5 text-2xl font-bold text-foreground">What you get</h2>
+          <h2 className="mb-5 text-2xl font-bold text-foreground">What the league includes</h2>
           <div className="grid gap-4 sm:grid-cols-3">
             {FANTASY.perks.map((p) => {
               const Icon = PERK_ICON[p.icon as keyof typeof PERK_ICON] ?? Trophy;
@@ -50,60 +74,31 @@ export default function FantasyPageView({ leagues }: { leagues: LeagueAvailabili
           </div>
         </section>
 
-        {/* Two signup cards */}
-        <section id="signup" className="mb-10 scroll-mt-20">
-          <div className="mb-4 flex items-center gap-2">
-            <ClipboardList size={20} className="text-accent" />
-            <h2 className="text-2xl font-bold text-foreground">Sign up — pick your path</h2>
+        <section className="mb-10 rounded-lg border border-border bg-card p-6">
+          <div className="mb-2 flex items-center gap-2">
+            <CalendarDays size={20} className="text-accent" />
+            <h2 className="text-xl font-bold text-foreground">Come watch the season</h2>
           </div>
-          <div className="grid items-start gap-5 md:grid-cols-2">
-            {/* Card 1: Join a Heroes league */}
-            <div className="rounded-lg border border-accent/30 bg-card p-6">
-              <div className="mb-1 flex items-center gap-2">
-                <Users size={20} className="text-accent" />
-                <h3 className="text-lg font-bold text-foreground">Join a Heroes League</h3>
-              </div>
-              <p className="mb-1 text-sm text-foreground/80">
-                No league? Hop into one of our official Heroes leagues — {LEAGUE_CAPACITY} open spots each (the commissioner takes the 10th). Join up to {MAX_LEAGUES_PER_USER}.
-                {spotsOpen > 0 ? ` ${spotsOpen} spots open right now.` : ''}
-              </p>
-              <p className="mb-4 text-xs text-muted">Free to join · $100 to the champ · remaining drafts this Labor Day weekend.</p>
-              <JoinLeagueForm leagues={leagues} />
-            </div>
-
-            {/* Card 2: Register your own league */}
-            <div className="rounded-lg border border-accent/30 bg-card p-6">
-              <div className="mb-1 flex items-center gap-2">
-                <Trophy size={20} className="text-accent" />
-                <h3 className="text-lg font-bold text-foreground">Register My League</h3>
-              </div>
-              <p className="mb-4 text-sm text-foreground/80">
-                Already a commissioner? Register your league for the $100 prize and book your draft at the bar (free munchies + big-screen draft).
-              </p>
-              <RegisterLeagueForm />
-
-              {/* Getting set up on Yahoo — for commissioners registering a league */}
-              <div className="mt-5 border-t border-border/50 pt-4">
-                <h4 className="font-semibold text-foreground">New to Yahoo? Set up your league first</h4>
-                <p className="mt-1 text-sm text-foreground/80">{FANTASY.yahoo.intro}</p>
-                <ol className="mt-3 space-y-2">
-                  {FANTASY.yahoo.steps.map((s, i) => (
-                    <li key={i} className="flex items-start gap-2.5 text-sm text-foreground/85">
-                      <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-accent/15 text-xs font-bold text-accent">{i + 1}</span>
-                      <span>{s}</span>
-                    </li>
-                  ))}
-                </ol>
-                <a href={YAHOO_FANTASY_URL} target="_blank" rel="noopener noreferrer"
-                  className="mt-3 inline-flex items-center gap-1.5 text-sm text-accent hover:underline">
-                  Open Yahoo Fantasy Football <ExternalLink size={14} />
-                </a>
-              </div>
-            </div>
+          <p className="text-sm leading-relaxed text-foreground/80">
+            Signup is closed. The games are not — every NFL Sunday, Thursday Night, and Monday Night
+            Football is on 16 TVs in Carlsbad Village. Walk-ins welcome, no cover.
+          </p>
+          <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+            <Link
+              href="/watch"
+              className="inline-flex items-center justify-center rounded-sm bg-card border border-border px-5 py-2.5 font-semibold text-foreground transition-colors hover:border-accent/40"
+            >
+              NFL game day
+            </Link>
+            <Link
+              href="/events"
+              className="inline-flex items-center justify-center rounded-sm bg-card border border-border px-5 py-2.5 font-semibold text-foreground transition-colors hover:border-accent/40"
+            >
+              This week&apos;s scoreboard
+            </Link>
           </div>
         </section>
 
-        {/* FAQ */}
         <section className="mb-10">
           <div className="mb-5 flex items-center gap-2">
             <MessageCircleQuestion size={20} className="text-accent" />

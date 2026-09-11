@@ -1,6 +1,11 @@
-# Fantasy Football Signup — how it works (LIVE)
+# Fantasy Football Signup — archived for 2026
 
-The `/fantasy-football` hub is sheet-driven and capturing signups. Flow:
+Official Heroes drafts are completed and the season is underway.
+`FANTASY_ARCHIVED` is `true` in `src/lib/fantasy.ts`: `/fantasy-football` is a
+past-tense archive page (no join/register forms), and `POST /api/fantasy/signup`
+returns 410. Historical sheet/script notes below stay for a future reopen.
+
+The `/fantasy-football` hub was sheet-driven. When signup is reopened, flow:
 **register → add to Sheet → validate → send share link → confirm.**
 
 ## Google Sheet (id 1Nfc4gGjZRWYKSKJqACvBH15uRQBYGcdz-hzxRIAqjyI)

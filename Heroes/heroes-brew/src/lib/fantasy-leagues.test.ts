@@ -1,11 +1,11 @@
 /**
  * FILE: fantasy-leagues.test.ts
- * PURPOSE: Guard the official-draft past-date filter so /fantasy-football
- * only presents upcoming leagues in America/Los_Angeles.
+ * PURPOSE: Guard the official-draft past-date filter used when drafts were live.
  *
  * OVERVIEW:
  * Sheet-driven league rows can still include drafts that already happened.
- * Presentation must drop those so open-spot totals exclude past slots.
+ * The filter remains covered so a future reopen does not regress. Guest
+ * signup is archived — see fantasy-archive.test.ts.
  *
  * DEPENDENCIES:
  * - ./fantasy-leagues.ts
@@ -23,13 +23,11 @@
  * - src/lib/fantasy-leagues.ts
  * - src/lib/fantasy.ts
  *
- * LAST UPDATED: 2026-09-04
+ * LAST UPDATED: 2026-09-11
  * MAINTAINER: American Heroes & Brew
  */
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { FANTASY, OFFICIAL_LEAGUES, leagueDateText } from './fantasy';
+import { OFFICIAL_LEAGUES, leagueDateText } from './fantasy';
 import { filterUpcomingLeagues, isUpcomingDraft } from './fantasy-leagues';
 
 /** Friday Sep 4, 2026 2:00 PM PDT (UTC-7). */
@@ -104,8 +102,8 @@ describe('filterUpcomingLeagues', () => {
   });
 });
 
-describe('bundled remaining official drafts', () => {
-  it('lists only the remaining Labor Day weekend slots', () => {
+describe('bundled official draft history', () => {
+  it('keeps the completed Labor Day weekend slots as historical config only', () => {
     expect(OFFICIAL_LEAGUES.map(leagueDateText)).toEqual([
       'Sat, Sep 5 · 4:00 PM',
       'Sun, Sep 6 · 3:00 PM',
@@ -113,24 +111,5 @@ describe('bundled remaining official drafts', () => {
     expect(OFFICIAL_LEAGUES.some((l) => l.id === 'sep04-3pm' || l.id === 'sep04-4pm')).toBe(false);
     expect(OFFICIAL_LEAGUES.some((l) => /Fri|Sep\s*4/i.test(`${l.id} ${l.label} ${l.time || ''}`))).toBe(false);
     expect(OFFICIAL_LEAGUES.some((l) => /aug\s*2[89]|aug\s*30|moved from/i.test(`${l.id} ${l.label}`))).toBe(false);
-  });
-
-  it('FAQ no longer advertises the full two-weekend slate', () => {
-    const draftsFaq = FANTASY.faqs.find((f) => /when are the official/i.test(f.question));
-    expect(draftsFaq?.answer).toMatch(/Labor Day weekend/i);
-    expect(draftsFaq?.answer).toMatch(/Sat(?:urday)? Sep 5 at 4pm/);
-    expect(draftsFaq?.answer).toMatch(/Sun(?:day)? Sep 6 at 3pm/);
-    expect(draftsFaq?.answer).not.toMatch(/Friday/i);
-    expect(draftsFaq?.answer).not.toMatch(/Sep(?:tember)? 4/);
-    expect(draftsFaq?.answer).not.toMatch(/two weekends/i);
-    expect(draftsFaq?.answer).not.toMatch(/two Friday/i);
-    expect(draftsFaq?.answer).not.toMatch(/3pm and 4pm/);
-    expect(draftsFaq?.answer).not.toMatch(/Aug(?:ust)? 2[89]|Aug(?:ust)? 30/);
-  });
-
-  it('FantasyPageView sums spotsOpen from returned leagues only', () => {
-    const src = readFileSync(resolve(__dirname, '../components/FantasyPageView.tsx'), 'utf8');
-    expect(src).toMatch(/spotsOpen = leagues\.reduce\(\(n, l\) => n \+ l\.spotsLeft/);
-    expect(src).not.toMatch(/spotsOpen\s*=\s*33/);
   });
 });
