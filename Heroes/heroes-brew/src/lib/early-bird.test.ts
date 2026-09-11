@@ -5,8 +5,8 @@
  * / two-plates framing off guest copy.
  *
  * OVERVIEW:
- * Carlsbad Toast published guest name `2 Eggs for $22` with description
- * `Two eggs breakfast plate for $22.` Early Bird is POS-group only (rename
+ * Menu Designer locked print: title `2 Eggs for $22`, detail
+ * `Sat–Sun · Two eggs breakfast plate for $22.` Early Bird is POS-group only (rename
  * to Brunch on display). Homepage lineup, FAQ, landing pages, /menu brunch
  * specials, and /llms.txt must stay in sync. Hours stay: Fri 11am; Sat–Sun 9am.
  *
@@ -67,6 +67,7 @@ const FRIDAY_BRUNCH = /friday\s*[–-]\s*sunday|friday through sunday|fri\s*[–
 const FRIDAY_9AM_OPEN = /friday\s+9(?::00)?\s*am|open at 9am friday/i;
 const TWO_EGGS_DEAL = /2 eggs for \$?22/i;
 const TWO_EGGS = /two eggs breakfast plate/i;
+const LOCKED_PRINT = /Sat–Sun · Two eggs breakfast plate for \$22\./;
 const RETIRED_GUEST_NAME = /\bTWO for \$?22\b/;
 const FORBIDDEN_BRAND = /early bird/i;
 const FORBIDDEN_TWO_PLATES =
@@ -105,6 +106,7 @@ function guestSurfaces(): { label: string; text: string }[] {
 function assertTwoEggsDeal(text: string, label: string) {
   expect(text, `${label} names 2 Eggs for $22`).toMatch(TWO_EGGS_DEAL);
   expect(text, `${label} uses Toast description`).toMatch(TWO_EGGS);
+  expect(text, `${label} uses Menu Designer print`).toMatch(LOCKED_PRINT);
   expect(text, `${label} is Sat–Sun`).toMatch(SAT_SUN);
   expect(text, `${label} must not say TWO for $22`).not.toMatch(RETIRED_GUEST_NAME);
   expect(text, `${label} must not say Early Bird`).not.toMatch(FORBIDDEN_BRAND);
@@ -116,13 +118,13 @@ describe('2 Eggs for $22 canonical facts', () => {
   it('is 2 Eggs for $22 — Toast plate copy, Saturday–Sunday, no Early Bird brand', () => {
     expect(TWO_FOR_22_NAME).toBe('2 Eggs for $22');
     expect(TWO_FOR_22.name).toBe('2 Eggs for $22');
-    expect(TWO_FOR_22_DESCRIPTION).toBe('Two eggs breakfast plate for $22.');
+    expect(TWO_FOR_22_DESCRIPTION).toBe('Sat–Sun · Two eggs breakfast plate for $22.');
     expect(BRUNCH_DAYS).toBe('Saturday–Sunday');
     expect(BRUNCH_DAYS_PROSE).toBe('Saturday and Sunday');
-    expect(TWO_FOR_22_PRINT).toBe('Sat–Sun');
+    expect(TWO_FOR_22_PRINT).toBe('Sat–Sun · Two eggs breakfast plate for $22.');
     expect(TWO_FOR_22_DAILY_DEAL).toEqual({
       item: '2 Eggs for $22',
-      detail: 'Sat–Sun',
+      detail: 'Sat–Sun · Two eggs breakfast plate for $22.',
       price: '$22',
     });
     expect(BREAKFAST_HAPPY_HOUR.name).toBe('Breakfast Happy Hour');
@@ -137,7 +139,7 @@ describe('2 Eggs for $22 canonical facts', () => {
     const food = twoFor22MenuDescription();
     const intro = brunchLandingIntro();
     assertTwoEggsDeal(`${food}\n${intro}`, 'canonical copy');
-    expect(food).toBe('Two eggs breakfast plate for $22.');
+    expect(food).toBe('Sat–Sun · Two eggs breakfast plate for $22.');
     expect(breakfastHappyHourMenuDescription()).toMatch(/saturday\s*[–-]\s*sunday/i);
     expect(breakfastHappyHourMenuDescription()).toMatch(/\$5/);
     expect(breakfastHappyHourMenuDescription()).toMatch(/screwdriver/i);

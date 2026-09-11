@@ -4,8 +4,9 @@
  *
  * OVERVIEW:
  * Single source for the live Toast guest item 2 Eggs for $22 (Saturday–Sunday).
- * Published guest description: “Two eggs breakfast plate for $22.” — not two
- * plates, not Early Bird, not TWO for $22. Breakfast Happy Hour is the same
+ * Menu Designer locked print: title “2 Eggs for $22”, detail
+ * “Sat–Sun · Two eggs breakfast plate for $22.” — not two plates, not Early
+ * Bird, not TWO for $22 / 2 eggs any style. Breakfast Happy Hour is the same
  * Sat–Sun window. Homepage lineup, /menu Brunch + Specials, /breakfast, FAQ,
  * and /llms.txt read from here so the days and meaning cannot drift.
  *
@@ -22,7 +23,7 @@
  * - brunchLandingIntro, brunchFaqAnswers
  *
  * IMPLEMENTATION STATUS:
- * - ✅ Sat–Sun 2 Eggs for $22 = two eggs breakfast plate; Breakfast Happy Hour $5
+ * - ✅ Sat–Sun 2 Eggs for $22 = locked Toast print; Breakfast Happy Hour $5
  * - ✅ Friday Funday 1–4 PM
  * - ❌ Early Bird brand / TWO for $22 guest name / two-plates mix-and-match
  *
@@ -43,10 +44,9 @@ export const BRUNCH_DAYS_PROSE = 'Saturday and Sunday';
 /** Toast published guest item name. Means two eggs, not two plates. */
 export const TWO_FOR_22_NAME = '2 Eggs for $22';
 export const TWO_FOR_22_PRICE = '$22';
-/** Toast published guest description. */
-export const TWO_FOR_22_DESCRIPTION = 'Two eggs breakfast plate for $22.';
-/** Guest window — Sat–Sun (Toast brunch daypart ~9am–1:10pm). */
-export const TWO_FOR_22_PRINT = 'Sat–Sun';
+/** Menu Designer locked guest print (title is TWO_FOR_22_NAME). */
+export const TWO_FOR_22_DESCRIPTION = 'Sat–Sun · Two eggs breakfast plate for $22.';
+export const TWO_FOR_22_PRINT = TWO_FOR_22_DESCRIPTION;
 
 export function twoFor22MenuDescription(): string {
   return TWO_FOR_22_DESCRIPTION;
@@ -108,9 +108,9 @@ export function brunchLandingIntro(): string {
 
 export const brunchFaqAnswers = {
   serveBreakfast:
-    `Yes — brunch is served Saturday and Sunday. ${TWO_FOR_22_NAME} is a two eggs breakfast plate for ${TWO_FOR_22_PRICE}. We also run a ${BREAKFAST_HAPPY_HOUR_PRICE} breakfast happy hour those same days. The menu also includes the American Hero Breakfast, Toasty Toast, Hamtown Omelette, Biscuits & Gravy, breakfast burritos, and Chilaquiles as a brunch special. Pair it with mimosas, bottomless mimosas, or a Bloody Mary, and catch the early games on 16 TVs.`,
+    `Yes — brunch is served Saturday and Sunday. ${TWO_FOR_22_NAME} — ${TWO_FOR_22_DESCRIPTION} We also run a ${BREAKFAST_HAPPY_HOUR_PRICE} breakfast happy hour those same days. The menu also includes the American Hero Breakfast, Toasty Toast, Hamtown Omelette, Biscuits & Gravy, breakfast burritos, and Chilaquiles as a brunch special. Pair it with mimosas, bottomless mimosas, or a Bloody Mary, and catch the early games on 16 TVs.`,
   breakfastDeal:
-    `Yes. ${TWO_FOR_22_NAME} is a two eggs breakfast plate for ${TWO_FOR_22_PRICE}. We open at 9am Saturday and Sunday.`,
+    `Yes. ${TWO_FOR_22_NAME} — ${TWO_FOR_22_DESCRIPTION} We open at 9am Saturday and Sunday.`,
   breakfastHappyHour:
     `Yes. Breakfast happy hour is Saturday and Sunday: Screwdriver, Tequila Sunrise, Sangria (Pasmosa Red Sangria), and Bloody Mary Shot for ${BREAKFAST_HAPPY_HOUR_PRICE} each.`,
   bottomlessMimosas:

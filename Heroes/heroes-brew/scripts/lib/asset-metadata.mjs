@@ -100,7 +100,7 @@ const SPECIALS = {
   },
   breakfast: {
     title: 'Weekend Brunch at American Heroes & Brew',
-    desc: 'Weekend breakfast Saturday–Sunday at American Heroes & Brew. 2 Eggs for $22 — two eggs breakfast plate for $22. $5 breakfast happy hour. American Hero Breakfast, Toasty Toast, Hamtown Omelette, Biscuits & Gravy, breakfast burritos, Chilaquiles, and bottomless mimosas.',
+    desc: 'Weekend breakfast Saturday–Sunday at American Heroes & Brew. 2 Eggs for $22 — Sat–Sun · Two eggs breakfast plate for $22. $5 breakfast happy hour. American Hero Breakfast, Toasty Toast, Hamtown Omelette, Biscuits & Gravy, breakfast burritos, Chilaquiles, and bottomless mimosas.',
     keywords: ['breakfast Carlsbad Village', 'brunch', '2 Eggs for $22', 'bottomless mimosas', 'weekend breakfast'],
   },
 };
