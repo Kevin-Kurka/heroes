@@ -166,6 +166,7 @@ describe('no Early Bird deal on guest-facing surfaces', () => {
     expect(fridayBlock).not.toMatch(/Early Bird|breakfast|Weekend Brunch/i);
     expect(home).toMatch(/day:\s*'Saturday'[\s\S]*Weekend Brunch/);
     expect(home).toMatch(/day:\s*'Sunday'[\s\S]*Weekend Brunch/);
+    expect(home).toMatch(/time:\s*'Opens 9 AM'/);
     expect(page).toMatch(/Saturday:\s*5/);
     expect(page).toMatch(/Sunday:\s*6/);
   });

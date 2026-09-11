@@ -61,15 +61,17 @@ const DAILY_SPECIALS = [
   {
     day: 'Saturday',
     name: 'Weekend Brunch',
+    time: 'Opens 9 AM',
     deals: [
-      { item: 'Brunch menu', detail: 'Opens 9 AM' },
+      { item: 'Brunch menu' },
     ],
   },
   {
     day: 'Sunday',
     name: 'Weekend Brunch',
+    time: 'Opens 9 AM',
     deals: [
-      { item: 'Brunch menu', detail: 'Opens 9 AM' },
+      { item: 'Brunch menu' },
     ],
   },
 ] as const;
