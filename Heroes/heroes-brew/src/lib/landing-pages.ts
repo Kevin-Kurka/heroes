@@ -260,7 +260,7 @@ export const LANDING_PAGES: Record<string, LandingPageContent> = {
     metaDescription:
       `Weekend breakfast in Carlsbad Village at American Heroes & Brew — Saturday and Sunday. ${TWO_FOR_22_NAME}: ${TWO_FOR_22_DESCRIPTION} $5 breakfast happy hour. American Hero Breakfast, Toasty Toast, breakfast burritos, Chilaquiles, and bottomless mimosas. 16 TVs, walk-ins welcome.`,
     h1: 'Weekend Breakfast in Carlsbad Village',
-    tagline: `${TWO_FOR_22_NAME} — ${TWO_FOR_22_DESCRIPTION} $5 breakfast happy hour.`,
+    tagline: `${TWO_FOR_22_NAME} — ${TWO_FOR_22_DESCRIPTION.replace(/\.$/, '')} · $5 breakfast happy hour.`,
     intro: [
       brunchLandingIntro(),
       `Looking for breakfast or brunch in Carlsbad Village? American Heroes & Brew serves weekend brunch Saturday and Sunday — including ${TWO_FOR_22_NAME} (${TWO_FOR_22_DESCRIPTION.replace(/\.$/, '')}) and $5 breakfast happy hour — plus the American Hero Breakfast, Toasty Toast, Hamtown Omelette, Biscuits & Gravy, breakfast burritos, and Chilaquiles as a brunch special. We’re the only sports bar in Carlsbad that does brunch, so you can have a great morning meal with the game on in the background.`,
