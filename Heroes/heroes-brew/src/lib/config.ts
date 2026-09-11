@@ -3,6 +3,7 @@
  *
  * SHOW_PRICES gates every regular item price on the customer-facing menu.
  * Regular item prices stay hidden while SHOW_PRICES is false.
+ * Published TWO for $22 deal prices stay visible via publicMenuCopy.
  * Flip SHOW_PRICES to `true` to restore all prices (MenuCard, VariantGroupCard,
  * MenuPageClient, menu JSON-LD). Staff printable at /menu/printable does not
  * read this flag and may still show prices.
@@ -56,8 +57,14 @@ export function stripPriceTokens(text: string, showPrices: boolean = SHOW_PRICES
   return tidyStrippedCopy(next);
 }
 
-/** Public card copy: hide regular prices while SHOW_PRICES is off. */
-export function publicMenuCopy(text: string | undefined, _name?: string): string | undefined {
+/** Live Toast TWO for $22 — deal $22 stays visible on /menu. */
+export function isPublishedDealName(name?: string): boolean {
+  return !!name && /two for \$?22|breakfast happy hour/i.test(name);
+}
+
+/** Public card copy: hide regular prices, keep published TWO for $22 deal prices. */
+export function publicMenuCopy(text: string | undefined, name?: string): string | undefined {
   if (!text) return undefined;
+  if (isPublishedDealName(name)) return text;
   return stripPriceTokens(text);
 }

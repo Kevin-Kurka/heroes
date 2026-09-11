@@ -91,7 +91,7 @@ Full menu: ${SITE_URL}/menu
 - Wed: Wings & Well Wednesday — wings $6 off, well cocktails $6ea
 - Thu: Thirsty Thursday — all burgers $5 off, house drafts $5ea
 - Fri: Friday Funday 1–4pm — drinks & munchies $2 off
-- Brunch: served Saturday and Sunday (restaurant opens 9am those days). American Hero Breakfast, Toasty Toast, Hamtown Omelette, Biscuits & Gravy, breakfast burritos, and Chilaquiles. Pair with mimosas, bottomless mimosas, Bloody Marys, or a Blueberry Muffin Shot.
+- Brunch: served Saturday and Sunday (restaurant opens 9am those days). TWO for $22 — Sat–Sun · 2 eggs any style. Breakfast happy hour $5: Screwdriver, Tequila Sunrise, Sangria, Bloody Mary Shot. American Hero Breakfast, Toasty Toast, Hamtown Omelette, Biscuits & Gravy, breakfast burritos, and Chilaquiles. Pair with mimosas, bottomless mimosas, Bloody Marys, or a Blueberry Muffin Shot.
 
 ## Watch parties (featured events with date & time)
 ${watchParties}

@@ -1,4 +1,5 @@
 import { Menu, Restaurant } from '@/types';
+import { BREAKFAST_HAPPY_HOUR, TWO_FOR_22 } from './early-bird';
 import { CALAMARI, CHILAQUILES, CRUNCHWRAPS, HOGZILLA, OREO_CHURROS, SPICY_CHICKEN } from './menu-specials';
 
 // Static fallback menu — June 2026 food book. Mirrors exactly what
@@ -281,6 +282,8 @@ export function getMenus(): Menu[] {
               name: 'Brunch Specials',
               displayMode: 'variants',
               items: [
+                { id: TWO_FOR_22.id, name: TWO_FOR_22.name, description: TWO_FOR_22.description },
+                { id: BREAKFAST_HAPPY_HOUR.id, name: BREAKFAST_HAPPY_HOUR.name, description: BREAKFAST_HAPPY_HOUR.description },
                 { id: CHILAQUILES.id, name: CHILAQUILES.name, description: CHILAQUILES.description },
               ],
             },
@@ -486,7 +489,9 @@ export function getMenus(): Menu[] {
             { id: 'specials-i2', name: 'Wings & Wells Wednesday', description: 'Wings $6 off · Well Cocktails $6ea.', price: 6 },
             { id: 'specials-i3', name: 'Burgers & Beer Thursday', description: 'All Burgers $5 off · House Drafts (Blonde, IPA, Amber, Lager) $5ea.', price: 5 },
             { id: 'specials-i4', name: 'Friday Funday 1–4pm', description: 'Drinks & Munchies $2 off.', price: 2 },
-            { id: 'specials-i5', name: 'Padre Games Hot Dogs & Beer', description: 'Friar Franks $6 · Heroes Drafts $2 off.', price: 6 },
+            { id: 'specials-i5', name: TWO_FOR_22.name, description: TWO_FOR_22.description },
+            { id: 'specials-i5b', name: BREAKFAST_HAPPY_HOUR.name, description: BREAKFAST_HAPPY_HOUR.description },
+            { id: 'specials-i6', name: 'Padre Games Hot Dogs & Beer', description: 'Friar Franks $6 · Heroes Drafts $2 off.', price: 6 },
           ],
         },
       ],
