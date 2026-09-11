@@ -1,4 +1,9 @@
-import { brunchFaqAnswers, brunchLandingIntro } from './early-bird';
+import {
+  TWO_FOR_22_DESCRIPTION,
+  TWO_FOR_22_NAME,
+  brunchFaqAnswers,
+  brunchLandingIntro,
+} from './early-bird';
 
 /**
  * Content for the high-intent SEO/AEO landing pages (/watch, /near-legoland,
@@ -253,12 +258,12 @@ export const LANDING_PAGES: Record<string, LandingPageContent> = {
     slug: 'breakfast',
     metaTitle: 'Weekend Breakfast & Brunch in Carlsbad Village',
     metaDescription:
-      'Weekend breakfast in Carlsbad Village at American Heroes & Brew — Saturday and Sunday. TWO for $22: Sat–Sun · 2 eggs any style. $5 breakfast happy hour. American Hero Breakfast, Toasty Toast, breakfast burritos, Chilaquiles, and bottomless mimosas. 16 TVs, walk-ins welcome.',
+      `Weekend breakfast in Carlsbad Village at American Heroes & Brew — Saturday and Sunday. ${TWO_FOR_22_NAME}: ${TWO_FOR_22_DESCRIPTION} $5 breakfast happy hour. American Hero Breakfast, Toasty Toast, breakfast burritos, Chilaquiles, and bottomless mimosas. 16 TVs, walk-ins welcome.`,
     h1: 'Weekend Breakfast in Carlsbad Village',
-    tagline: 'TWO for $22 — Sat–Sun · 2 eggs any style. $5 breakfast happy hour.',
+    tagline: `${TWO_FOR_22_NAME} — ${TWO_FOR_22_DESCRIPTION.replace(/\.$/, '')} · $5 breakfast happy hour.`,
     intro: [
       brunchLandingIntro(),
-      'Looking for breakfast or brunch in Carlsbad Village? American Heroes & Brew serves weekend brunch Saturday and Sunday — including TWO for $22 (Sat–Sun · 2 eggs any style) and $5 breakfast happy hour — plus the American Hero Breakfast, Toasty Toast, Hamtown Omelette, Biscuits & Gravy, breakfast burritos, and Chilaquiles as a brunch special. We’re the only sports bar in Carlsbad that does brunch, so you can have a great morning meal with the game on in the background.',
+      `Looking for breakfast or brunch in Carlsbad Village? American Heroes & Brew serves weekend brunch Saturday and Sunday — including ${TWO_FOR_22_NAME} (${TWO_FOR_22_DESCRIPTION.replace(/\.$/, '')}) and $5 breakfast happy hour — plus the American Hero Breakfast, Toasty Toast, Hamtown Omelette, Biscuits & Gravy, breakfast burritos, and Chilaquiles as a brunch special. We’re the only sports bar in Carlsbad that does brunch, so you can have a great morning meal with the game on in the background.`,
       'Find us at ' +
         ADDRESS +
         ', in the heart of the Village, steps from Carlsbad Village Beach and minutes from LEGOLAND — a perfect breakfast stop whether you’re a local or visiting. Walk-ins welcome; no reservations needed.',
@@ -267,13 +272,13 @@ export const LANDING_PAGES: Record<string, LandingPageContent> = {
       {
         heading: 'When we serve weekend breakfast',
         body: [
-          'Weekend breakfast runs Saturday and Sunday. We open at 9am those days. TWO for $22 is Sat–Sun · 2 eggs any style. Walk-ins welcome; no reservations needed.',
+          `Weekend breakfast runs Saturday and Sunday. We open at 9am those days, with brunch through about 1pm. ${TWO_FOR_22_NAME} is a two eggs breakfast plate for $22. Walk-ins welcome; no reservations needed.`,
         ],
       },
       {
-        heading: 'TWO for $22 — Sat–Sun · 2 eggs any style',
+        heading: `${TWO_FOR_22_NAME} — ${TWO_FOR_22_DESCRIPTION.replace(/\.$/, '')}`,
         body: [
-          'TWO for $22 — Sat–Sun · 2 eggs any style. Same weekend: $5 breakfast happy hour.',
+          `${TWO_FOR_22_NAME} — ${TWO_FOR_22_DESCRIPTION} Saturday and Sunday. Same weekend: $5 breakfast happy hour.`,
         ],
       },
       {
@@ -312,12 +317,12 @@ export const LANDING_PAGES: Record<string, LandingPageContent> = {
       {
         question: 'Where can I get breakfast in Carlsbad Village?',
         answer:
-          `American Heroes & Brew serves weekend brunch in Carlsbad Village, Saturday and Sunday — including TWO for $22 (Sat–Sun · 2 eggs any style), $5 breakfast happy hour, breakfast burritos, Toasty Toast, Chilaquiles, the American Hero Breakfast, and bottomless mimosas. It’s at 300 Carlsbad Village Drive, and it’s the only sports bar in Carlsbad serving brunch.`,
+          `American Heroes & Brew serves weekend brunch in Carlsbad Village, Saturday and Sunday — including ${TWO_FOR_22_NAME} (${TWO_FOR_22_DESCRIPTION.replace(/\.$/, '')}), $5 breakfast happy hour, breakfast burritos, Toasty Toast, Chilaquiles, the American Hero Breakfast, and bottomless mimosas. It’s at 300 Carlsbad Village Drive, and it’s the only sports bar in Carlsbad serving brunch.`,
       },
       {
         question: 'What days does American Heroes & Brew serve breakfast?',
         answer:
-          'Brunch is served Saturday and Sunday at American Heroes & Brew in Carlsbad Village. We open at 9am those days. TWO for $22 is Sat–Sun · 2 eggs any style.',
+          `Brunch is served Saturday and Sunday at American Heroes & Brew in Carlsbad Village. We open at 9am those days, with brunch through about 1pm. ${TWO_FOR_22_NAME} is a two eggs breakfast plate for $22.`,
       },
       {
         question: 'Is there a breakfast deal at American Heroes & Brew?',
@@ -365,7 +370,7 @@ export const LANDING_PAGES: Record<string, LandingPageContent> = {
       {
         heading: 'Weekend',
         body: [
-          `Weekends bring brunch Saturday and Sunday — including TWO for $22 (Sat–Sun · 2 eggs any style) and $5 breakfast happy hour — plus American Hero Breakfast, Toasty Toast, Hamtown Omelette, Biscuits & Gravy, breakfast burritos, Chilaquiles, and bottomless mimosas, with the game on all 16 TVs.`,
+          `Weekends bring brunch Saturday and Sunday — including ${TWO_FOR_22_NAME} (${TWO_FOR_22_DESCRIPTION.replace(/\.$/, '')}) and $5 breakfast happy hour — plus American Hero Breakfast, Toasty Toast, Hamtown Omelette, Biscuits & Gravy, breakfast burritos, Chilaquiles, and bottomless mimosas, with the game on all 16 TVs.`,
         ],
       },
     ],

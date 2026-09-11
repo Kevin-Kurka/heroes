@@ -4,9 +4,9 @@
  *
  * OVERVIEW:
  * Homepage FAQ, landing-page copy, /llms.txt, and the faq-vectors corpus must
- * describe weekend brunch Saturday and Sunday plus TWO for $22 (two eggs) —
- * never Friday brunch hours, never Early Bird / two-plates framing, and never
- * Steak & Eggs $20.
+ * describe weekend brunch Saturday and Sunday plus 2 Eggs for $22 (Toast
+ * two-eggs plate) — never Friday brunch hours, never Early Bird / TWO for $22
+ * / two-plates framing, and never Steak & Eggs $20.
  *
  * DEPENDENCIES:
  * - ./faq.ts
@@ -19,7 +19,7 @@
  * - (none — Vitest suite)
  *
  * IMPLEMENTATION STATUS:
- * - ✅ Asserts Sat–Sun brunch, TWO for $22 / two eggs, Friday 11am hours
+ * - ✅ Asserts Sat–Sun brunch, 2 Eggs for $22 / Toast plate copy, Friday 11am hours
  * - ✅ Forbids Early Bird brand, two-plates framing, and Friday 9am open
  *
  * RELATED FILES:
@@ -66,8 +66,9 @@ describe('weekend brunch FAQ copy', () => {
     expect(breakfast).toBeDefined();
     expect(breakfast!.answer).toMatch(/saturday and sunday/i);
     expect(breakfast!.answer).toMatch(/brunch/i);
-    expect(breakfast!.answer).toMatch(/two for \$?22/i);
-    expect(breakfast!.answer).toMatch(/2 eggs any style/i);
+    expect(breakfast!.answer).toMatch(/2 eggs for \$?22/i);
+    expect(breakfast!.answer).toMatch(/two eggs breakfast plate/i);
+    expect(breakfast!.answer).not.toMatch(/\bTWO for \$?22\b/);
     expect(breakfast!.answer).not.toMatch(FORBIDDEN_BRAND);
     expect(breakfast!.answer).not.toMatch(FORBIDDEN_TWO_PLATES);
   });

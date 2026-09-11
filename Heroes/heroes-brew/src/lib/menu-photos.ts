@@ -363,7 +363,7 @@ function stripRetiredBreakfastDeals(groups: MenuGroup[]) {
 }
 
 function isTwoFor22Name(name: string): boolean {
-  return /^(?:two|2)\s+for\s+\$?22$/i.test(name.trim());
+  return /^(?:two|2)(?:\s+eggs)?\s+(?:for\s+)?\$?22$/i.test(name.trim());
 }
 
 function isBreakfastHappyHourName(name: string): boolean {
@@ -413,7 +413,7 @@ function retireEarlyBirdGroupLabel(groups: MenuGroup[]) {
   }
 }
 
-/** Guest copy for TWO for $22 and Breakfast Happy Hour — never leftover sheet plates copy. */
+/** Guest copy for 2 Eggs for $22 and Breakfast Happy Hour — never leftover sheet plates copy. */
 function canonicalizeTwoFor22(groups: MenuGroup[]) {
   walkGroups(groups, (group) => {
     for (const item of group.items) {
@@ -438,7 +438,7 @@ function stripScatteredTwoFor22(groups: MenuGroup[]) {
   });
 }
 
-/** TWO for $22 first on Brunch Specials, then Breakfast Happy Hour (text-only). */
+/** 2 Eggs for $22 first on Brunch Specials, then Breakfast Happy Hour (text-only). */
 function ensureTwoFor22(groups: MenuGroup[]) {
   const specials = ensureBrunchSpecialsGroup(groups);
   const rest = specials.items.filter(

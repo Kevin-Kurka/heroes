@@ -716,7 +716,9 @@ describe('public menu prices', () => {
     const json = getMenuJsonLd(applyMenuPresentation(getMenus()));
     const blob = JSON.stringify(json);
     expect(blob).not.toContain('"offers"');
-    expect(blob).toMatch(/TWO for \$22/);
+    expect(blob).toMatch(/2 Eggs for \$22/);
+    expect(blob).toMatch(/Two eggs breakfast plate for \$22/);
+    expect(blob).not.toMatch(/\bTWO for \$22\b/);
     expect(blob).not.toMatch(/early bird|two breakfast plates|two plates for \$22/i);
     expect(blob.replace(/\$22/g, '').replace(/\$5(?!\s*off)/g, '')).not.toMatch(/\$\d/);
     expect(blob).toContain('Calamari');
@@ -748,7 +750,7 @@ describe('home specials', () => {
     expect(home).toContain('bg-card');
     expect(home).toContain('border-border');
     expect(home).toMatch(/Weekend Brunch/);
-    expect(home).toMatch(/TWO for \$22|TWO_FOR_22_DAILY_DEAL/);
+    expect(home).toMatch(/2 Eggs for \$22|TWO_FOR_22_DAILY_DEAL/);
     expect(home).not.toMatch(/Early Bird/);
     expect(home).not.toMatch(/2 Breakfast Entrées/);
     expect(home).not.toMatch(/two breakfast plates/i);
