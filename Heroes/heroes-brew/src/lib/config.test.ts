@@ -42,11 +42,11 @@ describe('stripPriceTokens', () => {
 });
 
 describe('publicMenuCopy', () => {
-  it('keeps Early Bird $22 / $5 deal prices on guest menu cards', () => {
-    expect(publicMenuCopy('Two plates for $22. Friday–Sunday 9–11 AM.', 'Early Bird Weekend Breakfast'))
-      .toBe('Two plates for $22. Friday–Sunday 9–11 AM.');
-    expect(publicMenuCopy('$5 Screwdriver, Tequila Sunrise.', 'Breakfast Happy Hour'))
-      .toBe('$5 Screwdriver, Tequila Sunrise.');
+  it('strips every dollar amount on guest menu cards', () => {
+    expect(publicMenuCopy('Two plates for $22. Saturday–Sunday 9–11 AM.', 'Weekend Brunch'))
+      .toBe('Two plates for. Saturday–Sunday 9–11 AM.');
+    expect(publicMenuCopy('$5 Screwdriver, Tequila Sunrise.', 'Brunch drinks'))
+      .toBe('Screwdriver, Tequila Sunrise.');
     expect(publicMenuCopy('Kalua Pork Sliders $4ea.', 'Mahalo Monday')).toBe('Kalua Pork Sliders.');
   });
 });

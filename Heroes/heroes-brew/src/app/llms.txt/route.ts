@@ -63,7 +63,7 @@ export async function GET() {
 - The only authentic Philly cheesesteak in Carlsbad, on Amoroso rolls flown in from Philadelphia.
 - Carlsbad Village's home for the 2026 FIFA World Cup and every game (NFL, NBA, MLB, college football, UFC PPV).
 - The go-to soccer & World Cup watch-party bar in North County San Diego, serving Carlsbad, Vista, Oceanside, and Encinitas.
-- Family-friendly with a kids' menu, weekend breakfast (Fri–Sun), and a full bar. Walk-ins welcome, no cover.
+- Family-friendly with a kids' menu, weekend breakfast (Sat–Sun), and a full bar. Walk-ins welcome, no cover.
 
 ## Key facts
 - **Name:** ${r.name}
@@ -91,8 +91,7 @@ Full menu: ${SITE_URL}/menu
 - Wed: Wings & Well Wednesday — wings $6 off, well cocktails $6ea
 - Thu: Thirsty Thursday — all burgers $5 off, house drafts $5ea
 - Fri: Friday Funday 1–4pm — drinks & munchies $2 off
-- Early Bird Weekend Breakfast (Fri–Sun 9–11 AM dine-in): two plates for $22 — American Hero Breakfast, Toasty Toast, Hamtown Omelette, or Biscuits & Gravy (with two eggs). Breakfast happy hour $5: Screwdriver, Tequila Sunrise, Sangria, Bloody Mary Shot.
-- Brunch: served Fri–Sun (restaurant opens 9am). Early Bird deal window is 9–11 AM dine-in; Chilaquiles stays on as a brunch special. Pair with mimosas, bottomless mimosas, Bloody Marys, or a Blueberry Muffin Shot.
+- Brunch: served Saturday and Sunday (restaurant opens 9am those days). American Hero Breakfast, Toasty Toast, Hamtown Omelette, Biscuits & Gravy, breakfast burritos, and Chilaquiles. Pair with mimosas, bottomless mimosas, Bloody Marys, or a Blueberry Muffin Shot.
 
 ## Watch parties (featured events with date & time)
 ${watchParties}
