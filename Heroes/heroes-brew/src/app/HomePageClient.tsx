@@ -15,7 +15,7 @@ import DoorDashIcon from '@/components/DoorDashIcon';
 import { trackEvent } from '@/lib/analytics';
 import { DOORDASH_URL } from '@/lib/doordash';
 import { useDoorDashAvailable } from '@/hooks/use-doordash-available';
-import { EARLY_BIRD_DAILY_DEALS, EARLY_BIRD_HOURS_SHORT, FRIDAY_FUNDAY_DEAL } from '@/lib/early-bird';
+import { FRIDAY_FUNDAY_DEAL } from '@/lib/early-bird';
 import { HOME_SPECIALS } from '@/lib/menu-specials';
 import { Week1HomeTeaser } from '@/components/Week1PosterGallery';
 
@@ -55,24 +55,22 @@ const DAILY_SPECIALS = [
   },
   {
     day: 'Friday',
-    name: 'Early Bird & Friday Funday',
-    deals: [
-      { item: 'Two breakfast plates', detail: `${EARLY_BIRD_HOURS_SHORT} dine-in`, price: '$22' },
-      { item: 'Breakfast happy hour', detail: EARLY_BIRD_HOURS_SHORT, price: '$5' },
-      FRIDAY_FUNDAY_DEAL,
-    ],
+    name: 'Friday Funday',
+    deals: [FRIDAY_FUNDAY_DEAL],
   },
   {
     day: 'Saturday',
-    name: 'Early Bird Weekend Breakfast',
-    time: EARLY_BIRD_HOURS_SHORT,
-    deals: EARLY_BIRD_DAILY_DEALS,
+    name: 'Weekend Brunch',
+    deals: [
+      { item: 'Brunch menu', detail: 'Opens 9 AM' },
+    ],
   },
   {
     day: 'Sunday',
-    name: 'Early Bird Weekend Breakfast',
-    time: EARLY_BIRD_HOURS_SHORT,
-    deals: EARLY_BIRD_DAILY_DEALS,
+    name: 'Weekend Brunch',
+    deals: [
+      { item: 'Brunch menu', detail: 'Opens 9 AM' },
+    ],
   },
 ] as const;
 
@@ -263,7 +261,7 @@ export default function HomePageClient({ events, todayIndex }: Props) {
                   {(DAILY_SPECIALS[todayIndex] ?? DAILY_SPECIALS[0]).deals.map((deal) => (
                     <li key={deal.item} className="flex items-center justify-between text-sm gap-3">
                       <span className="text-foreground/90">{deal.item}{'detail' in deal && deal.detail ? <span className="text-xs text-accent/90 ml-1">{deal.detail}</span> : null}</span>
-                      <span className="font-semibold text-accent whitespace-nowrap">{deal.price}</span>
+                      {'price' in deal && deal.price ? <span className="font-semibold text-accent whitespace-nowrap">{deal.price}</span> : null}
                     </li>
                   ))}
                 </ul>
@@ -294,7 +292,7 @@ export default function HomePageClient({ events, todayIndex }: Props) {
                     {special.deals.map((deal) => (
                       <li key={deal.item} className="flex items-center justify-between text-xs gap-2">
                         <span className="text-foreground/70">{deal.item}{'detail' in deal && deal.detail ? <span className="text-xs text-accent/90 ml-1">{deal.detail}</span> : null}</span>
-                        <span className="font-medium text-accent ml-2 whitespace-nowrap">{deal.price}</span>
+                        {'price' in deal && deal.price ? <span className="font-medium text-accent ml-2 whitespace-nowrap">{deal.price}</span> : null}
                       </li>
                     ))}
                   </ul>

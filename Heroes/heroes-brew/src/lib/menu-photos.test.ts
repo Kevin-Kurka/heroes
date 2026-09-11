@@ -323,7 +323,8 @@ describe('public menu notes and headers', () => {
     walkGroups(presented[0].groups, (group) => {
       if (group.name === 'Plates') plates = group;
     });
-    expect(plates?.description).toMatch(/Friday/i);
+    expect(plates?.description).toMatch(/Saturday/i);
+    expect(plates?.description).not.toMatch(/Friday/i);
     expect(plates?.description).toMatch(/hashbrown/i);
     expect(plates?.description).toMatch(/fruit/i);
     const ahb = plates?.items.find((item) => /american hero breakfast/i.test(item.name));
@@ -715,8 +716,8 @@ describe('public menu prices', () => {
     const json = getMenuJsonLd(applyMenuPresentation(getMenus()));
     const blob = JSON.stringify(json);
     expect(blob).not.toContain('"offers"');
-    expect(blob).toMatch(/\$22/);
-    expect(blob.replace(/\$22/g, '').replace(/\$5(?!\s*off)/g, '')).not.toMatch(/\$\d/);
+    expect(blob).not.toMatch(/\$22|early bird|two plates/i);
+    expect(blob.replace(/\$5(?!\s*off)/g, '')).not.toMatch(/\$\d/);
     expect(blob).toContain('Calamari');
     expect(blob).toContain('Spicy Chicken');
     expect(blob).toContain('Hogzilla');
@@ -741,11 +742,12 @@ describe('home specials', () => {
 
     const home = readFileSync(resolve(__dirname, '../app/HomePageClient.tsx'), 'utf8');
     expect(home).toContain('HOME_SPECIALS');
-    expect(home).toContain('EARLY_BIRD_DAILY_DEALS');
+    expect(home).toContain('FRIDAY_FUNDAY_DEAL');
     expect(home).toContain('grid-cols-1 sm:grid-cols-3');
     expect(home).toContain('bg-card');
     expect(home).toContain('border-border');
-    expect(home).toMatch(/Early Bird/);
+    expect(home).toMatch(/Weekend Brunch/);
+    expect(home).not.toMatch(/Early Bird/);
     expect(home).not.toMatch(/2 Breakfast Entrées/);
     expect(home).not.toMatch(/Steak & Eggs/);
   });

@@ -1,5 +1,4 @@
 import { Menu, Restaurant } from '@/types';
-import { BREAKFAST_HAPPY_HOUR, EARLY_BIRD } from './early-bird';
 import { CALAMARI, CHILAQUILES, CRUNCHWRAPS, HOGZILLA, OREO_CHURROS, SPICY_CHICKEN } from './menu-specials';
 
 // Static fallback menu — June 2026 food book. Mirrors exactly what
@@ -282,8 +281,6 @@ export function getMenus(): Menu[] {
               name: 'Brunch Specials',
               displayMode: 'variants',
               items: [
-                { id: EARLY_BIRD.id, name: EARLY_BIRD.name, description: EARLY_BIRD.description },
-                { id: BREAKFAST_HAPPY_HOUR.id, name: BREAKFAST_HAPPY_HOUR.name, description: BREAKFAST_HAPPY_HOUR.description },
                 { id: CHILAQUILES.id, name: CHILAQUILES.name, description: CHILAQUILES.description },
               ],
             },
@@ -331,7 +328,7 @@ export function getMenus(): Menu[] {
               id: 'breakfast-plates',
               name: 'Plates',
               displayMode: 'variants',
-              description: 'Friday–Sunday 9am–1pm. Every plate comes with hashbrowns and fruit.',
+              description: 'Saturday–Sunday 9am–1pm. Every plate comes with hashbrowns and fruit.',
               items: [
                 { id: 'breakfast-plates-i0', name: 'American Hero Breakfast', description: 'Bacon, sausage patty, or ham, 2 eggs any style, hashbrowns, choice of: biscuit, white, wheat, or rye toast.', price: 12 },
                 { id: 'breakfast-plates-i1', name: 'Fallbrook', description: 'Avocado toast served with 2 poached eggs, tomato, and sprouts on white, wheat, or rye toast.', price: 16 },
@@ -489,7 +486,6 @@ export function getMenus(): Menu[] {
             { id: 'specials-i2', name: 'Wings & Wells Wednesday', description: 'Wings $6 off · Well Cocktails $6ea.', price: 6 },
             { id: 'specials-i3', name: 'Burgers & Beer Thursday', description: 'All Burgers $5 off · House Drafts (Blonde, IPA, Amber, Lager) $5ea.', price: 5 },
             { id: 'specials-i4', name: 'Friday Funday 1–4pm', description: 'Drinks & Munchies $2 off.', price: 2 },
-            { id: 'specials-i6', name: EARLY_BIRD.name, description: EARLY_BIRD.description },
             { id: 'specials-i5', name: 'Padre Games Hot Dogs & Beer', description: 'Friar Franks $6 · Heroes Drafts $2 off.', price: 6 },
           ],
         },
@@ -514,7 +510,7 @@ export function getRestaurantInfo(): Restaurant {
       { dayOfWeek: 'Tuesday', open: '11:00 AM', close: '10:00 PM' },
       { dayOfWeek: 'Wednesday', open: '11:00 AM', close: '10:00 PM' },
       { dayOfWeek: 'Thursday', open: '11:00 AM', close: '10:00 PM' },
-      { dayOfWeek: 'Friday', open: '9:00 AM', close: '12:00 AM' },
+      { dayOfWeek: 'Friday', open: '11:00 AM', close: '12:00 AM' },
       { dayOfWeek: 'Saturday', open: '9:00 AM', close: '12:00 AM' },
       { dayOfWeek: 'Sunday', open: '9:00 AM', close: '10:00 PM' },
     ],

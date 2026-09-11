@@ -1,11 +1,11 @@
 /**
  * FILE: faq-copy.test.ts
- * PURPOSE: Guard guest-facing FAQ and SEO copy for weekend brunch + Early Bird framing.
+ * PURPOSE: Guard guest-facing FAQ and SEO copy for weekend brunch (Sat–Sun).
  *
  * OVERVIEW:
  * Homepage FAQ, landing-page copy, /llms.txt, and the faq-vectors corpus must
- * describe weekend brunch (Fri–Sun) and the live Early Bird window — never a
- * vague 2-for breakfast promo without 9–11 AM, and never Steak & Eggs $20.
+ * describe weekend brunch Saturday and Sunday — never Friday brunch hours,
+ * never Early Bird / two-plates / $22 deal copy, and never Steak & Eggs $20.
  *
  * DEPENDENCIES:
  * - ./faq.ts
@@ -18,15 +18,15 @@
  * - (none — Vitest suite)
  *
  * IMPLEMENTATION STATUS:
- * - ✅ Asserts Early Bird Fri–Sun 9–11 AM + $22 / $5 on guest copy
- * - ✅ Asserts restaurant hours stay separate from the deal window
+ * - ✅ Asserts Sat–Sun brunch and Friday 11am restaurant hours
+ * - ✅ Forbids Early Bird deal copy and Friday 9am open
  *
  * RELATED FILES:
  * - src/lib/early-bird.test.ts
  * - src/lib/faq.ts
  * - src/lib/landing-pages.ts
  *
- * LAST UPDATED: 2026-09-06
+ * LAST UPDATED: 2026-09-11
  * MAINTAINER: American Heroes & Brew
  */
 import { readFileSync } from 'node:fs';
@@ -37,7 +37,8 @@ import { FAQ } from './faq';
 import { LANDING_PAGES } from './landing-pages';
 
 const STEAK_JUNK = /steak\s*&\s*eggs\s*\$?20/i;
-const HOURS = /9\s*[–-]\s*11(?:\s*am)?|9:00\s*am\s*[–-]\s*11:00\s*am/i;
+const EARLY_BIRD_DEAL =
+  /early bird|two breakfast plates|two plates for \$22|2\s*-?\s*for\s*-?\s*\$?22/i;
 
 function flattenLandingCopy(): string[] {
   return Object.values(LANDING_PAGES).map((page) =>
@@ -57,52 +58,44 @@ function flattenLandingCopy(): string[] {
   );
 }
 
-function assertNoUnframedDeal(text: string) {
-  expect(text).not.toMatch(STEAK_JUNK);
-  const vague = text.match(/2\s*-?\s*for\s*-?\s*\$?22|two (?:breakfast )?plates for \$22|two for \$22/gi) ?? [];
-  for (const match of vague) {
-    const idx = text.toLowerCase().indexOf(match.toLowerCase());
-    const nearby = text.slice(Math.max(0, idx - 160), idx + match.length + 160);
-    expect(nearby, `unframed deal: "${match}"`).toMatch(HOURS);
-  }
-}
-
-describe('weekend brunch + Early Bird FAQ copy', () => {
-  it('answers that weekend brunch is Friday through Sunday and names Early Bird', () => {
+describe('weekend brunch FAQ copy', () => {
+  it('answers that weekend brunch is Saturday and Sunday', () => {
     const breakfast = FAQ.find((entry) => /serve breakfast/i.test(entry.question));
     expect(breakfast).toBeDefined();
-    expect(breakfast!.answer).toMatch(/friday through sunday/i);
+    expect(breakfast!.answer).toMatch(/saturday and sunday/i);
     expect(breakfast!.answer).toMatch(/brunch/i);
-    expect(breakfast!.answer).toMatch(/early bird/i);
-    expect(breakfast!.answer).toMatch(HOURS);
-    expect(breakfast!.answer).toMatch(/\$22/);
+    expect(breakfast!.answer).not.toMatch(EARLY_BIRD_DEAL);
   });
 
-  it('keeps restaurant hours separate from the Early Bird 9–11 window', () => {
+  it('keeps restaurant hours as Friday 11am open, Sat–Sun 9am open', () => {
     const hours = FAQ.find((entry) => /hours/i.test(entry.question));
     expect(hours).toBeDefined();
     expect(hours!.answer).toMatch(/Monday–Thursday 11am–10pm/i);
-    expect(hours!.answer).toMatch(/Friday 9am–midnight/i);
+    expect(hours!.answer).toMatch(/Friday 11am–midnight/i);
+    expect(hours!.answer).not.toMatch(/Friday 9am/i);
     expect(hours!.answer).not.toMatch(/early bird/i);
-    expect(hours!.answer).not.toMatch(/9–11/);
   });
 
-  it('does not advertise an unframed 2-for breakfast promo or Steak & Eggs $20', () => {
+  it('does not advertise Early Bird, two plates for $22, or Steak & Eggs $20', () => {
     const blob = FAQ.map((entry) => `${entry.question}\n${entry.answer}`).join('\n');
-    assertNoUnframedDeal(blob);
+    expect(blob).not.toMatch(STEAK_JUNK);
+    expect(blob).not.toMatch(EARLY_BIRD_DEAL);
     for (const text of flattenLandingCopy()) {
-      assertNoUnframedDeal(text);
+      expect(text).not.toMatch(STEAK_JUNK);
+      expect(text).not.toMatch(EARLY_BIRD_DEAL);
     }
-    assertNoUnframedDeal(
-      getKnowledge()
-        .map((entry) => `${entry.question}\n${entry.answer}`)
-        .join('\n'),
-    );
+    const knowledge = getKnowledge()
+      .map((entry) => `${entry.question}\n${entry.answer}`)
+      .join('\n');
+    expect(knowledge).not.toMatch(STEAK_JUNK);
+    expect(knowledge).not.toMatch(EARLY_BIRD_DEAL);
     for (const file of [
       resolve(__dirname, '../app/llms.txt/route.ts'),
       resolve(__dirname, '../../scripts/lib/asset-metadata.mjs'),
     ]) {
-      assertNoUnframedDeal(readFileSync(file, 'utf8'));
+      const text = readFileSync(file, 'utf8');
+      expect(text).not.toMatch(STEAK_JUNK);
+      expect(text).not.toMatch(EARLY_BIRD_DEAL);
     }
   });
 });

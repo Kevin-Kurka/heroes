@@ -1,10 +1,4 @@
-import {
-  EARLY_BIRD_FOOD_PRICE,
-  EARLY_BIRD_DRINK_PRICE,
-  EARLY_BIRD_HOURS_SHORT,
-  earlyBirdFaqAnswers,
-  earlyBirdLandingIntro,
-} from './early-bird';
+import { brunchFaqAnswers, brunchLandingIntro } from './early-bird';
 
 /**
  * Content for the high-intent SEO/AEO landing pages (/watch, /near-legoland,
@@ -86,7 +80,7 @@ export const LANDING_PAGES: Record<string, LandingPageContent> = {
       {
         heading: 'More than the match',
         body: [
-          'Catch a match over weekend breakfast (served Fri–Sun) with bottomless mimosas, or make a day of it with lunch and the game. Beyond the World Cup, we show every game year-round — NFL, NBA, college football, and pay-per-view UFC.',
+          'Catch a match over weekend breakfast (served Sat–Sun) with bottomless mimosas, or make a day of it with lunch and the game. Beyond the World Cup, we show every game year-round — NFL, NBA, college football, and pay-per-view UFC.',
         ],
       },
     ],
@@ -212,7 +206,7 @@ export const LANDING_PAGES: Record<string, LandingPageContent> = {
         bullets: [
           'Family-friendly with a dedicated kids’ menu',
           'A short drive from LEGOLAND California, the LEGOLAND hotels, and nearby Carlsbad resorts',
-          'Weekend breakfast (Friday–Sunday) — fuel up before the park',
+          'Weekend breakfast (Saturday–Sunday) — fuel up before the park',
           'Casual, come-as-you-are; no reservations needed',
           'Steps from the beach and the Village shops',
         ],
@@ -220,7 +214,7 @@ export const LANDING_PAGES: Record<string, LandingPageContent> = {
       {
         heading: 'Food the whole family will like',
         body: [
-          'Our all-American menu has something for everyone: juicy burgers, signature wings, loaded fries, nachos, salads, and the only authentic Philly cheesesteak in Carlsbad — made on Amoroso rolls flown in from Philadelphia. Kids have their own menu, and weekend brunch runs Friday through Sunday — including Early Bird 9–11 AM dine-in (two plates for $22) and bottomless mimosas for the grown-ups.',
+          'Our all-American menu has something for everyone: juicy burgers, signature wings, loaded fries, nachos, salads, and the only authentic Philly cheesesteak in Carlsbad — made on Amoroso rolls flown in from Philadelphia. Kids have their own menu, and weekend brunch runs Saturday and Sunday — American Hero Breakfast, Toasty Toast, breakfast burritos, Chilaquiles, and bottomless mimosas for the grown-ups.',
         ],
       },
       {
@@ -244,7 +238,7 @@ export const LANDING_PAGES: Record<string, LandingPageContent> = {
       {
         question: 'Is there a place near LEGOLAND that serves breakfast before the park?',
         answer:
-          'Yes — American Heroes & Brew serves weekend brunch Friday through Sunday in Carlsbad Village, minutes from LEGOLAND, including Early Bird 9–11 AM dine-in (two plates for $22) and Chilaquiles as a brunch special. A good fuel-up before a day at the park.',
+          'Yes — American Heroes & Brew serves weekend brunch Saturday and Sunday in Carlsbad Village, minutes from LEGOLAND, including the American Hero Breakfast, Toasty Toast, breakfast burritos, and Chilaquiles as a brunch special. A good fuel-up before a day at the park.',
       },
       {
         question: 'Is it kid-friendly?',
@@ -257,14 +251,14 @@ export const LANDING_PAGES: Record<string, LandingPageContent> = {
 
   breakfast: {
     slug: 'breakfast',
-    metaTitle: 'Weekend Breakfast & Early Bird Brunch in Carlsbad Village',
+    metaTitle: 'Weekend Breakfast & Brunch in Carlsbad Village',
     metaDescription:
-      'Weekend breakfast in Carlsbad Village at American Heroes & Brew — Friday–Sunday. Early Bird 9–11 AM dine-in: two plates for $22 and $5 breakfast happy hour. Bottomless mimosas, 16 TVs, walk-ins welcome.',
+      'Weekend breakfast in Carlsbad Village at American Heroes & Brew — Saturday and Sunday. American Hero Breakfast, Toasty Toast, breakfast burritos, Chilaquiles, and bottomless mimosas. 16 TVs, walk-ins welcome.',
     h1: 'Weekend Breakfast in Carlsbad Village',
-    tagline: 'Friday–Sunday · Early Bird 9–11 AM — two plates for $22 and $5 breakfast happy hour.',
+    tagline: 'Saturday–Sunday · brunch plates, burritos, Chilaquiles, and bottomless mimosas.',
     intro: [
-      earlyBirdLandingIntro(),
-      'Looking for breakfast or brunch in Carlsbad Village? American Heroes & Brew serves weekend brunch Friday through Sunday — the American Hero Breakfast, Toasty Toast, Hamtown Omelette, Biscuits & Gravy, breakfast burritos, and more — plus Chilaquiles as a brunch special. We’re the only sports bar in Carlsbad that does brunch, so you can have a great morning meal with the game on in the background.',
+      brunchLandingIntro(),
+      'Looking for breakfast or brunch in Carlsbad Village? American Heroes & Brew serves weekend brunch Saturday and Sunday — the American Hero Breakfast, Toasty Toast, Hamtown Omelette, Biscuits & Gravy, breakfast burritos, and more — plus Chilaquiles as a brunch special. We’re the only sports bar in Carlsbad that does brunch, so you can have a great morning meal with the game on in the background.',
       'Find us at ' +
         ADDRESS +
         ', in the heart of the Village, steps from Carlsbad Village Beach and minutes from LEGOLAND — a perfect breakfast stop whether you’re a local or visiting. Walk-ins welcome; no reservations needed.',
@@ -273,14 +267,11 @@ export const LANDING_PAGES: Record<string, LandingPageContent> = {
       {
         heading: 'When we serve weekend breakfast',
         body: [
-          'Weekend breakfast runs Friday, Saturday, and Sunday. We open at 9am those days — restaurant hours, not the deal window. Early Bird food and drink deals are 9–11 AM, dine-in only. After 11 AM the full brunch menu stays on. Walk-ins welcome; no reservations needed.',
+          'Weekend breakfast runs Saturday and Sunday. We open at 9am those days. Walk-ins welcome; no reservations needed.',
         ],
       },
       {
-        heading: 'Early Bird — two breakfast plates for $22 (Fri–Sun 9–11 AM)',
-        body: [
-          `Friday–Sunday, ${EARLY_BIRD_HOURS_SHORT}, dine-in. Pick any two plates for ${EARLY_BIRD_FOOD_PRICE}:`,
-        ],
+        heading: 'On the brunch plates',
         bullets: [
           'American Hero Breakfast (AHB Breakfast)',
           'Toasty Toast',
@@ -289,21 +280,9 @@ export const LANDING_PAGES: Record<string, LandingPageContent> = {
         ],
       },
       {
-        heading: 'Breakfast happy hour — $5 drinks',
+        heading: 'Brunch drinks',
         body: [
-          `Same Friday–Sunday ${EARLY_BIRD_HOURS_SHORT} dine-in window. ${EARLY_BIRD_DRINK_PRICE} each:`,
-        ],
-        bullets: [
-          'Screwdriver',
-          'Tequila Sunrise',
-          'Sangria (Pasmosa Red Sangria)',
-          'Bloody Mary Shot',
-        ],
-      },
-      {
-        heading: 'Brunch drinks beyond the deal',
-        body: [
-          'Pair brunch with a mimosa or bottomless mimosas, a Bloody Mary or Sam’s Spicy Bloody Mary, a Michelada, an Espresso Martini, or a Blueberry Muffin Shot — as available with weekend brunch. Regular drink prices stay on the menu; we don’t list them here.',
+          'Pair brunch with a mimosa or bottomless mimosas, a Bloody Mary or Sam’s Spicy Bloody Mary, a Michelada, an Espresso Martini, or a Blueberry Muffin Shot — as available with weekend brunch.',
         ],
       },
       {
@@ -327,24 +306,16 @@ export const LANDING_PAGES: Record<string, LandingPageContent> = {
       {
         question: 'Where can I get breakfast in Carlsbad Village?',
         answer:
-          `American Heroes & Brew serves weekend brunch in Carlsbad Village, Friday through Sunday — including Early Bird ${EARLY_BIRD_HOURS_SHORT} dine-in (two plates for ${EARLY_BIRD_FOOD_PRICE} and ${EARLY_BIRD_DRINK_PRICE} breakfast happy hour), breakfast burritos, Toasty Toast, Chilaquiles, and bottomless mimosas. It’s at 300 Carlsbad Village Drive, and it’s the only sports bar in Carlsbad serving brunch.`,
+          `American Heroes & Brew serves weekend brunch in Carlsbad Village, Saturday and Sunday — breakfast burritos, Toasty Toast, Chilaquiles, the American Hero Breakfast, and bottomless mimosas. It’s at 300 Carlsbad Village Drive, and it’s the only sports bar in Carlsbad serving brunch.`,
       },
       {
         question: 'What days does American Heroes & Brew serve breakfast?',
         answer:
-          'Brunch is served Friday, Saturday, and Sunday at American Heroes & Brew in Carlsbad Village. We open at 9am those days. Early Bird deals run 9–11 AM dine-in — separate from regular restaurant hours.',
-      },
-      {
-        question: 'Is there a breakfast deal at American Heroes & Brew?',
-        answer: earlyBirdFaqAnswers.breakfastDeal,
-      },
-      {
-        question: 'What drinks are on breakfast happy hour?',
-        answer: earlyBirdFaqAnswers.breakfastHappyHour,
+          'Brunch is served Saturday and Sunday at American Heroes & Brew in Carlsbad Village. We open at 9am those days.',
       },
       {
         question: 'Is there brunch with bottomless mimosas in Carlsbad?',
-        answer: earlyBirdFaqAnswers.bottomlessMimosas,
+        answer: brunchFaqAnswers.bottomlessMimosas,
       },
       {
         question: 'Can I watch the game during breakfast?',
@@ -380,7 +351,7 @@ export const LANDING_PAGES: Record<string, LandingPageContent> = {
       {
         heading: 'Weekend',
         body: [
-          `Weekends bring brunch Friday–Sunday, plus Early Bird ${EARLY_BIRD_HOURS_SHORT} dine-in: two breakfast plates for ${EARLY_BIRD_FOOD_PRICE} (American Hero Breakfast, Toasty Toast, Hamtown Omelette, or Biscuits & Gravy) and a ${EARLY_BIRD_DRINK_PRICE} breakfast happy hour — Screwdriver, Tequila Sunrise, Sangria, or Bloody Mary Shot. Bottomless mimosas and Chilaquiles stay on for brunch, and the game is on all 16 TVs.`,
+          `Weekends bring brunch Saturday and Sunday — American Hero Breakfast, Toasty Toast, Hamtown Omelette, Biscuits & Gravy, breakfast burritos, Chilaquiles, and bottomless mimosas, with the game on all 16 TVs.`,
         ],
       },
     ],
@@ -424,7 +395,7 @@ export const LANDING_PAGES: Record<string, LandingPageContent> = {
           'Fresh, never-frozen burgers cooked to order',
           'The only authentic Philly cheesesteak in Carlsbad — Amoroso rolls from Philadelphia',
           'Signature wings, loaded fries, sandwiches & salads',
-          'Weekend brunch (Fri–Sun), including Early Bird 9–11 AM dine-in — two plates for $22',
+          'Weekend brunch Saturday and Sunday — plates, burritos, Chilaquiles, and bottomless mimosas',
           'Full bar, craft beer, and daily food & drink specials',
           'Family-friendly with a kids’ menu — bring everyone',
         ],

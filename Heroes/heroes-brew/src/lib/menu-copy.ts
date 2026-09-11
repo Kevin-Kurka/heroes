@@ -150,7 +150,7 @@ add(COPY, ['Crunchwraps'], CRUNCHWRAPS.description);
 add(COPY, ['Chilaquiles'], CHILAQUILES.description);
 
 add(COPY, ['SD Burrito'], 'Choose your meat — wrapped with fluffy scrambled eggs, creamy guacamole, pico de gallo, golden fries, and melted jack and cheddar.');
-add(COPY, ['Plates'], 'Friday–Sunday 9am–1pm. Every plate comes with hashbrowns and fruit.');
+add(COPY, ['Plates'], 'Saturday–Sunday 9am–1pm. Every plate comes with hashbrowns and fruit.');
 add(COPY, ['Handhelds', 'Bagel Melt', 'Bagel Melts'], 'An egg any style and melted cheddar on your bagel.');
 add(COPY, ['Plain Bagel'], 'Toasted plain bagel.');
 add(COPY, ['Everything Bagel'], 'Everything bagel, toasted.');

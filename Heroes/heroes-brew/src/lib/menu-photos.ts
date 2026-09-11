@@ -1,6 +1,5 @@
 import type { Menu, MenuGroup, MenuItem } from '@/types';
 import { copyForName, shouldReplaceDescription } from './menu-copy';
-import { BREAKFAST_HAPPY_HOUR, EARLY_BIRD } from './early-bird';
 import {
   CALAMARI,
   CHILAQUILES,
@@ -353,15 +352,13 @@ function ensureChilaquiles(groups: MenuGroup[]) {
   specials.items = [asItem(CHILAQUILES), ...specials.items];
 }
 
-/** Early Bird + breakfast HH first on Brunch Specials (text-only frost cards). */
-function ensureEarlyBird(groups: MenuGroup[]) {
-  const specials = ensureBrunchSpecialsGroup(groups);
-  const rest = specials.items.filter(
-    (item) =>
-      photoKey(item.name) !== photoKey(EARLY_BIRD.name) &&
-      photoKey(item.name) !== photoKey(BREAKFAST_HAPPY_HOUR.name),
-  );
-  specials.items = [asItem(EARLY_BIRD), asItem(BREAKFAST_HAPPY_HOUR), ...rest];
+/** Retired Early Bird / breakfast HH deal rows — drop even if the sheet still has them. */
+const RETIRED_BREAKFAST_DEAL = /early bird|breakfast happy hour/i;
+
+function stripRetiredBreakfastDeals(groups: MenuGroup[]) {
+  walkGroups(groups, (group) => {
+    group.items = group.items.filter((item) => !RETIRED_BREAKFAST_DEAL.test(item.name));
+  });
 }
 
 /** Toast final: fish / Baja Fish use cilantro-lime crema — never tartar. */
@@ -421,23 +418,6 @@ function ensureSpecialsGroup(groups: MenuGroup[]): MenuGroup {
   return specials;
 }
 
-function ensureEarlyBirdWeekly(groups: MenuGroup[]) {
-  const specials = ensureSpecialsGroup(groups);
-  const existing = specials.items.find((item) => photoKey(item.name) === photoKey(EARLY_BIRD.name));
-  if (existing) {
-    existing.description = EARLY_BIRD.description;
-    return;
-  }
-  const row = {
-    id: 'specials-early-bird',
-    name: EARLY_BIRD.name,
-    description: EARLY_BIRD.description,
-  };
-  const fridayIdx = specials.items.findIndex((item) => /friday funday/i.test(item.name));
-  if (fridayIdx >= 0) specials.items.splice(fridayIdx + 1, 0, row);
-  else specials.items.push(row);
-}
-
 function ensureSpecialsTabFood(groups: MenuGroup[]) {
   const specials = ensureSpecialsGroup(groups);
   let kitchen = specials.subGroups?.find((g) => /^(kitchen|featured)$/i.test(g.name));
@@ -482,13 +462,12 @@ export function applyMenuPresentation(menus: Menu[]): Menu[] {
   const next = cloneMenus(menus);
   for (const menu of next) {
     retireLegacyCrunchWraps(menu.groups);
+    stripRetiredBreakfastDeals(menu.groups);
     ensureSpicyChickenOnHeroes(menu.groups);
     ensureKitchenSpecials(menu.groups);
     ensureChilaquiles(menu.groups);
-    ensureEarlyBird(menu.groups);
     ensureOreoChurros(menu.groups);
     ensureSpecialsTabFood(menu.groups);
-    ensureEarlyBirdWeekly(menu.groups);
     presentSdBurrito(menu.groups);
     stripNoteChoices(menu.groups);
     applyDescriptions(menu.groups);
