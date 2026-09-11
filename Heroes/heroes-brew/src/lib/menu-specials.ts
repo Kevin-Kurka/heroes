@@ -16,7 +16,7 @@
  *
  * IMPLEMENTATION STATUS:
  * - ✅ Current specials: Hogzilla, Crunchwraps, Chilaquiles; Spicy Chicken as a hero
- * - ✅ TWO for $22 lives in early-bird.ts (Brunch + Daily Lineup), not HOME_SPECIALS
+ * - ✅ 2 Eggs for $22 lives in early-bird.ts (Brunch + Daily Lineup), not HOME_SPECIALS
  *
  * RELATED FILES:
  * - src/lib/early-bird.ts

@@ -1,13 +1,14 @@
 /**
  * FILE: early-bird.test.ts
- * PURPOSE: Guard the live TWO for $22 weekend breakfast deal — two eggs,
- * Saturday–Sunday only — and keep Early Bird / two-plates framing off guest copy.
+ * PURPOSE: Guard the live Toast guest item 2 Eggs for $22 — two eggs
+ * breakfast plate, Saturday–Sunday only — and keep Early Bird / TWO for $22
+ * / two-plates framing off guest copy.
  *
  * OVERVIEW:
- * Kevin kept the Toast TWO for $22 item (two eggs, not two plates) and retired
- * Early Bird as a guest-facing brand. Homepage lineup, FAQ, landing pages,
- * /menu brunch specials, and /llms.txt must stay in sync. Hours from PR #17
- * stay: Friday opens 11am; brunch is Sat–Sun.
+ * Carlsbad Toast published guest name `2 Eggs for $22` with description
+ * `Two eggs breakfast plate for $22.` Early Bird is POS-group only (rename
+ * to Brunch on display). Homepage lineup, FAQ, landing pages, /menu brunch
+ * specials, and /llms.txt must stay in sync. Hours stay: Fri 11am; Sat–Sun 9am.
  *
  * DEPENDENCIES:
  * - ./early-bird.ts
@@ -24,8 +25,8 @@
  * - (none — Vitest suite)
  *
  * IMPLEMENTATION STATUS:
- * - ✅ Asserts TWO for $22 + two eggs + Sat–Sun on guest surfaces
- * - ✅ Forbids Early Bird brand, two-plates mix-and-match, Friday brunch
+ * - ✅ Asserts 2 Eggs for $22 + Toast description + Sat–Sun on guest surfaces
+ * - ✅ Forbids Early Bird brand, TWO for $22 guest name, two-plates, Friday brunch
  *
  * RELATED FILES:
  * - src/lib/early-bird.ts
@@ -47,6 +48,7 @@ import {
   BRUNCH_DAYS_PROSE,
   TWO_FOR_22,
   TWO_FOR_22_DAILY_DEAL,
+  TWO_FOR_22_DESCRIPTION,
   TWO_FOR_22_NAME,
   TWO_FOR_22_PRINT,
   breakfastHappyHourMenuDescription,
@@ -63,8 +65,9 @@ import { getRestaurantJsonLd } from './structured-data';
 const SAT_SUN = /saturday\s*[–-]\s*sunday|saturday and sunday|saturday through sunday|sat\s*[–-]\s*sun/i;
 const FRIDAY_BRUNCH = /friday\s*[–-]\s*sunday|friday through sunday|fri\s*[–-]\s*sun|friday,\s*saturday,\s*and sunday/i;
 const FRIDAY_9AM_OPEN = /friday\s+9(?::00)?\s*am|open at 9am friday/i;
-const TWO_EGGS_DEAL = /two for \$?22/i;
-const TWO_EGGS = /2 eggs any style/i;
+const TWO_EGGS_DEAL = /2 eggs for \$?22/i;
+const TWO_EGGS = /two eggs breakfast plate/i;
+const RETIRED_GUEST_NAME = /\bTWO for \$?22\b/;
 const FORBIDDEN_BRAND = /early bird/i;
 const FORBIDDEN_TWO_PLATES =
   /two breakfast plates|two plates for \$22|pick any two|mix-?and-?match two|two breakfasts/i;
@@ -100,24 +103,26 @@ function guestSurfaces(): { label: string; text: string }[] {
 }
 
 function assertTwoEggsDeal(text: string, label: string) {
-  expect(text, `${label} names TWO for $22`).toMatch(TWO_EGGS_DEAL);
-  expect(text, `${label} says two eggs`).toMatch(TWO_EGGS);
+  expect(text, `${label} names 2 Eggs for $22`).toMatch(TWO_EGGS_DEAL);
+  expect(text, `${label} uses Toast description`).toMatch(TWO_EGGS);
   expect(text, `${label} is Sat–Sun`).toMatch(SAT_SUN);
+  expect(text, `${label} must not say TWO for $22`).not.toMatch(RETIRED_GUEST_NAME);
   expect(text, `${label} must not say Early Bird`).not.toMatch(FORBIDDEN_BRAND);
   expect(text, `${label} must not use two-plates framing`).not.toMatch(FORBIDDEN_TWO_PLATES);
   expect(text, `${label} must not restore Friday brunch`).not.toMatch(FRIDAY_BRUNCH);
 }
 
-describe('TWO for $22 canonical facts', () => {
-  it('is TWO for $22 — two eggs, Saturday–Sunday, no Early Bird brand', () => {
-    expect(TWO_FOR_22_NAME).toBe('TWO for $22');
-    expect(TWO_FOR_22.name).toBe('TWO for $22');
+describe('2 Eggs for $22 canonical facts', () => {
+  it('is 2 Eggs for $22 — Toast plate copy, Saturday–Sunday, no Early Bird brand', () => {
+    expect(TWO_FOR_22_NAME).toBe('2 Eggs for $22');
+    expect(TWO_FOR_22.name).toBe('2 Eggs for $22');
+    expect(TWO_FOR_22_DESCRIPTION).toBe('Two eggs breakfast plate for $22.');
     expect(BRUNCH_DAYS).toBe('Saturday–Sunday');
     expect(BRUNCH_DAYS_PROSE).toBe('Saturday and Sunday');
-    expect(TWO_FOR_22_PRINT).toBe('Sat–Sun · 2 eggs any style');
+    expect(TWO_FOR_22_PRINT).toBe('Sat–Sun');
     expect(TWO_FOR_22_DAILY_DEAL).toEqual({
-      item: 'TWO for $22',
-      detail: 'Sat–Sun · 2 eggs any style',
+      item: '2 Eggs for $22',
+      detail: 'Sat–Sun',
       price: '$22',
     });
     expect(BREAKFAST_HAPPY_HOUR.name).toBe('Breakfast Happy Hour');
@@ -132,7 +137,7 @@ describe('TWO for $22 canonical facts', () => {
     const food = twoFor22MenuDescription();
     const intro = brunchLandingIntro();
     assertTwoEggsDeal(`${food}\n${intro}`, 'canonical copy');
-    expect(food).toMatch(/Sat–Sun · 2 eggs any style/);
+    expect(food).toBe('Two eggs breakfast plate for $22.');
     expect(breakfastHappyHourMenuDescription()).toMatch(/saturday\s*[–-]\s*sunday/i);
     expect(breakfastHappyHourMenuDescription()).toMatch(/\$5/);
     expect(breakfastHappyHourMenuDescription()).toMatch(/screwdriver/i);
@@ -161,17 +166,18 @@ describe('TWO for $22 canonical facts', () => {
   });
 });
 
-describe('TWO for $22 on guest-facing surfaces', () => {
-  it('keeps Early Bird brand and two-plates framing off every guest surface', () => {
+describe('2 Eggs for $22 on guest-facing surfaces', () => {
+  it('keeps Early Bird brand, TWO for $22, and two-plates framing off every guest surface', () => {
     for (const { label, text } of guestSurfaces()) {
       expect(text, label).not.toMatch(FORBIDDEN_BRAND);
+      expect(text, label).not.toMatch(RETIRED_GUEST_NAME);
       expect(text, label).not.toMatch(FORBIDDEN_TWO_PLATES);
       expect(text, label).not.toMatch(FRIDAY_BRUNCH);
       expect(text, label).not.toMatch(FRIDAY_9AM_OPEN);
     }
   });
 
-  it('answers breakfast-deal questions with TWO for $22 / two eggs', () => {
+  it('answers breakfast-deal questions with 2 Eggs for $22 / Toast plate copy', () => {
     const blob = FAQ.map((entry) => `${entry.question}\n${entry.answer}`).join('\n');
     assertTwoEggsDeal(blob, 'homepage FAQ');
 
@@ -196,7 +202,7 @@ describe('TWO for $22 on guest-facing surfaces', () => {
     expect(hours!.answer).not.toMatch(FORBIDDEN_BRAND);
   });
 
-  it('puts TWO for $22 on /breakfast and the /happy-hour weekend section', () => {
+  it('puts 2 Eggs for $22 on /breakfast and the /happy-hour weekend section', () => {
     const breakfast = LANDING_PAGES.breakfast;
     assertTwoEggsDeal(
       [
@@ -221,7 +227,7 @@ describe('TWO for $22 on guest-facing surfaces', () => {
     );
   });
 
-  it('shows TWO for $22 on Brunch Specials and the Specials tab', () => {
+  it('shows 2 Eggs for $22 on Brunch Specials and the Specials tab', () => {
     const presented = applyMenuPresentation(getMenus());
     const brunch = presented[0].groups.find((g) => g.name === 'Brunch');
     const brunchSpecials = brunch?.subGroups?.find((g) => g.name === 'Brunch Specials');
@@ -233,7 +239,7 @@ describe('TWO for $22 on guest-facing surfaces', () => {
     const deal = brunchSpecials?.items.find((item) => item.name === TWO_FOR_22.name);
     expect(deal?.description).toBe(twoFor22MenuDescription());
     expect(publicMenuCopy(deal?.description, deal?.name)).toMatch(/\$22/);
-    expect(publicMenuCopy(deal?.description, deal?.name)).toMatch(/2 eggs any style/i);
+    expect(publicMenuCopy(deal?.description, deal?.name)).toBe(TWO_FOR_22_DESCRIPTION);
     expect(names[1]).toBe(BREAKFAST_HAPPY_HOUR.name);
     const hh = brunchSpecials?.items.find((item) => item.name === BREAKFAST_HAPPY_HOUR.name);
     expect(hh?.description).toBe(breakfastHappyHourMenuDescription());
@@ -241,14 +247,15 @@ describe('TWO for $22 on guest-facing surfaces', () => {
     expect(deal?.imageUrl).toBeUndefined();
 
     const specials = presented[0].groups.find((g) => g.name === 'Specials');
-    const weekly = specials?.items.find((item) => /two for \$22/i.test(item.name));
+    const weekly = specials?.items.find((item) => /2 eggs for \$22/i.test(item.name));
     expect(weekly).toBeDefined();
-    expect(weekly?.description).toMatch(TWO_EGGS);
-    expect(weekly?.description).toMatch(SAT_SUN);
+    expect(weekly?.name).toBe(TWO_FOR_22.name);
+    expect(weekly?.description).toBe(TWO_FOR_22_DESCRIPTION);
+    expect(TWO_FOR_22.window).toMatch(SAT_SUN);
     expect(specials?.items.map((item) => item.name).join('\n')).toMatch(/friday funday/i);
   });
 
-  it('renames a Toast EARLY BIRD group and keeps TWO for $22, dropping retired Early Bird item names', () => {
+  it('renames a Toast EARLY BIRD group and keeps 2 Eggs for $22, dropping retired Early Bird item names', () => {
     const seeded = getMenus();
     const brunch = seeded[0].groups.find((g) => g.name === 'Brunch');
     brunch?.subGroups?.unshift({
@@ -264,12 +271,12 @@ describe('TWO for $22 on guest-facing surfaces', () => {
     const groupNames = presentedBrunch?.subGroups?.map((g) => g.name).join('\n') ?? '';
     expect(groupNames).not.toMatch(FORBIDDEN_BRAND);
     const names = presentedBrunch?.subGroups?.flatMap((g) => g.items.map((item) => item.name)).join('\n') ?? '';
-    expect(names).toMatch(/TWO for \$22/);
+    expect(names).toMatch(/2 Eggs for \$22/);
     expect(names).not.toMatch(FORBIDDEN_BRAND);
     expect(names).toMatch(/Chilaquiles/);
   });
 
-  it('canonicalizes sheet TWO for $22 copy and folds a top-level EARLY BIRD tab into Brunch', () => {
+  it('canonicalizes sheet TWO for $22 aliases to 2 Eggs for $22 and folds EARLY BIRD into Brunch', () => {
     const seeded = getMenus();
     seeded[0].groups.push({
       id: 'toast-early-bird-tab',
@@ -296,7 +303,7 @@ describe('TWO for $22 on guest-facing surfaces', () => {
     const twoFor22 = presented[0].groups
       .flatMap((g) => [g, ...(g.subGroups ?? [])])
       .flatMap((g) => g.items)
-      .filter((item) => /^(two|2) for \$22$/i.test(item.name));
+      .filter((item) => /2 eggs for \$22/i.test(item.name));
     expect(twoFor22.length).toBeGreaterThan(0);
     for (const item of twoFor22) {
       expect(item.name).toBe(TWO_FOR_22.name);
@@ -304,7 +311,7 @@ describe('TWO for $22 on guest-facing surfaces', () => {
     }
   });
 
-  it('features TWO for $22 on Sat–Sun Daily Lineup and Friday Funday alone on Friday', () => {
+  it('features 2 Eggs for $22 on Sat–Sun Daily Lineup and Friday Funday alone on Friday', () => {
     const home = readFileSync(resolve(__dirname, '../app/HomePageClient.tsx'), 'utf8');
     const page = readFileSync(resolve(__dirname, '../app/page.tsx'), 'utf8');
     expect(home).toContain('FRIDAY_FUNDAY_DEAL');
@@ -316,7 +323,7 @@ describe('TWO for $22 on guest-facing surfaces', () => {
     const fridayBlock = home.match(/day:\s*'Friday'[\s\S]*?(?=day:\s*'Saturday')/)?.[0] ?? '';
     expect(fridayBlock).toMatch(/Friday Funday/);
     expect(fridayBlock).toContain('FRIDAY_FUNDAY_DEAL');
-    expect(fridayBlock).not.toMatch(/TWO for \$22|Weekend Brunch|breakfast/i);
+    expect(fridayBlock).not.toMatch(/2 Eggs for \$22|TWO for \$22|Weekend Brunch|breakfast/i);
     expect(home).toMatch(/day:\s*'Saturday'[\s\S]*TWO_FOR_22_DAILY_DEAL/);
     expect(home).toMatch(/day:\s*'Sunday'[\s\S]*TWO_FOR_22_DAILY_DEAL/);
     expect(home).toMatch(/time:\s*'Opens 9 AM'/);
@@ -324,14 +331,14 @@ describe('TWO for $22 on guest-facing surfaces', () => {
     expect(page).toMatch(/Sunday:\s*6/);
   });
 
-  it('lists TWO for $22 in llms.txt and breakfast asset metadata', () => {
+  it('lists 2 Eggs for $22 in llms.txt and breakfast asset metadata', () => {
     const llms = readFileSync(resolve(__dirname, '../app/llms.txt/route.ts'), 'utf8');
     const assets = readFileSync(resolve(__dirname, '../../scripts/lib/asset-metadata.mjs'), 'utf8');
     assertTwoEggsDeal(llms, 'llms.txt');
     assertTwoEggsDeal(assets, 'asset metadata');
   });
 
-  it('keeps the FAQ retrieval corpus aligned with TWO for $22', () => {
+  it('keeps the FAQ retrieval corpus aligned with 2 Eggs for $22', () => {
     const blob = getKnowledge()
       .map((entry) => `${entry.question}\n${entry.answer}`)
       .join('\n');
