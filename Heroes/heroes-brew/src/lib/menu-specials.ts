@@ -16,7 +16,7 @@
  *
  * IMPLEMENTATION STATUS:
  * - ✅ Current specials: Hogzilla, Crunchwraps, Chilaquiles; Spicy Chicken as a hero
- * - ✅ Weekend brunch lives in early-bird.ts (Sat–Sun framing), not HOME_SPECIALS
+ * - ✅ TWO for $22 lives in early-bird.ts (Brunch + Daily Lineup), not HOME_SPECIALS
  *
  * RELATED FILES:
  * - src/lib/early-bird.ts

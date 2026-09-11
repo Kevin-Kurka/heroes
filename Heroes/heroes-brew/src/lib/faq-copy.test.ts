@@ -4,8 +4,9 @@
  *
  * OVERVIEW:
  * Homepage FAQ, landing-page copy, /llms.txt, and the faq-vectors corpus must
- * describe weekend brunch Saturday and Sunday — never Friday brunch hours,
- * never Early Bird / two-plates / $22 deal copy, and never Steak & Eggs $20.
+ * describe weekend brunch Saturday and Sunday plus TWO for $22 (two eggs) —
+ * never Friday brunch hours, never Early Bird / two-plates framing, and never
+ * Steak & Eggs $20.
  *
  * DEPENDENCIES:
  * - ./faq.ts
@@ -18,8 +19,8 @@
  * - (none — Vitest suite)
  *
  * IMPLEMENTATION STATUS:
- * - ✅ Asserts Sat–Sun brunch and Friday 11am restaurant hours
- * - ✅ Forbids Early Bird deal copy and Friday 9am open
+ * - ✅ Asserts Sat–Sun brunch, TWO for $22 / two eggs, Friday 11am hours
+ * - ✅ Forbids Early Bird brand, two-plates framing, and Friday 9am open
  *
  * RELATED FILES:
  * - src/lib/early-bird.test.ts
@@ -37,8 +38,9 @@ import { FAQ } from './faq';
 import { LANDING_PAGES } from './landing-pages';
 
 const STEAK_JUNK = /steak\s*&\s*eggs\s*\$?20/i;
-const EARLY_BIRD_DEAL =
-  /early bird|two breakfast plates|two plates for \$22|2\s*-?\s*for\s*-?\s*\$?22/i;
+const FORBIDDEN_BRAND = /early bird/i;
+const FORBIDDEN_TWO_PLATES =
+  /two breakfast plates|two plates for \$22|pick any two|mix-?and-?match two|two breakfasts/i;
 
 function flattenLandingCopy(): string[] {
   return Object.values(LANDING_PAGES).map((page) =>
@@ -64,7 +66,10 @@ describe('weekend brunch FAQ copy', () => {
     expect(breakfast).toBeDefined();
     expect(breakfast!.answer).toMatch(/saturday and sunday/i);
     expect(breakfast!.answer).toMatch(/brunch/i);
-    expect(breakfast!.answer).not.toMatch(EARLY_BIRD_DEAL);
+    expect(breakfast!.answer).toMatch(/two for \$?22/i);
+    expect(breakfast!.answer).toMatch(/two eggs|2 eggs/i);
+    expect(breakfast!.answer).not.toMatch(FORBIDDEN_BRAND);
+    expect(breakfast!.answer).not.toMatch(FORBIDDEN_TWO_PLATES);
   });
 
   it('keeps restaurant hours as Friday 11am open, Sat–Sun 9am open', () => {
@@ -76,26 +81,30 @@ describe('weekend brunch FAQ copy', () => {
     expect(hours!.answer).not.toMatch(/early bird/i);
   });
 
-  it('does not advertise Early Bird, two plates for $22, or Steak & Eggs $20', () => {
+  it('does not advertise Early Bird, two-plates mix-and-match, or Steak & Eggs $20', () => {
     const blob = FAQ.map((entry) => `${entry.question}\n${entry.answer}`).join('\n');
     expect(blob).not.toMatch(STEAK_JUNK);
-    expect(blob).not.toMatch(EARLY_BIRD_DEAL);
+    expect(blob).not.toMatch(FORBIDDEN_BRAND);
+    expect(blob).not.toMatch(FORBIDDEN_TWO_PLATES);
     for (const text of flattenLandingCopy()) {
       expect(text).not.toMatch(STEAK_JUNK);
-      expect(text).not.toMatch(EARLY_BIRD_DEAL);
+      expect(text).not.toMatch(FORBIDDEN_BRAND);
+      expect(text).not.toMatch(FORBIDDEN_TWO_PLATES);
     }
     const knowledge = getKnowledge()
       .map((entry) => `${entry.question}\n${entry.answer}`)
       .join('\n');
     expect(knowledge).not.toMatch(STEAK_JUNK);
-    expect(knowledge).not.toMatch(EARLY_BIRD_DEAL);
+    expect(knowledge).not.toMatch(FORBIDDEN_BRAND);
+    expect(knowledge).not.toMatch(FORBIDDEN_TWO_PLATES);
     for (const file of [
       resolve(__dirname, '../app/llms.txt/route.ts'),
       resolve(__dirname, '../../scripts/lib/asset-metadata.mjs'),
     ]) {
       const text = readFileSync(file, 'utf8');
       expect(text).not.toMatch(STEAK_JUNK);
-      expect(text).not.toMatch(EARLY_BIRD_DEAL);
+      expect(text).not.toMatch(FORBIDDEN_BRAND);
+      expect(text).not.toMatch(FORBIDDEN_TWO_PLATES);
     }
   });
 });

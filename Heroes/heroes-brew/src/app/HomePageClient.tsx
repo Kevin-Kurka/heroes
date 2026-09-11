@@ -15,7 +15,7 @@ import DoorDashIcon from '@/components/DoorDashIcon';
 import { trackEvent } from '@/lib/analytics';
 import { DOORDASH_URL } from '@/lib/doordash';
 import { useDoorDashAvailable } from '@/hooks/use-doordash-available';
-import { FRIDAY_FUNDAY_DEAL } from '@/lib/early-bird';
+import { FRIDAY_FUNDAY_DEAL, TWO_FOR_22_DAILY_DEAL } from '@/lib/early-bird';
 import { HOME_SPECIALS } from '@/lib/menu-specials';
 import { Week1HomeTeaser } from '@/components/Week1PosterGallery';
 
@@ -62,17 +62,13 @@ const DAILY_SPECIALS = [
     day: 'Saturday',
     name: 'Weekend Brunch',
     time: 'Opens 9 AM',
-    deals: [
-      { item: 'Brunch menu' },
-    ],
+    deals: [TWO_FOR_22_DAILY_DEAL],
   },
   {
     day: 'Sunday',
     name: 'Weekend Brunch',
     time: 'Opens 9 AM',
-    deals: [
-      { item: 'Brunch menu' },
-    ],
+    deals: [TWO_FOR_22_DAILY_DEAL],
   },
 ] as const;
 

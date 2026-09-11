@@ -42,7 +42,12 @@ describe('stripPriceTokens', () => {
 });
 
 describe('publicMenuCopy', () => {
-  it('strips every dollar amount on guest menu cards', () => {
+  it('keeps TWO for $22 deal prices on guest menu cards', () => {
+    expect(publicMenuCopy('Saturday–Sunday. TWO for $22 — a breakfast plate with two eggs for $22.', 'TWO for $22'))
+      .toBe('Saturday–Sunday. TWO for $22 — a breakfast plate with two eggs for $22.');
+  });
+
+  it('strips every other dollar amount on guest menu cards', () => {
     expect(publicMenuCopy('Two plates for $22. Saturday–Sunday 9–11 AM.', 'Weekend Brunch'))
       .toBe('Two plates for. Saturday–Sunday 9–11 AM.');
     expect(publicMenuCopy('$5 Screwdriver, Tequila Sunrise.', 'Brunch drinks'))
