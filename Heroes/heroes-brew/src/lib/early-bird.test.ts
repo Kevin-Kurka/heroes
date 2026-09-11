@@ -242,6 +242,41 @@ describe('TWO for $22 on guest-facing surfaces', () => {
     expect(names).toMatch(/Chilaquiles/);
   });
 
+  it('canonicalizes sheet TWO for $22 copy and folds a top-level EARLY BIRD tab into Brunch', () => {
+    const seeded = getMenus();
+    seeded[0].groups.push({
+      id: 'toast-early-bird-tab',
+      name: 'EARLY BIRD',
+      items: [
+        { id: 'sheet-two', name: '2 for $22', description: 'Pick any two plates for $22.' },
+      ],
+    });
+    const plates = seeded[0].groups
+      .find((g) => g.name === 'Brunch')
+      ?.subGroups?.find((g) => g.name === 'Plates');
+    plates?.items.push({
+      id: 'sheet-two-on-plates',
+      name: 'TWO for $22',
+      description: 'Two breakfast plates mix-and-match for $22.',
+    });
+
+    const presented = applyMenuPresentation(seeded);
+    const blob = JSON.stringify(presented);
+    expect(blob).not.toMatch(FORBIDDEN_BRAND);
+    expect(blob).not.toMatch(FORBIDDEN_TWO_PLATES);
+    expect(presented[0].groups.map((g) => g.name).join('\n')).not.toMatch(FORBIDDEN_BRAND);
+
+    const twoFor22 = presented[0].groups
+      .flatMap((g) => [g, ...(g.subGroups ?? [])])
+      .flatMap((g) => g.items)
+      .filter((item) => /^(two|2) for \$22$/i.test(item.name));
+    expect(twoFor22.length).toBeGreaterThan(0);
+    for (const item of twoFor22) {
+      expect(item.name).toBe(TWO_FOR_22.name);
+      expect(item.description).toBe(twoFor22MenuDescription());
+    }
+  });
+
   it('features TWO for $22 on Sat–Sun Daily Lineup and Friday Funday alone on Friday', () => {
     const home = readFileSync(resolve(__dirname, '../app/HomePageClient.tsx'), 'utf8');
     const page = readFileSync(resolve(__dirname, '../app/page.tsx'), 'utf8');

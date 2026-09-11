@@ -362,7 +362,21 @@ function stripRetiredBreakfastDeals(groups: MenuGroup[]) {
   });
 }
 
-/** Toast may still label the group EARLY BIRD — never show that brand to guests. */
+function isTwoFor22Name(name: string): boolean {
+  return /^(?:two|2)\s+for\s+\$?22$/i.test(name.trim());
+}
+
+function applyTwoFor22Copy(item: MenuItem): MenuItem {
+  item.name = TWO_FOR_22.name;
+  item.description = TWO_FOR_22.description;
+  return item;
+}
+
+function takeGroupItems(group: MenuGroup): MenuItem[] {
+  return [...group.items, ...(group.subGroups ?? []).flatMap((sub) => takeGroupItems(sub))];
+}
+
+/** Toast may still label a group EARLY BIRD — never show that brand to guests. */
 function retireEarlyBirdGroupLabel(groups: MenuGroup[]) {
   walkGroups(groups, (group) => {
     if (group.subGroups?.some((sub) => /early bird/i.test(sub.name))) {
@@ -385,25 +399,49 @@ function retireEarlyBirdGroupLabel(groups: MenuGroup[]) {
       }
       group.subGroups = kept;
     }
-    if (/early bird/i.test(group.name)) {
-      group.name = 'Brunch Specials';
+  });
+
+  for (let i = groups.length - 1; i >= 0; i -= 1) {
+    if (!/early bird/i.test(groups[i].name)) continue;
+    const brunchSpecials = ensureBrunchSpecialsGroup(groups);
+    brunchSpecials.items = [...takeGroupItems(groups[i]), ...brunchSpecials.items];
+    groups.splice(i, 1);
+  }
+}
+
+/** Guest copy for every TWO for $22 / 2 for $22 row — never leftover sheet plates copy. */
+function canonicalizeTwoFor22(groups: MenuGroup[]) {
+  walkGroups(groups, (group) => {
+    for (const item of group.items) {
+      if (isTwoFor22Name(item.name)) applyTwoFor22Copy(item);
     }
+  });
+}
+
+/** Keep the deal on Brunch Specials + weekly Specials only — not leftover sheet sections. */
+function stripScatteredTwoFor22(groups: MenuGroup[]) {
+  walkGroups(groups, (group, parent) => {
+    const keepHere =
+      /brunch specials/i.test(group.name) ||
+      WEEKLY_SPECIALS_RE.test(group.name) ||
+      (parent != null && WEEKLY_SPECIALS_RE.test(parent.name));
+    if (keepHere) return;
+    group.items = group.items.filter((item) => !isTwoFor22Name(item.name));
   });
 }
 
 /** TWO for $22 first on Brunch Specials (text-only frost cards). */
 function ensureTwoFor22(groups: MenuGroup[]) {
   const specials = ensureBrunchSpecialsGroup(groups);
-  const rest = specials.items.filter((item) => photoKey(item.name) !== photoKey(TWO_FOR_22.name));
+  const rest = specials.items.filter((item) => !isTwoFor22Name(item.name));
   specials.items = [asItem(TWO_FOR_22), ...rest];
 }
 
 function ensureTwoFor22Weekly(groups: MenuGroup[]) {
   const specials = ensureSpecialsGroup(groups);
-  const existing = specials.items.find((item) => photoKey(item.name) === photoKey(TWO_FOR_22.name));
+  const existing = specials.items.find((item) => isTwoFor22Name(item.name));
   if (existing) {
-    existing.name = TWO_FOR_22.name;
-    existing.description = TWO_FOR_22.description;
+    applyTwoFor22Copy(existing);
     return;
   }
   const row = {
@@ -522,10 +560,12 @@ export function applyMenuPresentation(menus: Menu[]): Menu[] {
     ensureSpicyChickenOnHeroes(menu.groups);
     ensureKitchenSpecials(menu.groups);
     ensureChilaquiles(menu.groups);
+    stripScatteredTwoFor22(menu.groups);
     ensureTwoFor22(menu.groups);
     ensureOreoChurros(menu.groups);
     ensureSpecialsTabFood(menu.groups);
     ensureTwoFor22Weekly(menu.groups);
+    canonicalizeTwoFor22(menu.groups);
     presentSdBurrito(menu.groups);
     stripNoteChoices(menu.groups);
     applyDescriptions(menu.groups);
