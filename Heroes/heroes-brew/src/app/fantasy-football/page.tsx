@@ -6,13 +6,12 @@ import {
   getBreadcrumbJsonLd,
 } from '@/lib/structured-data';
 import { FANTASY } from '@/lib/fantasy';
-import { getLeagueAvailability } from '@/lib/fantasy-leagues';
 import FantasyPageView from '@/components/FantasyPageView';
 
 const PAGE_URL = `${SITE_URL}/fantasy-football`;
-const TITLE = 'Fantasy Football League in Carlsbad — Draft at Heroes, Win $100';
+const TITLE = 'Fantasy Football League in Carlsbad — Drafts Completed, Season Underway';
 const DESCRIPTION =
-  'Join American Heroes & Brew’s Fantasy Football League in Carlsbad Village. Free to join, $100 gift card to each league winner, host your draft at the bar with free munchies and your draft live on the big screen. Sign up now.';
+  'American Heroes & Brew hosted 2026 Fantasy Football drafts in Carlsbad Village. Drafts are completed and the season is underway — watch every NFL game on 16 TVs. League champs still win a $100 gift card.';
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -26,13 +25,10 @@ export const metadata: Metadata = {
   },
 };
 
-// Render per request so the live sheet leagues (names + spots) are always current.
-// Static/ISR caching here is unsafe: a cached *fallback* render would carry league
-// ids that don't match the sheet, breaking every join made from that page.
-export const dynamic = 'force-dynamic';
+// Archive page — no live league counts. Daily rebuild is enough (World Cup pattern).
+export const revalidate = 86400;
 
-export default async function FantasyFootballPage() {
-  const leagues = await getLeagueAvailability();
+export default function FantasyFootballPage() {
   const jsonLd = [
     getWebPageJsonLd({ url: PAGE_URL, name: TITLE, description: DESCRIPTION }),
     getGenericFaqJsonLd(FANTASY.faqs, PAGE_URL),
@@ -51,7 +47,7 @@ export default async function FantasyFootballPage() {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(obj) }}
         />
       ))}
-      <FantasyPageView leagues={leagues} />
+      <FantasyPageView />
     </>
   );
 }

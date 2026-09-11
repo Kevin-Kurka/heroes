@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { MAX_LEAGUES_PER_USER } from '@/lib/fantasy';
+import { FANTASY_ARCHIVED, MAX_LEAGUES_PER_USER } from '@/lib/fantasy';
 
 /**
  * POST /api/fantasy/signup
@@ -9,7 +9,8 @@ import { MAX_LEAGUES_PER_USER } from '@/lib/fantasy';
  *   - type 'join'     → name, email, leagueIds[] (1–3), draftDates[]  → "Heroes League Joins" tab
  *   - type 'register' → name (commissioner), leagueName, email, phone, draftDate → "Registered Leagues" tab
  * Apps Script enforces the caps (10 players/league, 3 leagues/email, no dupes).
- * No DB. If FANTASY_SIGNUP_URL is unset → {ok:false, configured:false} so the
+ * No DB. While FANTASY_ARCHIVED is true this route returns 410 and does not
+ * forward. If FANTASY_SIGNUP_URL is unset → {ok:false, configured:false} so the
  * form shows a graceful DM/call fallback. See docs/fantasy-football-signup-setup.md.
  */
 
@@ -18,6 +19,13 @@ function s(v: unknown, max = 300): string {
 }
 
 export async function POST(req: NextRequest) {
+  if (FANTASY_ARCHIVED) {
+    return NextResponse.json(
+      { ok: false, archived: true, error: 'Drafts are completed. Signup is closed.' },
+      { status: 410 },
+    );
+  }
+
   let body: Record<string, unknown>;
   try {
     body = await req.json();

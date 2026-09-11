@@ -3,39 +3,32 @@
  * PURPOSE: Heroes Fantasy Football League copy + official-league config.
  *
  * OVERVIEW:
- * Content and bundled remaining draft slots for /fantasy-football. Live
- * availability comes from the sheet via FANTASY_COUNTS_URL; this file is
- * guest-facing copy plus the remaining official draft list (not a live
- * counts fallback).
- *
- * Two paths, two separate signup cards (separate Google Sheet tabs):
- *  - JOIN a Heroes league  → name, email, pick an official draft date (cap 10/league)
- *  - REGISTER your league  → commissioner name, league name, email, phone, draft date
- *
- * Remaining official drafts are this Labor Day weekend: Sat Sep 5 at 4pm
- * and Sun Sep 6 at 3pm. Both Friday Sep 4 drafts (3pm and 4pm) were
- * cancelled. Signups land in a Google Sheet via Apps Script (env
- * FANTASY_SIGNUP_URL); live per-league counts read back via
- * FANTASY_COUNTS_URL. See docs/fantasy-football-signup-setup.md.
+ * Guest-facing copy for /fantasy-football. Official 2026 drafts are completed
+ * and the season is underway — FANTASY_ARCHIVED gates signup UI and the API.
+ * Bundled OFFICIAL_LEAGUES stay as historical draft-slot config.
  *
  * DEPENDENCIES:
  * - none
  *
  * EXPORTS:
- * - YAHOO_FANTASY_URL, OfficialLeague, LEAGUE_CAPACITY, MAX_LEAGUES_PER_USER
- * - OFFICIAL_LEAGUES, leagueDateText, FANTASY
+ * - FANTASY_ARCHIVED, YAHOO_FANTASY_URL, OfficialLeague, LEAGUE_CAPACITY,
+ *   MAX_LEAGUES_PER_USER, OFFICIAL_LEAGUES, leagueDateText, FANTASY
  *
  * IMPLEMENTATION STATUS:
- * - ✅ Remaining Labor Day weekend 2026 draft slots
- * - ✅ FAQ/intro copy aligned to remaining drafts
+ * - ✅ 2026 season archived (drafts completed, no open signup)
+ * - ✅ Historical Labor Day weekend 2026 draft slots retained
  *
  * RELATED FILES:
  * - src/lib/fantasy-leagues.ts
+ * - src/lib/fantasy-archive.test.ts
  * - src/components/FantasyPageView.tsx
  *
- * LAST UPDATED: 2026-09-04
+ * LAST UPDATED: 2026-09-11
  * MAINTAINER: American Heroes & Brew
  */
+
+/** Official Heroes drafts are done for 2026. Flip to false to reopen signup. */
+export const FANTASY_ARCHIVED = true;
 
 export const YAHOO_FANTASY_URL = 'https://football.fantasysports.yahoo.com/';
 
@@ -52,10 +45,7 @@ export const LEAGUE_CAPACITY = 9; // 9 open spots per league — the commissione
 /** A player can be in at most this many official Heroes leagues. */
 export const MAX_LEAGUES_PER_USER = 3;
 
-/** Remaining official drafts this Labor Day weekend 2026.
- *  `id` is intentionally a non-date token (e.g. 'sep05-sat') so Google Sheets
- *  stores it as plain text and doesn't auto-convert it to a Date — which would
- *  break the per-league counts/caps keyed on this id. */
+/** Completed official drafts, Labor Day weekend 2026 (historical). */
 export const OFFICIAL_LEAGUES: OfficialLeague[] = [
   { id: 'sep05-sat', label: 'Sat, Sep 5', time: '4:00 PM', capacity: 10 },
   { id: 'sep06-sun', label: 'Sun, Sep 6', time: '3:00 PM', capacity: 10 },
@@ -67,10 +57,10 @@ export function leagueDateText(l: OfficialLeague): string {
 
 export const FANTASY = {
   title: 'Heroes Fantasy Football League',
-  tagline: 'Draft at the bar. Win a $100 gift card. Every game on the big screens.',
+  tagline: 'Drafts are completed. The 2026 season is underway.',
   intro: [
-    'American Heroes & Brew is running a Fantasy Football League for the season — and you’re invited. Jump into an official Heroes league or bring your own crew. Either way: prizes, draft-day perks, and every game on 16 TVs all season.',
-    'Free to join — we cover the prize. Pick your path below.',
+    'American Heroes & Brew hosted official Fantasy Football drafts at the bar. Every league is filled and the season is underway — catch every NFL game on 16 TVs in Carlsbad Village.',
+    'League champions still win a $100 American Heroes & Brew gift card, claimed in person at the bar on championship day.',
   ],
 
   perks: [
@@ -82,25 +72,25 @@ export const FANTASY = {
     },
     {
       icon: 'wings',
-      title: 'Draft at Heroes = free munchies',
+      title: 'Drafts hosted at Heroes',
       body:
-        'Host your draft at American Heroes & Brew and we’ll put out draft-day munchies on us. Gather the league over wings and cold beer.',
+        'Leagues drafted at American Heroes & Brew over wings and cold beer, with draft-day munchies on the house.',
     },
     {
       icon: 'tv',
-      title: 'Your draft on the big screen',
+      title: 'Every game on the big screens',
       body:
-        'Drafting here? We’ll stream it live on one of our TVs so the whole bar feels every pick. Live drafts hit different on the big screen.',
+        'The season is on. Watch every NFL kickoff on 16 TVs — Sundays, Thursday Night, and Monday Night Football.',
     },
   ],
 
   yahoo: {
     intro:
-      'Our leagues run on Yahoo Fantasy — free and easy. Set up your team on Yahoo, then sign up with us below to lock in prize eligibility and your draft.',
+      'Heroes leagues run on Yahoo Fantasy. Drafts are completed for 2026; managers play out the season there.',
     steps: [
-      'Create or join a free league at football.fantasysports.yahoo.com.',
-      'Pick American Heroes & Brew as your draft spot for the munchies + big-screen draft.',
-      'Sign up here so we can register you for the $100 prize and reserve your draft date.',
+      'Leagues were set up on Yahoo Fantasy before the season.',
+      'Managers drafted at American Heroes & Brew or on Yahoo.',
+      'Come watch the games here — every NFL matchup on 16 TVs.',
     ],
   },
 
@@ -108,12 +98,12 @@ export const FANTASY = {
     {
       question: 'How do I join the Heroes Fantasy Football League?',
       answer:
-        'Pick a path on this page: join an official American Heroes & Brew league (choose one of our draft dates) or register your own league. It’s free — we cover the prize.',
+        'Drafts are completed and signup is closed for the 2026 season. Come watch every NFL game on 16 TVs in Carlsbad Village — walk-ins welcome, no cover.',
     },
     {
-      question: 'When are the official Heroes league drafts?',
+      question: 'When were the official Heroes league drafts?',
       answer:
-        'Remaining official Heroes drafts are this Labor Day weekend: Saturday Sep 5 at 4pm and Sunday Sep 6 at 3pm. Each league has 9 open spots (the commissioner takes the 10th), so they fill up fast. You pick your draft date when you sign up.',
+        'Official Heroes drafts ran in early September 2026 and are now completed. The season is underway.',
     },
     {
       question: 'What does the winner get?',
@@ -123,12 +113,12 @@ export const FANTASY = {
     {
       question: 'Can my own league draft at American Heroes & Brew?',
       answer:
-        'Yes. Register your league here, then host your draft at the bar — commissioners get free draft munchies and we’ll stream the live draft on one of our TVs.',
+        'The 2026 draft window is closed. Bring the league in to watch games all season — 16 TVs, full bar, walk-ins welcome.',
     },
     {
       question: 'Is there an entry fee?',
       answer:
-        'No. The Heroes Fantasy Football League is free to join — American Heroes & Brew provides the prize.',
+        'No. The Heroes Fantasy Football League was free to enter — American Heroes & Brew provides the prize.',
     },
   ],
 };

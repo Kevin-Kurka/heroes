@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og';
 
-export const alt = 'Fantasy Football League at American Heroes & Brew — draft at the bar, win $100';
+export const alt = 'Fantasy Football League at American Heroes & Brew — drafts completed, season underway';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -61,7 +61,7 @@ export default function Image() {
         </div>
 
         <div style={{ display: 'flex', marginTop: 28, fontSize: 30, color: '#dfe3ea' }}>
-          Draft at the bar · Free to join · Every game on 16 TVs
+          Drafts completed · Season underway · Every game on 16 TVs
         </div>
 
         <div style={{ display: 'flex', gap: 10, marginTop: 30 }}>
