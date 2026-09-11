@@ -43,8 +43,8 @@ describe('stripPriceTokens', () => {
 
 describe('publicMenuCopy', () => {
   it('keeps 2 Eggs for $22 deal prices on guest menu cards', () => {
-    expect(publicMenuCopy('Two eggs breakfast plate for $22.', '2 Eggs for $22'))
-      .toBe('Two eggs breakfast plate for $22.');
+    expect(publicMenuCopy('Sat–Sun · Two eggs breakfast plate for $22.', '2 Eggs for $22'))
+      .toBe('Sat–Sun · Two eggs breakfast plate for $22.');
     expect(publicMenuCopy('TWO for $22 leftover sheet line.', 'TWO for $22'))
       .toBe('TWO for $22 leftover sheet line.');
     expect(publicMenuCopy('Saturday–Sunday. $5 Screwdriver, Tequila Sunrise, Sangria, or Bloody Mary Shot.', 'Breakfast Happy Hour'))

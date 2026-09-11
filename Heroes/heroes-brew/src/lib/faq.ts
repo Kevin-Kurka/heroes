@@ -54,7 +54,7 @@ export const FAQ: FaqEntry[] = [
   {
     question: 'Are there daily specials or happy-hour deals?',
     answer:
-      `Yes. We run daily specials Monday–Thursday — Mahalo Monday sliders, Taco Tuesday, Wings & Well Wednesday, and Thirsty Thursday burgers — plus Friday Funday and drink deals throughout the week. Weekend brunch is Saturday and Sunday, including ${TWO_FOR_22_NAME} — ${TWO_FOR_22_DESCRIPTION.replace(/\.$/, '')} — and $5 breakfast happy hour.`,
+      `Yes. We run daily specials Monday–Thursday — Mahalo Monday sliders, Taco Tuesday, Wings & Well Wednesday, and Thirsty Thursday burgers — plus Friday Funday and drink deals throughout the week. Weekend brunch is Saturday and Sunday, including ${TWO_FOR_22_NAME} — ${TWO_FOR_22_DESCRIPTION} $5 breakfast happy hour.`,
   },
   {
     question: 'Does American Heroes & Brew have outdoor seating and take reservations?',
@@ -104,7 +104,7 @@ export const FAQ: FaqEntry[] = [
   {
     question: 'Does American Heroes & Brew have happy hour and drink specials?',
     answer:
-      `Yes — American Heroes & Brew runs daily specials all week, including Friday Funday happy-hour pricing on drinks and apps, plus Mahalo Monday, Taco Tuesday, Wings & Well Wednesday, and Thirsty Thursday. Weekend brunch is Saturday and Sunday, including ${TWO_FOR_22_NAME} — ${TWO_FOR_22_DESCRIPTION.replace(/\.$/, '')} — and $5 breakfast happy hour. There’s a full bar with craft beer on tap. We’re in Carlsbad Village at 300 Carlsbad Village Drive.`,
+      `Yes — American Heroes & Brew runs daily specials all week, including Friday Funday happy-hour pricing on drinks and apps, plus Mahalo Monday, Taco Tuesday, Wings & Well Wednesday, and Thirsty Thursday. Weekend brunch is Saturday and Sunday, including ${TWO_FOR_22_NAME} — ${TWO_FOR_22_DESCRIPTION} $5 breakfast happy hour. There’s a full bar with craft beer on tap. We’re in Carlsbad Village at 300 Carlsbad Village Drive.`,
   },
   {
     question: 'Where is the best place to watch soccer and the World Cup in Carlsbad?',
