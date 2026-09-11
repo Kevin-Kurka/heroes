@@ -59,7 +59,7 @@ export function stripPriceTokens(text: string, showPrices: boolean = SHOW_PRICES
 
 /** Live Toast TWO for $22 — deal $22 stays visible on /menu. */
 export function isPublishedDealName(name?: string): boolean {
-  return !!name && /two for \$?22/i.test(name);
+  return !!name && /two for \$?22|breakfast happy hour/i.test(name);
 }
 
 /** Public card copy: hide regular prices, keep published TWO for $22 deal prices. */

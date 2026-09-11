@@ -67,7 +67,7 @@ describe('weekend brunch FAQ copy', () => {
     expect(breakfast!.answer).toMatch(/saturday and sunday/i);
     expect(breakfast!.answer).toMatch(/brunch/i);
     expect(breakfast!.answer).toMatch(/two for \$?22/i);
-    expect(breakfast!.answer).toMatch(/two eggs|2 eggs/i);
+    expect(breakfast!.answer).toMatch(/2 eggs any style/i);
     expect(breakfast!.answer).not.toMatch(FORBIDDEN_BRAND);
     expect(breakfast!.answer).not.toMatch(FORBIDDEN_TWO_PLATES);
   });

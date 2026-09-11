@@ -1,5 +1,5 @@
 import type { Menu, MenuGroup, MenuItem } from '@/types';
-import { TWO_FOR_22 } from './early-bird';
+import { BREAKFAST_HAPPY_HOUR, TWO_FOR_22 } from './early-bird';
 import { copyForName, shouldReplaceDescription } from './menu-copy';
 import {
   CALAMARI,
@@ -353,8 +353,8 @@ function ensureChilaquiles(groups: MenuGroup[]) {
   specials.items = [asItem(CHILAQUILES), ...specials.items];
 }
 
-/** Retired Early Bird brand / breakfast HH rows — drop even if the sheet still has them. */
-const RETIRED_BREAKFAST_DEAL = /early bird|breakfast happy hour/i;
+/** Retired Early Bird brand rows — drop even if the sheet still has them. */
+const RETIRED_BREAKFAST_DEAL = /early bird/i;
 
 function stripRetiredBreakfastDeals(groups: MenuGroup[]) {
   walkGroups(groups, (group) => {
@@ -364,6 +364,10 @@ function stripRetiredBreakfastDeals(groups: MenuGroup[]) {
 
 function isTwoFor22Name(name: string): boolean {
   return /^(?:two|2)\s+for\s+\$?22$/i.test(name.trim());
+}
+
+function isBreakfastHappyHourName(name: string): boolean {
+  return /breakfast happy hour/i.test(name);
 }
 
 function applyTwoFor22Copy(item: MenuItem): MenuItem {
@@ -409,11 +413,15 @@ function retireEarlyBirdGroupLabel(groups: MenuGroup[]) {
   }
 }
 
-/** Guest copy for every TWO for $22 / 2 for $22 row — never leftover sheet plates copy. */
+/** Guest copy for TWO for $22 and Breakfast Happy Hour — never leftover sheet plates copy. */
 function canonicalizeTwoFor22(groups: MenuGroup[]) {
   walkGroups(groups, (group) => {
     for (const item of group.items) {
       if (isTwoFor22Name(item.name)) applyTwoFor22Copy(item);
+      if (isBreakfastHappyHourName(item.name)) {
+        item.name = BREAKFAST_HAPPY_HOUR.name;
+        item.description = BREAKFAST_HAPPY_HOUR.description;
+      }
     }
   });
 }
@@ -430,28 +438,36 @@ function stripScatteredTwoFor22(groups: MenuGroup[]) {
   });
 }
 
-/** TWO for $22 first on Brunch Specials (text-only frost cards). */
+/** TWO for $22 first on Brunch Specials, then Breakfast Happy Hour (text-only). */
 function ensureTwoFor22(groups: MenuGroup[]) {
   const specials = ensureBrunchSpecialsGroup(groups);
-  const rest = specials.items.filter((item) => !isTwoFor22Name(item.name));
-  specials.items = [asItem(TWO_FOR_22), ...rest];
+  const rest = specials.items.filter(
+    (item) => !isTwoFor22Name(item.name) && !isBreakfastHappyHourName(item.name),
+  );
+  specials.items = [asItem(TWO_FOR_22), asItem(BREAKFAST_HAPPY_HOUR), ...rest];
+}
+
+function upsertWeeklyDeal(
+  groups: MenuGroup[],
+  deal: { id: string; name: string; description: string },
+  match: (name: string) => boolean,
+) {
+  const specials = ensureSpecialsGroup(groups);
+  const existing = specials.items.find((item) => match(item.name));
+  if (existing) {
+    existing.name = deal.name;
+    existing.description = deal.description;
+    return;
+  }
+  const row = { id: deal.id, name: deal.name, description: deal.description };
+  const after = specials.items.findIndex((item) => isTwoFor22Name(item.name) || /friday funday/i.test(item.name));
+  if (after >= 0) specials.items.splice(after + 1, 0, row);
+  else specials.items.push(row);
 }
 
 function ensureTwoFor22Weekly(groups: MenuGroup[]) {
-  const specials = ensureSpecialsGroup(groups);
-  const existing = specials.items.find((item) => isTwoFor22Name(item.name));
-  if (existing) {
-    applyTwoFor22Copy(existing);
-    return;
-  }
-  const row = {
-    id: 'specials-two-for-22',
-    name: TWO_FOR_22.name,
-    description: TWO_FOR_22.description,
-  };
-  const fridayIdx = specials.items.findIndex((item) => /friday funday/i.test(item.name));
-  if (fridayIdx >= 0) specials.items.splice(fridayIdx + 1, 0, row);
-  else specials.items.push(row);
+  upsertWeeklyDeal(groups, TWO_FOR_22, isTwoFor22Name);
+  upsertWeeklyDeal(groups, { ...BREAKFAST_HAPPY_HOUR, id: 'specials-breakfast-hh' }, isBreakfastHappyHourName);
 }
 
 /** Toast final: fish / Baja Fish use cilantro-lime crema — never tartar. */

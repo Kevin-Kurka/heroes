@@ -40,11 +40,16 @@ import { describe, expect, it } from 'vitest';
 import { getKnowledge } from './ask';
 import { publicMenuCopy } from './config';
 import {
+  BREAKFAST_HAPPY_HOUR,
+  BREAKFAST_HH_DAILY_DEAL,
+  BREAKFAST_HH_DRINKS,
   BRUNCH_DAYS,
   BRUNCH_DAYS_PROSE,
   TWO_FOR_22,
   TWO_FOR_22_DAILY_DEAL,
   TWO_FOR_22_NAME,
+  TWO_FOR_22_PRINT,
+  breakfastHappyHourMenuDescription,
   brunchFaqAnswers,
   brunchLandingIntro,
   twoFor22MenuDescription,
@@ -59,7 +64,7 @@ const SAT_SUN = /saturday\s*[–-]\s*sunday|saturday and sunday|saturday through
 const FRIDAY_BRUNCH = /friday\s*[–-]\s*sunday|friday through sunday|fri\s*[–-]\s*sun|friday,\s*saturday,\s*and sunday/i;
 const FRIDAY_9AM_OPEN = /friday\s+9(?::00)?\s*am|open at 9am friday/i;
 const TWO_EGGS_DEAL = /two for \$?22/i;
-const TWO_EGGS = /two eggs|2 eggs/i;
+const TWO_EGGS = /2 eggs any style/i;
 const FORBIDDEN_BRAND = /early bird/i;
 const FORBIDDEN_TWO_PLATES =
   /two breakfast plates|two plates for \$22|pick any two|mix-?and-?match two|two breakfasts/i;
@@ -109,16 +114,28 @@ describe('TWO for $22 canonical facts', () => {
     expect(TWO_FOR_22.name).toBe('TWO for $22');
     expect(BRUNCH_DAYS).toBe('Saturday–Sunday');
     expect(BRUNCH_DAYS_PROSE).toBe('Saturday and Sunday');
+    expect(TWO_FOR_22_PRINT).toBe('Sat–Sun · 2 eggs any style');
     expect(TWO_FOR_22_DAILY_DEAL).toEqual({
       item: 'TWO for $22',
-      detail: 'Breakfast plate with two eggs',
+      detail: 'Sat–Sun · 2 eggs any style',
       price: '$22',
     });
+    expect(BREAKFAST_HAPPY_HOUR.name).toBe('Breakfast Happy Hour');
+    expect(BREAKFAST_HH_DRINKS).toEqual([
+      'Screwdriver',
+      'Tequila Sunrise',
+      'Sangria',
+      'Bloody Mary Shot',
+    ]);
+    expect(BREAKFAST_HH_DAILY_DEAL.price).toBe('$5');
 
     const food = twoFor22MenuDescription();
     const intro = brunchLandingIntro();
     assertTwoEggsDeal(`${food}\n${intro}`, 'canonical copy');
-    expect(food).toMatch(/breakfast plate with two eggs/i);
+    expect(food).toMatch(/Sat–Sun · 2 eggs any style/);
+    expect(breakfastHappyHourMenuDescription()).toMatch(/saturday\s*[–-]\s*sunday/i);
+    expect(breakfastHappyHourMenuDescription()).toMatch(/\$5/);
+    expect(breakfastHappyHourMenuDescription()).toMatch(/screwdriver/i);
     expect(intro).toMatch(/16 tvs/i);
     expect(intro).toMatch(/walk-ins welcome/i);
     expect(brunchFaqAnswers.serveBreakfast).toMatch(/saturday and sunday/i);
@@ -164,6 +181,11 @@ describe('TWO for $22 on guest-facing surfaces', () => {
     expect(deal!.answer).toMatch(TWO_EGGS);
     expect(deal!.answer).toMatch(SAT_SUN);
 
+    const hh = FAQ.find((entry) => /breakfast happy hour/i.test(entry.question));
+    expect(hh).toBeDefined();
+    expect(hh!.answer).toMatch(/\$5 each/i);
+    expect(hh!.answer).toMatch(/saturday and sunday/i);
+
     const breakfast = FAQ.find((entry) => /serve breakfast/i.test(entry.question));
     expect(breakfast!.answer).toMatch(/saturday and sunday/i);
     expect(breakfast!.answer).toMatch(TWO_EGGS_DEAL);
@@ -187,6 +209,7 @@ describe('TWO for $22 on guest-facing surfaces', () => {
       '/breakfast',
     );
     expect(breakfast.faqs.some((f) => /breakfast deal/i.test(f.question))).toBe(true);
+    expect(breakfast.faqs.some((f) => /breakfast happy hour/i.test(f.question))).toBe(true);
     expect(breakfast.faqs.find((f) => /bottomless mimosas/i.test(f.question))?.answer).toMatch(
       /bottomless mimosas/i,
     );
@@ -210,7 +233,11 @@ describe('TWO for $22 on guest-facing surfaces', () => {
     const deal = brunchSpecials?.items.find((item) => item.name === TWO_FOR_22.name);
     expect(deal?.description).toBe(twoFor22MenuDescription());
     expect(publicMenuCopy(deal?.description, deal?.name)).toMatch(/\$22/);
-    expect(publicMenuCopy(deal?.description, deal?.name)).toMatch(/two eggs/i);
+    expect(publicMenuCopy(deal?.description, deal?.name)).toMatch(/2 eggs any style/i);
+    expect(names[1]).toBe(BREAKFAST_HAPPY_HOUR.name);
+    const hh = brunchSpecials?.items.find((item) => item.name === BREAKFAST_HAPPY_HOUR.name);
+    expect(hh?.description).toBe(breakfastHappyHourMenuDescription());
+    expect(publicMenuCopy(hh?.description, hh?.name)).toMatch(/\$5/);
     expect(deal?.imageUrl).toBeUndefined();
 
     const specials = presented[0].groups.find((g) => g.name === 'Specials');
@@ -282,6 +309,7 @@ describe('TWO for $22 on guest-facing surfaces', () => {
     const page = readFileSync(resolve(__dirname, '../app/page.tsx'), 'utf8');
     expect(home).toContain('FRIDAY_FUNDAY_DEAL');
     expect(home).toContain('TWO_FOR_22_DAILY_DEAL');
+    expect(home).toContain('BREAKFAST_HH_DAILY_DEAL');
     expect(home).not.toMatch(FORBIDDEN_BRAND);
     expect(home).not.toMatch(FORBIDDEN_TWO_PLATES);
     expect(home).not.toMatch(/Come back Monday–Friday for daily specials/);
