@@ -13,7 +13,7 @@ const DIRECTIONS_URL =
 interface Props {
   page: LandingPageContent;
   restaurant: Restaurant;
-  /** Optional extra block after the intro (e.g. Week 1 poster gallery on /watch). */
+  /** Optional extra block after the intro (e.g. Week 2 poster gallery on /watch). */
   afterIntro?: ReactNode;
 }
 
