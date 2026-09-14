@@ -87,4 +87,15 @@ describe('WEEK2_POSTERS', () => {
       }
     }
   });
+
+  it('keeps official week2-prefixed copies under public/gameday/week2/', () => {
+    for (const poster of WEEK2_POSTERS) {
+      for (const kind of ['feed-45', 'story-916'] as const) {
+        const official = resolve(PUBLIC, `gameday/week2/week2-${poster.id}-${kind}.jpg`);
+        const canonical = publicPath(kind === 'feed-45' ? poster.feedSrc : poster.storySrc);
+        expect(existsSync(official), `missing official ${official}`).toBe(true);
+        expect(readFileSync(official).equals(readFileSync(canonical))).toBe(true);
+      }
+    }
+  });
 });
