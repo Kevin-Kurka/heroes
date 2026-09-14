@@ -1,28 +1,29 @@
 /**
  * FILE: Week1PosterGallery.tsx
- * PURPOSE: NFL Week 1 watch-party poster grid with optional story lightbox.
+ * PURPOSE: Current-week NFL watch-party poster grid with optional story lightbox.
  *
  * OVERVIEW:
  * Client island for the feed (4:5) gallery used on /watch, /watch-party, and
  * (compact) the home This Week teaser. Story 9:16 crops open in a dialog.
+ * Week 2 is the featured slate; Week 1 assets remain on disk but are not shown.
  *
  * DEPENDENCIES:
  * - next/image, lucide-react
- * - src/lib/week1-posters.ts
+ * - src/lib/week2-posters.ts
  *
  * EXPORTS:
  * - Week1PosterGallery (default)
  * - Week1HomeTeaser
  *
  * IMPLEMENTATION STATUS:
- * - ✅ Feed grid, local Chargers emphasis, disclaimer, story lightbox
+ * - ✅ Feed grid, local Chargers emphasis, disclaimer, story lightbox (Week 2)
  *
  * RELATED FILES:
- * - src/lib/week1-posters.ts
+ * - src/lib/week2-posters.ts
  * - src/app/watch/page.tsx
  * - src/app/watch-party/page.tsx
  *
- * LAST UPDATED: 2026-09-07
+ * LAST UPDATED: 2026-09-14
  * MAINTAINER: American Heroes & Brew
  */
 'use client';
@@ -32,11 +33,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ChevronRight, MapPin, Tv, X } from 'lucide-react';
 import {
-  WEEK1_DISCLAIMER,
-  WEEK1_POSTERS,
-  getLocalWeek1Poster,
-  type Week1Poster,
-} from '@/lib/week1-posters';
+  WEEK2_DISCLAIMER,
+  WEEK2_POSTERS,
+  getLocalWeek2Poster,
+  type Week2Poster,
+} from '@/lib/week2-posters';
 
 interface GalleryProps {
   /** Optional heading override. */
@@ -46,12 +47,12 @@ interface GalleryProps {
 }
 
 export default function Week1PosterGallery({
-  heading = 'NFL Week 1 watch parties',
+  heading = 'NFL Week 2 watch parties',
   compact = false,
 }: GalleryProps) {
   const [openId, setOpenId] = useState<string | null>(null);
   const [story, setStory] = useState(false);
-  const open = WEEK1_POSTERS.find((p) => p.id === openId) ?? null;
+  const open = WEEK2_POSTERS.find((p) => p.id === openId) ?? null;
 
   useEffect(() => {
     if (!open) return;
@@ -68,10 +69,10 @@ export default function Week1PosterGallery({
   };
 
   return (
-    <section id="week-1" className="bg-card border border-border rounded-lg p-6">
+    <section id="week-2" className="bg-card border border-border rounded-lg p-6">
       <header className="mb-5">
         <p className="text-accent font-semibold tracking-wide uppercase text-sm">
-          NFL Week 1 · Carlsbad Village
+          NFL Week 2 · Carlsbad Village
         </p>
         <h2 className="text-xl font-bold text-foreground mt-1">{heading}</h2>
         {!compact && (
@@ -91,14 +92,14 @@ export default function Week1PosterGallery({
       </header>
 
       <ul className="grid gap-4 sm:grid-cols-2">
-        {WEEK1_POSTERS.map((poster) => (
+        {WEEK2_POSTERS.map((poster) => (
           <li key={poster.id}>
             <PosterCard poster={poster} onOpen={() => openPoster(poster.id)} />
           </li>
         ))}
       </ul>
 
-      <p className="mt-5 text-xs text-muted leading-relaxed">{WEEK1_DISCLAIMER}</p>
+      <p className="mt-5 text-xs text-muted leading-relaxed">{WEEK2_DISCLAIMER}</p>
 
       {open && (
         <div
@@ -160,7 +161,7 @@ export default function Week1PosterGallery({
                 sizes="(min-width: 480px) 28rem, 100vw"
               />
             </div>
-            <p className="mt-3 text-xs text-muted">{WEEK1_DISCLAIMER}</p>
+            <p className="mt-3 text-xs text-muted">{WEEK2_DISCLAIMER}</p>
           </div>
         </div>
       )}
@@ -168,7 +169,7 @@ export default function Week1PosterGallery({
   );
 }
 
-function PosterCard({ poster, onOpen }: { poster: Week1Poster; onOpen: () => void }) {
+function PosterCard({ poster, onOpen }: { poster: Week2Poster; onOpen: () => void }) {
   return (
     <button
       type="button"
@@ -209,12 +210,12 @@ function PosterCard({ poster, onOpen }: { poster: Week1Poster; onOpen: () => voi
 
 /** Compact home-page card pointing at the /watch gallery. */
 export function Week1HomeTeaser() {
-  const local = getLocalWeek1Poster();
+  const local = getLocalWeek2Poster();
   if (!local) return null;
 
   return (
     <Link
-      href="/watch#week-1"
+      href="/watch#week-2"
       className="mb-4 flex flex-col sm:flex-row overflow-hidden rounded-lg border border-sports/40 bg-card hover:border-sports/70 transition-colors group"
     >
       <div className="relative aspect-[4/5] sm:aspect-auto sm:w-40 shrink-0 bg-black">
@@ -228,16 +229,16 @@ export function Week1HomeTeaser() {
       </div>
       <div className="p-4 flex-1">
         <p className="text-xs font-semibold uppercase tracking-wide text-sports">
-          Local · NFL Week 1
+          Local · NFL Week 2
         </p>
         <h3 className="text-lg font-bold text-foreground mt-1 group-hover:text-accent transition-colors">
-          Chargers watch party + Week 1 posters
+          Chargers watch party + Week 2 posters
         </h3>
         <p className="text-sm text-foreground/75 mt-1">
           {local.when}. Walk-ins welcome · 16 TVs · 300 Carlsbad Village Dr.
         </p>
         <p className="inline-flex items-center gap-1 text-sm text-accent mt-3">
-          See all Week 1 posters <ChevronRight size={14} />
+          See all Week 2 posters <ChevronRight size={14} />
         </p>
       </div>
     </Link>
