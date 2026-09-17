@@ -47,18 +47,12 @@ describe('SPECIAL_LINEUP', () => {
     }
   });
 
-  it('commits every GBP still (and any feed/story that has shipped)', () => {
-    for (const src of Object.values(EXPECTED_GBP)) {
-      expect(existsSync(resolve(PUBLIC, src.replace(/^\//, ''))), src).toBe(true);
-    }
+  it('commits all 15 lineup JPEGs (5 days × gbp/feed/story)', () => {
     for (const row of Object.values(SPECIAL_LINEUP)) {
-      const feed = resolve(PUBLIC, row.feed.replace(/^\//, ''));
-      const story = resolve(PUBLIC, row.story.replace(/^\//, ''));
-      if (existsSync(feed)) expect(existsSync(feed)).toBe(true);
-      if (existsSync(story)) expect(existsSync(story)).toBe(true);
+      for (const src of [row.gbp, row.feed, row.story]) {
+        expect(existsSync(resolve(PUBLIC, src.replace(/^\//, ''))), src).toBe(true);
+      }
     }
-    expect(existsSync(resolve(PUBLIC, 'promos/daily-lineup/burgers-beer-thursday-feed.jpg'))).toBe(true);
-    expect(existsSync(resolve(PUBLIC, 'promos/daily-lineup/burgers-beer-thursday-story.jpg'))).toBe(true);
   });
 });
 

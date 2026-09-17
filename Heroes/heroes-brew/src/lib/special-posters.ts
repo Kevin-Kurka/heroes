@@ -16,8 +16,8 @@
  * - SPECIAL_GOOGLE_POSTERS, specialGooglePoster, specialFeedPoster, specialStoryPoster
  *
  * IMPLEMENTATION STATUS:
- * - ✅ All five GBP stills
- * - ✅ Thursday feed + story; other feed/story fall back to that day's GBP until shipped
+ * - ✅ v2 menu-library stills: all 5 GBP; Thu+Tue feed/story shipped
+ * - ✅ Mon/Wed/Fri feed+story are v2 GBP copies until dedicated crops land
  *
  * RELATED FILES:
  * - scripts/sheet-auto-publisher.gs
