@@ -3,8 +3,8 @@
  * PURPOSE: Allowlisted Google-Event stills for Mon–Fri daily specials.
  *
  * OVERVIEW:
- * GBP cannot take the scratcher/slot Story videos. Seeded Google specials
- * must use these brand-kit /promos/ JPEGs — never /api/og/special.
+ * Seeded Google + Feed/Story specials use these food /promos/ JPEGs —
+ * never /api/og/special and never scratcher/slot MP4s.
  * Mirrored in scripts/sheet-auto-publisher.gs SPECIAL_GOOGLE_POSTERS.
  *
  * DEPENDENCIES:

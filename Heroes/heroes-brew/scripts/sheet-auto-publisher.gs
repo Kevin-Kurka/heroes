@@ -45,12 +45,10 @@ var VIDEO_RE = /\.(mp4|mov|m4v)$/i;
 
 var HEADERS = ['Post Date', 'Post Time', 'Channel', 'Media', 'Headline', 'Caption', 'Story Caption', 'Tags', 'Approval', 'Posted', 'Notes', 'Event Start', 'Event End'];
 
-// Recurring daily specials (Mon–Fri). Each posts to the IG Story (scratch-off/slot video)
-// with its casual "what's on your mind" caption, AND to Google as a recurring weekly Event
-// (a branded /promos/ still + an Event time window). `key` selects the video pool and the
-// Google still; `deal`/`day`/`hours` drive the caption; `startH`/`endH` are the PT Event
-// window (24h). The Google Event re-seeds every week, so it's recurring in effect.
-// Google stills are allowlisted under /promos/ — never /api/og/special (generic Satori card).
+// Recurring daily specials (Mon–Fri). Each posts a branded FOOD still to IG Feed+Story
+// and to Google as a weekly Event. Scratcher/slot MP4s and Lucky Stars are out of scope.
+// `key` selects the /promos/ still; `deal`/`day`/`hours` drive the caption; `startH`/`endH`
+// are the PT Event window (24h). Never /api/og/special.
 var SPECIALS = {
   Mon: { key: 'mahalo',  name: 'Mahalo Monday',           day: 'Monday',    time: '11:00 AM', deal: '$4 Kalua Pork Sliders', hours: '11a–10p', startH: 11, endH: 22, cap: 'Sliders on my mind 🤙 Mahalo Monday at Heroes.' },
   Tue: { key: 'taco',    name: 'Taco Tuesday',            day: 'Tuesday',   time: '11:00 AM', deal: '$4 Tacos + Tequila',     hours: '11a–10p', startH: 11, endH: 22, cap: 'I want some tacos! 🌮 Taco Tuesday at Heroes.' },
@@ -69,17 +67,9 @@ var SPECIAL_GOOGLE_POSTERS = {
   funday: '/promos/funday-feed.jpg'
 };
 
-// Week-of-year number (used to rotate the daily-special video variant weekly).
-function weekNum_(d) {
-  var jan1 = new Date(d.getFullYear(), 0, 1);
-  return Math.floor((((d - jan1) / 86400000) + jan1.getDay() + 1) / 7);
-}
-
-// The themed video for a given special on a given date: <key>-scratcher.mp4 (lotto scratch-off)
-// on even weeks, <key>-slot.mp4 (Heroes Jackpot slot machine) on odd weeks — so the theme
-// rotates weekly and the filename says both the special and its theme.
-function specialMedia_(key, date) {
-  return key + '-' + ((weekNum_(date) % 2) ? 'slot' : 'scratcher') + '.mp4';
+// Food still for IG Feed + Story. Same allowlist as Google (Kevin: actual food, no gimmicks).
+function specialMedia_(key) {
+  return SPECIAL_GOOGLE_POSTERS[key] || '/promos/hero-up-watch-party.jpg';
 }
 
 function props_() { return PropertiesService.getScriptProperties(); }
@@ -518,10 +508,8 @@ function specialEventIso_(date, hour) {
   return Utilities.formatDate(d, 'America/Los_Angeles', "yyyy-MM-dd'T'HH:mm:ssZ");
 }
 
-// Seed a day's recurring special: an IG Story (scratch-off/slot video) AND a Google weekly
-// Event (branded poster + Event window). Idempotent and independent per channel — the Story
-// is matched by media-key + date, the Google Event by its Notes key — so a re-run, or a day
-// that only has one of the two, fills in just what's missing. Returns true if it added a row.
+// Seed a day's recurring special: IG Feed+Story food still AND a Google weekly Event.
+// Idempotent — Story/Feed by Notes key (or leftover same-day media), Google by Notes key.
 function seedSpecialOn_(sh, date) {
   var tz = Session.getScriptTimeZone();
   var dow = Utilities.formatDate(date, tz, 'EEE');
@@ -536,15 +524,18 @@ function seedSpecialOn_(sh, date) {
   var dayKey = Utilities.formatDate(date, tz, 'yyyy-MM-dd');
   var dateLabel = Utilities.formatDate(date, tz, 'MMM d, yyyy');
   var googleKey = 'gspecial-' + sp.key + '-' + dayKey;
+  var storyKey = 'sstory-' + sp.key + '-' + dayKey;
+  var still = specialMedia_(sp.key);
 
   var hasStory = false, hasGoogle = false;
   for (var i = 1; i < values.length; i++) {
     var r = values[i];
-    var f = String(r[c.media] || '').trim().toLowerCase();
+    var f = String(r[c.media] || '').trim();
+    var note = c.notes >= 0 ? String(r[c.notes] || '').trim() : '';
     var w = parseWhen_(c.date >= 0 ? r[c.date] : '', c.time >= 0 ? r[c.time] : '');
     var sameDay = w && Utilities.formatDate(w, tz, 'yyyy-MM-dd') === dayKey;
-    if (f.indexOf(sp.key) === 0 && sameDay) hasStory = true;
-    if (c.notes >= 0 && String(r[c.notes] || '').trim() === googleKey) hasGoogle = true;
+    if (note === storyKey || (sameDay && (f === still || f.toLowerCase().indexOf(sp.key) === 0))) hasStory = true;
+    if (note === googleKey) hasGoogle = true;
   }
 
   var added = false;
@@ -561,12 +552,13 @@ function seedSpecialOn_(sh, date) {
   if (!hasStory) appendSpecialRow_(function (a) {
     if (c.date >= 0) a[c.date] = dateLabel;
     if (c.time >= 0) a[c.time] = sp.time;
-    if (c.channel >= 0) a[c.channel] = 'Story';
-    if (c.media >= 0) a[c.media] = specialMedia_(sp.key, date);
+    if (c.channel >= 0) a[c.channel] = 'Feed, Story';
+    if (c.media >= 0) a[c.media] = still;
     if (c.headline >= 0) a[c.headline] = ''; // casual special: caption-only, no headline
     if (c.cap >= 0) a[c.cap] = sp.cap;
     if (c.tags >= 0) a[c.tags] = SPECIAL_TAGS;
     if (c.appr >= 0) a[c.appr] = 'Approve';
+    if (c.notes >= 0) a[c.notes] = storyKey;
   });
 
   if (!hasGoogle) appendSpecialRow_(function (a) {

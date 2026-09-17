@@ -3,8 +3,8 @@
  * PURPOSE: Guard Mon–Fri Google special stills against /api/og/special regression.
  *
  * OVERVIEW:
- * Daily-special Google Events must use allowlisted brand-kit /promos/ JPGs.
- * IG Story scratcher/slot MP4 rotation stays in the Apps Script seeder.
+ * Daily-special Google + Feed/Story rows must use allowlisted food /promos/ JPGs.
+ * Scratcher/slot MP4s and Lucky Stars are out of scope for the specials look.
  *
  * DEPENDENCIES:
  * - ./special-posters.ts
@@ -61,9 +61,13 @@ describe('sheet-auto-publisher.gs specials seeding contract', () => {
     }
   });
 
-  it('keeps the IG Story scratcher/slot MP4 rotation unchanged', () => {
-    expect(gs).toMatch(/function specialMedia_\(key, date\) \{\s*return key \+ '-' \+ \(\(weekNum_\(date\) % 2\) \? 'slot' : 'scratcher'\) \+ '\.mp4';\s*\}/);
-    expect(gs).toMatch(/a\[c\.media\] = specialMedia_\(sp\.key, date\)/);
+  it('seeds Feed/Story with food stills — not scratcher/slot MP4s or /api/og/special', () => {
+    expect(gs).not.toMatch(/return key \+ '-' \+ \(\(weekNum_\(date\) % 2\) \? 'slot' : 'scratcher'\) \+ '\.mp4'/);
+    expect(gs).toMatch(/function specialMedia_\(/);
+    expect(gs).toMatch(/var still = specialMedia_\(sp\.key\)/);
+    expect(gs).toMatch(/a\[c\.media\] = still/);
     expect(gs).toMatch(/a\[c\.media\] = specialPoster_\(sp\)/);
+    expect(gs).toMatch(/a\[c\.channel\] = 'Feed, Story'/);
+    expect(gs).not.toMatch(/lucky-stars|scratch-style-frame|slot-style-frame/i);
   });
 });
