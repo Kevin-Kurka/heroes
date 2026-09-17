@@ -4,7 +4,7 @@
  *
  * OVERVIEW:
  * Google uses *-gbp.jpg; Feed/Story use *-feed.jpg / *-story.jpg.
- * Hold current JPG bytes until v3 premium closeups land (no lifestyle).
+ * JPG bytes are v3 premium food closeups (no lifestyle).
  * Scratcher/slot MP4s and Lucky Stars must not be seeded.
  *
  * LAST UPDATED: 2026-09-17

@@ -4,9 +4,9 @@
  *
  * OVERVIEW:
  * Paths are stable under /promos/daily-lineup/. Google uses *-gbp.jpg;
- * Feed *-feed.jpg; Story *-story.jpg. Hold image-byte replacement until
- * Creative v3 premium food-closeups land. Lifestyle/in-bar plates are
- * cancelled. Never /api/og/special. Never scratcher/slot.
+ * Feed *-feed.jpg; Story *-story.jpg. Bytes are Creative v3 premium
+ * food closeups. Lifestyle/in-bar plates cancelled. Never /api/og/special.
+ * Never scratcher/slot.
  *
  * DEPENDENCIES:
  * - public/promos/daily-lineup/{mahalo-monday,taco-tuesday,wings-wednesday,
@@ -18,7 +18,7 @@
  *
  * IMPLEMENTATION STATUS:
  * - ✅ Path maps for all 5 days × gbp/feed/story
- * - 🔄 Hold current JPG bytes — v3 premium closeups incoming (no lifestyle)
+ * - ✅ v3 premium food-closeup bytes for all 5 days × gbp/feed/story
  *
  * RELATED FILES:
  * - scripts/sheet-auto-publisher.gs
