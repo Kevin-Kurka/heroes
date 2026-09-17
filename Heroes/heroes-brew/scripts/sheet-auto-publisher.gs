@@ -47,7 +47,7 @@ var HEADERS = ['Post Date', 'Post Time', 'Channel', 'Media', 'Headline', 'Captio
 
 // Recurring daily specials (Mon–Fri). Paths under /promos/daily-lineup/:
 // Google Event → *-gbp.jpg; IG Feed → *-feed.jpg; IG Story → *-story.jpg.
-// JPG bytes are placeholders until lifestyle (in-bar) plates replace them.
+// Hold JPG byte replacement until Creative v3 premium closeups (no lifestyle).
 // Scratcher/slot MP4s and Lucky Stars are out of scope. Never /api/og/special.
 var SPECIALS = {
   Mon: { key: 'mahalo',  name: 'Mahalo Monday',           day: 'Monday',    time: '11:00 AM', deal: '$4 Kalua Pork Sliders', hours: '11a–10p', startH: 11, endH: 22, cap: 'Sliders on my mind 🤙 Mahalo Monday at Heroes.' },
