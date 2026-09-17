@@ -45,8 +45,9 @@ var VIDEO_RE = /\.(mp4|mov|m4v)$/i;
 
 var HEADERS = ['Post Date', 'Post Time', 'Channel', 'Media', 'Headline', 'Caption', 'Story Caption', 'Tags', 'Approval', 'Posted', 'Notes', 'Event Start', 'Event End'];
 
-// Recurring daily specials (Mon–Fri). Real-food stills from /promos/daily-lineup/:
+// Recurring daily specials (Mon–Fri). Paths under /promos/daily-lineup/:
 // Google Event → *-gbp.jpg; IG Feed → *-feed.jpg; IG Story → *-story.jpg.
+// JPG bytes are placeholders until lifestyle (in-bar) plates replace them.
 // Scratcher/slot MP4s and Lucky Stars are out of scope. Never /api/og/special.
 var SPECIALS = {
   Mon: { key: 'mahalo',  name: 'Mahalo Monday',           day: 'Monday',    time: '11:00 AM', deal: '$4 Kalua Pork Sliders', hours: '11a–10p', startH: 11, endH: 22, cap: 'Sliders on my mind 🤙 Mahalo Monday at Heroes.' },

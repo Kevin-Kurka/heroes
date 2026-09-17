@@ -1,11 +1,12 @@
 /**
  * FILE: special-posters.ts
- * PURPOSE: Real-food daily-lineup stills for Google + IG specials.
+ * PURPOSE: Path wiring for Mon–Fri Google + IG specials stills.
  *
  * OVERVIEW:
- * Mon–Fri lineup uses Creative food photos under /promos/daily-lineup/.
- * Google Events use *-gbp.jpg; Feed uses *-feed.jpg; Story uses *-story.jpg.
- * Never /api/og/special. Never scratcher/slot MP4s or Lucky Stars.
+ * Paths are stable under /promos/daily-lineup/. Google uses *-gbp.jpg;
+ * Feed *-feed.jpg; Story *-story.jpg. JPG bytes are PLACEHOLDERS until
+ * Kevin's lifestyle (in-bar) plates land — do not treat current food-only
+ * closeups as final art. Never /api/og/special. Never scratcher/slot.
  *
  * DEPENDENCIES:
  * - public/promos/daily-lineup/{mahalo-monday,taco-tuesday,wings-wednesday,
@@ -16,8 +17,8 @@
  * - SPECIAL_GOOGLE_POSTERS, specialGooglePoster, specialFeedPoster, specialStoryPoster
  *
  * IMPLEMENTATION STATUS:
- * - ✅ v2 menu-library stills: all 5 GBP; Thu+Tue feed/story shipped
- * - ✅ Mon/Wed/Fri feed+story are v2 GBP copies until dedicated crops land
+ * - ✅ Path maps for all 5 days × gbp/feed/story
+ * - 🔄 Image bytes are food-only placeholders — lifestyle rebuild incoming
  *
  * RELATED FILES:
  * - scripts/sheet-auto-publisher.gs
