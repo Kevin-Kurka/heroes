@@ -4,7 +4,7 @@
  *
  * OVERVIEW:
  * Google uses *-gbp.jpg; Feed/Story use *-feed.jpg / *-story.jpg.
- * JPG bytes are v3 premium food closeups (no lifestyle).
+ * JPG bytes are v3 real-photo retouches of menu plates (no inventy AI).
  * Scratcher/slot MP4s and Lucky Stars must not be seeded.
  *
  * LAST UPDATED: 2026-09-17
