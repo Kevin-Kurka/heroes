@@ -34,6 +34,7 @@ const POSTS = [
   { slug: 'tacos',        img: 'village-tacos.jpg',          kicker: 'Taco Tuesday',   lines: ['Village Tacos'],        sub: '3 street tacos · carnitas · carne asada · baja fish',    accent: 'blue' },
   { slug: 'pasadena',     img: 'pasadena-burger.jpg',        kicker: 'Hero Burger',    lines: ['The Pasadena'],         sub: 'OG cheeseburger · American cheese · Hero sauce',         accent: 'red' },
   { slug: 'hiring',       img: 'venue.jpg',                  kicker: 'Join the Team',  lines: ['Now Hiring'],           sub: 'All positions · apply inside or DM us',                  accent: 'red' },
+  { slug: 'funday',       img: 'beer.jpg',                   kicker: 'Friday Funday',  lines: ['Happy Hour'],           sub: '1–4p · $2 Off drafts, wells & wine',                     accent: 'blue' },
 ];
 
 const crest = await loadImage(join(PUB, 'icon-512.png'));
