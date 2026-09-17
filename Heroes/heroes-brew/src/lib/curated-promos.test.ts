@@ -127,7 +127,7 @@ describe('curatePromos — branded event media (no Satori OG cards)', () => {
       awayTeam: 'Los Angeles Dodgers',
     })]);
     const e = out.find((p) => p.key === 'gevt-mlb-lad');
-    expect(e?.media).toBe('/promos/event-padres-dodgers.jpg');
+    expect(e?.media).toBe('/gameday/padres/padres-rival-feed-45.jpg');
     expect(e?.media).not.toMatch(/\/api\/og\/event/);
   });
 
@@ -144,8 +144,8 @@ describe('curatePromos — branded event media (no Satori OG cards)', () => {
       homeTeam: 'Arizona Diamondbacks',
       awayTeam: 'San Diego Padres',
     })]).find((p) => p.key === 'gevt-mlb-ari');
-    expect(home?.media).toBe('/promos/event-padres-home.jpg');
-    expect(away?.media).toBe('/promos/event-padres-home.jpg');
+    expect(home?.media).toBe('/gameday/padres/padres-home-feed-45.jpg');
+    expect(away?.media).toBe('/gameday/padres/padres-home-feed-45.jpg');
     expect(home?.media).not.toMatch(/\/api\/og\/event/);
   });
 
@@ -194,15 +194,24 @@ describe('curatePromos — branded event media (no Satori OG cards)', () => {
   });
 
   it('points media at files that exist under public/', () => {
-    for (const src of ['/promos/event-padres-dodgers.jpg', '/promos/event-padres-home.jpg', '/promos/nfl-sunday-4x5.jpg']) {
+    for (const src of [
+      '/gameday/padres/padres-rival-feed-45.jpg',
+      '/gameday/padres/padres-home-feed-45.jpg',
+      '/promos/nfl-sunday-4x5.jpg',
+    ]) {
       expect(existsSync(resolve(PUBLIC, src.replace(/^\//, ''))), src).toBe(true);
     }
   });
 });
 
 describe('resolveEventPoster — /gameday/ registry hook', () => {
-  it('ships an empty gameday registry so NFL week2 live-post plates stay manual', () => {
-    expect(GAMEDAY_EVENT_PLATES).toEqual([]);
+  it('registers Padres /gameday/ plates and does not steal NFL week2 live-post media', () => {
+    expect(GAMEDAY_EVENT_PLATES.map((p) => p.media)).toEqual([
+      '/gameday/padres/padres-rival-feed-45.jpg',
+      '/gameday/padres/padres-rival-feed-45.jpg',
+      '/gameday/padres/padres-home-feed-45.jpg',
+    ]);
+    expect(GAMEDAY_EVENT_PLATES.every((p) => !p.media.includes('/gameday/week2/'))).toBe(true);
   });
 
   it('lets a registered gameday MLB plate win over static /promos/ plates', () => {

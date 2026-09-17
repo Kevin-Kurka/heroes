@@ -8,13 +8,15 @@
  * Mirrored in scripts/sheet-auto-publisher.gs SPECIAL_GOOGLE_POSTERS.
  *
  * DEPENDENCIES:
- * - public/promos/{kalua-sliders,tacos,wings,pasadena,funday}-feed.jpg
+ * - public/promos/special-{taco-tuesday,wings-wednesday,burgers-beer-thursday}.jpg
+ * - public/promos/{kalua-sliders,funday}-feed.jpg (Mon/Fri until Creative delivers)
  *
  * EXPORTS:
  * - SpecialPosterKey, SPECIAL_GOOGLE_POSTERS, specialGooglePoster
  *
  * IMPLEMENTATION STATUS:
- * - ✅ Mon–Fri mapped to existing or brand-kit feed stills
+ * - ✅ Tue–Thu use Creative photo-led GBP stills
+ * - ✅ Mon/Fri use existing brand-kit food stills
  *
  * RELATED FILES:
  * - scripts/sheet-auto-publisher.gs (specialPoster_)
@@ -30,9 +32,9 @@ export type SpecialPosterKey = 'mahalo' | 'taco' | 'wings' | 'burgers' | 'funday
 /** Concrete /promos/ URLs the sheet seeder writes into Google Event Media. */
 export const SPECIAL_GOOGLE_POSTERS: Record<SpecialPosterKey, string> = {
   mahalo: '/promos/kalua-sliders-feed.jpg',
-  taco: '/promos/tacos-feed.jpg',
-  wings: '/promos/wings-feed.jpg',
-  burgers: '/promos/pasadena-feed.jpg',
+  taco: '/promos/special-taco-tuesday.jpg',
+  wings: '/promos/special-wings-wednesday.jpg',
+  burgers: '/promos/special-burgers-beer-thursday.jpg',
   funday: '/promos/funday-feed.jpg',
 };
 

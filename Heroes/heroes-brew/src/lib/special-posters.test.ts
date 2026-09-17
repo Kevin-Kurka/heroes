@@ -25,9 +25,9 @@ const GS = resolve(ROOT, 'scripts/sheet-auto-publisher.gs');
 
 const EXPECTED: Record<string, string> = {
   mahalo: '/promos/kalua-sliders-feed.jpg',
-  taco: '/promos/tacos-feed.jpg',
-  wings: '/promos/wings-feed.jpg',
-  burgers: '/promos/pasadena-feed.jpg',
+  taco: '/promos/special-taco-tuesday.jpg',
+  wings: '/promos/special-wings-wednesday.jpg',
+  burgers: '/promos/special-burgers-beer-thursday.jpg',
   funday: '/promos/funday-feed.jpg',
 };
 

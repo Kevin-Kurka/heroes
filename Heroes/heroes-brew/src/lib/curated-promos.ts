@@ -16,8 +16,8 @@
  * - EventPosterPlate, GAMEDAY_EVENT_PLATES, resolveEventPoster
  *
  * IMPLEMENTATION STATUS:
- * - ✅ Padres Dodgers/home stills + Chargers NFL Sunday fallback
- * - ✅ Empty GAMEDAY_EVENT_PLATES hook for future /gameday/ MLB plates
+ * - ✅ Padres /gameday/padres/ home + Dodgers-rival plates
+ * - ✅ Chargers NFL Sunday fallback (not week2 live-post plates)
  * - ❌ Week 2 NFL live-post flow is manual sheet rows — not wired here
  *
  * RELATED FILES:
@@ -135,7 +135,11 @@ export interface EventPosterPlate {
  * `{ league: 'MLB', awayIncludes: 'Dodgers', homeIncludes: 'Padres', media: '/gameday/mlb/dodgers-at-padres-feed-45.jpg' }`
  * Do not register NFL Week 2 live-post plates — those stay on the manual sheet path.
  */
-export const GAMEDAY_EVENT_PLATES: EventPosterPlate[] = [];
+export const GAMEDAY_EVENT_PLATES: EventPosterPlate[] = [
+  { league: 'MLB', awayIncludes: 'Dodgers', homeIncludes: 'Padres', media: '/gameday/padres/padres-rival-feed-45.jpg' },
+  { league: 'MLB', awayIncludes: 'Padres', homeIncludes: 'Dodgers', media: '/gameday/padres/padres-rival-feed-45.jpg' },
+  { league: 'MLB', anyTeamIncludes: 'Padres', media: '/gameday/padres/padres-home-feed-45.jpg' },
+];
 
 const STATIC_EVENT_PLATES: EventPosterPlate[] = [
   { league: 'MLB', awayIncludes: 'Dodgers', homeIncludes: 'Padres', media: '/promos/event-padres-dodgers.jpg' },
