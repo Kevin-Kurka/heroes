@@ -45,10 +45,9 @@ var VIDEO_RE = /\.(mp4|mov|m4v)$/i;
 
 var HEADERS = ['Post Date', 'Post Time', 'Channel', 'Media', 'Headline', 'Caption', 'Story Caption', 'Tags', 'Approval', 'Posted', 'Notes', 'Event Start', 'Event End'];
 
-// Recurring daily specials (Mon–Fri). Each posts a branded FOOD still to IG Feed+Story
-// and to Google as a weekly Event. Scratcher/slot MP4s and Lucky Stars are out of scope.
-// `key` selects the /promos/ still; `deal`/`day`/`hours` drive the caption; `startH`/`endH`
-// are the PT Event window (24h). Never /api/og/special.
+// Recurring daily specials (Mon–Fri). Real-food stills from /promos/daily-lineup/:
+// Google Event → *-gbp.jpg; IG Feed → *-feed.jpg; IG Story → *-story.jpg.
+// Scratcher/slot MP4s and Lucky Stars are out of scope. Never /api/og/special.
 var SPECIALS = {
   Mon: { key: 'mahalo',  name: 'Mahalo Monday',           day: 'Monday',    time: '11:00 AM', deal: '$4 Kalua Pork Sliders', hours: '11a–10p', startH: 11, endH: 22, cap: 'Sliders on my mind 🤙 Mahalo Monday at Heroes.' },
   Tue: { key: 'taco',    name: 'Taco Tuesday',            day: 'Tuesday',   time: '11:00 AM', deal: '$4 Tacos + Tequila',     hours: '11a–10p', startH: 11, endH: 22, cap: 'I want some tacos! 🌮 Taco Tuesday at Heroes.' },
@@ -58,18 +57,34 @@ var SPECIALS = {
 };
 var SPECIAL_DOWS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 var SPECIAL_TAGS = '#AmericanHeroesAndBrew #CarlsbadVillage #SportsBar';
-// Keep in sync with src/lib/special-posters.ts SPECIAL_GOOGLE_POSTERS.
+// Keep in sync with src/lib/special-posters.ts SPECIAL_LINEUP.
 var SPECIAL_GOOGLE_POSTERS = {
-  mahalo: '/promos/kalua-sliders-feed.jpg',
-  taco: '/promos/special-taco-tuesday.jpg',
-  wings: '/promos/special-wings-wednesday.jpg',
-  burgers: '/promos/burgers-beer-thursday-gbp.jpg',
-  funday: '/promos/funday-feed.jpg'
+  mahalo: '/promos/daily-lineup/mahalo-monday-gbp.jpg',
+  taco: '/promos/daily-lineup/taco-tuesday-gbp.jpg',
+  wings: '/promos/daily-lineup/wings-wednesday-gbp.jpg',
+  burgers: '/promos/daily-lineup/burgers-beer-thursday-gbp.jpg',
+  funday: '/promos/daily-lineup/friday-funday-gbp.jpg'
+};
+var SPECIAL_FEED_POSTERS = {
+  mahalo: '/promos/daily-lineup/mahalo-monday-feed.jpg',
+  taco: '/promos/daily-lineup/taco-tuesday-feed.jpg',
+  wings: '/promos/daily-lineup/wings-wednesday-feed.jpg',
+  burgers: '/promos/daily-lineup/burgers-beer-thursday-feed.jpg',
+  funday: '/promos/daily-lineup/friday-funday-feed.jpg'
+};
+var SPECIAL_STORY_POSTERS = {
+  mahalo: '/promos/daily-lineup/mahalo-monday-story.jpg',
+  taco: '/promos/daily-lineup/taco-tuesday-story.jpg',
+  wings: '/promos/daily-lineup/wings-wednesday-story.jpg',
+  burgers: '/promos/daily-lineup/burgers-beer-thursday-story.jpg',
+  funday: '/promos/daily-lineup/friday-funday-story.jpg'
 };
 
-// Food still for IG Feed + Story. Same allowlist as Google (Kevin: actual food, no gimmicks).
-function specialMedia_(key) {
-  return SPECIAL_GOOGLE_POSTERS[key] || '/promos/hero-up-watch-party.jpg';
+function specialFeed_(key) {
+  return SPECIAL_FEED_POSTERS[key] || SPECIAL_GOOGLE_POSTERS[key] || '/promos/hero-up-watch-party.jpg';
+}
+function specialStory_(key) {
+  return SPECIAL_STORY_POSTERS[key] || SPECIAL_GOOGLE_POSTERS[key] || '/promos/hero-up-watch-party.jpg';
 }
 
 function props_() { return PropertiesService.getScriptProperties(); }
@@ -524,17 +539,20 @@ function seedSpecialOn_(sh, date) {
   var dayKey = Utilities.formatDate(date, tz, 'yyyy-MM-dd');
   var dateLabel = Utilities.formatDate(date, tz, 'MMM d, yyyy');
   var googleKey = 'gspecial-' + sp.key + '-' + dayKey;
+  var feedKey = 'sfeed-' + sp.key + '-' + dayKey;
   var storyKey = 'sstory-' + sp.key + '-' + dayKey;
-  var still = specialMedia_(sp.key);
+  var feedStill = specialFeed_(sp.key);
+  var storyStill = specialStory_(sp.key);
 
-  var hasStory = false, hasGoogle = false;
+  var hasFeed = false, hasStory = false, hasGoogle = false;
   for (var i = 1; i < values.length; i++) {
     var r = values[i];
     var f = String(r[c.media] || '').trim();
     var note = c.notes >= 0 ? String(r[c.notes] || '').trim() : '';
     var w = parseWhen_(c.date >= 0 ? r[c.date] : '', c.time >= 0 ? r[c.time] : '');
     var sameDay = w && Utilities.formatDate(w, tz, 'yyyy-MM-dd') === dayKey;
-    if (note === storyKey || (sameDay && (f === still || f.toLowerCase().indexOf(sp.key) === 0))) hasStory = true;
+    if (note === feedKey || (sameDay && f === feedStill)) hasFeed = true;
+    if (note === storyKey || (sameDay && f === storyStill)) hasStory = true;
     if (note === googleKey) hasGoogle = true;
   }
 
@@ -549,12 +567,24 @@ function seedSpecialOn_(sh, date) {
     added = true;
   }
 
+  if (!hasFeed) appendSpecialRow_(function (a) {
+    if (c.date >= 0) a[c.date] = dateLabel;
+    if (c.time >= 0) a[c.time] = sp.time;
+    if (c.channel >= 0) a[c.channel] = 'Feed';
+    if (c.media >= 0) a[c.media] = feedStill;
+    if (c.headline >= 0) a[c.headline] = '';
+    if (c.cap >= 0) a[c.cap] = sp.cap;
+    if (c.tags >= 0) a[c.tags] = SPECIAL_TAGS;
+    if (c.appr >= 0) a[c.appr] = 'Approve';
+    if (c.notes >= 0) a[c.notes] = feedKey;
+  });
+
   if (!hasStory) appendSpecialRow_(function (a) {
     if (c.date >= 0) a[c.date] = dateLabel;
     if (c.time >= 0) a[c.time] = sp.time;
-    if (c.channel >= 0) a[c.channel] = 'Feed, Story';
-    if (c.media >= 0) a[c.media] = still;
-    if (c.headline >= 0) a[c.headline] = ''; // casual special: caption-only, no headline
+    if (c.channel >= 0) a[c.channel] = 'Story';
+    if (c.media >= 0) a[c.media] = storyStill;
+    if (c.headline >= 0) a[c.headline] = '';
     if (c.cap >= 0) a[c.cap] = sp.cap;
     if (c.tags >= 0) a[c.tags] = SPECIAL_TAGS;
     if (c.appr >= 0) a[c.appr] = 'Approve';
