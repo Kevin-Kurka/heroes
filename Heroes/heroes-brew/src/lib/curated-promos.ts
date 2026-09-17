@@ -16,7 +16,7 @@
  * - EventPosterPlate, GAMEDAY_EVENT_PLATES, resolveEventPoster
  *
  * IMPLEMENTATION STATUS:
- * - ✅ Padres /gameday/padres/ home + Dodgers-rival plates
+ * - ✅ Padres FINALS: /promos/event-padres-home.jpg + event-padres-dodgers.jpg
  * - ✅ Chargers NFL Sunday fallback (not week2 live-post plates)
  * - ❌ Week 2 NFL live-post flow is manual sheet rows — not wired here
  *
@@ -136,9 +136,8 @@ export interface EventPosterPlate {
  * Do not register NFL Week 2 live-post plates — those stay on the manual sheet path.
  */
 export const GAMEDAY_EVENT_PLATES: EventPosterPlate[] = [
-  { league: 'MLB', awayIncludes: 'Dodgers', homeIncludes: 'Padres', media: '/gameday/padres/padres-rival-feed-45.jpg' },
-  { league: 'MLB', awayIncludes: 'Padres', homeIncludes: 'Dodgers', media: '/gameday/padres/padres-rival-feed-45.jpg' },
-  { league: 'MLB', anyTeamIncludes: 'Padres', media: '/gameday/padres/padres-home-feed-45.jpg' },
+  // Future matchup-specific /gameday/mlb/… plates win when added here.
+  // Current Padres FINALS live in STATIC_EVENT_PLATES as /promos/event-padres-*.jpg.
 ];
 
 const STATIC_EVENT_PLATES: EventPosterPlate[] = [

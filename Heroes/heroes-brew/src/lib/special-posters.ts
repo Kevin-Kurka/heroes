@@ -8,8 +8,9 @@
  * Mirrored in scripts/sheet-auto-publisher.gs SPECIAL_GOOGLE_POSTERS.
  *
  * DEPENDENCIES:
- * - public/promos/special-{taco-tuesday,wings-wednesday,burgers-beer-thursday}.jpg
- * - public/promos/{kalua-sliders,funday}-feed.jpg (Mon/Fri until Creative delivers)
+ * - public/promos/burgers-beer-thursday-gbp.jpg (Creative FINALS)
+ * - public/promos/special-{taco-tuesday,wings-wednesday}.jpg
+ * - public/promos/{kalua-sliders,funday}-feed.jpg (Mon/Fri until lineup pack)
  *
  * EXPORTS:
  * - SpecialPosterKey, SPECIAL_GOOGLE_POSTERS, specialGooglePoster
@@ -34,7 +35,7 @@ export const SPECIAL_GOOGLE_POSTERS: Record<SpecialPosterKey, string> = {
   mahalo: '/promos/kalua-sliders-feed.jpg',
   taco: '/promos/special-taco-tuesday.jpg',
   wings: '/promos/special-wings-wednesday.jpg',
-  burgers: '/promos/special-burgers-beer-thursday.jpg',
+  burgers: '/promos/burgers-beer-thursday-gbp.jpg',
   funday: '/promos/funday-feed.jpg',
 };
 

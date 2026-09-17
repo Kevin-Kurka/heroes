@@ -27,7 +27,7 @@ const EXPECTED: Record<string, string> = {
   mahalo: '/promos/kalua-sliders-feed.jpg',
   taco: '/promos/special-taco-tuesday.jpg',
   wings: '/promos/special-wings-wednesday.jpg',
-  burgers: '/promos/special-burgers-beer-thursday.jpg',
+  burgers: '/promos/burgers-beer-thursday-gbp.jpg',
   funday: '/promos/funday-feed.jpg',
 };
 
