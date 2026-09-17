@@ -47,9 +47,10 @@ var HEADERS = ['Post Date', 'Post Time', 'Channel', 'Media', 'Headline', 'Captio
 
 // Recurring daily specials (Mon–Fri). Each posts to the IG Story (scratch-off/slot video)
 // with its casual "what's on your mind" caption, AND to Google as a recurring weekly Event
-// (a branded /api/og/special poster + an Event time window). `key` selects the video pool;
-// `deal`/`day`/`hours` drive the Google poster + caption; `startH`/`endH` are the PT Event
+// (a branded /promos/ still + an Event time window). `key` selects the video pool and the
+// Google still; `deal`/`day`/`hours` drive the caption; `startH`/`endH` are the PT Event
 // window (24h). The Google Event re-seeds every week, so it's recurring in effect.
+// Google stills are allowlisted under /promos/ — never /api/og/special (generic Satori card).
 var SPECIALS = {
   Mon: { key: 'mahalo',  name: 'Mahalo Monday',           day: 'Monday',    time: '11:00 AM', deal: '$4 Kalua Pork Sliders', hours: '11a–10p', startH: 11, endH: 22, cap: 'Sliders on my mind 🤙 Mahalo Monday at Heroes.' },
   Tue: { key: 'taco',    name: 'Taco Tuesday',            day: 'Tuesday',   time: '11:00 AM', deal: '$4 Tacos + Tequila',     hours: '11a–10p', startH: 11, endH: 22, cap: 'I want some tacos! 🌮 Taco Tuesday at Heroes.' },
@@ -59,6 +60,14 @@ var SPECIALS = {
 };
 var SPECIAL_DOWS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 var SPECIAL_TAGS = '#AmericanHeroesAndBrew #CarlsbadVillage #SportsBar';
+// Keep in sync with src/lib/special-posters.ts SPECIAL_GOOGLE_POSTERS.
+var SPECIAL_GOOGLE_POSTERS = {
+  mahalo: '/promos/kalua-sliders-feed.jpg',
+  taco: '/promos/tacos-feed.jpg',
+  wings: '/promos/wings-feed.jpg',
+  burgers: '/promos/pasadena-feed.jpg',
+  funday: '/promos/funday-feed.jpg'
+};
 
 // Week-of-year number (used to rotate the daily-special video variant weekly).
 function weekNum_(d) {
@@ -496,13 +505,10 @@ function currentMonthSheet_() {
   return ss_().getSheetByName(name) || monthSheets_()[0];
 }
 
-// Branded /api/og/special poster URL for a special's Google Event (query-driven so the
-// copy lives only here). Site-relative — mediaUrl_/linkifyMediaCell_ resolve it.
+// Branded /promos/ still for a special's Google Event. Site-relative — mediaUrl_
+// and linkifyMediaCell_ resolve it. Never /api/og/special.
 function specialPoster_(sp) {
-  return '/api/og/special?title=' + encodeURIComponent(sp.name)
-    + '&deal=' + encodeURIComponent(sp.deal)
-    + '&day=' + encodeURIComponent(sp.day)
-    + '&hours=' + encodeURIComponent(sp.hours);
+  return SPECIAL_GOOGLE_POSTERS[sp.key] || '/promos/hero-up-watch-party.jpg';
 }
 
 // ISO timestamp (PT offset) for a special's Event window edge — e.g. "2026-06-29T10:00:00-0700".

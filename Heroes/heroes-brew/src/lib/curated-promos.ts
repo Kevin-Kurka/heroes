@@ -1,3 +1,33 @@
+/**
+ * FILE: curated-promos.ts
+ * PURPOSE: Turn the live 7-day schedule into Google Event sheet rows.
+ *
+ * OVERVIEW:
+ * Padres/Chargers/USA-Mexico WC/Monday Night become google-event promos.
+ * Media prefers /gameday/ registry plates, then static /promos/ stills for
+ * Padres/MLB and Chargers — never a bare /api/og/event card for those.
+ *
+ * DEPENDENCIES:
+ * - ./events.ts
+ * - public/promos/event-padres-*.jpg, nfl-sunday-4x5.jpg
+ *
+ * EXPORTS:
+ * - PromoPostType, CuratedPromo, curatePromos, getCuratedPromos
+ * - EventPosterPlate, GAMEDAY_EVENT_PLATES, resolveEventPoster
+ *
+ * IMPLEMENTATION STATUS:
+ * - ✅ Padres Dodgers/home stills + Chargers NFL Sunday fallback
+ * - ✅ Empty GAMEDAY_EVENT_PLATES hook for future /gameday/ MLB plates
+ * - ❌ Week 2 NFL live-post flow is manual sheet rows — not wired here
+ *
+ * RELATED FILES:
+ * - src/lib/curated-promos.test.ts
+ * - src/app/api/promos/curate/route.ts
+ * - scripts/sheet-auto-publisher.gs (seedCuratedRows)
+ *
+ * LAST UPDATED: 2026-09-17
+ * MAINTAINER: American Heroes & Brew
+ */
 import type { UnifiedEvent } from '@/types';
 import { getAllEvents, isMondayNight } from './events';
 
@@ -83,7 +113,57 @@ function matchup(e: UnifiedEvent): string {
   return e.awayTeam && e.homeTeam ? `${e.awayTeam} vs ${e.homeTeam}` : e.eventTitle;
 }
 
-function eventPoster(e: UnifiedEvent, when: string, ratio: '9x16' | '4x5' = '9x16'): string {
+function isChargers(e: UnifiedEvent): boolean {
+  return e.homeTeam === 'Los Angeles Chargers' || e.awayTeam === 'Los Angeles Chargers';
+}
+
+/** First-match registry entry for a curated Google Event still. */
+export interface EventPosterPlate {
+  league?: string;
+  /** Case-insensitive substring of the away team name. */
+  awayIncludes?: string;
+  /** Case-insensitive substring of the home team name. */
+  homeIncludes?: string;
+  /** Case-insensitive substring of either team name. */
+  anyTeamIncludes?: string;
+  media: string;
+}
+
+/**
+ * Future /gameday/ plates win when registered here (first match).
+ * Example once an MLB plate ships:
+ * `{ league: 'MLB', awayIncludes: 'Dodgers', homeIncludes: 'Padres', media: '/gameday/mlb/dodgers-at-padres-feed-45.jpg' }`
+ * Do not register NFL Week 2 live-post plates — those stay on the manual sheet path.
+ */
+export const GAMEDAY_EVENT_PLATES: EventPosterPlate[] = [];
+
+const STATIC_EVENT_PLATES: EventPosterPlate[] = [
+  { league: 'MLB', awayIncludes: 'Dodgers', homeIncludes: 'Padres', media: '/promos/event-padres-dodgers.jpg' },
+  { league: 'MLB', awayIncludes: 'Padres', homeIncludes: 'Dodgers', media: '/promos/event-padres-dodgers.jpg' },
+  { league: 'MLB', anyTeamIncludes: 'Padres', media: '/promos/event-padres-home.jpg' },
+];
+
+const CHARGERS_FALLBACK = '/promos/nfl-sunday-4x5.jpg';
+const PADRES_FALLBACK = '/promos/event-padres-home.jpg';
+
+function plateMatches(e: UnifiedEvent, plate: EventPosterPlate): boolean {
+  if (plate.league && e.league !== plate.league) return false;
+  const away = (e.awayTeam ?? '').toLowerCase();
+  const home = (e.homeTeam ?? '').toLowerCase();
+  if (plate.awayIncludes && !away.includes(plate.awayIncludes.toLowerCase())) return false;
+  if (plate.homeIncludes && !home.includes(plate.homeIncludes.toLowerCase())) return false;
+  if (plate.anyTeamIncludes) {
+    const needle = plate.anyTeamIncludes.toLowerCase();
+    if (!away.includes(needle) && !home.includes(needle)) return false;
+  }
+  return true;
+}
+
+function firstMatchingPlate(e: UnifiedEvent, plates: EventPosterPlate[]): string | undefined {
+  return plates.find((p) => plateMatches(e, p))?.media;
+}
+
+function ogEventPoster(e: UnifiedEvent, when: string, ratio: '9x16' | '4x5' = '9x16'): string {
   const q = new URLSearchParams();
   if (e.awayTeam) q.set('away', e.awayTeam);
   if (e.homeTeam) q.set('home', e.homeTeam);
@@ -95,6 +175,29 @@ function eventPoster(e: UnifiedEvent, when: string, ratio: '9x16' | '4x5' = '9x1
   q.set('ratio', ratio);
   q.set('social', '1');
   return `/api/og/event?${q.toString()}`;
+}
+
+/**
+ * Resolve Google Event media: /gameday/ registry → static /promos/ plates →
+ * branded Chargers/Padres fallback → OG event card (WC / Monday Night only).
+ */
+export function resolveEventPoster(
+  e: UnifiedEvent,
+  when: string,
+  gamedayPlates: EventPosterPlate[] = GAMEDAY_EVENT_PLATES,
+  ratio: '9x16' | '4x5' = '9x16',
+): string {
+  const gameday = firstMatchingPlate(e, gamedayPlates);
+  if (gameday) return gameday;
+  const still = firstMatchingPlate(e, STATIC_EVENT_PLATES);
+  if (still) return still;
+  if (isChargers(e)) return CHARGERS_FALLBACK;
+  if (isPadres(e) || e.league === 'MLB') return PADRES_FALLBACK;
+  return ogEventPoster(e, when, ratio);
+}
+
+function eventPoster(e: UnifiedEvent, when: string, ratio: '9x16' | '4x5' = '9x16'): string {
+  return resolveEventPoster(e, when, GAMEDAY_EVENT_PLATES, ratio);
 }
 
 function googleEventPromo(e: UnifiedEvent): CuratedPromo {

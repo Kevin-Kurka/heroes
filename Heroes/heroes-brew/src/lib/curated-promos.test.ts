@@ -1,6 +1,25 @@
+/**
+ * FILE: curated-promos.test.ts
+ * PURPOSE: Guard Google Event curation — who gets a row, auto-approve, and branded media.
+ *
+ * OVERVIEW:
+ * Fixture-driven checks for Padres/Chargers/WC/MNF Google Events. P0 branded-media
+ * tests assert Padres/MLB and Chargers never ship bare /api/og/event Satori cards.
+ *
+ * DEPENDENCIES:
+ * - ./curated-promos.ts
+ * - public/promos/event-padres-*.jpg, nfl-sunday-4x5.jpg
+ *
+ * LAST UPDATED: 2026-09-17
+ * MAINTAINER: American Heroes & Brew
+ */
+import { existsSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { describe, it, expect } from 'vitest';
-import { curatePromos } from './curated-promos';
+import { curatePromos, GAMEDAY_EVENT_PLATES, resolveEventPoster } from './curated-promos';
 import type { UnifiedEvent } from '@/types';
+
+const PUBLIC = resolve(__dirname, '../../public');
 
 function ev(p: Partial<UnifiedEvent>): UnifiedEvent {
   return {
@@ -96,5 +115,114 @@ describe('curatePromos — Friar Frank push on Padres games', () => {
   it('does NOT add the Friar Frank push to a Chargers Google Event', () => {
     const out = curatePromos([ev({ id: 'nfl-c', league: 'NFL', homeTeam: 'Los Angeles Chargers', awayTeam: 'Denver Broncos' })]);
     expect(out.find((p) => p.key === 'gevt-nfl-c')?.caption).not.toContain('Friar Frank');
+  });
+});
+
+describe('curatePromos — branded event media (no Satori OG cards)', () => {
+  it('uses the Dodgers rivalry still for Padres vs Dodgers', () => {
+    const out = curatePromos([ev({
+      id: 'mlb-lad',
+      league: 'MLB',
+      homeTeam: 'San Diego Padres',
+      awayTeam: 'Los Angeles Dodgers',
+    })]);
+    const e = out.find((p) => p.key === 'gevt-mlb-lad');
+    expect(e?.media).toBe('/promos/event-padres-dodgers.jpg');
+    expect(e?.media).not.toMatch(/\/api\/og\/event/);
+  });
+
+  it('uses the home still for other Padres games', () => {
+    const home = curatePromos([ev({
+      id: 'mlb-chc',
+      league: 'MLB',
+      homeTeam: 'San Diego Padres',
+      awayTeam: 'Chicago Cubs',
+    })]).find((p) => p.key === 'gevt-mlb-chc');
+    const away = curatePromos([ev({
+      id: 'mlb-ari',
+      league: 'MLB',
+      homeTeam: 'Arizona Diamondbacks',
+      awayTeam: 'San Diego Padres',
+    })]).find((p) => p.key === 'gevt-mlb-ari');
+    expect(home?.media).toBe('/promos/event-padres-home.jpg');
+    expect(away?.media).toBe('/promos/event-padres-home.jpg');
+    expect(home?.media).not.toMatch(/\/api\/og\/event/);
+  });
+
+  it('uses a branded NFL still for Chargers — not /api/og/event and not week2 gameday plates', () => {
+    const out = curatePromos([ev({
+      id: 'nfl-c',
+      league: 'NFL',
+      homeTeam: 'Los Angeles Chargers',
+      awayTeam: 'Las Vegas Raiders',
+    })]);
+    const e = out.find((p) => p.key === 'gevt-nfl-c');
+    expect(e?.media).toBe('/promos/nfl-sunday-4x5.jpg');
+    expect(e?.media).not.toMatch(/\/api\/og\/event/);
+    expect(e?.media).not.toMatch(/\/gameday\/week2\//);
+  });
+
+  it('keeps World Cup / Monday Night on the OG event card (unchanged path)', () => {
+    const wc = curatePromos([ev({
+      id: 'wc-1',
+      league: 'WORLDCUP',
+      homeTeam: 'United States',
+      awayTeam: 'Wales',
+    })]).find((p) => p.key === 'gevt-wc-1');
+    const mnf = curatePromos([ev({
+      id: 'mnf',
+      league: 'NFL',
+      homeTeam: 'Buffalo Bills',
+      awayTeam: 'New York Jets',
+      eventTimestamp: '2026-06-29T19:00:00-07:00',
+    })]).find((p) => p.key === 'gevt-mnf');
+    expect(wc?.media).toMatch(/^\/api\/og\/event\?/);
+    expect(mnf?.media).toMatch(/^\/api\/og\/event\?/);
+  });
+
+  it('frames Padres/Chargers as a fan watch party — no official partnership language', () => {
+    const out = curatePromos([
+      ev({ id: 'mlb-p', league: 'MLB', homeTeam: 'San Diego Padres', awayTeam: 'Los Angeles Dodgers' }),
+      ev({ id: 'nfl-c', league: 'NFL', homeTeam: 'Los Angeles Chargers', awayTeam: 'Denver Broncos' }),
+    ]);
+    for (const p of out) {
+      const copy = `${p.headline}\n${p.caption}\n${p.storyCaption}`;
+      expect(copy).not.toMatch(/official (mlb|padres|nfl|chargers|partnership)/i);
+      expect(copy).not.toMatch(/presented by (the )?(mlb|padres|chargers|nfl)/i);
+      expect(copy).toMatch(/watch|catch/i);
+    }
+  });
+
+  it('points media at files that exist under public/', () => {
+    for (const src of ['/promos/event-padres-dodgers.jpg', '/promos/event-padres-home.jpg', '/promos/nfl-sunday-4x5.jpg']) {
+      expect(existsSync(resolve(PUBLIC, src.replace(/^\//, ''))), src).toBe(true);
+    }
+  });
+});
+
+describe('resolveEventPoster — /gameday/ registry hook', () => {
+  it('ships an empty gameday registry so NFL week2 live-post plates stay manual', () => {
+    expect(GAMEDAY_EVENT_PLATES).toEqual([]);
+  });
+
+  it('lets a registered gameday MLB plate win over static /promos/ plates', () => {
+    const e = ev({
+      league: 'MLB',
+      homeTeam: 'San Diego Padres',
+      awayTeam: 'Los Angeles Dodgers',
+    });
+    const future = '/gameday/mlb/dodgers-at-padres-feed-45.jpg';
+    expect(resolveEventPoster(e, 'Fri 7:10 PM', [
+      { league: 'MLB', awayIncludes: 'Dodgers', homeIncludes: 'Padres', media: future },
+    ])).toBe(future);
+  });
+
+  it('falls back to the static Dodgers plate when the gameday registry is empty', () => {
+    const e = ev({
+      league: 'MLB',
+      homeTeam: 'San Diego Padres',
+      awayTeam: 'Los Angeles Dodgers',
+    });
+    expect(resolveEventPoster(e, 'Fri 7:10 PM', [])).toBe('/promos/event-padres-dodgers.jpg');
   });
 });
