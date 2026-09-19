@@ -133,6 +133,9 @@ export default function LocationPageClient({ restaurant, today }: Props) {
                   </div>
                 ))}
               </div>
+              <p className="mt-3 text-xs leading-relaxed text-muted">
+                Kitchen may close earlier on slow nights — call ahead for last food order. Bar open during posted hours.
+              </p>
             </motion.div>
           </div>
         </div>

@@ -80,6 +80,8 @@ export async function GET() {
 ## Hours
 ${hours}
 
+Kitchen may close earlier on slow nights — call ahead for last food order. Bar open during posted hours.
+
 ## Menu highlights
 ${menuSections}
 
