@@ -17,8 +17,8 @@
  *
  * IMPLEMENTATION STATUS:
  * - ✅ Padres FINALS: /promos/event-padres-home.jpg + event-padres-dodgers.jpg
- * - ✅ Chargers NFL Sunday fallback (not week2 live-post plates)
- * - ❌ Week 2 NFL live-post flow is manual sheet rows — not wired here
+ * - ✅ Chargers NFL Sunday fallback (not week3 live-post plates)
+ * - ❌ Week 3 NFL live-post flow is manual sheet rows — not wired here
  *
  * RELATED FILES:
  * - src/lib/curated-promos.test.ts
@@ -133,7 +133,7 @@ export interface EventPosterPlate {
  * Future /gameday/ plates win when registered here (first match).
  * Example once an MLB plate ships:
  * `{ league: 'MLB', awayIncludes: 'Dodgers', homeIncludes: 'Padres', media: '/gameday/mlb/dodgers-at-padres-feed-45.jpg' }`
- * Do not register NFL Week 2 live-post plates — those stay on the manual sheet path.
+ * Do not register NFL Week 3 live-post plates — those stay on the manual sheet path.
  */
 export const GAMEDAY_EVENT_PLATES: EventPosterPlate[] = [
   // Future matchup-specific /gameday/mlb/… plates win when added here.

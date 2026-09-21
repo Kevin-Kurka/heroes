@@ -149,7 +149,7 @@ describe('curatePromos — branded event media (no Satori OG cards)', () => {
     expect(home?.media).not.toMatch(/\/api\/og\/event/);
   });
 
-  it('uses a branded NFL still for Chargers — not /api/og/event and not week2 gameday plates', () => {
+  it('uses a branded NFL still for Chargers — not /api/og/event and not week3 gameday plates', () => {
     const out = curatePromos([ev({
       id: 'nfl-c',
       league: 'NFL',
@@ -160,6 +160,7 @@ describe('curatePromos — branded event media (no Satori OG cards)', () => {
     expect(e?.media).toBe('/promos/nfl-sunday-4x5.jpg');
     expect(e?.media).not.toMatch(/\/api\/og\/event/);
     expect(e?.media).not.toMatch(/\/gameday\/week2\//);
+    expect(e?.media).not.toMatch(/\/gameday\/week3\//);
   });
 
   it('keeps World Cup / Monday Night on the OG event card (unchanged path)', () => {
@@ -207,8 +208,9 @@ describe('curatePromos — branded event media (no Satori OG cards)', () => {
 });
 
 describe('resolveEventPoster — /gameday/ registry hook', () => {
-  it('keeps the gameday registry free of NFL week2 live-post plates', () => {
+  it('keeps the gameday registry free of NFL week2/week3 live-post plates', () => {
     expect(GAMEDAY_EVENT_PLATES.every((p) => !p.media.includes('/gameday/week2/'))).toBe(true);
+    expect(GAMEDAY_EVENT_PLATES.every((p) => !p.media.includes('/gameday/week3/'))).toBe(true);
   });
 
   it('lets a registered gameday MLB plate win over static /promos/ plates', () => {
