@@ -1,26 +1,26 @@
 /**
  * FILE: page.tsx
- * PURPOSE: /watch-party index — Week 2 NFL posters plus featured event pages.
+ * PURPOSE: /watch-party index — Week 3 NFL posters plus featured event pages.
  *
  * OVERVIEW:
  * Hub for AHAB watch parties so /watch-party is a real route (not only slugs).
  * Reuses LandingPageView patterns: plain server shell + gallery client island.
  *
  * DEPENDENCIES:
- * - @/lib/menu, @/lib/watch-parties, @/lib/week2-posters
+ * - @/lib/menu, @/lib/watch-parties, @/lib/week3-posters
  * - Week1PosterGallery, structured-data helpers
  *
  * EXPORTS:
  * - WatchPartyIndexPage (default)
  *
  * IMPLEMENTATION STATUS:
- * - ✅ Week 2 gallery + links to dated /watch-party/<slug> pages
+ * - ✅ Week 3 gallery + links to dated /watch-party/<slug> pages
  *
  * RELATED FILES:
  * - src/app/watch/page.tsx
  * - src/app/watch-party/[slug]/page.tsx
  *
- * LAST UPDATED: 2026-09-14
+ * LAST UPDATED: 2026-09-21
  * MAINTAINER: American Heroes & Brew
  */
 import type { Metadata } from 'next';
@@ -28,7 +28,7 @@ import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
 import { getRestaurantInfo } from '@/lib/menu';
 import { getAllWatchParties } from '@/lib/watch-parties';
-import { WEEK2_DISCLAIMER } from '@/lib/week2-posters';
+import { WEEK3_DISCLAIMER } from '@/lib/week3-posters';
 import {
   SITE_URL,
   getWebPageJsonLd,
@@ -36,9 +36,9 @@ import {
 } from '@/lib/structured-data';
 import Week1PosterGallery from '@/components/Week1PosterGallery';
 
-const TITLE = 'Watch Parties in Carlsbad — NFL Week 2 at American Heroes & Brew';
+const TITLE = 'Watch Parties in Carlsbad — NFL Week 3 at American Heroes & Brew';
 const DESCRIPTION =
-  'NFL Week 2 watch-party posters at American Heroes & Brew in Carlsbad Village — 16 TVs, walk-ins welcome, 300 Carlsbad Village Dr. Kickoffs in PT. Fan graphic, not an official NFL partnership.';
+  'NFL Week 3 watch-party posters at American Heroes & Brew in Carlsbad Village — 16 TVs, walk-ins welcome, 300 Carlsbad Village Dr. Kickoffs in PT. Fan graphic, not an official NFL partnership.';
 const PAGE_URL = `${SITE_URL}/watch-party`;
 
 export const metadata: Metadata = {
@@ -100,7 +100,7 @@ export default function WatchPartyIndexPage() {
             </h1>
             <p className="text-lg text-foreground/80 mt-3 leading-relaxed">
               Every game on 16 TVs at {restaurant.address1} — walk-ins welcome, no cover.
-              NFL Week 2 posters are below; kickoffs in PT.
+              NFL Week 3 posters are below; kickoffs in PT.
             </p>
             <div className="mt-4 flex flex-wrap gap-3 text-sm">
               <Link href="/watch" className="text-accent hover:underline">
@@ -113,7 +113,7 @@ export default function WatchPartyIndexPage() {
             </div>
           </header>
 
-          <Week1PosterGallery heading="NFL Week 2 posters" />
+          <Week1PosterGallery heading="NFL Week 3" />
 
           {parties.length > 0 && (
             <section className="mt-8">
@@ -140,7 +140,7 @@ export default function WatchPartyIndexPage() {
             </section>
           )}
 
-          <p className="mt-8 text-xs text-muted">{WEEK2_DISCLAIMER}</p>
+          <p className="mt-8 text-xs text-muted">{WEEK3_DISCLAIMER}</p>
         </div>
       </div>
     </>
