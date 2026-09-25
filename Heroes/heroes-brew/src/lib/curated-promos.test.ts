@@ -5,18 +5,30 @@
  * OVERVIEW:
  * Fixture-driven checks for Padres/Chargers/WC/MNF Google Events. P0 branded-media
  * tests assert Padres/MLB and Chargers never ship bare /api/og/event Satori cards.
+ * Padres Media is the live static plates (home / Dodgers rival), never invented
+ * story-916 or big-series URLs that 404 on the site.
  *
  * DEPENDENCIES:
  * - ./curated-promos.ts
  * - public/promos/event-padres-*.jpg, nfl-sunday-4x5.jpg
+ * - scripts/sheet-auto-publisher.gs
  *
- * LAST UPDATED: 2026-09-17
+ * LAST UPDATED: 2026-09-25
  * MAINTAINER: American Heroes & Brew
  */
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, it, expect } from 'vitest';
-import { curatePromos, GAMEDAY_EVENT_PLATES, resolveEventPoster } from './curated-promos';
+import {
+  curatePromos,
+  GAMEDAY_EVENT_PLATES,
+  PADRES_HOME_FEED_ALIAS,
+  PADRES_HOME_PLATE,
+  PADRES_RIVAL_FEED_ALIAS,
+  PADRES_RIVAL_PLATE,
+  padresEventMedia,
+  resolveEventPoster,
+} from './curated-promos';
 import type { UnifiedEvent } from '@/types';
 
 const PUBLIC = resolve(__dirname, '../../public');
@@ -127,16 +139,18 @@ describe('curatePromos — branded event media (no Satori OG cards)', () => {
       awayTeam: 'Los Angeles Dodgers',
     })]);
     const e = out.find((p) => p.key === 'gevt-mlb-lad');
+    expect(e?.media).toBe(PADRES_RIVAL_PLATE);
     expect(e?.media).toBe('/promos/event-padres-dodgers.jpg');
     expect(e?.media).not.toMatch(/\/api\/og\/event/);
   });
 
-  it('uses the home still for other Padres games', () => {
+  it('uses the home still for Petco / other Padres games — never invented 404 URLs', () => {
     const home = curatePromos([ev({
       id: 'mlb-chc',
       league: 'MLB',
       homeTeam: 'San Diego Padres',
       awayTeam: 'Chicago Cubs',
+      venue: 'Petco Park',
     })]).find((p) => p.key === 'gevt-mlb-chc');
     const away = curatePromos([ev({
       id: 'mlb-ari',
@@ -144,9 +158,13 @@ describe('curatePromos — branded event media (no Satori OG cards)', () => {
       homeTeam: 'Arizona Diamondbacks',
       awayTeam: 'San Diego Padres',
     })]).find((p) => p.key === 'gevt-mlb-ari');
+    expect(home?.media).toBe(PADRES_HOME_PLATE);
+    expect(away?.media).toBe(PADRES_HOME_PLATE);
     expect(home?.media).toBe('/promos/event-padres-home.jpg');
     expect(away?.media).toBe('/promos/event-padres-home.jpg');
     expect(home?.media).not.toMatch(/\/api\/og\/event/);
+    expect(home?.media).not.toMatch(/story-916|big-series|event-padres-away/);
+    expect(away?.media).not.toMatch(/story-916|big-series|event-padres-away/);
   });
 
   it('uses a branded NFL still for Chargers — not /api/og/event and not week3 gameday plates', () => {
@@ -231,6 +249,75 @@ describe('resolveEventPoster — /gameday/ registry hook', () => {
       homeTeam: 'San Diego Padres',
       awayTeam: 'Los Angeles Dodgers',
     });
-    expect(resolveEventPoster(e, 'Fri 7:10 PM', [])).toBe('/promos/event-padres-dodgers.jpg');
+    expect(resolveEventPoster(e, 'Fri 7:10 PM', [])).toBe(PADRES_RIVAL_PLATE);
+  });
+});
+
+describe('padresEventMedia — Petco/home vs Dodgers rival vs live fallback', () => {
+  it('prefers the home plate for Petco / Padres-home games', () => {
+    expect(padresEventMedia(ev({
+      league: 'MLB',
+      homeTeam: 'San Diego Padres',
+      awayTeam: 'Arizona Diamondbacks',
+      venue: 'Petco Park',
+    }))).toBe(PADRES_HOME_PLATE);
+  });
+
+  it('uses the rival plate only vs Dodgers (home or away)', () => {
+    expect(padresEventMedia(ev({
+      league: 'MLB',
+      homeTeam: 'San Diego Padres',
+      awayTeam: 'Los Angeles Dodgers',
+      venue: 'Petco Park',
+    }))).toBe(PADRES_RIVAL_PLATE);
+    expect(padresEventMedia(ev({
+      league: 'MLB',
+      homeTeam: 'Los Angeles Dodgers',
+      awayTeam: 'San Diego Padres',
+      venue: 'Dodger Stadium',
+    }))).toBe(PADRES_RIVAL_PLATE);
+  });
+
+  it('falls back to the live home JPG for away non-Dodgers — no invented story/away URLs', () => {
+    const media = padresEventMedia(ev({
+      league: 'MLB',
+      homeTeam: 'Chicago Cubs',
+      awayTeam: 'San Diego Padres',
+      venue: 'Wrigley Field',
+    }));
+    expect(media).toBe(PADRES_HOME_PLATE);
+    expect(media).not.toMatch(/\/api\/og\/event/);
+    expect(media).not.toMatch(/story-916|big-series|event-padres-away/);
+  });
+
+  it('never returns an OG navy card even when league is missing', () => {
+    const media = padresEventMedia(ev({
+      homeTeam: 'San Diego Padres',
+      awayTeam: 'San Francisco Giants',
+    }));
+    expect(media).toBe(PADRES_HOME_PLATE);
+    expect(resolveEventPoster(ev({
+      homeTeam: 'San Diego Padres',
+      awayTeam: 'San Francisco Giants',
+    }), 'Sat 6:10 PM', [])).toBe(PADRES_HOME_PLATE);
+  });
+
+  it('keeps feed-45 aliases as live twins of the canonical plates', () => {
+    expect(PADRES_HOME_FEED_ALIAS).toBe('/promos/event-padres-home-feed-45.jpg');
+    expect(PADRES_RIVAL_FEED_ALIAS).toBe('/promos/event-padres-rival-feed-45.jpg');
+    expect(existsSync(resolve(PUBLIC, PADRES_HOME_PLATE.replace(/^\//, '')))).toBe(true);
+    expect(existsSync(resolve(PUBLIC, PADRES_HOME_FEED_ALIAS.replace(/^\//, '')))).toBe(true);
+    expect(existsSync(resolve(PUBLIC, PADRES_RIVAL_PLATE.replace(/^\//, '')))).toBe(true);
+    expect(existsSync(resolve(PUBLIC, PADRES_RIVAL_FEED_ALIAS.replace(/^\//, '')))).toBe(true);
+  });
+});
+
+describe('sheet-auto-publisher.gs — refresh leftover Padres OG media', () => {
+  const gs = readFileSync(resolve(__dirname, '../../scripts/sheet-auto-publisher.gs'), 'utf8');
+
+  it('rewrites unposted curated rows that still point at /api/og/event', () => {
+    expect(gs).toMatch(/function shouldRewriteCuratedMedia_/);
+    expect(gs).toMatch(/\/api\/og\/event/);
+    expect(gs).toMatch(/shouldRewriteCuratedMedia_\(/);
   });
 });

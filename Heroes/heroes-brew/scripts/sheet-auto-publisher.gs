@@ -728,6 +728,26 @@ function curatedExists_(values, c, item, tz) {
   return false;
 }
 
+function curatedRowIndex_(values, c, item) {
+  if (c.notes < 0 || !item || !item.key) return -1;
+  for (var i = 1; i < values.length; i++) {
+    if (String(values[i][c.notes] || '').trim() === item.key) return i;
+  }
+  return -1;
+}
+
+function isOgEventMedia_(media) {
+  return String(media || '').toLowerCase().indexOf('/api/og/event') >= 0;
+}
+
+// Rewrite leftover Satori navy cards on unposted curated rows onto branded stills.
+function shouldRewriteCuratedMedia_(existingMedia, newMedia, posted) {
+  if (String(posted || '').trim()) return false;
+  if (!newMedia) return false;
+  if (existingMedia === newMedia) return false;
+  return isOgEventMedia_(existingMedia) && !isOgEventMedia_(newMedia);
+}
+
 function seedCuratedRows() {
   var props = props_();
   var site = props.getProperty('SITE') || 'https://americanheroesandbrew.com';
@@ -764,6 +784,17 @@ function seedCuratedRows() {
     var ctx = ctxFor_(item);
     var sh = ctx.sh, header = ctx.header, c = ctx.c, values = ctx.values;
     if (c.media < 0 || c.date < 0) return;
+    var existingIdx = curatedRowIndex_(values, c, item);
+    if (existingIdx >= 0) {
+      var posted = c.posted >= 0 ? values[existingIdx][c.posted] : '';
+      var existingMedia = values[existingIdx][c.media];
+      if (shouldRewriteCuratedMedia_(existingMedia, item.media, posted)) {
+        sh.getRange(existingIdx + 1, c.media + 1).setValue(item.media);
+        values[existingIdx][c.media] = item.media;
+        linkifyMediaCell_(sh.getRange(existingIdx + 1, c.media + 1), site);
+      }
+      return;
+    }
     if (curatedExists_(values, c, item, tz)) return;
     var rowArr = [];
     for (var j = 0; j < header.length; j++) rowArr.push('');
