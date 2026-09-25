@@ -315,9 +315,36 @@ describe('padresEventMedia — Petco/home vs Dodgers rival vs live fallback', ()
 describe('sheet-auto-publisher.gs — refresh leftover Padres OG media', () => {
   const gs = readFileSync(resolve(__dirname, '../../scripts/sheet-auto-publisher.gs'), 'utf8');
 
+  function loadRewriteFns() {
+    const isOg = gs.match(/function isOgEventMedia_\([\s\S]*?\n\}/)?.[0];
+    const should = gs.match(/function shouldRewriteCuratedMedia_\([\s\S]*?\n\}/)?.[0];
+    expect(isOg, 'isOgEventMedia_ missing').toBeTruthy();
+    expect(should, 'shouldRewriteCuratedMedia_ missing').toBeTruthy();
+    // Eval the Apps Script helpers in-process so the predicate is the live source.
+    // eslint-disable-next-line no-eval -- extract the bound-script functions for a real fixture table
+    return eval(`(function () { ${isOg}\n${should}\n return { isOgEventMedia_, shouldRewriteCuratedMedia_ }; })()`) as {
+      isOgEventMedia_: (media: string) => boolean;
+      shouldRewriteCuratedMedia_: (existing: string, next: string, posted: string) => boolean;
+    };
+  }
+
   it('rewrites unposted curated rows that still point at /api/og/event', () => {
     expect(gs).toMatch(/function shouldRewriteCuratedMedia_/);
     expect(gs).toMatch(/\/api\/og\/event/);
     expect(gs).toMatch(/shouldRewriteCuratedMedia_\(/);
+  });
+
+  it('only rewrites unposted OG leftovers onto a branded still', () => {
+    const { shouldRewriteCuratedMedia_ } = loadRewriteFns();
+    const og = '/api/og/event?away=Cubs&home=Padres';
+    const home = '/promos/event-padres-home.jpg';
+    const rival = '/promos/event-padres-dodgers.jpg';
+    expect(shouldRewriteCuratedMedia_(og, home, '')).toBe(true);
+    expect(shouldRewriteCuratedMedia_(og, rival, '')).toBe(true);
+    expect(shouldRewriteCuratedMedia_(og, home, 'Sep 25, 2026')).toBe(false);
+    expect(shouldRewriteCuratedMedia_(home, rival, '')).toBe(false);
+    expect(shouldRewriteCuratedMedia_(og, og, '')).toBe(false);
+    expect(shouldRewriteCuratedMedia_(og, '', '')).toBe(false);
+    expect(shouldRewriteCuratedMedia_(home, home, '')).toBe(false);
   });
 });
