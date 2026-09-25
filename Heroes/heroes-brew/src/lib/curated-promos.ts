@@ -4,8 +4,8 @@
  *
  * OVERVIEW:
  * Padres/Chargers/USA-Mexico WC/Monday Night become google-event promos.
- * Media prefers /gameday/ registry plates, then static /promos/ stills for
- * Padres/MLB and Chargers — never a bare /api/og/event card for those.
+ * Padres Media is always a live static JPG (home / Dodgers rival) — never a
+ * bare /api/og/event navy card, and never an invented story-916 URL.
  *
  * DEPENDENCIES:
  * - ./events.ts
@@ -14,9 +14,12 @@
  * EXPORTS:
  * - PromoPostType, CuratedPromo, curatePromos, getCuratedPromos
  * - EventPosterPlate, GAMEDAY_EVENT_PLATES, resolveEventPoster
+ * - PADRES_HOME_PLATE, PADRES_RIVAL_PLATE, padresEventMedia
  *
  * IMPLEMENTATION STATUS:
- * - ✅ Padres FINALS: /promos/event-padres-home.jpg + event-padres-dodgers.jpg
+ * - ✅ Padres home/Petco → /promos/event-padres-home.jpg
+ * - ✅ Padres vs Dodgers → /promos/event-padres-dodgers.jpg
+ * - ✅ Away non-Dodgers fall back to the live home JPG (no 404 story/away URLs)
  * - ✅ Chargers NFL Sunday fallback (not week3 live-post plates)
  * - ❌ Week 3 NFL live-post flow is manual sheet rows — not wired here
  *
@@ -25,7 +28,7 @@
  * - src/app/api/promos/curate/route.ts
  * - scripts/sheet-auto-publisher.gs (seedCuratedRows)
  *
- * LAST UPDATED: 2026-09-17
+ * LAST UPDATED: 2026-09-25
  * MAINTAINER: American Heroes & Brew
  */
 import type { UnifiedEvent } from '@/types';
@@ -70,8 +73,34 @@ const EVENT_DURATION_MS = 2.5 * 60 * 60 * 1000;
 /** The Padres game-day special, pushed on every Padres post. */
 const FRIAR_FRANK_PUSH = 'Friar Franks $6 + $2 off Heroes drafts all game. 🌭🍺';
 
+function teamBlob(e: UnifiedEvent): string {
+  return `${e.homeTeam ?? ''}|${e.awayTeam ?? ''}|${e.eventTitle ?? ''}`.toLowerCase();
+}
+
 function isPadres(e: UnifiedEvent): boolean {
-  return e.homeTeam === 'San Diego Padres' || e.awayTeam === 'San Diego Padres';
+  return /\bpadres\b/.test(teamBlob(e));
+}
+
+function isDodgersRivalry(e: UnifiedEvent): boolean {
+  const blob = teamBlob(e);
+  return /\bpadres\b/.test(blob) && /\bdodgers\b/.test(blob);
+}
+
+/** Live branded plates (both 200 on production). Feed-45 files are byte aliases. */
+export const PADRES_HOME_PLATE = '/promos/event-padres-home.jpg';
+export const PADRES_HOME_FEED_ALIAS = '/promos/event-padres-home-feed-45.jpg';
+export const PADRES_RIVAL_PLATE = '/promos/event-padres-dodgers.jpg';
+export const PADRES_RIVAL_FEED_ALIAS = '/promos/event-padres-rival-feed-45.jpg';
+
+/**
+ * Padres Google/Feed media. Rival plate only vs Dodgers; Petco/home and every
+ * other Padres game use the home plate that already 200s. Do not invent
+ * story-916 / away / big-series URLs — those 404 on the live site.
+ */
+export function padresEventMedia(e: UnifiedEvent): string | undefined {
+  if (!isPadres(e)) return undefined;
+  if (isDodgersRivalry(e)) return PADRES_RIVAL_PLATE;
+  return PADRES_HOME_PLATE;
 }
 
 /** Teams whose every game becomes a Google Event (league-scoped below). */
@@ -141,13 +170,12 @@ export const GAMEDAY_EVENT_PLATES: EventPosterPlate[] = [
 ];
 
 const STATIC_EVENT_PLATES: EventPosterPlate[] = [
-  { league: 'MLB', awayIncludes: 'Dodgers', homeIncludes: 'Padres', media: '/promos/event-padres-dodgers.jpg' },
-  { league: 'MLB', awayIncludes: 'Padres', homeIncludes: 'Dodgers', media: '/promos/event-padres-dodgers.jpg' },
-  { league: 'MLB', anyTeamIncludes: 'Padres', media: '/promos/event-padres-home.jpg' },
+  { league: 'MLB', awayIncludes: 'Dodgers', homeIncludes: 'Padres', media: PADRES_RIVAL_PLATE },
+  { league: 'MLB', awayIncludes: 'Padres', homeIncludes: 'Dodgers', media: PADRES_RIVAL_PLATE },
+  { league: 'MLB', anyTeamIncludes: 'Padres', media: PADRES_HOME_PLATE },
 ];
 
 const CHARGERS_FALLBACK = '/promos/nfl-sunday-4x5.jpg';
-const PADRES_FALLBACK = '/promos/event-padres-home.jpg';
 
 function plateMatches(e: UnifiedEvent, plate: EventPosterPlate): boolean {
   if (plate.league && e.league !== plate.league) return false;
@@ -181,8 +209,9 @@ function ogEventPoster(e: UnifiedEvent, when: string, ratio: '9x16' | '4x5' = '9
 }
 
 /**
- * Resolve Google Event media: /gameday/ registry → static /promos/ plates →
- * branded Chargers/Padres fallback → OG event card (WC / Monday Night only).
+ * Resolve Google Event media: /gameday/ registry → Padres static plates →
+ * other static /promos/ plates → Chargers fallback → OG event card
+ * (WC / Monday Night only). Padres never fall through to /api/og/event.
  */
 export function resolveEventPoster(
   e: UnifiedEvent,
@@ -192,10 +221,11 @@ export function resolveEventPoster(
 ): string {
   const gameday = firstMatchingPlate(e, gamedayPlates);
   if (gameday) return gameday;
+  const padres = padresEventMedia(e);
+  if (padres) return padres;
   const still = firstMatchingPlate(e, STATIC_EVENT_PLATES);
   if (still) return still;
   if (isChargers(e)) return CHARGERS_FALLBACK;
-  if (isPadres(e) || e.league === 'MLB') return PADRES_FALLBACK;
   return ogEventPoster(e, when, ratio);
 }
 
