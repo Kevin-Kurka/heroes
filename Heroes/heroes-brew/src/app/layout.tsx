@@ -5,7 +5,7 @@ import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { GoogleAnalytics } from '@next/third-parties/google';
 import TopNav from '@/components/TopNav';
-import BottomNav from '@/components/BottomNav';
+import SiteChrome from '@/components/SiteChrome';
 import { getRestaurantJsonLd, SITE_URL } from '@/lib/structured-data';
 
 const geistSans = Geist({
@@ -91,10 +91,10 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(getRestaurantJsonLd()) }}
         />
         <TopNav />
-        <main className="md:pt-16 pb-20 md:pb-0 min-h-screen">
+        <main className="md:pt-16 pb-[calc(7.75rem+env(safe-area-inset-bottom))] md:pb-[calc(4.25rem+env(safe-area-inset-bottom))] min-h-screen">
           {children}
         </main>
-        <BottomNav />
+        <SiteChrome />
         <Analytics />
         <SpeedInsights />
       </body>

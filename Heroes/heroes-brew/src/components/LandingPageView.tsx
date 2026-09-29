@@ -6,9 +6,7 @@ import { LANDING_PAGES, type LandingPageContent } from '@/lib/landing-pages';
 import { SITE_URL } from '@/lib/structured-data';
 import ReviewCTA from '@/components/ReviewCTA';
 import InviteActions from '@/components/InviteActions';
-
-const DIRECTIONS_URL =
-  'https://www.google.com/maps/dir//American+Heroes+%26+Brew,+300+Carlsbad+Village+Dr+STE+120,+Carlsbad,+CA+92008';
+import { DIRECTIONS_URL, PHONE_TEL } from '@/lib/visit';
 
 interface Props {
   page: LandingPageContent;
@@ -25,7 +23,6 @@ interface Props {
  * mirroring AboutFaqSection, and matches the page's FAQPage JSON-LD.
  */
 export default function LandingPageView({ page, restaurant, afterIntro }: Props) {
-  const tel = restaurant.phone.replace(/\D/g, '');
   const otherPages = Object.values(LANDING_PAGES).filter((p) => p.slug !== page.slug);
 
   return (
@@ -61,7 +58,7 @@ export default function LandingPageView({ page, restaurant, afterIntro }: Props)
               <MapPin size={18} /> Get Directions
             </a>
             <a
-              href={`tel:${tel}`}
+              href={`tel:${PHONE_TEL}`}
               className="inline-flex items-center justify-center gap-2 bg-card border border-border text-foreground font-medium px-6 py-3 rounded-sm hover:border-accent/40 transition-colors"
             >
               <Phone size={18} /> {restaurant.phone}

@@ -46,7 +46,7 @@ function getStyleCSS(s: StyleKey, m: ModeKey): string {
   const G = "'Geist',var(--font-geist-sans),system-ui,sans-serif";
   const shared = `
     @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&display=swap');
-    nav,header,.bottom-nav,footer{display:none!important}
+    nav,header,.bottom-nav,[data-conversion-bar],footer{display:none!important}
     main{padding:0!important;min-height:auto!important}
     *{box-sizing:border-box}
     @media print{
