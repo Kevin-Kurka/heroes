@@ -60,7 +60,7 @@ export default function VisitActions({ source, variant = 'bar' }: Props) {
         className={`${btnBase} bg-navy text-white hover:bg-navy/80 transition-colors`}
       >
         <MapPin size={isBar ? 16 : 18} />
-        {isBar ? 'Directions' : 'Get Directions'}
+        Directions
       </a>
       <a
         href={`tel:${PHONE_TEL}`}

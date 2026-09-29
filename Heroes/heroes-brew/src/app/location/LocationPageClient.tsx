@@ -35,8 +35,8 @@ export default function LocationPageClient({ restaurant, today }: Props) {
         className="fixed inset-0 -z-10 bg-[url('/location-bg.jpg')] bg-cover bg-center opacity-10 pointer-events-none"
         style={{ y: bgY, scale: bgScale, willChange: 'transform' }}
       />
-      <div className="max-w-4xl mx-auto px-4 py-6">
-        <h1 className="text-3xl font-bold text-foreground drop-shadow-lg mb-4" style={{ viewTransitionName: 'page-title' }}>Find Us</h1>
+      <div className="max-w-4xl mx-auto px-4 py-4 md:py-6">
+        <h1 className="text-3xl font-bold text-foreground drop-shadow-lg mb-3" style={{ viewTransitionName: 'page-title' }}>Find Us</h1>
 
         <VisitActions source="location" variant="page" />
 
@@ -93,17 +93,17 @@ export default function LocationPageClient({ restaurant, today }: Props) {
               transition={{ duration: 0.2, delay: 0.15, ease: [0, 0, 0.2, 1] }}
               className="bg-card/70 backdrop-blur-md border border-white/10 rounded-md p-4"
             >
-              <div className="flex items-center gap-3 mb-3">
+              <div className="flex items-center gap-3 mb-2">
                 <div className="p-2 bg-accent/10 rounded-lg">
                   <Clock size={20} className="text-accent" />
                 </div>
                 <h3 className="font-semibold text-foreground">Hours</h3>
               </div>
-              <div className="space-y-1.5">
+              <div className="space-y-0.5">
                 {restaurant.hours.map((h) => (
                   <div
                     key={h.dayOfWeek}
-                    className={`flex justify-between text-sm px-2 py-1 rounded ${
+                    className={`flex justify-between text-sm px-2 py-0.5 rounded ${
                       h.dayOfWeek === today
                         ? 'bg-accent/10 text-accent font-medium'
                         : 'text-muted'

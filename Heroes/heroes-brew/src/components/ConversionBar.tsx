@@ -32,7 +32,9 @@ export default function ConversionBar() {
       aria-label="Directions, call, and order"
       className="border-t border-border bg-card/95 backdrop-blur-md"
     >
-      <VisitActions source="conversion_bar" variant="bar" />
+      <div className="mx-auto w-full max-w-3xl md:max-w-xl md:px-2 md:py-0.5">
+        <VisitActions source="conversion_bar" variant="bar" />
+      </div>
     </nav>
   );
 }

@@ -51,7 +51,7 @@ describe('visit conversion links', () => {
     expect(actions).toContain('DIRECTIONS_URL');
     expect(actions).toContain('PHONE_TEL');
     expect(actions).toContain('DOORDASH_URL');
-    expect(actions).toContain('Get Directions');
+    expect(actions).toContain('aria-label="Get Directions"');
     expect(actions).toContain('Order');
 
     const chrome = readFileSync(resolve(__dirname, '../components/SiteChrome.tsx'), 'utf8');
