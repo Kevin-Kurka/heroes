@@ -13,7 +13,7 @@ import InstagramEmbed from '@/components/InstagramEmbed';
 import { getCurrentHero } from '@/lib/heroes';
 import DoorDashIcon from '@/components/DoorDashIcon';
 import { trackEvent } from '@/lib/analytics';
-import { DOORDASH_URL } from '@/lib/doordash';
+import { DIRECTIONS_URL, DOORDASH_URL } from '@/lib/visit';
 import { useDoorDashAvailable } from '@/hooks/use-doordash-available';
 import { BREAKFAST_HH_DAILY_DEAL, FRIDAY_FUNDAY_DEAL, TWO_FOR_22_DAILY_DEAL } from '@/lib/early-bird';
 import { HOME_SPECIALS } from '@/lib/menu-specials';
@@ -202,7 +202,7 @@ export default function HomePageClient({ events, todayIndex }: Props) {
               )}
             </div>
             <a
-              href="https://www.google.com/maps/dir//American+Heroes+%26+Brew,+300+Carlsbad+Village+Dr+STE+120,+Carlsbad,+CA+92008"
+              href={DIRECTIONS_URL}
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => trackEvent('get_directions', { source: 'home_hero' })}

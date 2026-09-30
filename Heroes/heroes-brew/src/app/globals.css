@@ -47,6 +47,13 @@ html {
   scroll-behavior: smooth;
 }
 
+@media print {
+  [data-conversion-bar],
+  [data-bottom-nav] {
+    display: none !important;
+  }
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 6px;

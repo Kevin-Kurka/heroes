@@ -20,7 +20,7 @@ export default function ReviewCardPage() {
     <div className="min-h-screen w-full bg-white text-black flex flex-col items-center justify-center gap-6 p-8 print:p-0">
       {/* Hide site nav/chrome when printing; one card per page. */}
       <style>{`@media print {
-        nav, header, footer, [data-bottom-nav], .md\\:block, .md\\:hidden { display: none !important; }
+        nav, header, footer, [data-bottom-nav], [data-conversion-bar], .md\\:block, .md\\:hidden { display: none !important; }
         body { background: #fff !important; }
         @page { margin: 0.4in; }
       }`}</style>

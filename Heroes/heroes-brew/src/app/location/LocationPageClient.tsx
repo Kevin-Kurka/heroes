@@ -5,6 +5,8 @@ import { MapPin, Phone, Clock, Navigation, ExternalLink } from 'lucide-react';
 import { Restaurant } from '@/types';
 import PageTransition from '@/components/PageTransition';
 import ReviewCTA from '@/components/ReviewCTA';
+import VisitActions from '@/components/VisitActions';
+import { DIRECTIONS_URL, PHONE_TEL } from '@/lib/visit';
 import { trackEvent } from '@/lib/analytics';
 
 interface Props {
@@ -15,9 +17,9 @@ interface Props {
 }
 
 export default function LocationPageClient({ restaurant, today }: Props) {
-  const fullAddress = `${restaurant.address1}${restaurant.address2 ? ', ' + restaurant.address2 : ''}, ${restaurant.city}, ${restaurant.stateCode} ${restaurant.zipCode}`;
-  const mapsQuery = encodeURIComponent(fullAddress);
-  const mapsUrl = 'https://www.google.com/maps/dir//American+Heroes+%26+Brew,+300+Carlsbad+Village+Dr+STE+120,+Carlsbad,+CA+92008';
+  const mapsQuery = encodeURIComponent(
+    `${restaurant.address1}${restaurant.address2 ? ', ' + restaurant.address2 : ''}, ${restaurant.city}, ${restaurant.stateCode} ${restaurant.zipCode}`,
+  );
   const embedUrl = `https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY}&q=${mapsQuery}`;
 
   const { scrollY } = useScroll();
@@ -33,96 +35,75 @@ export default function LocationPageClient({ restaurant, today }: Props) {
         className="fixed inset-0 -z-10 bg-[url('/location-bg.jpg')] bg-cover bg-center opacity-10 pointer-events-none"
         style={{ y: bgY, scale: bgScale, willChange: 'transform' }}
       />
-      <div className="max-w-4xl mx-auto px-4 py-6">
-        <h1 className="text-3xl font-bold text-foreground drop-shadow-lg mb-6" style={{ viewTransitionName: 'page-title' }}>Find Us</h1>
+      <div className="max-w-4xl mx-auto px-4 py-4 md:py-6">
+        <h1 className="text-3xl font-bold text-foreground drop-shadow-lg mb-3" style={{ viewTransitionName: 'page-title' }}>Find Us</h1>
 
-        <div className="grid gap-6 md:grid-cols-2">
-          {/* Map */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.98 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.25, ease: [0, 0, 0.2, 1] }}
-            className="rounded-md overflow-hidden border border-border aspect-[4/3] md:aspect-auto md:h-full"
-          >
-            <iframe
-              src={embedUrl}
-              className="w-full h-full min-h-[300px]"
-              style={{ border: 0 }}
-              allowFullScreen
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              title="American Heroes & Brew location"
-            />
-          </motion.div>
+        <VisitActions source="location" variant="page" />
 
-          {/* Info cards */}
+        <div className="grid gap-6 md:grid-cols-2 mt-6">
+          {/* Visit details first so address, phone, hours, and CTAs stay above the fold on mobile. */}
           <div className="flex flex-col gap-4">
-            {/* Address */}
-            <motion.a
-              href={mapsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => trackEvent('get_directions', { source: 'location' })}
+            <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.2, delay: 0.05, ease: [0, 0, 0.2, 1] }}
-              whileHover={{ scale: 1.01 }}
-              className="flex items-start gap-4 bg-card/70 backdrop-blur-md border border-white/10 rounded-md p-4 hover:border-accent/30 transition-colors group"
+              className="bg-card/70 backdrop-blur-md border border-white/10 rounded-md p-4 space-y-3"
             >
-              <div className="p-2 bg-accent/10 rounded-lg shrink-0">
-                <MapPin size={20} className="text-accent" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-foreground group-hover:text-accent transition-colors">Address</h3>
-                <p className="text-muted text-sm mt-0.5">{restaurant.address1}</p>
-                {restaurant.address2 && <p className="text-muted text-sm">{restaurant.address2}</p>}
-                <p className="text-muted text-sm">{restaurant.city}, {restaurant.stateCode} {restaurant.zipCode}</p>
-                <span className="inline-flex items-center gap-1 mt-2 text-xs text-accent">
-                  <Navigation size={12} /> Get Directions <ExternalLink size={10} />
-                </span>
-              </div>
-            </motion.a>
+              <a
+                href={DIRECTIONS_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => trackEvent('get_directions', { source: 'location' })}
+                className="flex items-start gap-3 group"
+              >
+                <div className="p-2 bg-accent/10 rounded-lg shrink-0">
+                  <MapPin size={20} className="text-accent" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-foreground group-hover:text-accent transition-colors">Address</h3>
+                  <p className="text-muted text-sm mt-0.5">{restaurant.address1}</p>
+                  {restaurant.address2 && <p className="text-muted text-sm">{restaurant.address2}</p>}
+                  <p className="text-muted text-sm">{restaurant.city}, {restaurant.stateCode} {restaurant.zipCode}</p>
+                  <span className="inline-flex items-center gap-1 mt-1.5 text-xs text-accent">
+                    <Navigation size={12} /> Get Directions <ExternalLink size={10} />
+                  </span>
+                </div>
+              </a>
+              <a
+                href={`tel:${PHONE_TEL}`}
+                onClick={() => trackEvent('call', { source: 'location' })}
+                className="flex items-start gap-3 group border-t border-white/10 pt-3"
+              >
+                <div className="p-2 bg-accent/10 rounded-lg shrink-0">
+                  <Phone size={20} className="text-accent" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-foreground group-hover:text-accent transition-colors">Phone</h3>
+                  <p className="text-muted text-sm mt-0.5">{restaurant.phone}</p>
+                  <span className="inline-flex items-center gap-1 mt-1.5 text-xs text-accent">
+                    Tap to Call
+                  </span>
+                </div>
+              </a>
+            </motion.div>
 
-            {/* Phone */}
-            <motion.a
-              href={`tel:${restaurant.phone.replace(/\D/g, '')}`}
-              onClick={() => trackEvent('call', { source: 'location' })}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.2, delay: 0.1, ease: [0, 0, 0.2, 1] }}
-              whileHover={{ scale: 1.01 }}
-              className="flex items-start gap-4 bg-card/70 backdrop-blur-md border border-white/10 rounded-md p-4 hover:border-accent/30 transition-colors group"
-            >
-              <div className="p-2 bg-accent/10 rounded-lg shrink-0">
-                <Phone size={20} className="text-accent" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-foreground group-hover:text-accent transition-colors">Phone</h3>
-                <p className="text-muted text-sm mt-0.5">{restaurant.phone}</p>
-                <span className="inline-flex items-center gap-1 mt-2 text-xs text-accent">
-                  Tap to Call
-                </span>
-              </div>
-            </motion.a>
-
-            {/* Hours */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.2, delay: 0.15, ease: [0, 0, 0.2, 1] }}
               className="bg-card/70 backdrop-blur-md border border-white/10 rounded-md p-4"
             >
-              <div className="flex items-center gap-3 mb-3">
+              <div className="flex items-center gap-3 mb-2">
                 <div className="p-2 bg-accent/10 rounded-lg">
                   <Clock size={20} className="text-accent" />
                 </div>
                 <h3 className="font-semibold text-foreground">Hours</h3>
               </div>
-              <div className="space-y-1.5">
+              <div className="space-y-0.5">
                 {restaurant.hours.map((h) => (
                   <div
                     key={h.dayOfWeek}
-                    className={`flex justify-between text-sm px-2 py-1 rounded ${
+                    className={`flex justify-between text-sm px-2 py-0.5 rounded ${
                       h.dayOfWeek === today
                         ? 'bg-accent/10 text-accent font-medium'
                         : 'text-muted'
@@ -138,6 +119,23 @@ export default function LocationPageClient({ restaurant, today }: Props) {
               </p>
             </motion.div>
           </div>
+
+          <motion.div
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.25, ease: [0, 0, 0.2, 1] }}
+            className="rounded-md overflow-hidden border border-border aspect-[4/3] md:aspect-auto md:h-full md:min-h-[360px]"
+          >
+            <iframe
+              src={embedUrl}
+              className="w-full h-full min-h-[300px]"
+              style={{ border: 0 }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="American Heroes & Brew location"
+            />
+          </motion.div>
         </div>
 
         {/* Review ask — most location-page visitors are deciding whether to come
