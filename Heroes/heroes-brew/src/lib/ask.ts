@@ -117,12 +117,12 @@ const CLAIMS: Omit<KnowledgeEntry, 'source'>[] = [
     url: `${SITE_URL}/world-cup`,
   },
   {
-    id: 'claim-nfl-week3-chargers',
-    question: 'Where can I watch NFL Week 3 and the Chargers in Carlsbad?',
+    id: 'claim-nfl-week5-chargers',
+    question: 'Where can I watch NFL Week 5 and the Chargers in Carlsbad?',
     answer:
-      'American Heroes & Brew in Carlsbad Village is showing NFL Week 3 on 16 TVs — including the local Chargers game (Chargers at Bills, Sun Sep 27, 10:00 AM PT, FOX). Walk-ins welcome at 300 Carlsbad Village Drive. Fan watch-party only — not an official NFL or team partnership.',
+      'American Heroes & Brew in Carlsbad Village is showing NFL Week 5 on 16 TVs — including the local Chargers game (Broncos at Chargers, Sun Oct 11, 1:05 PM PT, CBS). Walk-ins welcome at 300 Carlsbad Village Drive. Fan watch-party only — not an official NFL or team partnership.',
     keywords: [
-      'nfl week 3 carlsbad',
+      'nfl week 5 carlsbad',
       'chargers watch party carlsbad',
       'where to watch the chargers carlsbad village',
     ],

@@ -11,7 +11,7 @@ import { DIRECTIONS_URL, PHONE_TEL } from '@/lib/visit';
 interface Props {
   page: LandingPageContent;
   restaurant: Restaurant;
-  /** Optional extra block after the intro (e.g. Week 3 poster gallery on /watch). */
+  /** Optional extra block after the intro (e.g. Week 5 poster gallery on /watch). */
   afterIntro?: ReactNode;
 }
 
