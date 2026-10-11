@@ -4,14 +4,13 @@ import { copyForName, shouldReplaceDescription } from './menu-copy';
 import {
   CALAMARI,
   CHILAQUILES,
-  CRUNCHWRAPS,
   FOOD_SPECIALS,
   HOGZILLA,
   OREO_CHURROS,
   SPICY_CHICKEN,
 } from './menu-specials';
 
-export { CALAMARI, CHILAQUILES, CRUNCHWRAPS, FOOD_SPECIALS, HOGZILLA, OREO_CHURROS, SPICY_CHICKEN };
+export { CALAMARI, CHILAQUILES, FOOD_SPECIALS, HOGZILLA, OREO_CHURROS, SPICY_CHICKEN };
 export { HOME_SPECIALS } from './menu-specials';
 
 /**
@@ -22,8 +21,6 @@ export { HOME_SPECIALS } from './menu-specials';
 export const MENU_PHOTO_PATHS: Record<string, string> = {
   calamari: '/images/polished/calamari.jpg',
   'spicy chicken': '/images/polished/spicy-chicken.jpg',
-  'cheeseburger crunchwrap': '/images/polished/burger-wrap.jpg',
-  'burger wrap': '/images/polished/burger-wrap.jpg',
   hoboken: '/images/polished/hoboken-sandwich.jpg',
   'hoboken italian': '/images/polished/hoboken-sandwich.jpg',
   nachos: '/images/polished/chicken-nachos.jpg',
@@ -86,18 +83,13 @@ export const BLOCKED_PHOTO_KEYS = [
 export const KITCHEN_SPECIALS = [
   { ...CALAMARI, place: 'munchies' as const },
   { ...HOGZILLA, place: 'kitchen-specials' as const },
-  { ...CRUNCHWRAPS, place: 'kitchen-specials' as const },
 ] as const;
 
 const WEEKLY_SPECIALS_RE = /^(specials|daily specials|daily lineup)$/i;
 const NOTE_CHOICE_RE = /^note$/i;
 const SD_BURRITO_MEATS = ['Sausage', 'Bacon', 'Chicken', 'Carnitas', 'Carne Asada', 'Pastrami'] as const;
-const LEGACY_WRAP_KEYS = new Set([
-  'burger wrap',
-  'cheeseburger crunchwrap',
-  'carnitas crunchwrap',
-  'carne asada crunchwrap',
-]);
+/** Crunchwraps are permanently off the menu (2026-10-10); matches any variant the sheet sends. */
+const RETIRED_WRAP_RE = /\b(crunch ?wraps?|burger wraps?)\b/;
 
 export function photoKey(name: string): string {
   return name
@@ -232,34 +224,16 @@ function ensureHeroSandwichesGroup(groups: MenuGroup[]): MenuGroup {
   return heroes;
 }
 
-/** Kitchen Specials = Hogzilla + Crunchwraps only. */
+/** Kitchen Specials = Hogzilla only. */
 function ensureKitchenSpecials(groups: MenuGroup[]) {
   ensureCalamari(groups);
   const specials = ensureKitchenSpecialsGroup(groups);
-  const keep = new Set([photoKey(HOGZILLA.name), photoKey(CRUNCHWRAPS.name)]);
-
-  specials.items = specials.items.filter((item) => keep.has(photoKey(item.name)));
-
-  if (!specials.items.some((item) => photoKey(item.name) === photoKey(HOGZILLA.name))) {
-    specials.items.push(asItem(HOGZILLA));
-  }
-  if (!specials.items.some((item) => photoKey(item.name) === photoKey(CRUNCHWRAPS.name))) {
-    specials.items.push(asItem(CRUNCHWRAPS));
-  }
-
-  specials.items = [HOGZILLA, CRUNCHWRAPS]
-    .map((wanted) => specials.items.find((item) => photoKey(item.name) === photoKey(wanted.name)))
-    .filter((item): item is MenuItem => Boolean(item))
-    .map((item) => {
-      if (photoKey(item.name) === photoKey(HOGZILLA.name)) {
-        return { ...item, name: HOGZILLA.name, description: item.description?.trim() || HOGZILLA.description };
-      }
-      return {
-        ...item,
-        name: CRUNCHWRAPS.name,
-        description: item.description?.trim() || CRUNCHWRAPS.description,
-      };
-    });
+  const hogzilla = specials.items.find((item) => photoKey(item.name) === photoKey(HOGZILLA.name));
+  specials.items = [
+    hogzilla
+      ? { ...hogzilla, name: HOGZILLA.name, description: hogzilla.description?.trim() || HOGZILLA.description }
+      : asItem(HOGZILLA),
+  ];
 }
 
 function takeNamedItem(groups: MenuGroup[], name: string): MenuItem | undefined {
@@ -286,17 +260,17 @@ function ensureSpicyChickenOnHeroes(groups: MenuGroup[]) {
   );
 }
 
-function isLegacyCrunchSection(name: string): boolean {
+function isCrunchWrapSection(name: string): boolean {
   return /^(crunch\s*wraps?|burger wraps?)$/i.test(name.trim());
 }
 
-/** Drop the old Mains Crunch Wraps section and leftover wrap SKUs. */
-function retireLegacyCrunchWraps(groups: MenuGroup[]) {
+/** Drop every Crunch Wraps section and wrap SKU, wherever the sheet puts them. */
+function retireCrunchWraps(groups: MenuGroup[]) {
   const strip = (list: MenuGroup[]): MenuGroup[] =>
     list
-      .filter((group) => !isLegacyCrunchSection(group.name))
+      .filter((group) => !isCrunchWrapSection(group.name))
       .map((group) => {
-        group.items = group.items.filter((item) => !LEGACY_WRAP_KEYS.has(photoKey(item.name)));
+        group.items = group.items.filter((item) => !RETIRED_WRAP_RE.test(photoKey(item.name)));
         if (group.subGroups?.length) group.subGroups = strip(group.subGroups);
         return group;
       });
@@ -570,7 +544,7 @@ function ensureOreoChurros(groups: MenuGroup[]) {
 export function applyMenuPresentation(menus: Menu[]): Menu[] {
   const next = cloneMenus(menus);
   for (const menu of next) {
-    retireLegacyCrunchWraps(menu.groups);
+    retireCrunchWraps(menu.groups);
     retireEarlyBirdGroupLabel(menu.groups);
     stripRetiredBreakfastDeals(menu.groups);
     ensureSpicyChickenOnHeroes(menu.groups);

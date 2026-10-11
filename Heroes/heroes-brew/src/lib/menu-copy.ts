@@ -8,7 +8,7 @@
  * honest to the kitchen recipe sheet and existing menu — adjectives only.
  *
  * DEPENDENCIES:
- * - menu-specials.ts (Hogzilla, Crunchwraps, Chilaquiles, Calamari, Spicy Chicken, Oreo Churros)
+ * - menu-specials.ts (Hogzilla, Chilaquiles, Calamari, Spicy Chicken, Oreo Churros)
  *
  * EXPORTS:
  * - MENU_DESCRIPTIONS
@@ -26,7 +26,6 @@
 import {
   CALAMARI,
   CHILAQUILES,
-  CRUNCHWRAPS,
   HOGZILLA,
   OREO_CHURROS,
   SPICY_CHICKEN,
@@ -146,7 +145,6 @@ add(COPY, ['Kids Grilled Cheese', 'Grilled Cheese'], 'American and cheddar melte
 
 add(COPY, ['Spicy Chicken'], SPICY_CHICKEN.description);
 add(COPY, ['Hogzilla'], HOGZILLA.description);
-add(COPY, ['Crunchwraps'], CRUNCHWRAPS.description);
 add(COPY, ['Chilaquiles'], CHILAQUILES.description);
 
 add(COPY, ['SD Burrito'], 'Choose your meat — wrapped with fluffy scrambled eggs, creamy guacamole, pico de gallo, golden fries, and melted jack and cheddar.');

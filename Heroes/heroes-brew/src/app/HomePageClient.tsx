@@ -345,7 +345,7 @@ export default function HomePageClient({ events, todayIndex }: Props) {
           <Flame size={20} className="text-accent" />
           <h2 className="text-2xl font-bold text-foreground">Specials</h2>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {HOME_SPECIALS.map((special, i) => (
             <motion.div
               key={special.name}
