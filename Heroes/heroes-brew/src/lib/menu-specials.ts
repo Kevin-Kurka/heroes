@@ -10,18 +10,19 @@
  * - none
  *
  * EXPORTS:
- * - SPICY_CHICKEN, HOGZILLA, CRUNCHWRAPS, CHILAQUILES
+ * - SPICY_CHICKEN, HOGZILLA, CHILAQUILES
  * - HOME_SPECIALS
  * - CALAMARI, OREO_CHURROS (shared inject ids)
  *
  * IMPLEMENTATION STATUS:
- * - ✅ Current specials: Hogzilla, Crunchwraps, Chilaquiles; Spicy Chicken as a hero
+ * - ✅ Current specials: Hogzilla, Chilaquiles; Spicy Chicken as a hero
+ * - ✅ Crunchwraps permanently retired 2026-10-10 (menu-photos.ts strips any the sheet sends)
  * - ✅ 2 Eggs for $22 lives in early-bird.ts (Brunch + Daily Lineup), not HOME_SPECIALS
  *
  * RELATED FILES:
  * - src/lib/early-bird.ts
  *
- * LAST UPDATED: 2026-09-11
+ * LAST UPDATED: 2026-10-10
  * MAINTAINER: American Heroes & Brew
  */
 
@@ -44,13 +45,6 @@ export const HOGZILLA = {
     'Carolina BBQ pulled pork stacked with ham, bacon, crisp coleslaw, and fried pickle chips on a toasted brioche bun.',
 } as const;
 
-export const CRUNCHWRAPS = {
-  id: 'mains-kitchen-specials-crunchwraps',
-  name: 'Crunchwraps',
-  description: 'Golden, pressed wraps — Carne Asada, Carnitas, or Chicken.',
-  proteins: ['Carne Asada', 'Carnitas', 'Chicken'],
-} as const;
-
 export const CHILAQUILES = {
   id: 'brunch-specials-chilaquiles',
   name: 'Chilaquiles',
@@ -65,11 +59,10 @@ export const OREO_CHURROS = {
 } as const;
 
 /** Kitchen food specials shared by home, /menu Specials, and Mains. */
-export const FOOD_SPECIALS = [HOGZILLA, CRUNCHWRAPS, CHILAQUILES] as const;
+export const FOOD_SPECIALS = [HOGZILLA, CHILAQUILES] as const;
 
 /** Homepage featured specials — no prices. */
 export const HOME_SPECIALS = [
   { name: HOGZILLA.name, description: HOGZILLA.description },
   { name: CHILAQUILES.name, description: CHILAQUILES.description },
-  { name: CRUNCHWRAPS.name, description: CRUNCHWRAPS.description },
 ] as const;
