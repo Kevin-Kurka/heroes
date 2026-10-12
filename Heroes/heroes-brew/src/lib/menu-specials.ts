@@ -10,19 +10,19 @@
  * - none
  *
  * EXPORTS:
- * - SPICY_CHICKEN, HOGZILLA, CHILAQUILES
+ * - SPICY_CHICKEN, HOGZILLA, CHILAQUILES, OKTOBERFEST_BRATWURST
  * - HOME_SPECIALS
  * - CALAMARI, OREO_CHURROS (shared inject ids)
  *
  * IMPLEMENTATION STATUS:
- * - ✅ Current specials: Hogzilla, Chilaquiles; Spicy Chicken as a hero
+ * - ✅ Current specials: Hogzilla, Chilaquiles, Oktoberfest Bratwurst ($6 each); Spicy Chicken as a hero
  * - ✅ Crunchwraps permanently retired 2026-10-10 (menu-photos.ts strips any the sheet sends)
  * - ✅ 2 Eggs for $22 lives in early-bird.ts (Brunch + Daily Lineup), not HOME_SPECIALS
  *
  * RELATED FILES:
  * - src/lib/early-bird.ts
  *
- * LAST UPDATED: 2026-10-10
+ * LAST UPDATED: 2026-10-12
  * MAINTAINER: American Heroes & Brew
  */
 
@@ -52,6 +52,14 @@ export const CHILAQUILES = {
     'Crispy tortilla chips simmered in salsa, topped with eggs, crema, queso fresco, and fresh fixings — a weekend brunch favorite.',
 } as const;
 
+export const OKTOBERFEST_BRATWURST = {
+  id: 'specials-kitchen-oktoberfest-bratwurst',
+  name: 'Oktoberfest Bratwurst',
+  description:
+    'A juicy bratwurst braised in beer, piled with tangy sauerkraut and zesty mustard on a soft, salty pretzel bun.',
+  price: 6,
+} as const;
+
 export const OREO_CHURROS = {
   id: 'sweets-oreo-churros',
   name: 'Oreo Churros',
@@ -59,10 +67,11 @@ export const OREO_CHURROS = {
 } as const;
 
 /** Kitchen food specials shared by home, /menu Specials, and Mains. */
-export const FOOD_SPECIALS = [HOGZILLA, CHILAQUILES] as const;
+export const FOOD_SPECIALS = [HOGZILLA, CHILAQUILES, OKTOBERFEST_BRATWURST] as const;
 
 /** Homepage featured specials — no prices. */
 export const HOME_SPECIALS = [
   { name: HOGZILLA.name, description: HOGZILLA.description },
   { name: CHILAQUILES.name, description: CHILAQUILES.description },
+  { name: OKTOBERFEST_BRATWURST.name, description: OKTOBERFEST_BRATWURST.description },
 ] as const;
