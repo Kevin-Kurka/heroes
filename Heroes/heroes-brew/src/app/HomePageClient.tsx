@@ -161,13 +161,13 @@ export default function HomePageClient({ events, todayIndex }: Props) {
               className="text-2xl md:text-3xl font-bold text-foreground"
               style={{ textShadow: '0 2px 8px rgba(0,0,0,0.8), 0 4px 20px rgba(0,0,0,0.6)' }}
             >
-              North County&apos;s Best Sports Bar
+              North County's Best Sports Bar
             </h2>
             <p
               className="text-foreground/80 text-base md:text-lg max-w-md mx-auto mt-1"
               style={{ textShadow: '0 2px 8px rgba(0,0,0,0.8), 0 4px 16px rgba(0,0,0,0.5)' }}
             >
-              Everyone&apos;s favorites, all day — every day!
+              Everyone's favorites, all day — every day!
             </p>
           </motion.div>
 
@@ -243,7 +243,7 @@ export default function HomePageClient({ events, todayIndex }: Props) {
               <div className="absolute top-0 left-0 w-1 h-full bg-accent" />
               <div className="flex items-center justify-between mb-3">
                 <div>
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-accent">Today&apos;s Special</span>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-accent">Today's Special</span>
                   <h3 className="text-lg font-bold text-foreground leading-tight">
                     {DAILY_SPECIALS[todayIndex]?.name ?? DAILY_SPECIALS[0].name}
                   </h3>
@@ -345,7 +345,7 @@ export default function HomePageClient({ events, todayIndex }: Props) {
           <Flame size={20} className="text-accent" />
           <h2 className="text-2xl font-bold text-foreground">Specials</h2>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {HOME_SPECIALS.map((special, i) => (
             <motion.div
               key={special.name}
