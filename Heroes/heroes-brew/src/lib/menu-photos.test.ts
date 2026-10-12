@@ -18,6 +18,7 @@ import {
   photoKey,
 } from './menu-photos';
 import { copyForName } from './menu-copy';
+import { OKTOBERFEST_BRATWURST } from './menu-specials';
 import type { Menu, MenuItem } from '@/types';
 
 const PUBLIC_ROOT = resolve(__dirname, '../../public');
@@ -745,10 +746,11 @@ describe('applyMenuPresentation', () => {
     const presented = applyMenuPresentation(getMenus());
     const specials = presented[0].groups.find((g) => g.name === 'Specials');
     const kitchen = specials?.subGroups?.find((g) => /kitchen|featured/i.test(g.name));
-    expect(kitchen?.items.map((item) => item.name)).toEqual(['Hogzilla', 'Chilaquiles']);
+    expect(kitchen?.items.map((item) => item.name)).toEqual(['Hogzilla', 'Chilaquiles', 'Oktoberfest Bratwurst']);
     expect(kitchen?.items.map((item) => item.description)).toEqual([
       HOGZILLA.description,
       CHILAQUILES.description,
+      OKTOBERFEST_BRATWURST.description,
     ]);
     expect(kitchen?.items.every((item) => item.price == null)).toBe(true);
     expect(kitchen?.items.every((item) => item.imageUrl == null)).toBe(true);
@@ -798,10 +800,11 @@ describe('public menu prices', () => {
 
 describe('home specials', () => {
   it('keeps Hogzilla and Chilaquiles as unpriced kitchen cards', () => {
-    expect(HOME_SPECIALS.map((s) => s.name)).toEqual(['Hogzilla', 'Chilaquiles']);
+    expect(HOME_SPECIALS.map((s) => s.name)).toEqual(['Hogzilla', 'Chilaquiles', 'Oktoberfest Bratwurst']);
     expect(HOME_SPECIALS.map((s) => s.description)).toEqual([
       HOGZILLA.description,
       CHILAQUILES.description,
+      OKTOBERFEST_BRATWURST.description,
     ]);
     for (const special of HOME_SPECIALS) {
       expect(special.description).not.toMatch(/\$|\b22\b|price/i);
@@ -812,7 +815,7 @@ describe('home specials', () => {
     expect(home).toContain('FRIDAY_FUNDAY_DEAL');
     expect(home).toContain('grid-cols-1 sm:grid-cols-3');
     // Specials grid columns track the card count so two cards don't leave an empty slot.
-    expect(home).toMatch(/sm:grid-cols-2 gap-3">\s*\{HOME_SPECIALS\.map/);
+    expect(home).toMatch(/sm:grid-cols-3 gap-3">\s*\{HOME_SPECIALS\.map/);
     expect(home).toContain('bg-card');
     expect(home).toContain('border-border');
     expect(home).toMatch(/Weekend Brunch/);
