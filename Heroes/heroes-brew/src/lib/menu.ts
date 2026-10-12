@@ -1,6 +1,6 @@
 import { Menu, Restaurant } from '@/types';
 import { BREAKFAST_HAPPY_HOUR, TWO_FOR_22 } from './early-bird';
-import { CALAMARI, CHILAQUILES, HOGZILLA, OREO_CHURROS, SPICY_CHICKEN } from './menu-specials';
+import { CALAMARI, CHILAQUILES, HOGZILLA, OKTOBERFEST_BRATWURST, OREO_CHURROS, SPICY_CHICKEN } from './menu-specials';
 
 // Static fallback menu — June 2026 food book. Mirrors exactly what
 // parseMenuRows() in menu-sheet.ts produces from the live Google Sheet CSV
@@ -478,6 +478,7 @@ export function getMenus(): Menu[] {
               items: [
                 { id: 'specials-kitchen-hogzilla', name: HOGZILLA.name, description: HOGZILLA.description },
                 { id: 'specials-kitchen-chilaquiles', name: CHILAQUILES.name, description: CHILAQUILES.description },
+                { id: OKTOBERFEST_BRATWURST.id, name: OKTOBERFEST_BRATWURST.name, description: OKTOBERFEST_BRATWURST.description, price: OKTOBERFEST_BRATWURST.price },
               ],
             },
           ],
