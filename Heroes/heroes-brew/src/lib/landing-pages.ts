@@ -149,10 +149,10 @@ export const LANDING_PAGES: Record<string, LandingPageContent> = {
         ],
       },
       {
-        heading: 'NFL Week 5 watch parties',
+        heading: 'NFL Week 7 watch parties',
         body: [
-          'NFL Week 5 is on the TVs at American Heroes & Brew — walk-ins welcome, 16 TVs, 300 Carlsbad Village Dr. Kickoffs are listed in Pacific time. Soft fan watch-party framing only; not an official NFL or team partnership.',
-          'Local priority: Broncos at Chargers, Sunday Oct 11 at 1:05 PM PT on CBS. Also on the slate: Buccaneers at Cowboys (Thu Oct 8, 5:15 PM PT, Prime), 49ers at Seahawks and Bears at Packers (Sun Oct 11, 1:25 PM PT, FOX), Ravens at Falcons (Sun Oct 11, 5:20 PM PT, NBC), and Bills at Rams (Mon Oct 12, 5:15 PM PT, ESPN/ABC).',
+          'NFL Week 7 (Oct 22–26, 2026) is on the TVs at American Heroes & Brew — walk-ins welcome, 16 TVs, 300 Carlsbad Village Dr. Kickoffs are listed in Pacific time. Soft fan watch-party framing only; not an official NFL or team partnership.',
+          'Local priority: Rams at Raiders, Sunday Oct 25 at 1:25 PM PT on FOX (Chargers on bye). Also on the slate: Patriots at Bears (Thu Oct 22, 5:15 PM PT, Prime), 49ers at Falcons (Sun Oct 25, 10:00 AM PT, FOX), Packers at Lions (Sun Oct 25, 1:25 PM PT, FOX), Chiefs at Seahawks (Sun Oct 25, 5:20 PM PT, NBC), and Cowboys at Eagles (Mon Oct 26, 5:15 PM PT, ESPN/ABC).',
         ],
       },
       {
@@ -184,9 +184,9 @@ export const LANDING_PAGES: Record<string, LandingPageContent> = {
           'Yes — American Heroes & Brew is a genuinely family-friendly sports bar with a kids’ menu, so you can bring the whole family to watch the game.',
       },
       {
-        question: 'Where can I watch NFL Week 5 and the Chargers in Carlsbad?',
+        question: 'Where can I watch NFL Week 7 and the Rams in Carlsbad?',
         answer:
-          'American Heroes & Brew in Carlsbad Village is showing NFL Week 5 on 16 TVs — including the local Chargers game (Broncos at Chargers, Sun Oct 11, 1:05 PM PT, CBS). Walk-ins welcome, no cover, at 300 Carlsbad Village Drive. Fan watch-party only — not an official NFL or team partnership.',
+          'American Heroes & Brew in Carlsbad Village is showing NFL Week 7 (Oct 22–26) on 16 TVs — including the local LA-area game (Rams at Raiders, Sun Oct 25, 1:25 PM PT, FOX). The Chargers are on bye. Walk-ins welcome, no cover, at 300 Carlsbad Village Drive. Fan watch-party only — not an official NFL or team partnership.',
       },
     ],
     breadcrumbLabel: 'Watch the Game',
