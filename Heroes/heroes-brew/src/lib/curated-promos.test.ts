@@ -45,13 +45,15 @@ function ev(p: Partial<UnifiedEvent>): UnifiedEvent {
 }
 
 describe('curatePromos — Google Events', () => {
-  it('flags a Padres game as a google-event', () => {
+  it('does NOT flag a Padres game (local-team event scheduling removed Oct 26, 2026)', () => {
     const out = curatePromos([ev({ id: 'mlb-1', league: 'MLB', homeTeam: 'San Diego Padres', awayTeam: 'Los Angeles Dodgers' })]);
-    const e = out.find((p) => p.key.includes('mlb-1'));
-    expect(e?.postType).toBe('google-event');
-    expect(e?.channel).toBe('Google');
-    expect(e?.eventStart).toBeTruthy();
-    expect(e?.eventEnd).toBeTruthy();
+    expect(out.find((p) => p.key.includes('mlb-1'))).toBeUndefined();
+  });
+
+  it('does NOT flag a non-prime-time Chargers game (local-team event scheduling removed)', () => {
+    // 2026-11-01 is a Sunday afternoon — not Monday Night.
+    const out = curatePromos([ev({ id: 'nfl-ch', league: 'NFL', homeTeam: 'Los Angeles Chargers', awayTeam: 'Denver Broncos', eventTimestamp: '2026-11-01T13:05:00-08:00' })]);
+    expect(out.find((p) => p.key.includes('nfl-ch'))).toBeUndefined();
   });
 
   it('flags a USA World Cup game as a google-event', () => {
@@ -98,9 +100,9 @@ describe('curatePromos — games post ONLY as Google Events', () => {
     expect(out.find((p) => p.postType === 'schedule-story')).toBeUndefined();
   });
 
-  it('a Padres Google Event carries a start and end time', () => {
-    const out = curatePromos([ev({ id: 'mlb-1', league: 'MLB', homeTeam: 'San Diego Padres', awayTeam: 'Chicago Cubs' })]);
-    const e = out.find((p) => p.key === 'gevt-mlb-1');
+  it('a Monday Night NFL Google Event carries a start and end time', () => {
+    const out = curatePromos([ev({ id: 'mnf-1', league: 'NFL', homeTeam: 'Buffalo Bills', awayTeam: 'New York Jets', eventTimestamp: '2026-06-29T19:00:00-07:00' })]);
+    const e = out.find((p) => p.key === 'gevt-mnf-1');
     expect(e?.channel).toBe('Google');
     expect(e?.eventStart).toBeTruthy();
     expect(e?.eventEnd).toBeTruthy();
@@ -108,20 +110,20 @@ describe('curatePromos — games post ONLY as Google Events', () => {
 });
 
 describe('curatePromos — auto-approval', () => {
-  it('auto-approves Padres/Chargers Events, but NOT Monday-Night events', () => {
+  it('emits no Padres Event and keeps Monday-Night events on the manual gate', () => {
     const out = curatePromos([
       ev({ id: 'p', league: 'MLB', homeTeam: 'San Diego Padres', awayTeam: 'Chicago Cubs', eventTimestamp: '2026-06-30T18:00:00-07:00' }),
       ev({ id: 'mnf', league: 'NFL', homeTeam: 'Buffalo Bills', awayTeam: 'New York Jets', eventTimestamp: '2026-06-29T19:00:00-07:00' }),
     ]);
-    expect(out.find((p) => p.key === 'gevt-p')?.autoApprove).toBe(true);
+    expect(out.find((p) => p.key === 'gevt-p')).toBeUndefined();
     expect(out.find((p) => p.key === 'gevt-mnf')?.autoApprove).toBe(false);
   });
 });
 
 describe('curatePromos — Friar Frank push on Padres games', () => {
-  it('adds the Friar Frank push to a Padres Google Event', () => {
+  it('no longer emits a Padres Google Event (so no Friar Frank push)', () => {
     const out = curatePromos([ev({ id: 'mlb-p', league: 'MLB', homeTeam: 'San Diego Padres', awayTeam: 'Los Angeles Dodgers' })]);
-    expect(out.find((p) => p.key === 'gevt-mlb-p')?.caption).toContain('Friar Franks $6');
+    expect(out.find((p) => p.key === 'gevt-mlb-p')).toBeUndefined();
   });
 
   it('does NOT add the Friar Frank push to a Chargers Google Event', () => {
@@ -132,32 +134,31 @@ describe('curatePromos — Friar Frank push on Padres games', () => {
 
 describe('curatePromos — branded event media (no Satori OG cards)', () => {
   it('uses the Dodgers rivalry still for Padres vs Dodgers', () => {
-    const out = curatePromos([ev({
+    const e = { media: resolveEventPoster(ev({
       id: 'mlb-lad',
       league: 'MLB',
       homeTeam: 'San Diego Padres',
       awayTeam: 'Los Angeles Dodgers',
-    })]);
-    const e = out.find((p) => p.key === 'gevt-mlb-lad');
+    }), 'Mon 7:00 PM') };
     expect(e?.media).toBe(PADRES_RIVAL_PLATE);
     expect(e?.media).toBe('/promos/event-padres-dodgers.jpg');
     expect(e?.media).not.toMatch(/\/api\/og\/event/);
   });
 
   it('uses the home still for Petco / other Padres games — never invented 404 URLs', () => {
-    const home = curatePromos([ev({
+    const home = { media: resolveEventPoster(ev({
       id: 'mlb-chc',
       league: 'MLB',
       homeTeam: 'San Diego Padres',
       awayTeam: 'Chicago Cubs',
       venue: 'Petco Park',
-    })]).find((p) => p.key === 'gevt-mlb-chc');
-    const away = curatePromos([ev({
+    }), 'Mon 7:00 PM') };
+    const away = { media: resolveEventPoster(ev({
       id: 'mlb-ari',
       league: 'MLB',
       homeTeam: 'Arizona Diamondbacks',
       awayTeam: 'San Diego Padres',
-    })]).find((p) => p.key === 'gevt-mlb-ari');
+    }), 'Mon 7:00 PM') };
     expect(home?.media).toBe(PADRES_HOME_PLATE);
     expect(away?.media).toBe(PADRES_HOME_PLATE);
     expect(home?.media).toBe('/promos/event-padres-home.jpg');

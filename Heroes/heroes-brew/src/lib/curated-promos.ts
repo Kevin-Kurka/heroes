@@ -104,7 +104,9 @@ export function padresEventMedia(e: UnifiedEvent): string | undefined {
 }
 
 /** Teams whose every game becomes a Google Event (league-scoped below). */
-const GOOGLE_EVENT_TEAMS = new Set(['San Diego Padres', 'Los Angeles Chargers']);
+// Oct 26, 2026 (Kevin): Padres/Chargers event scheduling REMOVED. Local-team games no
+// longer seed Google Events; NFL (Monday Night) handling below is unchanged.
+const GOOGLE_EVENT_TEAMS = new Set<string>([]);
 
 function isUsaOrMexicoWC(e: UnifiedEvent): boolean {
   if (e.league !== 'WORLDCUP') return false;
@@ -254,7 +256,7 @@ function googleEventPromo(e: UnifiedEvent): CuratedPromo {
     eventStart: e.eventTimestamp,
     eventEnd: end,
     league: e.league ?? '',
-    // Local-team (Padres/Chargers) Events auto-post; Monday-Night/other Events keep the manual gate.
+    // Local-team auto-post retired (GOOGLE_EVENT_TEAMS is empty); Monday-Night/other Events keep the manual gate.
     autoApprove: isGoogleEventTeamGame(e),
   };
 }

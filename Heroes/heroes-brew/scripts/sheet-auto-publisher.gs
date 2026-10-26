@@ -38,6 +38,11 @@
 var PUBLISH_FN = 'publishDue';
 var DIGEST_FN = 'weeklyDigest';
 var SPECIAL_FN = 'seedTodaySpecial';
+
+// PAUSED (Oct 26, 2026, per Kevin): daily specials posting is paused pending a full
+// specials refactor / new cadence. While true, seedTodaySpecial, backfillSpecials and
+// enableSpecials are no-ops (code kept intact). Flip to false only when Kevin approves.
+var SPECIALS_PAUSED = true;
 var MONTHS = { jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5, jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11 };
 var MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 var MONTH_TAB_RE = /^[A-Z][a-z]+ \d{4}$/;
@@ -611,6 +616,7 @@ function seedSpecialOn_(sh, date) {
 
 // Daily 8 AM trigger: add today's recurring special to the current month tab.
 function seedTodaySpecial() {
+  if (SPECIALS_PAUSED) { Logger.log('seedTodaySpecial: SPECIALS_PAUSED — skipping'); return; }
   if (seedSpecialOn_(currentMonthSheet_(), new Date())) scheduleNext();
 }
 
@@ -656,6 +662,7 @@ function newMonthSheet_(name) {
 // specials, from tomorrow forward (today is handled by seedTodaySpecial). Idempotent —
 // safe to re-run; it won't duplicate any special already present on a date.
 function backfillSpecials() {
+  if (SPECIALS_PAUSED) { Logger.log('backfillSpecials: SPECIALS_PAUSED — skipping'); return; }
   var tz = Session.getScriptTimeZone();
   var now = new Date();
   var start = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);   // tomorrow
@@ -699,6 +706,7 @@ function setup() {
 }
 
 function enableSpecials() {
+  if (SPECIALS_PAUSED) { clearTriggers_(SPECIAL_FN); Logger.log('enableSpecials: SPECIALS_PAUSED — trigger removed, not re-created'); return; }
   clearTriggers_(SPECIAL_FN);
   ScriptApp.newTrigger(SPECIAL_FN).timeBased().everyDays(1).atHour(8).create();
   seedTodaySpecial();
@@ -806,8 +814,8 @@ function seedCuratedRows() {
     if (c.cap >= 0) rowArr[c.cap] = item.caption || '';
     if (c.storyCap >= 0) rowArr[c.storyCap] = item.storyCaption || '';
     if (c.tags >= 0) rowArr[c.tags] = item.tags || '';
-    // The curator decides what auto-posts: daily lineups + local-team (Padres/Chargers)
-    // Events & feed posts carry autoApprove; Monday-Night/other Events stay manual (blank).
+    // The curator decides what auto-posts. Padres/Chargers (local-team) Events were removed
+    // Oct 26, 2026; NFL Monday-Night/other Events stay manual (blank Approval).
     if (c.appr >= 0) rowArr[c.appr] = item.autoApprove ? 'Approve' : '';
     if (c.notes >= 0) rowArr[c.notes] = item.key;
     if (c.eventStart >= 0 && item.eventStart) rowArr[c.eventStart] = item.eventStart;
