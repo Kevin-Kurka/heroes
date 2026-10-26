@@ -117,14 +117,14 @@ const CLAIMS: Omit<KnowledgeEntry, 'source'>[] = [
     url: `${SITE_URL}/world-cup`,
   },
   {
-    id: 'claim-nfl-week7-rams',
-    question: 'Where can I watch NFL Week 7 and the Rams in Carlsbad?',
+    id: 'claim-nfl-week8-chargers',
+    question: 'Where can I watch NFL Week 8 and the Chargers in Carlsbad?',
     answer:
-      'American Heroes & Brew in Carlsbad Village is showing NFL Week 7 (Oct 22–26) on 16 TVs — including the local LA-area game (Rams at Raiders, Sun Oct 25, 1:25 PM PT, FOX). The Chargers are on bye. Walk-ins welcome at 300 Carlsbad Village Drive. Fan watch-party only — not an official NFL or team partnership.',
+      'American Heroes & Brew in Carlsbad Village is showing NFL Week 8 (Oct 29–Nov 2) on 16 TVs — including the local Chargers watch party (Chargers at Rams, Sun Nov 1, 1:05 PM PT, FOX). Walk-ins welcome at 300 Carlsbad Village Drive. Fan watch-party only — not an official NFL or team partnership.',
     keywords: [
-      'nfl week 7 carlsbad',
-      'rams watch party carlsbad',
-      'where to watch the rams carlsbad village',
+      'nfl week 8 carlsbad',
+      'chargers watch party carlsbad',
+      'where to watch the chargers carlsbad village',
     ],
     url: `${SITE_URL}/watch`,
   },

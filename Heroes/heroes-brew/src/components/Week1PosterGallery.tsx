@@ -5,25 +5,25 @@
  * OVERVIEW:
  * Client island for the feed (4:5) gallery used on /watch, /watch-party, and
  * (compact) the home This Week teaser. Story 9:16 crops open in a dialog.
- * Week 7 is the featured slate; Week 1–5 assets remain on disk but are not shown.
+ * Week 8 is the featured slate; Week 1–7 assets remain on disk but are not shown.
  *
  * DEPENDENCIES:
  * - next/image, lucide-react
- * - src/lib/week7-posters.ts
+ * - src/lib/week8-posters.ts
  *
  * EXPORTS:
  * - Week1PosterGallery (default)
  * - Week1HomeTeaser
  *
  * IMPLEMENTATION STATUS:
- * - ✅ Feed grid, local Rams (LA-area) emphasis, disclaimer, story lightbox (Week 7)
+ * - ✅ Feed grid, local Chargers (Bolt Up) emphasis, disclaimer, story lightbox (Week 8)
  *
  * RELATED FILES:
- * - src/lib/week7-posters.ts
+ * - src/lib/week8-posters.ts
  * - src/app/watch/page.tsx
  * - src/app/watch-party/page.tsx
  *
- * LAST UPDATED: 2026-10-19
+ * LAST UPDATED: 2026-10-26
  * MAINTAINER: American Heroes & Brew
  */
 'use client';
@@ -33,11 +33,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ChevronRight, MapPin, Tv, X } from 'lucide-react';
 import {
-  WEEK7_DISCLAIMER,
-  WEEK7_POSTERS,
-  getLocalWeek7Poster,
-  type Week7Poster,
-} from '@/lib/week7-posters';
+  WEEK8_DISCLAIMER,
+  WEEK8_POSTERS,
+  getLocalWeek8Poster,
+  type Week8Poster,
+} from '@/lib/week8-posters';
 
 interface GalleryProps {
   /** Optional heading override. */
@@ -47,12 +47,12 @@ interface GalleryProps {
 }
 
 export default function Week1PosterGallery({
-  heading = 'NFL Week 7',
+  heading = 'NFL Week 8',
   compact = false,
 }: GalleryProps) {
   const [openId, setOpenId] = useState<string | null>(null);
   const [story, setStory] = useState(false);
-  const open = WEEK7_POSTERS.find((p) => p.id === openId) ?? null;
+  const open = WEEK8_POSTERS.find((p) => p.id === openId) ?? null;
 
   useEffect(() => {
     if (!open) return;
@@ -69,10 +69,10 @@ export default function Week1PosterGallery({
   };
 
   return (
-    <section id="week-7" className="bg-card border border-border rounded-lg p-6">
+    <section id="week-8" className="bg-card border border-border rounded-lg p-6">
       <header className="mb-5">
         <p className="text-accent font-semibold tracking-wide uppercase text-sm">
-          NFL Week 7 · Carlsbad Village
+          NFL Week 8 · Carlsbad Village
         </p>
         <h2 className="text-xl font-bold text-foreground mt-1">{heading}</h2>
         {!compact && (
@@ -92,14 +92,14 @@ export default function Week1PosterGallery({
       </header>
 
       <ul className="grid gap-4 sm:grid-cols-2">
-        {WEEK7_POSTERS.map((poster) => (
+        {WEEK8_POSTERS.map((poster) => (
           <li key={poster.id}>
             <PosterCard poster={poster} onOpen={() => openPoster(poster.id)} />
           </li>
         ))}
       </ul>
 
-      <p className="mt-5 text-xs text-muted leading-relaxed">{WEEK7_DISCLAIMER}</p>
+      <p className="mt-5 text-xs text-muted leading-relaxed">{WEEK8_DISCLAIMER}</p>
 
       {open && (
         <div
@@ -161,7 +161,7 @@ export default function Week1PosterGallery({
                 sizes="(min-width: 480px) 28rem, 100vw"
               />
             </div>
-            <p className="mt-3 text-xs text-muted">{WEEK7_DISCLAIMER}</p>
+            <p className="mt-3 text-xs text-muted">{WEEK8_DISCLAIMER}</p>
           </div>
         </div>
       )}
@@ -169,7 +169,7 @@ export default function Week1PosterGallery({
   );
 }
 
-function PosterCard({ poster, onOpen }: { poster: Week7Poster; onOpen: () => void }) {
+function PosterCard({ poster, onOpen }: { poster: Week8Poster; onOpen: () => void }) {
   return (
     <button
       type="button"
@@ -210,12 +210,12 @@ function PosterCard({ poster, onOpen }: { poster: Week7Poster; onOpen: () => voi
 
 /** Compact home-page card pointing at the /watch gallery. */
 export function Week1HomeTeaser() {
-  const local = getLocalWeek7Poster();
+  const local = getLocalWeek8Poster();
   if (!local) return null;
 
   return (
     <Link
-      href="/watch#week-7"
+      href="/watch#week-8"
       className="mb-4 flex flex-col sm:flex-row overflow-hidden rounded-lg border border-sports/40 bg-card hover:border-sports/70 transition-colors group"
     >
       <div className="relative aspect-[4/5] sm:aspect-auto sm:w-40 shrink-0 bg-black">
@@ -229,16 +229,16 @@ export function Week1HomeTeaser() {
       </div>
       <div className="p-4 flex-1">
         <p className="text-xs font-semibold uppercase tracking-wide text-sports">
-          Local · NFL Week 7
+          Local · NFL Week 8
         </p>
         <h3 className="text-lg font-bold text-foreground mt-1 group-hover:text-accent transition-colors">
-          Rams watch party + Week 7 posters
+          Chargers watch party + Week 8 posters
         </h3>
         <p className="text-sm text-foreground/75 mt-1">
           {local.when}. Walk-ins welcome · 16 TVs · 300 Carlsbad Village Dr.
         </p>
         <p className="inline-flex items-center gap-1 text-sm text-accent mt-3">
-          See all Week 7 posters <ChevronRight size={14} />
+          See all Week 8 posters <ChevronRight size={14} />
         </p>
       </div>
     </Link>
