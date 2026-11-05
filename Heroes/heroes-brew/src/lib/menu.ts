@@ -375,7 +375,7 @@ export function getMenus(): Menu[] {
         },
         {
           id: 'food-bread-bowls',
-          name: 'Bread Bowls',
+          name: 'Boule',
           displayMode: 'variants',
           items: [
             { id: 'food-bread-bowls-i0', name: 'Beef & Guinness Stew', description: 'Slow-braised beef, carrots, potatoes and onions in a rich Guinness gravy, served in a sourdough bread boule.', price: 16 },
