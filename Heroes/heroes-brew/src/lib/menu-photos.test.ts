@@ -555,7 +555,7 @@ describe('applyMenuPresentation', () => {
       'Loaded Chips',
       'Salads',
       'Soup',
-      'Bread Bowls',
+      'Boule',
       'Sides',
       'Sweets',
       'Kids',

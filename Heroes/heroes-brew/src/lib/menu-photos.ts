@@ -550,6 +550,29 @@ function ensureOreoChurros(groups: MenuGroup[]) {
   ];
 }
 
+
+/** Display "Bread Bowls" as "Boule"; keep existing ids so URL anchors stay valid. */
+function renameBreadBowlsToBoule(groups: MenuGroup[]) {
+  const BREAD_BOWL_RE = /\bbread\s*bowls?\b/i;
+  walkGroups(groups, (group) => {
+    if (/^bread\s*bowls?$/i.test(group.name.trim())) {
+      group.name = 'Boule';
+    }
+    for (const item of group.items) {
+      if (BREAD_BOWL_RE.test(item.name)) {
+        item.name = item.name.replace(BREAD_BOWL_RE, (m) =>
+          /s$/i.test(m) ? 'Boules' : 'Boule',
+        );
+      }
+      if (item.description && BREAD_BOWL_RE.test(item.description)) {
+        item.description = item.description.replace(BREAD_BOWL_RE, (m) =>
+          /s$/i.test(m) ? 'boules' : 'boule',
+        );
+      }
+    }
+  });
+}
+
 /**
  * Presentation pass for the public menu.
  *
@@ -563,6 +586,7 @@ export function applyMenuPresentation(menus: Menu[]): Menu[] {
   const next = cloneMenus(menus);
   for (const menu of next) {
     retireCrunchWraps(menu.groups);
+    renameBreadBowlsToBoule(menu.groups);
     retireEarlyBirdGroupLabel(menu.groups);
     stripRetiredBreakfastDeals(menu.groups);
     // Only fold SD Burrito / note choices when a live sheet still sends them.
