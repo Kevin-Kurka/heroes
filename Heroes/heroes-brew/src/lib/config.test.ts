@@ -35,9 +35,10 @@ describe('stripPriceTokens', () => {
       .toBe('Orange, Pineapple, Apple, Cranberry, Grapefruit.');
   });
 
-  it('defaults to the site SHOW_PRICES flag (off for the public menu)', () => {
+  it('defaults to the site SHOW_PRICES flag (off — no public prices)', () => {
     expect(SHOW_PRICES).toBe(false);
     expect(stripPriceTokens('Wings $6 off')).toBe('Wings');
+    expect(stripPriceTokens('Wings $6 off', true)).toBe('Wings $6 off');
   });
 });
 
@@ -51,7 +52,7 @@ describe('publicMenuCopy', () => {
       .toBe('Saturday–Sunday. $5 Screwdriver, Tequila Sunrise, Sangria, or Bloody Mary Shot.');
   });
 
-  it('strips every other dollar amount on guest menu cards', () => {
+  it('strips dollar amounts on guest menu cards while SHOW_PRICES is off', () => {
     expect(publicMenuCopy('Two plates for $22. Saturday–Sunday 9–11 AM.', 'Weekend Brunch'))
       .toBe('Two plates for. Saturday–Sunday 9–11 AM.');
     expect(publicMenuCopy('$5 Screwdriver, Tequila Sunrise.', 'Brunch drinks'))

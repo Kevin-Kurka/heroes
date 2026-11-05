@@ -226,6 +226,8 @@ export function copyForName(name: string, groupName?: string): string | undefine
 }
 
 export function shouldReplaceDescription(name: string, current?: string): boolean {
-  if (SKIP_REPLACE_IF_PRESENT.has(key(name)) && current?.trim()) return false;
+  // Sheet sync is authoritative — never overwrite a non-empty description.
+  if (current?.trim()) return false;
+  if (SKIP_REPLACE_IF_PRESENT.has(key(name))) return false;
   return true;
 }

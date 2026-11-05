@@ -46,8 +46,13 @@ export interface MenuItem {
   name: string;
   subtitle?: string;
   description?: string;
-  /** Staff-only. Public /menu never renders this (see SHOW_PRICES). */
+  /** Numeric price when a single amount applies (JSON-LD + simple display). */
   price?: number;
+  /**
+   * Guest-facing price text for dual/ranged prices (pint/pitcher, glass/bottle,
+   * cup/bowl, small/large). Prefer this over `price` when present.
+   */
+  priceLabel?: string;
   imageUrl?: string;
   calories?: number;
 }
@@ -71,8 +76,10 @@ export interface MenuGroup {
   displayMode?: 'cards' | 'variants' | 'starters';
   /** Honest plate photo for the group (single-item cards, nachos, drafts, etc.). */
   imageUrl?: string;
-  /** Staff-only. Public /menu never renders this (see SHOW_PRICES). */
+  /** Shared section price when every variant costs the same. */
   basePrice?: number;
+  /** Dual/ranged price label for the section header when needed. */
+  basePriceLabel?: string;
   addOns?: MenuGroupAddOn[];
   addOnLabel?: string;
   mods?: MenuGroupAddOn[];

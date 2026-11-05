@@ -278,8 +278,9 @@ function groupToMenuSection(group: MenuGroup): Record<string, unknown> {
     if (SHOW_PRICES && item.price != null) {
       node.offers = {
         '@type': 'Offer',
-        price: item.price.toFixed(2),
+        price: Number(item.price).toFixed(2),
         priceCurrency: 'USD',
+        ...(item.priceLabel ? { description: item.priceLabel } : {}),
       };
     }
     return node;
