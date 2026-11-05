@@ -6,7 +6,7 @@ import MenuPageClient from './MenuPageClient';
 export const metadata: Metadata = {
   title: 'Menu',
   description:
-    'The kitchen and bar menu at American Heroes & Brew — burgers, sandwiches, wings, and weekend breakfast at the family sports bar in Carlsbad Village.',
+    'Our menu rotates — items vary daily. Ask your server what\'s available today. Burgers, sandwiches, wings, and weekend breakfast at American Heroes & Brew in Carlsbad Village.',
   alternates: { canonical: '/menu' },
 };
 
