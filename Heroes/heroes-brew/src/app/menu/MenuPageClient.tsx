@@ -130,9 +130,18 @@ export default function MenuPageClient({ menus }: Props) {
             Menu
           </h1>
           <p className="mt-3 text-[15px] leading-relaxed text-muted">
-            Kitchen and bar in Carlsbad Village — burgers, heroes, wings, and a full bar. Ask your server about today&apos;s specials.
+            Kitchen and bar in Carlsbad Village — burgers, heroes, wings, and a full bar.
           </p>
         </header>
+
+        <div
+          role="note"
+          className="mb-6 rounded-lg border border-accent/40 bg-accent/10 px-4 py-3 text-[15px] leading-snug text-foreground"
+        >
+          <p className="font-medium text-accent">
+            Our menu rotates — items vary daily. Ask your server what&apos;s available today.
+          </p>
+        </div>
 
         {/* Sentinel to detect sticky state */}
         <div ref={sentinelRef} className="h-0" />
