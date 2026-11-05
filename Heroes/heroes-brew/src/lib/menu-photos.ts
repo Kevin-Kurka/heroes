@@ -225,6 +225,8 @@ function ensureHeroSandwichesGroup(groups: MenuGroup[]): MenuGroup {
 }
 
 /** Kitchen Specials = Hogzilla only. */
+// Sheet sync no longer calls these injectors; kept for live CSV override paths / future use.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function ensureKitchenSpecials(groups: MenuGroup[]) {
   ensureCalamari(groups);
   const specials = ensureKitchenSpecialsGroup(groups);
@@ -249,6 +251,7 @@ function takeNamedItem(groups: MenuGroup[], name: string): MenuItem | undefined 
 }
 
 /** Spicy Chicken lives under Hero Sandwiches — never duplicated. */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function ensureSpicyChickenOnHeroes(groups: MenuGroup[]) {
   const existing = takeNamedItem(groups, SPICY_CHICKEN.name);
   const heroes = ensureHeroSandwichesGroup(groups);
@@ -321,6 +324,7 @@ function ensureBrunchSpecialsGroup(groups: MenuGroup[]) {
   return specials;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function ensureChilaquiles(groups: MenuGroup[]) {
   if (hasNamedItem(groups, CHILAQUILES.name)) return;
   const specials = ensureBrunchSpecialsGroup(groups);
@@ -388,6 +392,7 @@ function retireEarlyBirdGroupLabel(groups: MenuGroup[]) {
 }
 
 /** Guest copy for 2 Eggs for $22 and Breakfast Happy Hour — never leftover sheet plates copy. */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function canonicalizeTwoFor22(groups: MenuGroup[]) {
   walkGroups(groups, (group) => {
     for (const item of group.items) {
@@ -401,6 +406,7 @@ function canonicalizeTwoFor22(groups: MenuGroup[]) {
 }
 
 /** Keep the deal on Brunch Specials + weekly Specials only — not leftover sheet sections. */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function stripScatteredTwoFor22(groups: MenuGroup[]) {
   walkGroups(groups, (group, parent) => {
     const keepHere =
@@ -413,6 +419,7 @@ function stripScatteredTwoFor22(groups: MenuGroup[]) {
 }
 
 /** 2 Eggs for $22 first on Brunch Specials, then Breakfast Happy Hour (text-only). */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function ensureTwoFor22(groups: MenuGroup[]) {
   const specials = ensureBrunchSpecialsGroup(groups);
   const rest = specials.items.filter(
@@ -439,6 +446,7 @@ function upsertWeeklyDeal(
   else specials.items.push(row);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function ensureTwoFor22Weekly(groups: MenuGroup[]) {
   upsertWeeklyDeal(groups, TWO_FOR_22, isTwoFor22Name);
   upsertWeeklyDeal(groups, { ...BREAKFAST_HAPPY_HOUR, id: 'specials-breakfast-hh' }, isBreakfastHappyHourName);
@@ -501,6 +509,7 @@ function ensureSpecialsGroup(groups: MenuGroup[]): MenuGroup {
   return specials;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function ensureSpecialsTabFood(groups: MenuGroup[]) {
   const specials = ensureSpecialsGroup(groups);
   let kitchen = specials.subGroups?.find((g) => /^(kitchen|featured)$/i.test(g.name));
@@ -525,6 +534,7 @@ function ensureSpecialsTabFood(groups: MenuGroup[]) {
   });
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function ensureOreoChurros(groups: MenuGroup[]) {
   if (hasNamedItem(groups, OREO_CHURROS.name)) return;
   let sweets = findGroup(groups, (g) => /^(sweets?|sweet stuff)$/i.test(g.name));
@@ -540,22 +550,22 @@ function ensureOreoChurros(groups: MenuGroup[]) {
   ];
 }
 
-/** Kitchen specials, brunch rename, recipe copy. Public /menu stays text-only. */
+/**
+ * Presentation pass for the public menu.
+ *
+ * After the 2026-11 sheet sync the bundled menu is Food + Drinks only. Do not
+ * inject Kitchen Specials / Brunch / Oreo Churros / weekly Specials — those are
+ * not on Kevin's sheet. Keep retirement scrubbers + empty-description fill-ins
+ * so a live MENU_SHEET_CSV_URL override still stays clean. Public /menu stays
+ * text-only (photos stay mapped in MENU_PHOTO_PATHS for matching names).
+ */
 export function applyMenuPresentation(menus: Menu[]): Menu[] {
   const next = cloneMenus(menus);
   for (const menu of next) {
     retireCrunchWraps(menu.groups);
     retireEarlyBirdGroupLabel(menu.groups);
     stripRetiredBreakfastDeals(menu.groups);
-    ensureSpicyChickenOnHeroes(menu.groups);
-    ensureKitchenSpecials(menu.groups);
-    ensureChilaquiles(menu.groups);
-    stripScatteredTwoFor22(menu.groups);
-    ensureTwoFor22(menu.groups);
-    ensureOreoChurros(menu.groups);
-    ensureSpecialsTabFood(menu.groups);
-    ensureTwoFor22Weekly(menu.groups);
-    canonicalizeTwoFor22(menu.groups);
+    // Only fold SD Burrito / note choices when a live sheet still sends them.
     presentSdBurrito(menu.groups);
     stripNoteChoices(menu.groups);
     applyDescriptions(menu.groups);

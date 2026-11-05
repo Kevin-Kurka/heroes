@@ -237,7 +237,14 @@ function getStyleCSS(s: StyleKey, m: ModeKey): string {
 /* ============================================================
    SHARED RENDERERS
    ============================================================ */
-function fmtPrice(p?: number) { return p == null ? '' : `${p}`; }
+function fmtPrice(p?: number | string) {
+  if (p == null || p === '') return '';
+  return `${p}`;
+}
+function itemPrice(it: MenuItem): string {
+  if (it.priceLabel?.trim()) return it.priceLabel.trim();
+  return fmtPrice(it.price);
+}
 
 function Header({ style: s }: { style: StyleKey }) {
   if (s === 'editorial') return (
@@ -261,7 +268,7 @@ function SecHead({ title, desc }: { title: string; desc?: string }) {
   </>;
 }
 
-function VGroup({ g, style: s }: { g: MenuGroup; style: StyleKey }) {
+function VGroup({ g, style: _s }: { g: MenuGroup; style: StyleKey }) {
   const allSame = g.items.every(i => i.price === g.basePrice);
   return (
     <div className="grp">
@@ -289,7 +296,7 @@ function VGroup({ g, style: s }: { g: MenuGroup; style: StyleKey }) {
   );
 }
 
-function ItemRow({ name, sub, desc, price }: { name: string; sub?: string; desc?: string; price?: number }) {
+function ItemRow({ name, sub, desc, price }: { name: string; sub?: string; desc?: string; price?: number | string }) {
   return <>
     <div className="row">
       <span className="row-nm">{name}</span>
@@ -358,7 +365,7 @@ function SaladsSection({ group, style: s }: { group: MenuGroup; style: StyleKey 
   return (
     <PageWrap style={s}>
       <SecHead title="Salads" />
-      {group.items.map(it => <ItemRow key={it.id} name={it.name} desc={it.description} price={it.price} />)}
+      {group.items.map(it => <ItemRow key={it.id} name={it.name} desc={it.description} price={itemPrice(it)} />)}
       <AddOnBox addOns={group.addOns} label={group.addOnLabel} />
     </PageWrap>
   );
@@ -397,7 +404,7 @@ function HeroesSection({ heroesGroup, style: s }: { heroesGroup: MenuGroup; styl
         {heroesGroup.subGroups?.map(sub => <VGroup key={sub.id} g={sub} style={s} />)}
         {heroesGroup.items.map(it => (
           <div key={it.id} style={{ marginBottom: 6, breakInside: 'avoid' }}>
-            <div className="row"><span className="row-nm">{it.name}</span>{it.subtitle && <span className="row-sub">{it.subtitle}</span>}<span className="row-dots" /><span className="row-pr">{fmtPrice(it.price)}</span></div>
+            <div className="row"><span className="row-nm">{it.name}</span>{it.subtitle && <span className="row-sub">{it.subtitle}</span>}<span className="row-dots" /><span className="row-pr">{itemPrice(it)}</span></div>
             {it.description && <div className="row-desc">{it.description}</div>}
           </div>
         ))}
@@ -412,7 +419,7 @@ function SweetSection({ group, style: s }: { group: MenuGroup; style: StyleKey }
     <PageWrap style={s}>
       <SecHead title="Sweet Stuff" />
       {group.subGroups?.map(sub => <VGroup key={sub.id} g={sub} style={s} />)}
-      <div className="c2">{group.items.map(it => <ItemRow key={it.id} name={it.name} desc={it.description} price={it.price} />)}</div>
+      <div className="c2">{group.items.map(it => <ItemRow key={it.id} name={it.name} desc={it.description} price={itemPrice(it)} />)}</div>
     </PageWrap>
   );
 }
@@ -492,7 +499,7 @@ function ComboBurgersHeroes({ burgersGroup, heroesGroup, style: s }: { burgersGr
           {heroesGroup.subGroups?.map(sub => <VGroup key={sub.id} g={sub} style={s} />)}
           {heroesGroup.items.map(it => (
             <div key={it.id} style={{ marginBottom: 4, breakInside: 'avoid' }}>
-              <div className="row"><span className="row-nm" style={{ fontSize: 12 }}>{it.name}</span>{it.subtitle && <span className="row-sub" style={{ fontSize: 10 }}>{it.subtitle}</span>}<span className="row-dots" /><span className="row-pr" style={{ fontSize: 12 }}>{fmtPrice(it.price)}</span></div>
+              <div className="row"><span className="row-nm" style={{ fontSize: 12 }}>{it.name}</span>{it.subtitle && <span className="row-sub" style={{ fontSize: 10 }}>{it.subtitle}</span>}<span className="row-dots" /><span className="row-pr" style={{ fontSize: 12 }}>{itemPrice(it)}</span></div>
               {it.description && <div className="row-desc" style={{ fontSize: 9, marginBottom: 4 }}>{it.description}</div>}
             </div>
           ))}
@@ -513,7 +520,7 @@ function ComboStartersSalads({ startersGroup, saladsGroup, style: s }: { starter
       {/* Salads */}
       <div style={{ marginTop: 14 }}>
         <SecHead title="Salads" />
-        {saladsGroup.items.map(it => <ItemRow key={it.id} name={it.name} desc={it.description} price={it.price} />)}
+        {saladsGroup.items.map(it => <ItemRow key={it.id} name={it.name} desc={it.description} price={itemPrice(it)} />)}
         <AddOnBox addOns={saladsGroup.addOns} label={saladsGroup.addOnLabel} />
       </div>
     </PageWrap>
@@ -526,7 +533,7 @@ function ComboSweetKids({ sweetGroup, kidsGroup, style: s, mode: m }: { sweetGro
       {/* Sweet Stuff — half page */}
       <SecHead title="Sweet Stuff" />
       {sweetGroup.subGroups?.map(sub => <VGroup key={sub.id} g={sub} style={s} />)}
-      <div className="c2">{sweetGroup.items.map(it => <ItemRow key={it.id} name={it.name} desc={it.description} price={it.price} />)}</div>
+      <div className="c2">{sweetGroup.items.map(it => <ItemRow key={it.id} name={it.name} desc={it.description} price={itemPrice(it)} />)}</div>
 
       {/* Divider */}
       <div style={{ marginTop: 18 }} />
@@ -577,7 +584,7 @@ function groupToRows(g: MenuGroup, tab: string, section: string): string[][] {
 
   g.items.forEach((item: MenuItem) => {
     const name = item.subtitle ? `${item.name} ${item.subtitle}` : item.name;
-    rows.push([tab, section, name, item.price != null ? String(item.price) : '', item.description ?? '', '', '', '']);
+    rows.push([tab, section, name, item.priceLabel?.trim() || (item.price != null ? String(item.price) : ''), item.description ?? '', '', '', '']);
   });
 
   // Variant groups list their options/upcharges at the group level.
@@ -717,16 +724,16 @@ export default function PrintableMenuClient({ menus }: { menus: Menu[] }) {
       </div>
       <div style={{ minHeight: '100vh', padding: '20px 16px' }}>
         {selected.has('daily') && <DailySection style={style} />}
-        {selected.has('starters') && <StartersSection group={find('starting')} style={style} />}
-        {selected.has('salads') && <SaladsSection group={find('salads')} style={style} />}
-        {selected.has('burgers') && <BurgersSection group={find('mains-hero-burgers')} style={style} />}
-        {selected.has('heroes') && <HeroesSection heroesGroup={find('mains-hero-sandwiches')} style={style} />}
-        {selected.has('sweet') && <SweetSection group={find('sweets')} style={style} />}
+        {selected.has('starters') && <StartersSection group={find('food-starters')} style={style} />}
+        {selected.has('salads') && <SaladsSection group={find('food-salads')} style={style} />}
+        {selected.has('burgers') && <BurgersSection group={find('food-burgers')} style={style} />}
+        {selected.has('heroes') && <HeroesSection heroesGroup={find('food-heroes')} style={style} />}
+        {selected.has('sweet') && <SweetSection group={find('food-sweet-stuff')} style={style} />}
         {selected.has('drinks') && <DrinksSection group={find('drinks')} style={style} />}
         {selected.has('kids') && <KidsSection group={find('kids')} style={style} mode={mode} />}
-        {selected.has('combo-burgers-heroes') && <ComboBurgersHeroes burgersGroup={find('mains-hero-burgers')} heroesGroup={find('mains-hero-sandwiches')} style={style} />}
-        {selected.has('combo-starters-salads') && <ComboStartersSalads startersGroup={find('starting')} saladsGroup={find('salads')} style={style} />}
-        {selected.has('combo-sweet-kids') && <ComboSweetKids sweetGroup={find('sweets')} kidsGroup={find('kids')} style={style} mode={mode} />}
+        {selected.has('combo-burgers-heroes') && <ComboBurgersHeroes burgersGroup={find('food-burgers')} heroesGroup={find('food-heroes')} style={style} />}
+        {selected.has('combo-starters-salads') && <ComboStartersSalads startersGroup={find('food-starters')} saladsGroup={find('food-salads')} style={style} />}
+        {selected.has('combo-sweet-kids') && <ComboSweetKids sweetGroup={find('food-sweet-stuff')} kidsGroup={find('kids')} style={style} mode={mode} />}
         {selected.size === 0 && <div style={{ textAlign: 'center', color: '#9ca3af', marginTop: 80, fontSize: 16 }}>Select sections above to preview &amp; print</div>}
       </div>
     </>

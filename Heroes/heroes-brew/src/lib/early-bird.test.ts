@@ -229,45 +229,52 @@ describe('2 Eggs for $22 on guest-facing surfaces', () => {
     );
   });
 
-  it('shows 2 Eggs for $22 on Brunch Specials and the Specials tab', () => {
+  it('does not inject Brunch/Specials onto the sheet-synced section tabs', () => {
+    // After the 2026-11 sheet sync the public /menu is Drinks + per-section
+    // food tabs (and Kids from the prior site). Brunch / 2 Eggs / Specials
+    // live on homepage, FAQ, and landing pages — not as injected /menu tabs.
     const presented = applyMenuPresentation(getMenus());
-    const brunch = presented[0].groups.find((g) => g.name === 'Brunch');
-    const brunchSpecials = brunch?.subGroups?.find((g) => g.name === 'Brunch Specials');
-    const names = brunchSpecials?.items.map((item) => item.name) ?? [];
-    expect(names[0]).toBe(TWO_FOR_22.name);
-    expect(names).toContain('Chilaquiles');
-    expect(names.join(' ')).not.toMatch(FORBIDDEN_BRAND);
-
-    const deal = brunchSpecials?.items.find((item) => item.name === TWO_FOR_22.name);
-    expect(deal?.description).toBe(twoFor22MenuDescription());
-    expect(publicMenuCopy(deal?.description, deal?.name)).toMatch(/\$22/);
-    expect(publicMenuCopy(deal?.description, deal?.name)).toBe(TWO_FOR_22_DESCRIPTION);
-    expect(names[1]).toBe(BREAKFAST_HAPPY_HOUR.name);
-    const hh = brunchSpecials?.items.find((item) => item.name === BREAKFAST_HAPPY_HOUR.name);
-    expect(hh?.description).toBe(breakfastHappyHourMenuDescription());
-    expect(publicMenuCopy(hh?.description, hh?.name)).toMatch(/\$5/);
-    expect(deal?.imageUrl).toBeUndefined();
-
-    const specials = presented[0].groups.find((g) => g.name === 'Specials');
-    const weekly = specials?.items.find((item) => /2 eggs for \$22/i.test(item.name));
-    expect(weekly).toBeDefined();
-    expect(weekly?.name).toBe(TWO_FOR_22.name);
-    expect(weekly?.description).toBe(TWO_FOR_22_DESCRIPTION);
+    const tabNames = presented[0].groups.map((g) => g.name);
+    expect(tabNames[0]).toBe('Drinks');
+    expect(tabNames).toContain('Sweets');
+    expect(tabNames).toContain('Kids');
+    expect(tabNames).not.toContain('Food');
+    expect(tabNames).not.toContain('Brunch');
+    expect(tabNames).not.toContain('Breakfast');
+    expect(tabNames).not.toContain('Specials');
+    const blob = JSON.stringify(presented);
+    expect(blob).not.toMatch(FORBIDDEN_BRAND);
+    expect(blob).not.toMatch(FORBIDDEN_TWO_PLATES);
     expect(TWO_FOR_22.window).toMatch(SAT_SUN);
-    expect(specials?.items.map((item) => item.name).join('\n')).toMatch(/friday funday/i);
+    expect(twoFor22MenuDescription()).toBe(TWO_FOR_22_DESCRIPTION);
+    expect(publicMenuCopy(TWO_FOR_22_DESCRIPTION, TWO_FOR_22.name)).toMatch(/\$22/);
+    expect(publicMenuCopy(breakfastHappyHourMenuDescription(), BREAKFAST_HAPPY_HOUR.name)).toMatch(/\$5/);
   });
 
-  it('renames a Toast EARLY BIRD group and keeps 2 Eggs for $22, dropping retired Early Bird item names', () => {
-    const seeded = getMenus();
-    const brunch = seeded[0].groups.find((g) => g.name === 'Brunch');
-    brunch?.subGroups?.unshift({
-      id: 'toast-early-bird',
-      name: 'EARLY BIRD',
-      items: [
-        { id: 'toast-two-for-22', name: 'TWO for $22', description: 'old sheet line' },
-        { id: 'retired-early-bird', name: 'Early Bird Weekend Breakfast', description: 'Two plates for $22.' },
+  it('renames a Toast EARLY BIRD group and drops retired Early Bird item names on leftover sheet data', () => {
+    const seeded = [{
+      id: 'menu-live',
+      name: 'Menu',
+      groups: [
+        {
+          id: 'brunch',
+          name: 'Brunch',
+          displayMode: 'starters' as const,
+          items: [],
+          subGroups: [
+            {
+              id: 'toast-early-bird',
+              name: 'EARLY BIRD',
+              items: [
+                { id: 'toast-two-for-22', name: 'TWO for $22', description: 'old sheet line' },
+                { id: 'retired-early-bird', name: 'Early Bird Weekend Breakfast', description: 'Two plates for $22.' },
+                { id: 'keep-eggs', name: '2 Eggs for $22', description: TWO_FOR_22_DESCRIPTION },
+              ],
+            },
+          ],
+        },
       ],
-    });
+    }];
     const presented = applyMenuPresentation(seeded);
     const presentedBrunch = presented[0].groups.find((g) => g.name === 'Brunch');
     const groupNames = presentedBrunch?.subGroups?.map((g) => g.name).join('\n') ?? '';
@@ -275,42 +282,43 @@ describe('2 Eggs for $22 on guest-facing surfaces', () => {
     const names = presentedBrunch?.subGroups?.flatMap((g) => g.items.map((item) => item.name)).join('\n') ?? '';
     expect(names).toMatch(/2 Eggs for \$22/);
     expect(names).not.toMatch(FORBIDDEN_BRAND);
-    expect(names).toMatch(/Chilaquiles/);
+    expect(names).not.toMatch(/Early Bird Weekend Breakfast/i);
   });
 
-  it('canonicalizes sheet TWO for $22 aliases to 2 Eggs for $22 and folds EARLY BIRD into Brunch', () => {
-    const seeded = getMenus();
-    seeded[0].groups.push({
-      id: 'toast-early-bird-tab',
-      name: 'EARLY BIRD',
-      items: [
-        { id: 'sheet-two', name: '2 for $22', description: 'Pick any two plates for $22.' },
+  it('scrubs EARLY BIRD branding from leftover sheet tabs without inventing brunch items', () => {
+    const seeded = [{
+      id: 'menu-live',
+      name: 'Menu',
+      groups: [
+        {
+          id: 'toast-early-bird-tab',
+          name: 'EARLY BIRD',
+          items: [
+            { id: 'sheet-two', name: '2 for $22', description: 'Pick any two plates for $22.' },
+          ],
+        },
+        {
+          id: 'food',
+          name: 'Food',
+          displayMode: 'starters' as const,
+          items: [],
+          subGroups: [
+            {
+              id: 'food-sides',
+              name: 'Sides',
+              items: [{ id: 'fries', name: 'Fries', price: 6 }],
+            },
+          ],
+        },
       ],
-    });
-    const plates = seeded[0].groups
-      .find((g) => g.name === 'Brunch')
-      ?.subGroups?.find((g) => g.name === 'Plates');
-    plates?.items.push({
-      id: 'sheet-two-on-plates',
-      name: 'TWO for $22',
-      description: 'Two breakfast plates mix-and-match for $22.',
-    });
+    }];
 
     const presented = applyMenuPresentation(seeded);
     const blob = JSON.stringify(presented);
     expect(blob).not.toMatch(FORBIDDEN_BRAND);
-    expect(blob).not.toMatch(FORBIDDEN_TWO_PLATES);
     expect(presented[0].groups.map((g) => g.name).join('\n')).not.toMatch(FORBIDDEN_BRAND);
-
-    const twoFor22 = presented[0].groups
-      .flatMap((g) => [g, ...(g.subGroups ?? [])])
-      .flatMap((g) => g.items)
-      .filter((item) => /2 eggs for \$22/i.test(item.name));
-    expect(twoFor22.length).toBeGreaterThan(0);
-    for (const item of twoFor22) {
-      expect(item.name).toBe(TWO_FOR_22.name);
-      expect(item.description).toBe(twoFor22MenuDescription());
-    }
+    // Presentation no longer injects 2 Eggs / Chilaquiles — sheet sync owns the menu.
+    expect(blob).not.toMatch(/Chilaquiles/);
   });
 
   it('features 2 Eggs for $22 on Sat–Sun Daily Lineup and Friday Funday alone on Friday', () => {

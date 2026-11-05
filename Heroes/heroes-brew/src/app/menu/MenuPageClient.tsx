@@ -130,7 +130,7 @@ export default function MenuPageClient({ menus }: Props) {
             Menu
           </h1>
           <p className="mt-3 text-[15px] leading-relaxed text-muted">
-            Kitchen and bar in Carlsbad Village — a family sports bar. Ask your server for today’s prices.
+            Kitchen and bar in Carlsbad Village — burgers, heroes, wings, and a full bar. Ask your server about today&apos;s specials.
           </p>
         </header>
 

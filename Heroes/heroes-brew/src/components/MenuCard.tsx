@@ -9,8 +9,15 @@ interface MenuCardProps {
   featured?: boolean;
 }
 
+function displayPrice(item: MenuItem): string | null {
+  if (item.priceLabel?.trim()) return item.priceLabel.trim();
+  if (item.price != null) return String(item.price);
+  return null;
+}
+
 export default function MenuCard({ item }: MenuCardProps) {
   const description = publicMenuCopy(item.description, item.name);
+  const price = displayPrice(item);
 
   return (
     <article className="rounded-xl bg-white/5 p-4 transition-colors duration-200 hover:bg-white/[0.08]">
@@ -26,8 +33,8 @@ export default function MenuCard({ item }: MenuCardProps) {
             <p className="mt-1.5 text-sm leading-relaxed text-muted">{description}</p>
           )}
         </div>
-        {SHOW_PRICES && item.price != null && (
-          <span className="shrink-0 font-mono text-sm font-semibold text-accent">{item.price}</span>
+        {SHOW_PRICES && price != null && (
+          <span className="shrink-0 font-mono text-sm font-semibold text-accent">{price}</span>
         )}
       </div>
     </article>

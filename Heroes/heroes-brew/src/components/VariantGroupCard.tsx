@@ -84,8 +84,10 @@ export default function VariantGroupCard({ group, elevated }: VariantGroupCardPr
         <h2 className="text-sm font-semibold uppercase tracking-wider text-foreground sm:text-base">
           {group.name}
         </h2>
-        {SHOW_PRICES && group.basePrice != null && (
-          <span className="shrink-0 font-mono text-lg font-semibold text-accent">{group.basePrice}</span>
+        {SHOW_PRICES && (group.basePriceLabel || group.basePrice != null) && (
+          <span className="shrink-0 font-mono text-lg font-semibold text-accent">
+            {group.basePriceLabel?.trim() || String(group.basePrice)}
+          </span>
         )}
       </div>
 

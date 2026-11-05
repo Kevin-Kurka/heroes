@@ -2,11 +2,9 @@
  * Site-wide display configuration.
  *
  * SHOW_PRICES gates every regular item price on the customer-facing menu.
- * Regular item prices stay hidden while SHOW_PRICES is false.
- * Published 2 Eggs for $22 deal prices stay visible via publicMenuCopy.
- * Flip SHOW_PRICES to `true` to restore all prices (MenuCard, VariantGroupCard,
- * MenuPageClient, menu JSON-LD). Staff printable at /menu/printable does not
- * read this flag and may still show prices.
+ * Off for the 2026-11 sheet sync — Kevin wants no prices on the public site
+ * (UI, JSON-LD offers, llms.txt). Price fields stay in menu data for staff
+ * printable at /menu/printable, which does not read this flag.
  */
 export const SHOW_PRICES = false;
 
