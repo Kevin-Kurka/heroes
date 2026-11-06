@@ -130,21 +130,59 @@ const ESPN_SPORTS: { sport: string; league: SportLeague }[] = [
   { sport: 'football/college-football', league: 'CFB' },
 ];
 
+/**
+ * Returns `count` consecutive civil dates (YYYYMMDD) starting from today in
+ * America/Los_Angeles. ESPN files games by local game-day date, so a UTC
+ * "today" would skip tonight's games after ~4pm PT. Uses Date.UTC day
+ * arithmetic so DST transitions never skip or duplicate a date.
+ */
+export function getPacificDateKeys(count: number, now: Date = new Date()): string[] {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/Los_Angeles',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(now);
+  const get = (t: string) => Number(parts.find((p) => p.type === t)?.value);
+  const y = get('year');
+  const m = get('month');
+  const d = get('day');
+  const keys: string[] = [];
+  for (let i = 0; i < count; i++) {
+    keys.push(new Date(Date.UTC(y, m - 1, d + i)).toISOString().slice(0, 10).replace(/-/g, ''));
+  }
+  return keys;
+}
+
 async function fetchESPNScoreboard(sport: string, league: SportLeague): Promise<UnifiedEvent[]> {
   try {
-    // Build date range: today through today+7
-    const now = new Date();
-    const end = new Date(now);
-    end.setDate(now.getDate() + 7);
-    const fmt = (d: Date) => d.toISOString().split('T')[0].replace(/-/g, '');
-    const dates = `${fmt(now)}-${fmt(end)}`;
-
-    const res = await fetch(
-      `https://site.api.espn.com/apis/site/v2/sports/${sport}/scoreboard?dates=${dates}`,
-      { cache: 'no-store' }
+    // ESPN rejects dates=START-END ranges (HTTP 400), so fetch each
+    // America/Los_Angeles calendar day separately and merge.
+    const days = getPacificDateKeys(8);
+    const responses = await Promise.all(
+      days.map(async (day) => {
+        try {
+          const res = await fetch(
+            `https://site.api.espn.com/apis/site/v2/sports/${sport}/scoreboard?dates=${day}`,
+            { cache: 'no-store' }
+          );
+          if (!res.ok) return [];
+          const json = await res.json();
+          return (json.events || []) as Record<string, unknown>[];
+        } catch {
+          return [];
+        }
+      })
     );
-    if (!res.ok) throw new Error(`ESPN ${league}: ${res.status}`);
-    const data = await res.json();
+    const seenIds = new Set<string>();
+    const data = {
+      events: responses.flat().filter((e) => {
+        const id = String(e.id);
+        if (seenIds.has(id)) return false;
+        seenIds.add(id);
+        return true;
+      }),
+    } as { events: any[] }; // eslint-disable-line @typescript-eslint/no-explicit-any
 
     const events: UnifiedEvent[] = [];
     const isSoccer = sport.startsWith('soccer');
