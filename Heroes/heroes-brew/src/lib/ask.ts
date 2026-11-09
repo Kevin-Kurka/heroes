@@ -117,12 +117,12 @@ const CLAIMS: Omit<KnowledgeEntry, 'source'>[] = [
     url: `${SITE_URL}/world-cup`,
   },
   {
-    id: 'claim-nfl-week9-chargers',
-    question: 'Where can I watch NFL Week 9 and the Chargers in Carlsbad?',
+    id: 'claim-nfl-week10-chargers',
+    question: 'Where can I watch NFL Week 10 and the Chargers in Carlsbad?',
     answer:
-      'American Heroes & Brew in Carlsbad Village is showing NFL Week 9 (Nov 5–9) on 16 TVs — including the local Chargers watch party (Texans at Chargers, Sun Nov 8, 1:05 PM PT, CBS). Walk-ins welcome at 300 Carlsbad Village Drive. Fan watch-party only — not an official NFL or team partnership.',
+      'American Heroes & Brew in Carlsbad Village is showing NFL Week 10 (Nov 12–16) on 16 TVs — including the local Chargers watch party (Chargers at Ravens, Monday Night Football, Mon Nov 16, 5:15 PM PT, ESPN). Walk-ins welcome at 300 Carlsbad Village Drive. Fan watch-party only — not an official NFL or team partnership.',
     keywords: [
-      'nfl week 9 carlsbad',
+      'nfl week 10 carlsbad',
       'chargers watch party carlsbad',
       'where to watch the chargers carlsbad village',
     ],
