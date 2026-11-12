@@ -9,6 +9,7 @@ import VariantGroupCard from '@/components/VariantGroupCard';
 import PageTransition from '@/components/PageTransition';
 import SecretMenuGate, { type SecretUnlock } from '@/components/SecretMenuGate';
 import { SHOW_PRICES, SECRET_MENU_ENABLED, stripPriceTokens } from '@/lib/config';
+import { MENU_FOOTNOTE } from '@/lib/menu';
 
 const SECRET_TAB = '__secret__';
 const SECRET_CACHE_KEY = 'heroes_secret_menu_v1';
@@ -312,6 +313,10 @@ export default function MenuPageClient({ menus }: Props) {
             </>
           )}
         </div>
+
+        <p className="mx-auto mt-10 max-w-2xl text-center text-xs leading-relaxed text-muted">
+          {MENU_FOOTNOTE}
+        </p>
 
         {showGate && <SecretMenuGate onClose={() => setShowGate(false)} onUnlock={handleUnlock} />}
       </div>

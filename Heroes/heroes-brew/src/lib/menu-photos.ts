@@ -146,6 +146,9 @@ function applyDescriptions(groups: MenuGroup[]) {
     const groupCopy = copyForName(group.name);
     if (groupCopy) group.description = groupCopy;
 
+    // Printed Sides are name + price only. Do not invent guest copy for them.
+    if (/^sides$/i.test(group.name)) return;
+
     for (const item of group.items) {
       if (!shouldReplaceDescription(item.name, item.description)) continue;
       const copy = copyForName(item.name, group.name);

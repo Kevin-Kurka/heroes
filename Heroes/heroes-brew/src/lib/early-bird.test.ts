@@ -236,7 +236,8 @@ describe('2 Eggs for $22 on guest-facing surfaces', () => {
     const presented = applyMenuPresentation(getMenus());
     const tabNames = presented[0].groups.map((g) => g.name);
     expect(tabNames[0]).toBe('Drinks');
-    expect(tabNames).toContain('Sweets');
+    expect(tabNames).toContain('Wings');
+    expect(tabNames).not.toContain('Sweets');
     expect(tabNames).toContain('Kids');
     expect(tabNames).not.toContain('Food');
     expect(tabNames).not.toContain('Brunch');

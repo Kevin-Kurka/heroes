@@ -46,7 +46,7 @@ function add(map: Record<string, string>, names: string[], copy: string) {
 
 const COPY: Record<string, string> = {};
 
-add(COPY, ['Wings', 'Wings or Tenders'], 'Jumbo wings tossed in your sauce, with crisp carrots, celery, and cool ranch.');
+add(COPY, ['Wings', 'Wings or Tenders'], 'Jumbo wings tossed in your sauce, with crisp carrots, celery, and house made ranch.');
 add(COPY, ['Tenders'], 'Crispy tenders with crisp carrots, celery, and cool ranch.');
 add(COPY, ['Nachos'], 'Crisp chips piled high with beans, guacamole, melted cheese, Cheez Whiz, cilantro-lime crema, pico, and jalapeños.');
 add(COPY, ['Fried Pickles', 'Fried Pickle Chips'], 'Crispy fried pickle chips with cool chipotle ranch.');
