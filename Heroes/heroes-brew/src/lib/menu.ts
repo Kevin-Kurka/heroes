@@ -3,7 +3,7 @@ import { Menu, Restaurant } from '@/types';
 // Static menu. Food tabs match the current printed Carlsbad Village menu
 // (starters through sides). Drinks and Kids are unchanged from the prior site.
 // Prices stay in data; SHOW_PRICES hides them on the public site.
-// Live sheet CSV override (MENU_SHEET_CSV_URL) still wins when configured.
+// This file is the only menu source. /menu does not read a Google Sheet.
 
 /** Printed-menu footer: sales tax, card surcharge, and large-party gratuity. */
 export const MENU_FOOTNOTE =

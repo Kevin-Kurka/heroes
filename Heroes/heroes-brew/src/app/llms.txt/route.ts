@@ -1,5 +1,5 @@
-import { getRestaurantInfo } from '@/lib/menu';
-import { resolveMenus } from '@/lib/menu-sheet';
+import { getRestaurantInfo, getMenus } from '@/lib/menu';
+import { applyMenuPresentation } from '@/lib/menu-photos';
 import { FAQ } from '@/lib/faq';
 import { SITE_URL } from '@/lib/structured-data';
 import { getAllWatchParties } from '@/lib/watch-parties';
@@ -17,21 +17,20 @@ function when(iso: string): string {
   return `${date}, ${time}`;
 }
 
-// Re-pull the live (sheet-driven) menu at most once a minute.
+// Dated watch-party copy; the menu itself is the bundled static menu.
 export const revalidate = 60;
 
 /**
  * /llms.txt — the emerging convention for giving AI assistants a concise,
- * authoritative brief about a site. Built from the same live data as the rest
- * of the app (menu from the Google Sheet) so the facts never drift. Served as
- * markdown text/plain.
+ * authoritative brief about a site. The menu section is the same static menu
+ * the public /menu page renders. Served as markdown text/plain.
  */
 export async function GET() {
   const r = getRestaurantInfo();
   const address = `${r.address1}, ${r.address2}, ${r.city}, ${r.stateCode} ${r.zipCode}`;
   const hours = r.hours.map((d) => `- ${d.dayOfWeek}: ${d.open} – ${d.close}`).join('\n');
 
-  const menuSections = (await resolveMenus())
+  const menuSections = applyMenuPresentation(getMenus())
     .flatMap((m) => m.groups)
     .flatMap((g) => (g.subGroups?.length ? g.subGroups : [g]))
     .map((g) => {

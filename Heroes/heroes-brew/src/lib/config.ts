@@ -2,7 +2,7 @@
  * Site-wide display configuration.
  *
  * SHOW_PRICES gates every regular item price on the customer-facing menu.
- * Off for the 2026-11 sheet sync — Kevin wants no prices on the public site
+ * Off — Kevin wants no prices on the public site
  * (UI, JSON-LD offers, llms.txt). Price fields stay in menu data for staff
  * printable at /menu/printable, which does not read this flag.
  */

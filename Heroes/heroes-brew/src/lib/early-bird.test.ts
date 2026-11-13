@@ -318,7 +318,7 @@ describe('2 Eggs for $22 on guest-facing surfaces', () => {
     const blob = JSON.stringify(presented);
     expect(blob).not.toMatch(FORBIDDEN_BRAND);
     expect(presented[0].groups.map((g) => g.name).join('\n')).not.toMatch(FORBIDDEN_BRAND);
-    // Presentation no longer injects 2 Eggs / Chilaquiles — sheet sync owns the menu.
+    // Presentation does not inject 2 Eggs / Chilaquiles onto the static menu.
     expect(blob).not.toMatch(/Chilaquiles/);
   });
 

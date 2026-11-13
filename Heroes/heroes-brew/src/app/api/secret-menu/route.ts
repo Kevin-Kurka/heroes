@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { SECRET_MENU_NOTE } from '@/lib/secret-menu';
-import { resolveSecretMenuItems } from '@/lib/menu-sheet';
+import { SECRET_MENU_ITEMS, SECRET_MENU_NOTE } from '@/lib/secret-menu';
 
 export const runtime = 'nodejs';
 
@@ -57,5 +56,5 @@ export async function POST(req: Request) {
     console.warn('Secret menu signup (SHEETS_WEBHOOK_URL unset):', { name, email, phone, source });
   }
 
-  return NextResponse.json({ ok: true, items: await resolveSecretMenuItems(), note: SECRET_MENU_NOTE });
+  return NextResponse.json({ ok: true, items: SECRET_MENU_ITEMS, note: SECRET_MENU_NOTE });
 }

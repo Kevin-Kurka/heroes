@@ -167,5 +167,5 @@ Each phase ships independently and is testable on its own.
 ## 10. Reused / Retired
 - **Reused:** IG publish flow (now `src/lib/instagram-publish.ts`), token-refresh cron, `getAllEvents()`.
 - **Retired:** the "Event Posters & Posts" Google Sheet workflow, any external daily publish task,
-  and the never-built sheet-write-back publisher. (The unrelated **menu** sync via `MENU_SHEET_CSV_URL`
-  stays as-is — it is not part of this system.)
+  and the never-built sheet-write-back publisher. (The public menu is the static
+  menu in `src/lib/menu.ts`. The old `MENU_SHEET_CSV_URL` override was removed.)
