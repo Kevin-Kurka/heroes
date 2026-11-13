@@ -1,5 +1,5 @@
 import 'server-only';
-import { parseCsv } from './menu-sheet';
+import { parseCsv } from './csv';
 
 /**
  * Promo posters → Instagram daily publisher (data layer).

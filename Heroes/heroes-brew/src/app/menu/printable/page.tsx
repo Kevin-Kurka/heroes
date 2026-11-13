@@ -8,10 +8,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-// The printable layout is bound to the curated static menu's group structure
-// (fixed section components + ids), so it renders from the static menu — and its
-// CSV/xlsx export is what seeds the live Google Sheet. The customer-facing /menu
-// is the sheet-driven surface (see src/lib/menu-sheet.ts).
+// Staff print view of the same static menu the public /menu page renders.
 export default function PrintableMenuPage() {
   const menus = getMenus();
   return <PrintableMenuClient menus={menus} />;

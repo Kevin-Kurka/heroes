@@ -146,6 +146,9 @@ function applyDescriptions(groups: MenuGroup[]) {
     const groupCopy = copyForName(group.name);
     if (groupCopy) group.description = groupCopy;
 
+    // Printed Sides are name + price only. Do not invent guest copy for them.
+    if (/^sides$/i.test(group.name)) return;
+
     for (const item of group.items) {
       if (!shouldReplaceDescription(item.name, item.description)) continue;
       const copy = copyForName(item.name, group.name);
@@ -576,11 +579,10 @@ function renameBreadBowlsToBoule(groups: MenuGroup[]) {
 /**
  * Presentation pass for the public menu.
  *
- * After the 2026-11 sheet sync the bundled menu is Food + Drinks only. Do not
- * inject Kitchen Specials / Brunch / Oreo Churros / weekly Specials — those are
- * not on Kevin's sheet. Keep retirement scrubbers + empty-description fill-ins
- * so a live MENU_SHEET_CSV_URL override still stays clean. Public /menu stays
- * text-only (photos stay mapped in MENU_PHOTO_PATHS for matching names).
+ * The public menu is the static menu in menu.ts. Do not inject Kitchen
+ * Specials / Brunch / Oreo Churros / weekly Specials. Retirement scrubbers and
+ * empty-description fill-ins stay so leftover names never surface. Public
+ * /menu stays text-only (photos stay mapped in MENU_PHOTO_PATHS for matching names).
  */
 export function applyMenuPresentation(menus: Menu[]): Menu[] {
   const next = cloneMenus(menus);
@@ -589,7 +591,7 @@ export function applyMenuPresentation(menus: Menu[]): Menu[] {
     renameBreadBowlsToBoule(menu.groups);
     retireEarlyBirdGroupLabel(menu.groups);
     stripRetiredBreakfastDeals(menu.groups);
-    // Only fold SD Burrito / note choices when a live sheet still sends them.
+    // Fold leftover SD Burrito protein rows and drop Note-labeled choices.
     presentSdBurrito(menu.groups);
     stripNoteChoices(menu.groups);
     applyDescriptions(menu.groups);

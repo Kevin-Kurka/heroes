@@ -270,23 +270,12 @@ describe('photo allowlist', () => {
     expect(photoForName('Oreo Churros')).toBe('/images/polished/oreo-churros.jpg');
   });
 
-  it('puts Cheesecake under the Sweets tab with Kevin flavor choices', () => {
+  it('does not keep Cheesecake on the printed food menu', () => {
     const presented = applyMenuPresentation(getMenus());
-    const sweets = presented[0].groups.find((g) => g.name === 'Sweets');
-    expect(sweets?.basePrice).toBe(7);
-    expect(sweets?.choices?.[0]?.label).toBe('Flavor');
-    expect(sweets?.choices?.[0]?.options).toEqual([
-      'Oreo with chocolate',
-      'Heath bar with caramel',
-      'Strawberry and marshmallow creme',
-      'Fig and balsamic glaze',
-    ]);
-    const cake = sweets?.items.find((item) => photoKey(item.name) === 'cheesecake');
-    expect(cake?.name).toBe('Cheesecake');
-    expect(cake?.price).toBe(7);
-    expect(cake?.imageUrl).toBeUndefined();
-    expect(sweets?.items.some((item) => photoKey(item.name) === 'oreo churros')).toBe(false);
-    // Photo allowlist still maps Oreo Churros for matching leftover names; not on the sheet menu.
+    expect(presented[0].groups.find((g) => g.name === 'Sweets')).toBeUndefined();
+    expect(flattenItems(presented).some(({ item }) => photoKey(item.name) === 'cheesecake')).toBe(false);
+    expect(flattenItems(presented).some(({ item }) => photoKey(item.name) === 'oreo churros')).toBe(false);
+    // Photo allowlist still maps Oreo Churros for matching leftover names; not on the printed menu.
     expect(photoForName('Oreo Churros')).toBe('/images/polished/oreo-churros.jpg');
     expect(photoForName('Churros')).toBeUndefined();
     expect(photoForName('Churros with Vanilla Ice Cream')).toBeUndefined();
@@ -316,23 +305,25 @@ describe('kitchen recipe copy', () => {
     const byName = (name: string) => rows.find(({ item }) => photoKey(item.name) === photoKey(name))?.item;
     // Sheet sync owns guest copy — non-empty sheet descriptions are not overwritten.
     expect(byName('Philly Cheesesteak')?.description).toMatch(/Amoroso|ribeye|whiz/i);
-    expect(byName('Nachos')?.description).toMatch(/guacamole|pico|jalape/i);
-    expect(byName('Pasadena')?.description).toMatch(/Hero sauce|cheeseburger|brioche/i);
+    expect(byName('Nachos')).toBeUndefined();
+    expect(byName('Pasadena')?.description).toMatch(/Hero sauce|cheeseburger|gourmet bun/i);
     expect(byName('Hoboken')?.description).toMatch(/capicola|salami|provolone/i);
     expect(byName('Carlsbad')?.description).toMatch(/BLT|avocado|bacon|chicken/i);
     expect(byName('Manhattan')?.description).toMatch(/Reuben|pastrami|sauerkraut|Swiss/i);
     expect(byName('Austin')?.description).toMatch(/jalape|whiz|Hero sauce/i);
-    expect(byName('Spicy Chicken')?.description).toMatch(/fried chicken|bacon|jalape/i);
+    expect(byName('Nashville')?.description).toMatch(/fried chicken|bacon|jalape/i);
+    expect(byName('Spicy Chicken')).toBeUndefined();
     expect(byName('Crunchwraps')).toBeUndefined();
     expect(byName('Chilaquiles')).toBeUndefined();
     expect(byName('Hogzilla')).toBeUndefined();
-    expect(byName('Emerald City')?.price).toBeUndefined();
+    expect(byName('Emerald City')?.price).toBe(8);
     expect(byName('Emerald City')?.description).toMatch(/cream cheese|sriracha/i);
 
     const tabs = presented[0].groups.map((g) => g.name);
     expect(tabs[0]).toBe('Drinks');
     expect(tabs).toContain('Starters');
-    expect(tabs).toContain('Sweets');
+    expect(tabs).toContain('Wings');
+    expect(tabs).not.toContain('Sweets');
     expect(tabs).toContain('Kids');
     expect(tabs).not.toContain('Food');
     expect(rows.find(({ group }) => group === 'SD Burrito')).toBeUndefined();
@@ -416,7 +407,8 @@ describe('public menu notes and headers', () => {
     });
     expect(plates).toBeUndefined();
     expect(presented[0].groups.map((g) => g.name)[0]).toBe('Drinks');
-    expect(presented[0].groups.map((g) => g.name)).toContain('Sweets');
+    expect(presented[0].groups.map((g) => g.name)).toContain('Soup & Salad');
+    expect(presented[0].groups.map((g) => g.name)).not.toContain('Sweets');
     expect(presented[0].groups.map((g) => g.name)).toContain('Kids');
     expect(presented[0].groups.map((g) => g.name)).not.toContain('Food');
   });
@@ -548,22 +540,19 @@ describe('applyMenuPresentation', () => {
       'Drinks',
       'Starters',
       'Burgers',
+      'Wings',
       'Heroes',
+      'Load \'Em Up',
+      'Soup & Salad',
       'Hot Dogs',
-      'Loaded Fries',
-      'Loaded Tots',
-      'Loaded Chips',
-      'Salads',
-      'Soup',
-      'Boule',
       'Sides',
-      'Sweets',
       'Kids',
     ]);
     const names = flattenItems(presented).map(({ item }) => item.name);
-    expect(names).toContain('Spicy Chicken');
+    expect(names).toContain('Nashville');
+    expect(names).not.toContain('Spicy Chicken');
     expect(names).toContain('Pasadena');
-    expect(names).toContain('Cheesecake');
+    expect(names).not.toContain('Cheesecake');
     expect(names).toContain('Emerald City');
     expect(names).not.toContain('Hogzilla');
     expect(names).not.toContain('Chilaquiles');
@@ -573,15 +562,16 @@ describe('applyMenuPresentation', () => {
     expect(crunchwrapHits(presented)).toEqual([]);
   });
 
-  it('puts Spicy Chicken under the Heroes tab with a sheet description', () => {
+  it('puts Nashville under the Heroes tab with the printed fried-chicken description', () => {
     const presented = applyMenuPresentation(getMenus());
     const heroes = presented[0].groups.find((g) => g.name === 'Heroes');
-    const spicy = heroes?.items.find((item) => photoKey(item.name) === photoKey(SPICY_CHICKEN.name));
-    expect(spicy?.name).toBe('Spicy Chicken');
-    expect(spicy?.description).toMatch(/fried chicken|bacon|jalape/i);
-    expect(spicy?.imageUrl).toBeUndefined();
-    expect(spicy?.price).toBe(24);
-    expect(flattenItems(presented).filter(({ item }) => photoKey(item.name) === 'spicy chicken')).toHaveLength(1);
+    const nashville = heroes?.items.find((item) => photoKey(item.name) === 'nashville');
+    expect(nashville?.name).toBe('Nashville');
+    expect(nashville?.description).toMatch(/fried chicken|bacon|jalape/i);
+    expect(nashville?.imageUrl).toBeUndefined();
+    expect(nashville?.price).toBe(24);
+    expect(flattenItems(presented).filter(({ item }) => photoKey(item.name) === 'nashville')).toHaveLength(1);
+    expect(flattenItems(presented).filter(({ item }) => photoKey(item.name) === 'spicy chicken')).toHaveLength(0);
   });
 
   it('does not invent a Kitchen Specials or Brunch tab', () => {
@@ -592,14 +582,12 @@ describe('applyMenuPresentation', () => {
     expect(crunchwrapHits(presented)).toEqual([]);
   });
 
-  it('keeps Soft Drinks under Drinks and Cheesecake under Sweets', () => {
+  it('keeps Soft Drinks under Drinks and drops the Sweets tab', () => {
     const presented = applyMenuPresentation(getMenus());
     const drinks = presented[0].groups.find((g) => g.name === 'Drinks');
     const soft = drinks?.subGroups?.find((g) => /soft drinks/i.test(g.name));
     expect(soft?.items.map((i) => i.name)).toEqual(['Sodas']);
-    const sweet = presented[0].groups.find((g) => g.name === 'Sweets');
-    expect(sweet?.items.map((i) => i.name)).toEqual(['Cheesecake']);
-    expect(sweet?.basePrice).toBe(7);
+    expect(presented[0].groups.find((g) => g.name === 'Sweets')).toBeUndefined();
   });
 
   it('does not invent photos for quarantined dishes on the live menu', () => {
@@ -701,9 +689,10 @@ describe('applyMenuPresentation', () => {
   it('does not duplicate sheet items after presentation', () => {
     const presented = applyMenuPresentation(getMenus());
     const names = flattenItems(presented).map(({ item }) => photoKey(item.name));
-    expect(names.filter((n) => n === 'spicy chicken')).toHaveLength(1);
+    expect(names.filter((n) => n === 'spicy chicken')).toHaveLength(0);
+    expect(names.filter((n) => n === 'nashville')).toHaveLength(1);
     expect(names.filter((n) => n === 'pasadena')).toHaveLength(1);
-    expect(names.filter((n) => n === 'cheesecake')).toHaveLength(1);
+    expect(names.filter((n) => n === 'cheesecake')).toHaveLength(0);
     expect(names.filter((n) => n === 'cheeseburger crunchwrap')).toHaveLength(0);
     expect(names.filter((n) => n === 'hogzilla')).toHaveLength(0);
   });
@@ -716,20 +705,21 @@ describe('public menu prices', () => {
     const pasadena = flattenItems(presented).find(({ item }) => item.name === 'Pasadena')?.item;
     expect(pasadena?.price).toBe(18);
     const emerald = flattenItems(presented).find(({ item }) => item.name === 'Emerald City')?.item;
-    expect(emerald?.price).toBeUndefined();
+    expect(emerald?.price).toBe(8);
     const tap = flattenItems(presented).find(({ item }) => item.name === 'AHB Amber')?.item;
     expect(tap?.price).toBe(8);
     expect(tap?.priceLabel).toMatch(/8\s*\/\s*30/);
-    const cake = flattenItems(presented).find(({ item }) => item.name === 'Cheesecake')?.item;
-    expect(cake?.price).toBe(7);
+    const soup = flattenItems(presented).find(({ item }) => item.name === 'Soup of the Day')?.item;
+    expect(soup?.price).toBe(8);
+    expect(soup?.priceLabel).toMatch(/Cup 8 \/ Bowl 14 \/ Bread Boule 16/);
   });
 
   it('strips upcharge language from public copy while prices are hidden', () => {
     const presented = applyMenuPresentation(getMenus());
-    const nachos = flattenItems(presented).find(({ item }) => item.name === 'Nachos')?.item;
-    // raw data still has +6; public strip removes it
-    expect(nachos?.description).toMatch(/\+\s*6/);
-    expect(stripPriceTokens(nachos?.description ?? '')).not.toMatch(/\$|\+\s*\d/);
+    const philly = flattenItems(presented).find(({ item }) => item.name === 'Philly Cheesesteak')?.item;
+    // raw data still has +1; public strip removes it
+    expect(philly?.description).toMatch(/\+\s*1/);
+    expect(stripPriceTokens(philly?.description ?? '')).not.toMatch(/\$|\+\s*\d/);
   });
 
   it('omits offers from menu JSON-LD while prices are hidden', () => {
@@ -737,8 +727,9 @@ describe('public menu prices', () => {
     const blob = JSON.stringify(json);
     expect(blob).not.toContain('"offers"');
     expect(blob).toContain('Pasadena');
-    expect(blob).toContain('Spicy Chicken');
-    expect(blob).toContain('Cheesecake');
+    expect(blob).toContain('Nashville');
+    expect(blob).not.toContain('Spicy Chicken');
+    expect(blob).not.toContain('Cheesecake');
     expect(blob).toContain('Emerald City');
     expect(blob).toContain('Kids');
     expect(blob).not.toContain('Hogzilla');

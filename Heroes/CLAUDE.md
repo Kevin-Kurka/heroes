@@ -97,16 +97,15 @@ src/app/menu/MenuPageClient.tsx → Client: sticky category nav, animated menu c
 Rendering mode is chosen per page based on whether it touches a live external API and how fresh it must be:
 
 - **`force-dynamic`** — `/`, `/events` (live sports/holiday APIs every request so scores stay current), and **`/fantasy-football`** (⚠️ MUST stay `force-dynamic` — an ISR fallback render breaks the live per-league count joins via an id mismatch).
-- **`revalidate = 60`** — `/menu`, `/menu/printable`. Call `resolveMenus()`, which renders from the live Google Sheet CSV when `MENU_SHEET_CSV_URL` is set, else the bundled static menu.
+- **Fully static** — `/menu`, `/menu/printable`, and `/location`. The menu is `getMenus()` in `menu.ts` (presented by `applyMenuPresentation`). No Google Sheet override.
 - **`revalidate = 300`** — `/g/[id]` (the looked-up event fully determines the page, so a rescheduled game refreshes within 5 min).
 - **`revalidate = 900`** — `/social` (Instagram cache, 15 min).
 - **`revalidate = 3600`** — all SEO landing pages + `/watch-party/[slug]` + `/api/ask` + `/faq-vectors.json` (mostly static content; hourly is plenty).
-- **Fully static** — `/location` (`getRestaurantInfo()` is hardcoded).
 
 ### Data Layer (`src/lib/`)
 
-- **`menu.ts`** — Hand-curated **static** menu + restaurant data (the fallback/seed). `getMenus(): Menu[]` and `getRestaurantInfo(): Restaurant` return hardcoded objects. No Toast/POS integration — this replaced the Toast sync in the PRD.
-- **`menu-sheet.ts`** — Optional **Google Sheet sync**. `resolveMenus(): Promise<Menu[]>` fetches `MENU_SHEET_CSV_URL` (a published-CSV Google Sheet), parses it (inverse of the `/menu/printable` CSV export — columns `Tab,Section,Item,Price,Description,Option Group,Option,Option Price`), and returns it; falls back to `getMenus()` on any failure. Lets anyone with edit access to the sheet update the live menu. Setup: see `MENU-SHEET-SYNC.md`. Live sheet id: `1g0O_KjjbmMZ0NxkJ6-VQnXoz6u9tG73e55t4naxb4XI`.
+- **`menu.ts`** — Hand-curated **static** menu + restaurant data, the only source for `/menu`, `/menu/printable`, and `/llms.txt`. `getMenus(): Menu[]` and `getRestaurantInfo(): Restaurant` return hardcoded objects. No Toast/POS integration and no Google Sheet override. `applyMenuPresentation()` in `menu-photos.ts` is the public display pass.
+- **`csv.ts`** — Shared RFC-4180 `parseCsv`, used by the promo-poster sheet reader (`promos-sheet.ts`). Not a menu source.
 - **`events.ts`** — Live. Aggregates from 3 sources in parallel (`Promise.all`), normalizing all into `UnifiedEvent` sorted chronologically:
   - MLB Stats API (`statsapi.mlb.com`) — all games for the week
   - ESPN API (`site.api.espn.com`) — NFL and NBA scoreboards
@@ -220,7 +219,6 @@ Used by the running app (set in `heroes-brew/.env.local` locally and in Vercel p
 NEXT_PUBLIC_GOOGLE_MAPS_KEY=<maps_key>    # location page map
 NEXT_PUBLIC_GA_ID=<G-XXXX>                # GA4 measurement id (analytics.ts / layout.tsx)
 GOOGLE_SITE_VERIFICATION=<token>          # Search Console HTML-tag verification (omitted when unset)
-MENU_SHEET_CSV_URL=<published_csv_url>    # optional: live menu from a Google Sheet (see MENU-SHEET-SYNC.md)
 
 # Instagram / Facebook
 INSTAGRAM_ACCESS_TOKEN=<long_lived_token> # social page; getInstagramPosts() returns [] if unset
@@ -260,7 +258,7 @@ HEROES_NOMINATION_URL=<apps_script_url>   # Hero-of-the-Month nomination capture
 
 **Auto-curated Events:** `GET /api/promos/curate` (guarded by `PROMOS_SECRET`) returns the rolling 7-day curated promo rows — WC USA/Mexico, Padres, Chargers, and Monday-Night games as Google **Events**, plus WC-day and NFL-Sunday schedule **Stories** (poster from `/api/og/schedule`). The Apps Script `seedCuratedRows()` daily trigger upserts these into the month tab (deduped by key in Notes); Google Event rows seed unapproved (manual Approve), Stories auto-approve. `publish-google` emits `topicType:EVENT` when a row carries Event Start/End. Spec: `docs/superpowers/specs/2026-06-28-google-event-curation-design.md`.
 
-No Toast credentials are used. The menu is static by default but can be driven live by a Google Sheet via `MENU_SHEET_CSV_URL` (see `MENU-SHEET-SYNC.md`). `NEXT_PUBLIC_ELFSIGHT_APP_ID` may appear in `.env.local` but is unused.
+No Toast credentials are used. The menu is the static data in `src/lib/menu.ts`. `NEXT_PUBLIC_ELFSIGHT_APP_ID` may appear in `.env.local` but is unused.
 
 ## Key Patterns
 
