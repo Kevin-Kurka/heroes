@@ -155,7 +155,7 @@ export function getMenus(): Menu[] {
           displayMode: 'variants',
           items: [
             { id: 'food-heroes-i0', name: 'Philly Cheesesteak', description: 'Thin-sliced ribeye on a toasted Amoroso roll, with white American, provolone, or whiz. Add sautéed mushrooms +1, sautéed peppers +1, or red pepper relish +1.', price: 22 },
-            { id: 'food-heroes-i1', name: 'Pacific Beach', description: 'Three fish tacos. Cabbage, pico, cilantro-lime crema. Served with house made and chips and guacamole.', price: 20 },
+            { id: 'food-heroes-i1', name: 'Pacific Beach', description: 'Three fish tacos. Cabbage, pico, cilantro-lime crema. Served with house made salsa and chips and guacamole.', price: 20 },
             { id: 'food-heroes-i2', name: 'Hoboken', description: 'Italian Sub. Capicola, salami, ham, mortadella, provolone, lettuce, tomato, onion, oregano, oil & vinegar on a hoagie roll.', price: 22 },
             { id: 'food-heroes-i3', name: 'Carlsbad', description: 'BLT+ Grilled chicken, bacon, avocado, lettuce, tomato, garlic aioli, on an hoagie roll.', price: 20 },
             { id: 'food-heroes-i4', name: 'San Diego', description: 'California Burrito. Carne asada, guacamole, fries, pico, shredded cheese, sour cream, in a flour tortilla.', price: 20 },
