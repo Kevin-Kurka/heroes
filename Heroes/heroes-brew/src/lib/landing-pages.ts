@@ -149,10 +149,10 @@ export const LANDING_PAGES: Record<string, LandingPageContent> = {
         ],
       },
       {
-        heading: 'NFL Week 10 watch parties',
+        heading: 'NFL Week 12 watch parties',
         body: [
-          'NFL Week 10 (Nov 12–16, 2026) is on the TVs at American Heroes & Brew — walk-ins welcome, 16 TVs, 300 Carlsbad Village Dr. Kickoffs are listed in Pacific time. Soft fan watch-party framing only; not an official NFL or team partnership.',
-          'Local priority: Chargers at Ravens, Monday Night Football, Mon Nov 16 at 5:15 PM PT on ESPN — Bolt Up. Sunday is a Watch \'Em All party from the 10:00 AM PT kickoffs on. Also on the slate: Commanders at Giants (Thu Nov 12, 5:15 PM PT, Prime), Vikings at Packers (Sun Nov 15, 10:00 AM PT, FOX), Chiefs at Falcons (Sun Nov 15, 10:00 AM PT, CBS), Rams at Cardinals (Sun Nov 15, 1:05 PM PT, CBS), 49ers at Cowboys (Sun Nov 15, 1:25 PM PT, FOX), and Steelers at Bengals (Sun Nov 15, 5:20 PM PT, NBC). Byes: Bears, Broncos, Buccaneers, Eagles.',
+          'NFL Week 12 (Thanksgiving week, Wed Nov 25–Mon Nov 30, 2026) is on the TVs at American Heroes & Brew — walk-ins welcome, 16 TVs, 300 Carlsbad Village Dr. Kickoffs are listed in Pacific time. Soft fan watch-party framing only; not an official NFL or team partnership.',
+          'Local priority: Patriots at Chargers, Sunday Nov 29 at 1:05 PM PT on CBS — Bolt Up. Thanksgiving week is a Watch \'Em All party from Wednesday night through Monday Night Football. Also on the slate: Packers at Rams (Wed Nov 25, 5:00 PM PT, Netflix), Bears at Lions (Thu Nov 26, 10:00 AM PT, CBS), Eagles at Cowboys (Thu Nov 26, 1:30 PM PT, FOX), Chiefs at Bills (Thu Nov 26, 5:20 PM PT, NBC), Broncos at Steelers (Fri Nov 27, 12:00 PM PT, Prime), Falcons at Vikings (Sun Nov 29, 10:00 AM PT, FOX), Seahawks at 49ers (Sun Nov 29, 1:25 PM PT, FOX), Raiders at Browns (Sun Nov 29, 5:20 PM PT, NBC), and Panthers at Buccaneers (Mon Nov 30, 5:15 PM PT, ESPN).',
         ],
       },
       {
@@ -184,9 +184,9 @@ export const LANDING_PAGES: Record<string, LandingPageContent> = {
           'Yes — American Heroes & Brew is a genuinely family-friendly sports bar with a kids’ menu, so you can bring the whole family to watch the game.',
       },
       {
-        question: 'Where can I watch NFL Week 10 and the Chargers in Carlsbad?',
+        question: 'Where can I watch NFL Week 12 and the Chargers in Carlsbad?',
         answer:
-          'American Heroes & Brew in Carlsbad Village is showing NFL Week 10 (Nov 12–16) on 16 TVs — including the local Chargers watch party (Chargers at Ravens, Monday Night Football, Mon Nov 16, 5:15 PM PT, ESPN). Walk-ins welcome, no cover, at 300 Carlsbad Village Drive. Fan watch-party only — not an official NFL or team partnership.',
+          'American Heroes & Brew in Carlsbad Village is showing NFL Week 12 (Thanksgiving week, Wed Nov 25–Mon Nov 30) on 16 TVs — including the local Chargers watch party (Patriots at Chargers, Sun Nov 29, 1:05 PM PT, CBS). Walk-ins welcome, no cover, at 300 Carlsbad Village Drive. Fan watch-party only — not an official NFL or team partnership.',
       },
     ],
     breadcrumbLabel: 'Watch the Game',
